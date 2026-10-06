@@ -5,6 +5,11 @@ dist/
 # local dev SQLite database (production uses /data, the Fly volume)
 .data/
 
+# Playwright e2e output (pnpm test:e2e)
+test-results/
+playwright-report/
+blob-report/
+
 # editor and OS junk
 .DS_Store
 ._*

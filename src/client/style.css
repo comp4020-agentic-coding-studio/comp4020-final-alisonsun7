@@ -1,0 +1,254 @@
+:root {
+  --paper: #f6efe0;
+  --paper-raised: #fffdf7;
+  --ink: #2a2319;
+  --ink-soft: #5b5142;
+  --line: #d8cdb4;
+  --where: #1f5f58;
+  --where-bg: #e4efe9;
+  --eat: #9c3b1f;
+  --eat-bg: #f3e4dd;
+  --do: #7a5a12;
+  --do-bg: #f0e8d2;
+  --error: #9c1f1f;
+  --focus: #1f5f58;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 4rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.9rem;
+  margin: 0.4rem 0 0.75rem;
+}
+
+h2 {
+  font-size: 1.3rem;
+  margin: 1.75rem 0 0.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.25rem;
+}
+
+h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+}
+
+a {
+  color: var(--where);
+}
+
+code {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 1.05em;
+}
+
+p.error {
+  color: var(--error);
+  font-weight: 600;
+}
+
+p.stage,
+p.inspiration {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0.1rem 0 0.6rem;
+}
+
+/* Forms */
+form {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  max-width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: #fff;
+  color: var(--ink);
+}
+
+select {
+  width: auto;
+  min-width: 10rem;
+}
+
+button {
+  width: auto;
+  background: var(--ink);
+  color: var(--paper-raised);
+  border-color: var(--ink);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.6rem 1.1rem;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Board */
+#board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+#board section {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--paper-raised);
+  border-top-width: 4px;
+}
+
+#board section:nth-of-type(1) {
+  border-top-color: var(--where);
+}
+#board section:nth-of-type(2) {
+  border-top-color: var(--eat);
+}
+#board section:nth-of-type(3) {
+  border-top-color: var(--do);
+}
+
+#board ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0;
+}
+
+#board li {
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed var(--line);
+  word-break: break-word;
+}
+
+#board li:last-child {
+  border-bottom: none;
+}
+
+.author {
+  color: var(--ink-soft);
+  font-size: 0.9em;
+}
+
+.shared {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--ink-soft);
+}
+
+/* Participants list */
+main > ul {
+  list-style: none;
+  padding: 0;
+}
+
+main > ul li {
+  padding: 0.2rem 0;
+}
+
+/* Your responsibility card — the "quick reveal" */
+.role-card {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.9rem 1rem;
+  margin: 1rem 0;
+  animation: card-reveal 480ms ease-out;
+}
+
+.role-card[data-role="WHERE"] {
+  background: var(--where-bg);
+  border-color: var(--where);
+}
+.role-card[data-role="EAT"] {
+  background: var(--eat-bg);
+  border-color: var(--eat);
+}
+.role-card[data-role="DO"] {
+  background: var(--do-bg);
+  border-color: var(--do);
+}
+
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role-card {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 1rem 0.75rem 3rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+  select {
+    width: 100%;
+  }
+}

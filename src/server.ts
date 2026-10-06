@@ -44,9 +44,13 @@ const sendJson = (res: ServerResponse, status: number, body: unknown): void => {
   res.end(JSON.stringify(body));
 };
 
-const STATIC_JS: Record<string, string> = {
-  "/room.js": join(__dirname, "client", "room.js"),
-  "/submit-state.js": join(__dirname, "client", "submit-state.js"),
+const STATIC_ASSETS: Record<string, { path: string; contentType: string }> = {
+  "/room.js": { path: join(__dirname, "client", "room.js"), contentType: "text/javascript; charset=utf-8" },
+  "/submit-state.js": {
+    path: join(__dirname, "client", "submit-state.js"),
+    contentType: "text/javascript; charset=utf-8",
+  },
+  "/style.css": { path: join(__dirname, "client", "style.css"), contentType: "text/css; charset=utf-8" },
 };
 
 function setIdentityCookies(res: ServerResponse, secure: boolean, roomCode: string, credential: string): void {
@@ -253,9 +257,10 @@ const server = createServer((req, res) => {
         return;
       }
 
-      if (url.pathname in STATIC_JS && req.method === "GET") {
-        res.writeHead(200, { "content-type": "text/javascript; charset=utf-8" });
-        res.end(readFileSync(STATIC_JS[url.pathname]));
+      if (url.pathname in STATIC_ASSETS && req.method === "GET") {
+        const asset = STATIC_ASSETS[url.pathname];
+        res.writeHead(200, { "content-type": asset.contentType });
+        res.end(readFileSync(asset.path));
         return;
       }
 

@@ -128,6 +128,23 @@ ${items || "<li><em>No ideas yet.</em></li>"}
 </section>`;
 }
 
+const RESPONSIBILITY: Record<Category, string> = {
+  WHERE: "Think about where the group could go.",
+  EAT: "Think about where the group could eat.",
+  DO: "Think about what the group could do there.",
+};
+
+// The "quick reveal" (CLAUDE.md interface quality): a short, reduced-motion-
+// aware animation on first paint of the viewer's own already-assigned role.
+// It never gates the idea form below it — plain markup, no JS dependency.
+function roleCardBlock(viewer: Participant | undefined): string {
+  if (!viewer?.role) return "";
+  return `<div class="role-card" data-role="${viewer.role}">
+<h3>Your responsibility: ${viewer.role}</h3>
+<p>${RESPONSIBILITY[viewer.role]} Everyone can still see and add to every category.</p>
+</div>`;
+}
+
 function participantList(participants: Participant[], viewer: Participant | undefined): string {
   const items = participants
     .map((p) => {
@@ -194,6 +211,8 @@ ${CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join("\n")}
 <p>Room code: <code>${escapeHtml(room.code)}</code> (copy and share it to invite others)</p>
 <p>${participants.length} of ${MAX_PARTICIPANTS} joined (registered members — not a live presence count)</p>
 ${stageLine(room.phase)}
+
+${roleCardBlock(viewer)}
 
 <h2>Participants</h2>
 ${participantList(participants, viewer)}

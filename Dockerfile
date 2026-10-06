@@ -15,7 +15,7 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src
-RUN pnpm exec tsc -p tsconfig.build.json
+RUN pnpm exec tsc -p tsconfig.build.json && cp src/client/style.css dist/client/style.css
 
 FROM base AS runtime
 ENV NODE_ENV=production
