@@ -1,11 +1,21 @@
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { emptyRoleCounts, pickLeastPopulated } from "./roles.js";
+import type { Category } from "./validation.js";
 
-// Each migration's SQL must be safe to run once and only once; re-running the
+interface Migration {
+  name: string;
+  sql?: string;
+  // For migrations that need more than DDL, e.g. backfilling existing rows
+  // the same way the live assignment path would.
+  run?: (db: DatabaseSync) => void;
+}
+
+// Each migration must be safe to run once and only once; re-running the
 // whole list on every boot (guarded by _migrations) is what makes startup
 // idempotent — no table-drop, no reseed.
-const MIGRATIONS: { name: string; sql: string }[] = [
+const MIGRATIONS: Migration[] = [
   {
     name: "001_initial",
     sql: `
@@ -39,6 +49,36 @@ const MIGRATIONS: { name: string; sql: string }[] = [
       CREATE INDEX idx_proposals_room ON proposals(room_id);
     `,
   },
+  {
+    name: "002_roles",
+    // Nullable: a brand-new row always sets it at insert time (src/rooms.ts),
+    // so NULL only ever appears on rows written before this column existed —
+    // handled by the backfill below, not by a NOT NULL default here. The
+    // column-add is itself guarded (not just the outer _migrations table) so
+    // this migration is safe to re-run if an upgrade crashes between adding
+    // the column and finishing the backfill.
+    run: (db) => {
+      const hasRoleColumn = (
+        db.prepare("SELECT 1 FROM pragma_table_info('participants') WHERE name = 'role'").get()
+      ) !== undefined;
+      if (!hasRoleColumn) db.exec("ALTER TABLE participants ADD COLUMN role TEXT;");
+
+      const rooms = db
+        .prepare("SELECT DISTINCT room_id FROM participants WHERE role IS NULL")
+        .all() as { room_id: string }[];
+      for (const { room_id: roomId } of rooms) {
+        const rows = db
+          .prepare("SELECT id FROM participants WHERE room_id = ? ORDER BY created_at ASC")
+          .all(roomId) as { id: string }[];
+        const counts = emptyRoleCounts();
+        for (const row of rows) {
+          const role: Category = pickLeastPopulated(counts);
+          counts[role]++;
+          db.prepare("UPDATE participants SET role = ? WHERE id = ?").run(role, row.id);
+        }
+      }
+    },
+  },
 ];
 
 function migrate(db: DatabaseSync): void {
@@ -54,8 +94,19 @@ function migrate(db: DatabaseSync): void {
   );
   for (const migration of MIGRATIONS) {
     if (applied.has(migration.name)) continue;
-    db.exec(migration.sql);
-    db.prepare("INSERT INTO _migrations (name) VALUES (?)").run(migration.name);
+    // SQLite's DDL is transactional, so a crash mid-migration rolls back the
+    // schema change too — otherwise a restart would re-run an ALTER TABLE
+    // whose column already exists and fail permanently.
+    db.exec("BEGIN");
+    try {
+      if (migration.sql) db.exec(migration.sql);
+      if (migration.run) migration.run(db);
+      db.prepare("INSERT INTO _migrations (name) VALUES (?)").run(migration.name);
+      db.exec("COMMIT");
+    } catch (err) {
+      db.exec("ROLLBACK");
+      throw err;
+    }
   }
 }
 

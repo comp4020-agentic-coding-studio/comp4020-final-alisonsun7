@@ -40,6 +40,22 @@ export class Session {
     return { code, res };
   }
 
+  async joinRoom(code: string, nickname: string): Promise<Response> {
+    return this.fetch("/join", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ code, nickname }).toString(),
+    });
+  }
+
+  startRoom(code: string): Promise<Response> {
+    return this.fetch(`/rooms/${code}/start`, { method: "POST" });
+  }
+
+  homePage(): Promise<Response> {
+    return this.fetch("/");
+  }
+
   submitIdea(
     code: string,
     idea: { category: string; title: string; requestKey: string },

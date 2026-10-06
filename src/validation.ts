@@ -12,6 +12,8 @@ function bounded(raw: unknown, min: number, max: number, label: string): Validat
 
 export const validateRoomTitle = (raw: unknown): Validated<string> => bounded(raw, 1, 60, "Room title");
 
+export const validateRoomCode = (raw: unknown): Validated<string> => bounded(raw, 1, 20, "Room code");
+
 export const validateNickname = (raw: unknown): Validated<string> => bounded(raw, 1, 30, "Nickname");
 
 export const validateIdeaTitle = (raw: unknown): Validated<string> => bounded(raw, 1, 120, "Idea title");

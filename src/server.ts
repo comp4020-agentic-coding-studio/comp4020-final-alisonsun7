@@ -5,13 +5,16 @@ import { fileURLToPath } from "node:url";
 import { parseFormBody, readBody } from "./body.js";
 import { parseCookies, serializeCookie } from "./cookies.js";
 import { defaultDbPath, openDb } from "./db.js";
-import { homePage, notFoundPage, roomPage } from "./pages.js";
+import { errorPage, homePage, notFoundPage, roomPage, type RecentRoom } from "./pages.js";
 import { renderReadmePage } from "./readme.js";
 import {
   authenticateParticipant,
   createRoom,
   findRoomByCode,
+  joinRoom,
+  listParticipants,
   listProposals,
+  startRoom,
   submitProposal,
 } from "./rooms.js";
 import { normaliseRoomCode } from "./ids.js";
@@ -20,6 +23,7 @@ import {
   validateIdeaTitle,
   validateNickname,
   validateRequestKey,
+  validateRoomCode,
   validateRoomTitle,
 } from "./validation.js";
 
@@ -45,6 +49,24 @@ const STATIC_JS: Record<string, string> = {
   "/submit-state.js": join(__dirname, "client", "submit-state.js"),
 };
 
+function setIdentityCookies(res: ServerResponse, secure: boolean, roomCode: string, credential: string): void {
+  res.setHeader("set-cookie", [
+    serializeCookie("dd_room", roomCode, { secure }),
+    serializeCookie("dd_credential", credential, { secure }),
+  ]);
+}
+
+function recentRoomFromCookies(req: IncomingMessage): RecentRoom {
+  const cookies = parseCookies(req.headers.cookie);
+  if (!cookies.dd_room || !cookies.dd_credential) return { kind: "none" };
+
+  const room = findRoomByCode(db, cookies.dd_room);
+  const viewer = room && authenticateParticipant(db, room.id, cookies.dd_credential);
+  if (!room || !viewer) return { kind: "stale" };
+
+  return { kind: "active", code: room.code, title: room.title, nickname: viewer.nickname, phase: room.phase };
+}
+
 async function handleCreateRoom(req: IncomingMessage, res: ServerResponse): Promise<void> {
   const raw = await readBody(req);
   const form = parseFormBody(raw);
@@ -53,23 +75,58 @@ async function handleCreateRoom(req: IncomingMessage, res: ServerResponse): Prom
   const nickname = validateNickname(form.nickname);
 
   if (!title.ok) {
-    sendHtml(res, 400, homePage({ error: title.error, nickname: form.nickname }));
+    sendHtml(res, 400, homePage({ createError: title.error, createValues: { nickname: form.nickname } }));
     return;
   }
   if (!nickname.ok) {
-    sendHtml(res, 400, homePage({ error: nickname.error, title: form.title }));
+    sendHtml(res, 400, homePage({ createError: nickname.error, createValues: { title: form.title } }));
     return;
   }
 
-  const { room, credential } = createRoom(db, { title: title.value, nickname: nickname.value });
-  const secure = isHttps(req);
-  res.writeHead(303, {
-    location: `/rooms/${room.code}`,
-    "set-cookie": [
-      serializeCookie("dd_room", room.code, { secure }),
-      serializeCookie("dd_credential", credential, { secure }),
-    ],
-  });
+  const result = createRoom(db, { title: title.value, nickname: nickname.value });
+  if (result.outcome === "full") {
+    // Unreachable for a brand-new room (starts at 0 participants); kept so
+    // createRoom's return type doesn't lie about what addParticipant can do.
+    sendHtml(res, 500, homePage({ createError: "Could not create the room. Try again." }));
+    return;
+  }
+
+  setIdentityCookies(res, isHttps(req), result.room.code, result.credential);
+  res.writeHead(303, { location: `/rooms/${result.room.code}` });
+  res.end();
+}
+
+async function handleJoinRoom(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const raw = await readBody(req);
+  const form = parseFormBody(raw);
+
+  const codeInput = validateRoomCode(form.code);
+  const nickname = validateNickname(form.nickname);
+
+  if (!codeInput.ok) {
+    sendHtml(res, 400, homePage({ joinError: codeInput.error, joinValues: { nickname: form.nickname } }));
+    return;
+  }
+  if (!nickname.ok) {
+    sendHtml(res, 400, homePage({ joinError: nickname.error, joinValues: { code: form.code } }));
+    return;
+  }
+
+  const code = normaliseRoomCode(codeInput.value);
+  const room = findRoomByCode(db, code);
+  if (!room) {
+    sendHtml(res, 404, homePage({ joinError: "No room matches that code.", joinValues: { code: form.code, nickname: form.nickname } }));
+    return;
+  }
+
+  const result = joinRoom(db, room.id, nickname.value);
+  if (result.outcome === "full") {
+    sendHtml(res, 409, homePage({ joinError: "That room is full (12 of 12).", joinValues: { code: form.code, nickname: form.nickname } }));
+    return;
+  }
+
+  setIdentityCookies(res, isHttps(req), room.code, result.credential);
+  res.writeHead(303, { location: `/rooms/${room.code}` });
   res.end();
 }
 
@@ -88,7 +145,31 @@ function handleRoomPage(req: IncomingMessage, res: ServerResponse, codeParam: st
       : undefined;
 
   const proposals = listProposals(db, room.id);
-  sendHtml(res, 200, roomPage({ room, proposals, viewer }));
+  const participants = listParticipants(db, room.id);
+  sendHtml(res, 200, roomPage({ room, proposals, participants, viewer }));
+}
+
+function handleStartRoom(req: IncomingMessage, res: ServerResponse, codeParam: string): void {
+  const code = normaliseRoomCode(codeParam);
+  const room = findRoomByCode(db, code);
+  if (!room) {
+    sendHtml(res, 404, notFoundPage());
+    return;
+  }
+
+  const cookies = parseCookies(req.headers.cookie);
+  const viewer =
+    cookies.dd_room === room.code
+      ? authenticateParticipant(db, room.id, cookies.dd_credential)
+      : undefined;
+  if (!viewer) {
+    sendHtml(res, 401, errorPage("Join this room first", "You need to be a member of this room to start it."));
+    return;
+  }
+
+  startRoom(db, room.id); // idempotent either way; the room page explains why if it didn't change phase
+  res.writeHead(303, { location: `/rooms/${room.code}` });
+  res.end();
 }
 
 async function handleSubmitProposal(
@@ -168,7 +249,7 @@ const server = createServer((req, res) => {
 
     try {
       if (segments.length === 0 && req.method === "GET") {
-        sendHtml(res, 200, homePage());
+        sendHtml(res, 200, homePage({ recentRoom: recentRoomFromCookies(req) }));
         return;
       }
 
@@ -184,6 +265,11 @@ const server = createServer((req, res) => {
         return;
       }
 
+      if (segments[0] === "join" && segments.length === 1 && req.method === "POST") {
+        await handleJoinRoom(req, res);
+        return;
+      }
+
       if (segments[0] === "rooms" && segments.length === 1 && req.method === "POST") {
         await handleCreateRoom(req, res);
         return;
@@ -196,6 +282,11 @@ const server = createServer((req, res) => {
 
       if (segments[0] === "rooms" && segments.length === 3 && segments[2] === "proposals" && req.method === "POST") {
         await handleSubmitProposal(req, res, segments[1]);
+        return;
+      }
+
+      if (segments[0] === "rooms" && segments.length === 3 && segments[2] === "start" && req.method === "POST") {
+        handleStartRoom(req, res, segments[1]);
         return;
       }
 

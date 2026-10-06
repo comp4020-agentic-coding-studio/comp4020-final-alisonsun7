@@ -28,11 +28,11 @@ it("a retried submission with the same request key does not duplicate, but a dif
   const { code } = await a.createRoom(`Retry Room ${unique()}`, "Wen");
   const key = unique();
 
-  const first = await a.submitIdea(code, { category: "EAT", title: "Korean BBQ", requestKey: key });
+  const first = await a.submitIdea(code, { category: "EAT", title: "Dumpling House", requestKey: key });
   expect(first.status).toBe(201);
   const firstBody = await first.json();
 
-  const replay = await a.submitIdea(code, { category: "EAT", title: "Korean BBQ", requestKey: key });
+  const replay = await a.submitIdea(code, { category: "EAT", title: "Dumpling House", requestKey: key });
   expect(replay.status).toBe(200);
   const replayBody = await replay.json();
   expect(replayBody.id).toBe(firstBody.id);
@@ -41,7 +41,7 @@ it("a retried submission with the same request key does not duplicate, but a dif
   expect(conflicting.status).toBe(409);
 
   const board = await (await a.roomPage(code)).text();
-  const occurrences = board.split("Korean BBQ").length - 1;
+  const occurrences = board.split("Dumpling House").length - 1;
   expect(occurrences).toBe(1);
   expect(board).not.toContain("Something else");
 
