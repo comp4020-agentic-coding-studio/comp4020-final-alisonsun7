@@ -2,6 +2,9 @@ node_modules/
 dist/
 *.log
 
+# local dev SQLite database (production uses /data, the Fly volume)
+.data/
+
 # editor and OS junk
 .DS_Store
 ._*
