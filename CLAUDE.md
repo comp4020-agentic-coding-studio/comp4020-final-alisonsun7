@@ -40,6 +40,5 @@ Warm paper, dark ink and three distinct category accents; readable, restrained c
 
 Work in vertical slices: deploy baseline; save one idea; add join/roles/return; verify and refine. Commit actual milestones after verification; do not fabricate a development history or squash it into one dump. Log concise prompts, observed failures, corrections and real command results in docs/evidence-log.md. When a failure reveals a violated promise, fix the rule/test as well as the code. Record the test's failure and successful rerun when available.
 
-README is a candidate design argument for Wen to revise. PROCESS.md and reflections/crit-8.md require Wen's truthful account. Do not generate invented personal experience, source engagement, peer feedback, commit hashes, deployment success or test counts. Ask for missing factual notes while progressing independent engineering work. Do not treat writing placeholders as complete evidence.
 
 Deployment can use the supplied private Fly app during work. Keep credentials outside git and logs. Before publishing, follow the installed course preflight/ship instructions, inspect the full history for secrets, and report blockers precisely. Do not invent course skill names or claim that building locally ships the prototype. External publication follows Wen's concrete deployment instruction and the actual installed workflow.
