@@ -120,6 +120,27 @@ A factual working record for writing the process overview. Not a replacement for
 - Real commit: [`780f7ec`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/780f7ec3621abce2b110fc33e29bd65c89e12d26), following `759e074`/`649cd90` (slice 3), `3c57f2f`/`cd58cb5` (slice 2), `4d058e4`/`a6db826` (slice 1), `d05a97f` (scaffolding).
 - What remains unverified: e2e is a manual local/Docker check, not a CI job — it needs a browser install step CI doesn't currently have, and adding it was out of scope for this pass; flagged here rather than silently left out, per spec/README.md's own allowance for "a separate e2e invocation". Real two-rendered-browser-window verification (vs. independent HTTP sessions, already covered) for DD02/DD03/DD07 was not repeated here since it was already covered at the HTTP-session tier in slices 2–3. Human peer-observation (docs/evidence-log.md's own "Peer observation record" section) has not happened — that requires an actual person, which only Wen can arrange. `reflections/crit-8.md`, the remaining `PROCESS.md` sections and `docs/design-sources.md` notes are Wen's writing, not invented here.
 
+## M0 — continuation audit (C8 checkpoint verified, full-project mode begins)
+
+- Date/time/timezone: 2026-10-08, ~00:00–00:20 UTC (2026-10-08 ~11:00 Australia/Sydney)
+- Goal: before starting any C9/C10/Final work, verify the actual current state of the repo/app/tests/writing rather than trusting the inherited slice-1–4 reports, per Wen's completion-pack materials (`docs/prompts/daydraw-master.md`, `docs/prompts/daydraw-stages.md` M0).
+- Exact consequential prompt: Wen supplied `daydraw-completion-pack/` and asked to follow its workflow, continuing autonomously through the staged milestones with recommended choices, under full-project mode (not C8-only).
+- Inputs actually inspected: `git remote -v`, `git status`, `git log -1` (local vs `origin/main`, both at `91c4c51`), `git tag -l` (none), `fly.toml`, `gh repo view` (visibility), `flyctl status -a comp4020-final-alisonsun7`, live `curl` of `/` and `/readme/`, `reflections/`, `docs/`, `spec/`, `src/`, `.github/workflows/`, `package.json`, `README.md`, `reflections/crit-8.md`, `docs/design-sources.md`.
+- Actual command results, not expectations:
+  - `git status` — clean except untracked `daydraw-completion-pack/`; local `main` matches `origin/main` at `91c4c51`.
+  - `gh repo view` — `comp4020-agentic-coding-studio/comp4020-final-alisonsun7`, visibility `PRIVATE`.
+  - `flyctl status -a comp4020-final-alisonsun7` — one `started` machine in `syd`.
+  - `curl -o /dev/null -w '%{http_code}'` against the live `/` and `/readme/` — both `200`.
+  - `pnpm build` then `PORT=8099 node dist/server.js` (background) then `APP_URL=http://localhost:8099 pnpm check` — **39/39 tests passed**, typecheck exit 0. (Not 39 inherited blindly — freshly re-run this session.)
+  - `pnpm check:evidence` — **passed**: `reflections/crit-8.md` present, `PROCESS.md` has 4 cited commits, all resolve to real commits in this repo.
+  - `APP_URL=http://localhost:8099 pnpm test:e2e` — **8/8 Playwright checks passed** (1920×1080, 390×844, keyboard, focus ring, reduced-motion reveal ≤800ms, draft preserved on simulated failure).
+  - `grep -c '\[fill\]' docs/design-sources.md` — `0`; no placeholder markers remain.
+  - Read `reflections/crit-8.md` directly — real first-person content (breakthrough + developer-identity answers), not a template.
+- Conclusion: **C8 is genuinely complete and currently verified**, not merely reported complete by an earlier session. No C8 gap list is needed. This matches the course-checklist's six C8 obligations (Fly deploy, durable stranger action, sourced README/`readme/`, public-track private-pending repo, growing PROCESS/reflection, accountable agent direction) — repo stays private pre-cutoff per the checklist's own guidance, which is a normal pre-cutoff state, not a blocker.
+- Decision: proceed in full-project mode per Wen's instruction. Copied the completion pack's `docs/`, `docs/prompts/`, `docs/decisions/`, `docs/writing/` files into the real repo under their own distinct names (no collisions with existing `docs/acceptance.md`, `docs/crit8-brief.md`, `docs/design-sources.md`, `docs/evidence-log.md`, `docs/decisions/001-stack.md`). `daydraw-completion-pack/` itself left outside `docs/` as reading material only, per the pack's own instruction.
+- Files changed: added `docs/daydraw-agent-rules.md`, `docs/daydraw-course-checklist.md`, `docs/daydraw-product-spec.md`, `docs/daydraw-test-plan.md`, `docs/daydraw-release.md`, `docs/daydraw-logging.md`, `docs/daydraw-evidence-template.md`, `docs/decisions/daydraw-live-behaviour.md`, `docs/prompts/daydraw-master.md`, `docs/prompts/daydraw-stages.md`, `docs/prompts/daydraw-review.md`, `docs/writing/*.md` (six writing-candidate guides).
+- What remains unverified: nothing for C8. For the full-project track beyond this point: everything (M1 realtime, M2 voting, M3 logging, M4 resilience, M5 writing) is still to be built and verified from here, not assumed from the pack's proposed spec.
+
 ## Observation rules
 
 “Expected to pass” is not “passed”. Local DB close/reopen is not deployed redeploy proof. Two tabs sharing credentials are not two identities. A mock or seeded suggestion is not a visitor's saved contribution. A screenshot cannot establish that data survived a restart. A source summary is not evidence that Wen read it. Writing fields left blank are not complete submission evidence.

@@ -3,13 +3,21 @@
 
 # DayDraw agent rules
 
-Merge these rules with the existing course harness; retain course instructions and preserve shipped tests. Read docs/crit8-brief.md and docs/acceptance.md before implementation. This file governs C8 work; future requirements are not current promises.
+Merge these rules with the existing course harness; retain course instructions and preserve shipped tests. Read docs/crit8-brief.md and docs/acceptance.md before implementation. This file originally governed C8-only work; it now also carries the current continuation phase (see "Current phase" below). Future requirements beyond the active phase are still not current promises.
+
+## Current phase
+
+**Active: M1 (C9 minimum realtime).** Source: `docs/daydraw-agent-rules.md`, `docs/prompts/daydraw-stages.md`, `docs/daydraw-product-spec.md`. C8 is verified complete and historical (see `docs/evidence-log.md`'s M0 entry, 2026-10-08).
+
+C8's blanket "do not implement SSE/WebSockets" restriction below is **retired for M1 only**: a minimal live shared-state slice (membership, proposals, phase reach other authorised sessions without reload) is now in scope and should prefer SSE with versioned server state for this one-server stack. Voting, readiness coordination, telemetry/structured logging, AI recommendations, external venue APIs, accounts, chat and final Reveal remain **out of scope until M2/M3** respectively — do not pull those forward just because realtime is now allowed. Do not show a working vote button, a fabricated "Live" claim without an actual open connection, fabricated participants or seeded proposals. "Joined" and "online" are different claims; only show connection-state language the server can back up.
+
+When M2 (voting) is activated, update this section and explicitly retire the "no voting" line below for that phase, the same way M1 retired the realtime line. Do not retire a restriction before its phase actually starts.
 
 ## Purpose and scope
 
-DayDraw helps 2–12 friends contribute options for a shared outing, organised into WHERE, EAT and DO. This week's core interaction is a saved suggestion in a shared room. Build that complete loop before visual polish. Use English UI and explain progress to Wen in Chinese.
+DayDraw helps 2–12 friends contribute options for a shared outing, organised into WHERE, EAT and DO. This week's core interaction is a saved suggestion in a shared room, now extended (M1) with live propagation of that same state. Build each complete loop before visual polish. Use English UI and explain progress to Wen in Chinese.
 
-Do not implement SSE/WebSockets, shortlist, voting, readiness coordination, telemetry, AI recommendations, external venue APIs, accounts, chat or final Reveal for C8. Do not show a working vote button, a Live badge, fabricated participants or seeded proposals. Explain briefly that this version collects ideas and that another session refreshes to see changes.
+C8 scope (historical): do not implement SSE/WebSockets, shortlist, voting, readiness coordination, telemetry, AI recommendations, external venue APIs, accounts, chat or final Reveal for C8. Do not show a working vote button, a Live badge, fabricated participants or seeded proposals. Explain briefly that this version collects ideas and that another session refreshes to see changes. **Superseded for realtime only by "Current phase" above as of M1.**
 
 ## Product invariants
 
