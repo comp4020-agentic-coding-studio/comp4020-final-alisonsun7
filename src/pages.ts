@@ -153,23 +153,31 @@ function participantList(participants: Participant[], viewer: Participant | unde
       return `<li>${escapeHtml(p.nickname)}${you} — ${escapeHtml(role)}</li>`;
     })
     .join("\n");
-  return `<ul>${items}</ul>`;
+  return `<ul id="participants-list">${items}</ul>`;
 }
 
 function stageLine(phase: string): string {
   const current = phase === "planning" ? "Planning" : "Ideas";
-  return `<p class="stage">Stage: Draw (done) &rarr; ${current} (current) &rarr; Vote (later) &rarr; Reveal (later)</p>`;
+  return `<p id="stage-line" class="stage">Stage: Draw (done) &rarr; ${current} (current) &rarr; Vote (later) &rarr; Reveal (later)</p>`;
 }
 
+// Mirrored by renderStartBlock in src/client/live.ts so a live phase/count
+// change (someone else starting the room, or crossing MIN_TO_START) updates
+// this block without reload. Kept in its own wrapper div so the client can
+// replace it wholesale instead of tracking which of the three shapes it was.
 function startBlock(room: Room, participantCount: number, viewer: Participant | undefined): string {
-  if (!viewer) return "";
-  if (room.phase === "planning") {
+  if (!viewer) return `<div id="start-block"></div>`;
+  return `<div id="start-block">${startBlockInner(room.phase, room.code, participantCount)}</div>`;
+}
+
+function startBlockInner(phase: string, code: string, participantCount: number): string {
+  if (phase === "planning") {
     return `<p>This room has started planning together.</p>`;
   }
   if (participantCount < MIN_TO_START) {
     return `<p>Starting becomes available once a second person joins. Saving ideas doesn't need to wait for that.</p>`;
   }
-  return `<form method="post" action="/rooms/${escapeHtml(room.code)}/start">
+  return `<form method="post" action="/rooms/${escapeHtml(code)}/start">
 <button type="submit">Start planning together</button>
 </form>`;
 }
@@ -209,7 +217,7 @@ ${CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join("\n")}
 <p><a href="/">&larr; Back to DayDraw</a></p>
 <h1>${escapeHtml(room.title)}</h1>
 <p>Room code: <code>${escapeHtml(room.code)}</code> (copy and share it to invite others)</p>
-<p>${participants.length} of ${MAX_PARTICIPANTS} joined (registered members — not a live presence count)</p>
+<p id="participant-count">${participants.length} of ${MAX_PARTICIPANTS} joined (registered members — not a live presence count)</p>
 ${stageLine(room.phase)}
 
 ${roleCardBlock(viewer)}
@@ -222,10 +230,12 @@ ${startBlock(room, participants.length, viewer)}
 ${ideaForm}
 
 <h2>Board</h2>
-<p><a href="/rooms/${escapeHtml(room.code)}">Refresh board</a> — this app updates on refresh, not live.</p>
-<div id="board">
+<p id="live-status" aria-live="polite">Live updates: connecting&hellip;</p>
+<p><a href="/rooms/${escapeHtml(room.code)}">Refresh board</a> — works even without live updates or JavaScript.</p>
+<div id="board" data-room-code="${escapeHtml(room.code)}"${viewer ? ` data-viewer-id="${escapeHtml(viewer.id)}"` : ""}>
 ${CATEGORIES.map((c) => boardList(c, proposals, roleCounts)).join("\n")}
 </div>
+<script type="module" src="/live.js"></script>
 </main>`,
   );
 }

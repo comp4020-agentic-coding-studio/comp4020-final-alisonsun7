@@ -18,7 +18,7 @@ Aurora Harley’s [Visibility of System Status](https://www.nngroup.com/articles
 
 ## This first version
 
-Create a named room, share its code, and join using a nickname. Draw a responsibility card and add suggestions to any of the three categories. Saved ideas belong to the shared board. This version requires refreshing the board to see another visitor’s latest changes; it does not claim to update live. Returning in the same browser should offer a route back to the room. Browser storage remembers your room credential; the server database stores the actual work. Clearing browser storage loses that automatic identity recovery.
+Create a named room, share its code, and join using a nickname. Draw a responsibility card and add suggestions to any of the three categories. Saved ideas belong to the shared board. Another visitor joining, adding an idea, or starting the room now reaches your screen on its own, through a background connection the page labels Live or Reconnecting — only while it is actually open, never claimed ahead of one. A plain reload still works the same as before, with or without that connection. Returning in the same browser should offer a route back to the room. Browser storage remembers your room credential; the server database stores the actual work. Clearing browser storage loses that automatic identity recovery.
 
 ## Promises and judgement
 

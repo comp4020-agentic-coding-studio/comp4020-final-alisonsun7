@@ -11,6 +11,7 @@ export interface Room {
   code: string;
   title: string;
   phase: string;
+  revision: number;
   createdAt: string;
 }
 
@@ -46,6 +47,7 @@ interface RoomRow {
   code: string;
   title: string;
   phase: string;
+  revision: number;
   created_at: string;
 }
 
@@ -54,8 +56,17 @@ const toRoom = (row: RoomRow): Room => ({
   code: row.code,
   title: row.title,
   phase: row.phase,
+  revision: row.revision,
   createdAt: row.created_at,
 });
+
+// Every state-changing commit below calls this inside its own transaction so
+// the revision bump can never be observed without the change it describes,
+// or vice versa. Reads (support totals, votes, etc. in later milestones)
+// don't bump it; only membership/proposal/phase writes do, per M1 scope.
+function bumpRevision(db: DatabaseSync, roomId: string): void {
+  db.prepare("UPDATE rooms SET revision = revision + 1 WHERE id = ?").run(roomId);
+}
 
 interface ParticipantRow {
   id: string;
@@ -140,6 +151,7 @@ export function createRoom(
         db.exec("ROLLBACK");
         return { outcome: "full" };
       }
+      bumpRevision(db, roomId);
       db.exec("COMMIT");
 
       const room = asRow<RoomRow>(db.prepare("SELECT * FROM rooms WHERE id = ?").get(roomId));
@@ -158,8 +170,21 @@ export function createRoom(
   throw new Error("could not allocate a unique room code");
 }
 
+// addParticipant's own INSERT is already atomic with the capacity check
+// (single statement), but adding a second write (the revision bump) needs an
+// explicit transaction so a crash between the two can't commit one without
+// the other.
 export function joinRoom(db: DatabaseSync, roomId: string, nickname: string): AddParticipantResult {
-  return addParticipant(db, roomId, nickname);
+  db.exec("BEGIN");
+  try {
+    const added = addParticipant(db, roomId, nickname);
+    if (added.outcome === "added") bumpRevision(db, roomId);
+    db.exec("COMMIT");
+    return added;
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
+  }
 }
 
 export function findRoomByCode(db: DatabaseSync, code: string): Room | undefined {
@@ -183,7 +208,7 @@ export type StartRoomResult = "started" | "already-started" | "too-few-members";
 export function startRoom(db: DatabaseSync, roomId: string): StartRoomResult {
   const info = db
     .prepare(
-      `UPDATE rooms SET phase = 'planning'
+      `UPDATE rooms SET phase = 'planning', revision = revision + 1
        WHERE id = ? AND phase = 'collecting'
          AND (SELECT COUNT(*) FROM participants WHERE room_id = ?) >= ${MIN_TO_START}`,
     )
@@ -221,11 +246,19 @@ export function submitProposal(
   input: { roomId: string; participantId: string; authorNickname: string; category: Category; title: string; requestKey: string },
 ): SubmitProposalResult {
   const id = newId();
+  // Wraps the insert and the revision bump so a crash between them can't
+  // commit one without the other. A UNIQUE violation (retried/conflicting
+  // request key) rolls back the whole attempt — nothing was written, so the
+  // replay/conflict read below runs afterwards as a plain autocommit read.
+  db.exec("BEGIN");
   try {
     db.prepare(
       "INSERT INTO proposals (id, room_id, participant_id, category, title, request_key) VALUES (?, ?, ?, ?, ?, ?)",
     ).run(id, input.roomId, input.participantId, input.category, input.title, input.requestKey);
+    bumpRevision(db, input.roomId);
+    db.exec("COMMIT");
   } catch (err) {
+    db.exec("ROLLBACK");
     if (isUniqueViolationOn(err, "proposals.room_id, proposals.participant_id, proposals.request_key")) {
       const existing = asRow<{
         id: string;
@@ -312,4 +345,29 @@ export function listProposals(db: DatabaseSync, roomId: string): Proposal[] {
     title: row.title,
     createdAt: row.created_at,
   }));
+}
+
+// The authoritative, versioned view the live stream (src/live.ts) sends on
+// every connect/reconnect/notify: membership, proposals and phase, nothing
+// else — no credential hash, no vote mapping (not built yet anyway).
+export interface RoomSnapshot {
+  revision: number;
+  phase: string;
+  participants: { id: string; nickname: string; role: Category | null }[];
+  proposals: { id: string; category: Category; title: string; authorNickname: string; createdAt: string }[];
+}
+
+export function buildRoomSnapshot(db: DatabaseSync, room: Room): RoomSnapshot {
+  return {
+    revision: room.revision,
+    phase: room.phase,
+    participants: listParticipants(db, room.id).map((p) => ({ id: p.id, nickname: p.nickname, role: p.role })),
+    proposals: listProposals(db, room.id).map((p) => ({
+      id: p.id,
+      category: p.category,
+      title: p.title,
+      authorNickname: p.authorNickname,
+      createdAt: p.createdAt,
+    })),
+  };
 }

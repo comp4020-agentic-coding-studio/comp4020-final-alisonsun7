@@ -5,10 +5,12 @@ import { fileURLToPath } from "node:url";
 import { parseFormBody, readBody } from "./body.js";
 import { parseCookies, serializeCookie } from "./cookies.js";
 import { defaultDbPath, openDb } from "./db.js";
+import { notifyRoom, subscribe } from "./live.js";
 import { errorPage, homePage, notFoundPage, roomPage, type RecentRoom } from "./pages.js";
 import { renderReadmePage } from "./readme.js";
 import {
   authenticateParticipant,
+  buildRoomSnapshot,
   createRoom,
   findRoomByCode,
   joinRoom,
@@ -50,6 +52,7 @@ const STATIC_ASSETS: Record<string, { path: string; contentType: string }> = {
     path: join(__dirname, "client", "submit-state.js"),
     contentType: "text/javascript; charset=utf-8",
   },
+  "/live.js": { path: join(__dirname, "client", "live.js"), contentType: "text/javascript; charset=utf-8" },
   "/style.css": { path: join(__dirname, "client", "style.css"), contentType: "text/css; charset=utf-8" },
 };
 
@@ -94,6 +97,7 @@ async function handleCreateRoom(req: IncomingMessage, res: ServerResponse): Prom
     sendHtml(res, 500, homePage({ createError: "Could not create the room. Try again." }));
     return;
   }
+  notifyRoom(result.room.id);
 
   setIdentityCookies(res, isHttps(req), result.room.code, result.credential);
   res.writeHead(303, { location: `/rooms/${result.room.code}` });
@@ -128,6 +132,7 @@ async function handleJoinRoom(req: IncomingMessage, res: ServerResponse): Promis
     sendHtml(res, 409, homePage({ joinError: "That room is full (12 of 12).", joinValues: { code: form.code, nickname: form.nickname } }));
     return;
   }
+  notifyRoom(room.id);
 
   setIdentityCookies(res, isHttps(req), room.code, result.credential);
   res.writeHead(303, { location: `/rooms/${room.code}` });
@@ -153,6 +158,56 @@ function handleRoomPage(req: IncomingMessage, res: ServerResponse, codeParam: st
   sendHtml(res, 200, roomPage({ room, proposals, participants, viewer }));
 }
 
+// Live membership/proposal/phase stream (M1). Read access matches the room
+// page's existing viewing policy — anyone who has the room code, no
+// credential required — since the board itself is already visible to
+// anonymous visitors (DD05); this stream adds no new read capability, only
+// a live one, and never carries a credential or (once built) a vote mapping.
+function handleRoomEvents(req: IncomingMessage, res: ServerResponse, codeParam: string): void {
+  const code = normaliseRoomCode(codeParam);
+  const room = findRoomByCode(db, code);
+  if (!room) {
+    sendJson(res, 404, { error: "Room not found." });
+    return;
+  }
+
+  res.writeHead(200, {
+    "content-type": "text/event-stream; charset=utf-8",
+    "cache-control": "no-cache, no-transform",
+    connection: "keep-alive",
+  });
+  // Short native retry: a dropped connection (offline, redeploy) resumes
+  // quickly, and every reconnect re-subscribes then re-sends a fresh
+  // snapshot below — that's the whole reconnect story, no replay log needed.
+  res.write("retry: 2000\n\n");
+
+  const send = (): void => {
+    if (res.writableEnded || res.destroyed) {
+      unsubscribe();
+      return;
+    }
+    // Re-read by code, not a cached room object: a stale room row would
+    // publish a stale revision forever. Subscribing happens before this is
+    // ever called, including for the very first send below, so no commit
+    // between "start listening" and "read current state" can be missed —
+    // and since node:sqlite is synchronous, nothing else can run between
+    // those two lines in the same tick anyway.
+    const fresh = findRoomByCode(db, code);
+    if (!fresh) return;
+    const snapshot = buildRoomSnapshot(db, fresh);
+    try {
+      res.write(`event: snapshot\ndata: ${JSON.stringify(snapshot)}\n\n`);
+    } catch {
+      unsubscribe();
+    }
+  };
+
+  const unsubscribe = subscribe(room.id, send);
+  send();
+
+  req.on("close", unsubscribe);
+}
+
 function handleStartRoom(req: IncomingMessage, res: ServerResponse, codeParam: string): void {
   const code = normaliseRoomCode(codeParam);
   const room = findRoomByCode(db, code);
@@ -171,7 +226,8 @@ function handleStartRoom(req: IncomingMessage, res: ServerResponse, codeParam: s
     return;
   }
 
-  startRoom(db, room.id); // idempotent either way; the room page explains why if it didn't change phase
+  const result = startRoom(db, room.id); // idempotent either way; the room page explains why if it didn't change phase
+  if (result === "started") notifyRoom(room.id);
   res.writeHead(303, { location: `/rooms/${room.code}` });
   res.end();
 }
@@ -236,6 +292,7 @@ async function handleSubmitProposal(
     sendJson(res, 409, { error: "This request key was already used for a different idea." });
     return;
   }
+  if (result.outcome === "created") notifyRoom(room.id);
 
   sendJson(res, result.outcome === "created" ? 201 : 200, {
     id: result.proposal.id,
@@ -292,6 +349,11 @@ const server = createServer((req, res) => {
 
       if (segments[0] === "rooms" && segments.length === 3 && segments[2] === "start" && req.method === "POST") {
         handleStartRoom(req, res, segments[1]);
+        return;
+      }
+
+      if (segments[0] === "rooms" && segments.length === 3 && segments[2] === "events" && req.method === "GET") {
+        handleRoomEvents(req, res, segments[1]);
         return;
       }
 

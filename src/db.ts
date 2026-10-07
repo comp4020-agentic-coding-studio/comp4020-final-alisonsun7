@@ -79,6 +79,18 @@ const MIGRATIONS: Migration[] = [
       }
     },
   },
+  {
+    name: "003_revision",
+    // Same guarded-ALTER pattern as 002_roles. Every existing room backfills
+    // at 0, which is correct: nothing has changed about them since this
+    // column started being read, so no live subscriber predates revision 0.
+    run: (db) => {
+      const hasRevisionColumn = (
+        db.prepare("SELECT 1 FROM pragma_table_info('rooms') WHERE name = 'revision'").get()
+      ) !== undefined;
+      if (!hasRevisionColumn) db.exec("ALTER TABLE rooms ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;");
+    },
+  },
 ];
 
 function migrate(db: DatabaseSync): void {
