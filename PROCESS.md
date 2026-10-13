@@ -25,6 +25,7 @@ impossible — the one behaviour the whole idea, and the crit, is about.
 ## The one documented decision
 
 [`docs/decisions/001-cell-conflict-resolution.md`](docs/decisions/001-cell-conflict-resolution.md)
+(landed in [`a00ec53`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a00ec53))
 is the required Crit 9 decision: what happens when two people edit the same
 cell at (almost) the same moment. Last-write-wins was chosen over a per-cell
 lock or an optimistic-version check, evaluated directly against README's
@@ -49,7 +50,8 @@ For real-time transport, Server-Sent Events were used again (the same
 general shape — a versioned state object pushed to every open connection —
 as this repo's earlier realtime work before the reset), because the route
 surface is small (grid, instrument, transport) and SSE needs nothing beyond
-plain `node:http`. Playback stays synchronised across open tabs without the
+plain `node:http`. Landed in
+[`2dfc5f0`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/2dfc5f0). Playback stays synchronised across open tabs without the
 server itself ticking: the server only records *when* Play was pressed
 (`startedAtMs`), and each client computes "which of the 36 steps is playing
 right now" from that timestamp plus a fixed step duration, so every open tab
@@ -66,13 +68,16 @@ testing for.
 
 Automated (`pnpm check`): the two required invariants (`/` returns 200,
 `/readme/` renders every README heading in order) plus a new real-time spec
-(`spec/realtime.test.ts`) that opens two independent SSE connections — one
-standing in for the person who makes a change, the other for the person who
-should see it — and asserts a cell edit, a cell clear, an instrument switch,
-and a Play press each reach the second connection within a 1-second budget,
-matching the crit's own definition of real-time. A rejection test confirms
-an out-of-range cell index and an invalid note are both refused rather than
-corrupting the shared board.
+(`spec/realtime.test.ts`, landed in
+[`074ea12`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/074ea12))
+that opens two independent SSE connections — one standing in for the person
+who makes a change, the other for the person who should see it — and asserts
+a cell edit, a cell clear, an instrument switch, and a Play press each reach
+the second connection within a 1-second budget, matching the crit's own
+definition of real-time. A rejection test confirms an out-of-range cell
+index and an invalid note are both refused rather than corrupting the shared
+board. All 8 tests pass locally against the actual compiled
+`dist/server.js`.
 
 Not yet verified at the time of writing: a real `docker build` of this app
 (Docker was unavailable in the working environment this was built in — see
