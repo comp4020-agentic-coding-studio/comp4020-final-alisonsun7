@@ -1,76 +1,73 @@
 # Your harness
 
-# NoteGrid agent rules
+# SoundGarden agent rules
 
-## Purpose and scope
+Read README.md (the definition of good) and
+`docs/decisions/001-simultaneous-edits.md` before changing behaviour.
+Explain progress to Wen in Chinese; the UI is English.
 
-NoteGrid is a single shared 6×6 step-sequencer grid: anyone who opens the
-page can fill a cell with one of 5 notes (or clear it), and anyone can press
-Play to start a shared, synchronised playback of all 36 cells in one 36-step
-loop, in one of 3 instruments (piano/guitar/sax, pure Web Audio synthesis —
-no samples). There are no rooms and no accounts: one global board for
-everyone who has the page open.
+## What it is
 
-## Current phase
-
-**Active: Crit 9 (real-time + one documented multi-user decision).** The
-grid, playback, instrument switching, and SSE-based real-time sync are now
-built. The documented decision is last-write-wins on simultaneous cell edits
-(`docs/decisions/001-cell-conflict-resolution.md`). Do not add accounts,
-persistence across a restart, undo, per-cell locking, or per-user rooms —
-README's "deliberate limits" says plainly none of that exists, and adding it
-now would contradict a promise already made in the shipped README.
+One shared 6×6 grid. Columns are the six steps of a loop; every note in a
+column sounds together. Five notes (C4 D4 E4 G4 A4, pentatonic) plus an eraser.
+Three synthesised instruments (piano, guitar, saxophone). One garden for
+everyone, no rooms.
 
 ## Product invariants
 
-- One global board, not per-room or per-user copies. The whole point of the
-  product is several people editing and hearing the same thing.
-- Play/Stop and the current instrument are global, shared state — not
-  something each browser tracks independently. An instrument switch must be
-  able to change what another open session is currently hearing.
-- A client derives "which step is currently playing" from the server's
-  `startedAtMs` plus a fixed step duration — the server does not tick a
-  playback clock itself.
-- Simultaneous cell edits resolve last-write-wins, by design (see the ADR).
-  Do not add locking or version-conflict rejection without updating the ADR.
-- `/readme/` renders README.md's actual headings, in order, in server HTML —
-  keep `spec/invariants.test.ts` green.
-- The board lives in server memory only. Do not add a database or claim
-  persistence across a restart; README says explicitly that closing every
-  tab clears the board.
+- **One shared garden.** Every person sees and edits the same 36 squares.
+  Anyone may add, change or erase any note. Do not add rooms or per-note
+  ownership.
+- **Instrument is shared; playback is not.** Switching instrument changes it
+  for everyone, and a listener's next beat uses the new instrument. Pressing
+  Play starts only that browser's loop — never force playback on others.
+- **Live edits are heard without restarting.** The scheduler reads the grid
+  and instrument at the moment it schedules each beat.
+- **Real-time means within about a second, no reload.** Every mutation is
+  pushed to every open page as the full `GardenState`; a reconnect gets the
+  full state, never just later events.
+- **Last write wins, in server order.** Each mutation is one transaction that
+  bumps `garden_state.version`; clients ignore snapshots older than one
+  they've shown. Changing this means rewriting the ADR first.
+- **Identity comes from the session, never the request body.** The browser
+  holds only a random HttpOnly token; the DB stores its SHA-256 hash. Every
+  mutating route resolves the user from that cookie and returns 401 without
+  it. Two people may share a nickname.
+- **Persistence.** Notes, instrument, users and activity live in SQLite at
+  `/data/garden.db` on the Fly volume. Never delete or reseed it on startup.
+- **Presence is honest.** "N people creating" counts distinct users with an
+  open event stream right now.
+- **Every action is logged** as one `[time] INFO event key=value` line on
+  stdout, including the user id and nickname, so `flyctl logs` explains what
+  happened.
 
 ## Engineering constraints
 
-Plain `node:http`, no framework. Server-Sent Events for real-time push
-(`GET /events`), a single in-memory `BoardState` object in `src/state.ts` as
-the one source of truth, broadcast on every mutation. Keep the Fly app
-identity, URL and single-machine/256MB constraint; this app needs no volume
-mount since it keeps no persistent state.
+Plain `node:http`, `node:sqlite`, SSE, TypeScript compiled with `tsc`; one
+runtime dependency (`marked`, for `/readme/`). Validate every input on the
+server (row/col integers 0–5, note and instrument from their enums, body size
+capped). Escape nicknames in HTML; set them via `textContent` in the client.
 
-Validate every mutation route's input server-side (cell index range, note
-enum, instrument enum) — never trust client-shaped JSON directly into shared
-state. Escape user-supplied text (nicknames) in rendered HTML.
+Every file the browser loads must be listed in `STATIC` in `src/server.ts`.
+A missing module makes the page 200 while rendering nothing — that exact bug
+shipped once, and `spec/client.test.ts` exists to stop it recurring.
 
-Do not overwrite unrelated user work or the harness. Preserve shipped spec
-assertions (`spec/invariants.test.ts`). Add product checks through
-`spec/*.test.ts`; do not skip or weaken tests to make CI green. If a
-build/test cannot be run (e.g. Docker unavailable locally), report it as
-unverified rather than claiming it passed.
+Keep the Fly app, single machine, 256 MB and `/data` volume as configured.
 
-## Interface quality
+## Checks and evidence
 
-Warm paper background, dark ink, five distinct note colours. Real labelled
-form controls (fieldset/legend for instruments, a real button grid). Full
-keyboard operability and visible focus. No fabricated "Live" claim — the
-status line should reflect an actually open SSE connection, and
-"Reconnecting…" should only show when the connection has actually dropped.
+Product checks go in `spec/*.test.ts` and run against the running app with
+`pnpm check`. Keep `spec/invariants.test.ts` as shipped. Never weaken a test
+to get green; if something can't be run (e.g. Docker locally), say it's
+unverified.
 
-## Work and evidence
+A green spec is not proof the page works. Before saying a UI change is done,
+load it in a real browser and confirm the grid renders and a second session
+sees the change.
 
-Work in verified vertical slices; commit real milestones, not one dump. Log
-prompts, failures and corrections in `docs/evidence-log.md`. When a failure
-reveals a violated promise, fix the rule/test as well as the code.
+Commit verified milestones, not dumps. Log prompts, failures and corrections
+in `docs/evidence-log.md`. When a failure shows a broken promise, fix the
+test or rule as well as the code.
 
-Deployment follows the installed course preflight/ship workflow. Keep
-credentials outside git and logs. Before publishing, inspect history for
-secrets and report blockers precisely.
+Deploy follows the course ship/preflight skills. Keep secrets out of git and
+logs.

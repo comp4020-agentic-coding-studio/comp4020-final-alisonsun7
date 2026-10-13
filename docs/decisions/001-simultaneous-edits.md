@@ -1,93 +1,97 @@
-# ADR 001: last-write-wins on a simultaneously edited cell
+# ADR 001: Simultaneous edits to one square — server order, last write wins
 
 ## Status
 
-Accepted, 2026-10-14.
+Accepted, 2026-10-14. Replaces the first version of this record, written for
+the NoteGrid build, which kept state in memory and broadcast a version number
+that nothing actually checked.
 
 ## Context
 
-NoteGrid is one shared 6×6 board with no accounts and no rooms: every open
-tab is editing the same 36 cells. Crit 9 requires picking one concrete
-decision about multi-user behaviour and evaluating it against README's
-definition of "good." The area that matters most for this app is: **what
-happens when two people click the same cell at (almost) the same moment,
-intending different notes (or one filling it while another clears it)?**
+SoundGarden is one shared 6×6 grid with no rooms and no owners: everyone on
+the page can add, change or erase any note. Crit 9 asks for one decision about
+how the app behaves when several people use it at once, judged against the
+README's own definition of good.
 
-This isn't hypothetical — it's the most likely point of contact between two
-people in the same room both reaching for the grid, which is exactly the use
-case the app is built for.
+The question that matters most here is **what happens when two people change
+the same square at nearly the same moment** — Alice taps a red C into row 2,
+step 3 while Bob, a few milliseconds later, taps a blue A into the same square
+(or erases it). This isn't an edge case. Two people sitting side by side,
+building one loop, reach for the same spot all the time, and the crit's pod
+will do it on purpose.
+
+There are two parts to get right: *which* write survives, and whether every
+screen agrees on it afterwards.
 
 ## Options considered
 
-### A — Last-write-wins (chosen)
+**A. Server order, last write wins (chosen).** The server applies writes one
+at a time, in the order they arrive. Each write runs in a single SQLite
+transaction that also increments a garden-wide `version` and records who made
+it. The server then pushes the full garden, stamped with that version, to
+every open page. A page ignores any snapshot older than one it has already
+shown, so a late, out-of-order message can't roll it back.
 
-The server applies each `POST /cells/:index` in the order it arrives, with no
-read-before-write check and no per-cell ownership. Whichever write reaches
-the server last is simply the cell's new value, and the resulting board is
-broadcast to everyone over SSE. See `setCell` in `src/state.ts` — it is
-exactly four lines: validate the index, assign, bump `version`, broadcast.
+**B. Claim the square first.** The first tap on a square locks it to that
+person for a moment, and other people's taps on it are refused (or greyed out)
+until the lock expires.
 
-### B — Per-cell claim/lock
+**C. Reject stale writes.** Each tap carries the version the browser last saw,
+and the server refuses a tap whose version is out of date, asking the browser
+to retry against the current grid.
 
-The first click on an empty or unclaimed cell marks it "being edited by
-session X" for a short window (shown to other users, e.g. a dimmed or
-outlined cell); other sessions' writes to that cell are rejected or queued
-until the lock is released or expires.
-
-### C — Per-cell version check (optimistic concurrency)
-
-Each cell write carries the `version` the client last saw; the server
-rejects a write whose version is stale, and the client is told to retry
-against the fresh state.
+**D. Owners only.** A note can only be changed or erased by the person who
+placed it.
 
 ## Decision
 
-**Option A: last-write-wins, no locking, no version check.**
+Option A.
 
-Evaluated against README's "what good means here" section: good is defined
-as *change is instantly and audibly shared*, and explicitly **not** defined
-as "every edit is preserved." Options B and C both exist to protect an edit
-from being silently overwritten — but protecting edits is not a promise this
-app makes or needs to make. A locked or rejected cell would read as the
-board being less responsive than it actually is, which directly contradicts
-the one thing README says has to be true: an edit's effect should be
-immediate and shared, full stop.
+Measured against README's three principles:
 
-Option A also keeps the mutation path exactly as simple as the
-real-time requirement demands: no lock state to expire, no "stale write"
-error path for the client to handle, no UI for "this cell is busy." Every
-extra mechanism in B or C is surface area that could itself introduce a
-delay or a failure mode — the opposite of what Crit 9 is grading.
+- **"Anyone can make music."** A, B and C all accept the first tap without
+  ceremony, but B and C make the *second* tap sometimes do nothing, or fail
+  with an error. That's a confusing first impression for a stranger who has
+  never seen the app before. Under A, a tap always works.
+- **"Music belongs to everyone."** D directly contradicts this — it turns the
+  shared grid into 36 small private plots. B and C don't contradict it, but
+  they spend their complexity protecting the half-second-old intention of
+  whoever got there first. Nothing in the README promises that, and in a
+  six-beat loop anyone can simply tap the square again.
+- **"Every contribution leaves a trace."** A loses the overwritten note from
+  the grid, but not from the record. Both writes are in `activity_logs` and in
+  the server log, so "who put that there, and who replaced it" is still
+  answerable.
 
-## Alternatives rejected, and why
+A is also the only option where the crit's real-time promise has no extra
+moving parts. There is no lock to expire, no retry loop, and no "square busy"
+state to keep in sync.
 
-- **B (claim/lock)** was rejected because it solves a problem this app
-  doesn't actually have: there's no persistent authorship to protect (notes
-  aren't attributed to a person), and a visible "someone else is editing
-  this" state adds a second kind of real-time event to get right (lock
-  acquired, lock expired, lock released) for a benefit — protecting a
-  half-second-old intention — that doesn't matter here. It would also most
-  likely *feel* less responsive: clicking a cell someone else touched a
-  moment ago would sometimes do nothing, which is a worse first impression
-  than "the last click wins."
-- **C (version check)** was rejected for the same reason B was, with an
-  added cost: it pushes a retry loop onto the client for a failure mode
-  (two people clicking the same cell within ~350ms, one step length) that
-  is rare and, once it happens, costs the loser nothing worse than clicking
-  again.
+## What it costs
 
-## Consequences
+- **An edit can be silently overwritten.** If Bob's write lands after
+  Alice's, Alice's note is replaced and she gets no warning. She will see it
+  change on her own screen within a second, and the activity list will say
+  Bob did it, but there's no undo. This is the main trade, and it's
+  deliberate.
+- **"Last" means last to arrive at the server, not last to be tapped.**
+  Someone on a slow connection can tap first and still win. Nobody can see
+  this difference from the outside, but it is a real gap between what "last
+  write" sounds like and what it means.
+- **The losing write still costs something.** The overwritten note briefly
+  appears on its author's screen (the browser shows a tap immediately), then
+  changes to the winner within a second. That flicker is the visible cost of
+  showing taps instantly rather than waiting for the server.
 
-- A user's edit to a cell can be silently overwritten by someone else's
-  near-simultaneous edit to the same cell, with no notification, undo, or
-  conflict indicator. This is a real, named cost, not an oversight: anyone
-  reading the commit history or this ADR can see it was considered and
-  accepted.
-- There is no way to tell, after the fact, who wrote which note — the board
-  carries no authorship at all, which is consistent with README's "no
-  accounts" limit but is worth stating plainly here since it is a direct
-  result of this decision's absence of per-write identity.
-- If NoteGrid ever needed per-user authorship or undo, this decision would
-  need revisiting — `version` already exists on the broadcast board state
-  for exactly that future reason, even though nothing currently checks it
-  on write.
+## How it's checked
+
+`spec/realtime.test.ts` sends two writes to the same square at the same time
+from two separate sessions. It then asserts that a third, fresh session sees
+one of the two values, and that both writers' open pages converge on that same
+value and version within a second.
+
+## When to revisit
+
+If SoundGarden ever offers undo, private gardens or per-person ownership, B
+or D starts paying for itself and this record should be replaced, not quietly
+worked around.

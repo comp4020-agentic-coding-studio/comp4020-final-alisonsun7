@@ -2,29 +2,28 @@
 
 ## What was the breakthrough that moved the work forward?
 
-The breakthrough was realising that "real-time" and "the product idea" were
-the same requirement, not two separate things to satisfy. I started NoteGrid
-wanting a shared grid where switching instruments would change what someone
-else was hearing — but until I actually sat down with the crit's definition
-of real-time ("within about a second, without a reload"), I hadn't noticed
-that the feature I wanted literally could not exist without a single global,
-server-authoritative transport. A version of this app where everyone's
-playback loops independently in their own browser is easier to build, but it
-quietly breaks the one moment the whole idea is built around. Once I saw that
-the architecture decision (one shared Play button and instrument, not
-per-user copies) wasn't a technical nicety but the actual condition for the
-product to be honest about what it does, the rest of the design — one
-in-memory board, one versioned state broadcast over SSE, no database — fell
-out of that single constraint instead of being a pile of separate choices.
+The breakthrough was looking at the deployed page myself instead of trusting
+the green checks. The first version passed CI, answered 200, and passed every
+test. The agent told me it had opened it in a browser, and the page showed no
+grid at all: two JavaScript files it depended on were 404ing. Every test
+checked what the server sent, and none checked what a browser could actually
+run. Once I said "the grid isn't there", the cause took two commands to find.
+
+That moment also changed how I directed the rest of the work. I stopped
+handing over a one-line idea and wrote a full design: which way the grid
+plays, which state is shared and which is personal, how identity works. That
+exposed a second problem I'd missed. I had chosen "each person plays
+locally", but the first build ran one global clock. A more precise brief made
+the mismatch visible.
 
 ## What did this work change about who I want to be as a software developer?
 
-I used to think of "pick a conflict-resolution strategy" as a hedge against
-being wrong — cover every case, lock what you can, don't let anything get
-silently overwritten. Writing the ADR for what happens when two people click
-the same cell at once changed that. The right answer here wasn't the most
-careful one; it was the one that matched what the app actually promises.
-Choosing last-write-wins, and writing down exactly why a lock would have made
-the board *feel* worse even though it looks safer on paper, made me more
-comfortable making a deliberate, defensible trade instead of reaching for the
-safest-sounding option by default.
+I used to read a green check as "done". Now I read it as "the things I
+thought to test are fine". The broken client wasn't a hard bug. It sat in
+exactly the gap between what the tests looked at and what a person sees. I
+want to be the developer who opens the thing and uses it before saying it
+works, and who turns each miss into a test, so the same gap can't open twice.
+
+I also want to own my answers. When I say "local playback", that decision
+should survive into the code. Checking the build against the decisions I
+actually made is my job, not the agent's.
