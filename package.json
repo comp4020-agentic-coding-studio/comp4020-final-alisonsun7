@@ -9,11 +9,9 @@
     "check:evidence": "node scripts/check-evidence.ts",
     "test": "vitest run",
     "build": "tsc -p tsconfig.build.json && mkdir -p dist/client && cp src/client/style.css dist/client/style.css",
-    "start": "node dist/server.js",
-    "test:e2e": "playwright test"
+    "start": "node dist/server.js"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^24.0.0",
     "jsdom": "^30.1.0",

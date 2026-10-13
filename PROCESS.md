@@ -1,46 +1,91 @@
-# DayDraw — process overview
+# NoteGrid — process overview
 
-## From brief to a deliberate scope
+## From the brief to a deliberate scope
 
-My friends often have lots of ideas scattered across chats but no shared place for them. That's the gap DayDraw is for. I considered starting with voting — letting the group narrow ideas down right away — but rejected it: collecting ideas naturally has to come before deciding between them, or there's nothing real to vote on yet. That's why C8 ends at a saved suggestion rather than anything resembling a decision: it's the honest first half of the problem, not a shortcut around the second half.
+The [final project brief](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/assessments/final-project/#what-you-submit)
+asks for a week-9 "all at once" step: make the app genuinely real-time, by the
+course's precise definition ("a change one person makes reaches everyone else
+within about a second, without a reload"), and make and document one decision
+about multi-user behaviour. [`crits/09-all-at-once`](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/crits/09-all-at-once/)
+names the mechanism (WebSockets/SSE/polling) as "mostly settled by your
+stack" and the actual decision as one level up — what happens when several
+people act at once.
 
-A second, more concrete alternative was considered and rejected during the work: `docs/crit8-brief.md` explicitly allows assigning a participant's responsibility category either "on creation/join or first draw" — i.e., either automatically the moment someone joins, or through a separate player-initiated "Draw" action with its own button. We chose automatic assignment at join (`src/rooms.ts` `addParticipant`), revealed to the viewer with a quick CSS animation on first paint of their room page, rather than a manual draw button. The reasoning: automatic assignment guarantees the balance invariant (largest-minus-smallest category count ≤ 1) can never depend on whether someone remembers to click a button, and "the card is already drawn, and revealed to you" reads as a legitimate interpretation of a quick reveal. The cost of that choice is a real wording mismatch against README.md's "Draw a responsibility card" phrasing, which I flagged rather than quietly resolved — see "Verification and its limits" below. Scoped in [`d05a97f`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/d05a97f).
+NoteGrid's own idea already pointed straight at this requirement before the
+brief was even checked: a shared 6×6 grid that several people edit together,
+with an instrument switch that's meant to audibly change what someone else is
+currently hearing, is only a real feature if it is real-time. The product and
+the assessment requirement are the same thing here, which shaped an early
+scope decision: keep the board a single global shared state (one grid, one
+instrument, one Play button) rather than private per-user rooms. A private
+room would have been easier to build, but it would also make "switching
+instrument mid-playback changes what someone else hears" structurally
+impossible — the one behaviour the whole idea, and the crit, is about.
 
-## Reading and the definition of good
+## The one documented decision
 
-Reading Sloan's "An app can be a home-cooked meal" (docs/design-sources.md), the point that stayed with me is that software doesn't need to serve everyone. I stopped trying to make DayDraw a complete planning platform and focused it on a small tool for a group of friends — the README's "Why this scale and feedback" section and the deliberate limits on voting/accounts/venue search are the concrete result. This is a scope decision about who the app is for, not a security promise: the room code limits casual guessing, it isn't meant to resist a determined outsider, and README.md says so plainly rather than implying stronger confidentiality than exists.
+[`docs/decisions/001-cell-conflict-resolution.md`](docs/decisions/001-cell-conflict-resolution.md)
+(landed in [`a00ec53`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a00ec53))
+is the required Crit 9 decision: what happens when two people edit the same
+cell at (almost) the same moment. Last-write-wins was chosen over a per-cell
+lock or an optimistic-version check, evaluated directly against README's
+"what good means here" — good is defined there as *instant, audibly shared
+change*, not *every edit preserved* — so protecting a half-second-old edit
+from being overwritten is not a promise this app makes, and the locking
+alternatives would have made the board feel less responsive, which is the
+opposite of what the requirement actually asks for.
 
-Reading Harley's "Visibility of System Status," the point I took was that users shouldn't have to guess whether an action worked. That's not an abstract preference — it changed a specific UI decision: submitting a suggestion now goes through explicit idle → Saving… → Saved/error states (`src/client/submit-state.ts`), rather than just redirecting and hoping. The trade-off against interface clutter is small here, because the feedback is a single line of status text, not a popup or extra screen; the real cost was engineering one (a retry has to reuse the same request key so it can't duplicate), not visual noise. I haven't yet run an actual session with someone trying the app cold, so I can't claim this is verified as *felt* clarity — only that the mechanism behind it is real and tested (`spec/submit-state.test.ts`, the e2e failure-handling test in `e2e/ui.spec.ts`).
+## Stack and workflow
 
-## Stack and workflow trade-offs
+The stack continues what this repo's Fly/Docker/CI shape already requires:
+one process, one machine, 256 MB, no separate database. Rather than add
+SQLite for a product whose only real persistence requirement is "the current
+board while people are using it," the whole board lives as one in-memory
+object in `src/state.ts`, broadcast to every open SSE connection on every
+mutation. That is a deliberate scope decision, not a shortcut: README's
+"deliberate limits" section says plainly that nothing is saved once every tab
+closes, so there is no gap between what the app promises and what it does.
 
-The supplied starter had zero runtime dependencies (only `typescript`/`vitest`/`jsdom` for the harness) and a busybox placeholder `Dockerfile` — there was no existing app runtime to continue, so the choice was a small Node/TypeScript server with SQLite on the supplied Fly volume (full rationale and rejected alternatives in `docs/decisions/001-stack.md`, accepted 2026-10-07). Two concrete trade-offs worth naming:
+For real-time transport, Server-Sent Events were used again (the same
+general shape — a versioned state object pushed to every open connection —
+as this repo's earlier realtime work before the reset), because the route
+surface is small (grid, instrument, transport) and SSE needs nothing beyond
+plain `node:http`. Landed in
+[`2dfc5f0`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/2dfc5f0). Playback stays synchronised across open tabs without the
+server itself ticking: the server only records *when* Play was pressed
+(`startedAtMs`), and each client computes "which of the 36 steps is playing
+right now" from that timestamp plus a fixed step duration, so every open tab
+converges on the same step without a server-side clock loop.
 
-- **`node:sqlite` over `better-sqlite3`.** `better-sqlite3` is a native addon that has to be compiled for the Docker runtime, not a developer machine's binary — a real risk the ADR named up front. `node:sqlite` ships inside the Node binary itself (confirmed working, no experimental warning, on the pinned Node 24.21.0), so that whole risk disappears. The cost: it's a newer, less battle-tested API than `better-sqlite3`, so every usage pattern (transactions via raw `BEGIN`/`COMMIT`, the exact shape of a unique-constraint error, a capacity-gated `INSERT ... SELECT ... WHERE`) was verified with a small throwaway script against the real module before being relied on in `src/rooms.ts`, rather than assumed from documentation or habit.
-- **Plain `node:http` over a framework.** The route surface this week is a handful of paths (home, readme, rooms, join, proposals, start), so a hand-rolled router avoids a dependency to version-track and secret-scan, and `node:http` supports Server-Sent Events directly for C9 without a framework swap later.
+The audio engine (`src/client/audio.ts`) uses three Web Audio oscillator
+presets (triangle+short decay for piano, sawtooth+lowpass sweep for guitar,
+sine+vibrato for saxophone) rather than sampled instruments, specifically so
+an instrument switch takes effect on the very next note with zero loading
+delay — a soundfont fetch would risk exactly the kind of latency the crit is
+testing for.
 
-The Fly machine/volume shape (one `shared-cpu-1x` machine, 256 MB, one volume at `/data`) directly drove the SQLite choice: a single-writer embedded database fits a single machine exactly, and would not extend to multiple machines without real work later (noted as a limit in the ADR, not hidden). Work proceeded in vertical slices — deploy baseline, save one idea, join/roles/return, verify and refine — because each slice had its own genuinely testable claim (a 200 response; a saved idea surviving reload; a balanced role surviving a membership-size sweep; a real browser not showing a false "Saved") rather than one large, hard-to-verify change.
+## Verification
 
-## Direction, grounding and correction
+Automated (`pnpm check`): the two required invariants (`/` returns 200,
+`/readme/` renders every README heading in order) plus a new real-time spec
+(`spec/realtime.test.ts`, landed in
+[`074ea12`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/074ea12))
+that opens two independent SSE connections — one standing in for the person
+who makes a change, the other for the person who should see it — and asserts
+a cell edit, a cell clear, an instrument switch, and a Play press each reach
+the second connection within a 1-second budget, matching the crit's own
+definition of real-time. A rejection test confirms an out-of-range cell
+index and an invalid note are both refused rather than corrupting the shared
+board. All 8 tests pass locally against the actual compiled
+`dist/server.js`.
 
-Three consequential prompts actually directed this work (not a transcript dump — the full prompts are in the conversation):
-
-1. **"Establish the smallest working production path"** (first implementation prompt) constrained the agent to exactly `/`, `/readme/`, and the Docker/Fly plumbing — explicitly no database yet. Evidence checked before writing any code: a `node:sqlite` probe confirming the API's real behaviour, and the actual `package.json`/`Dockerfile` to see nothing existed yet to build on. One real failure here: the first `tsc -p tsconfig.build.json` run failed (`TS5096`/`TS5011`) because the base `tsconfig.json`'s `allowImportingTsExtensions` setting — meant for `noEmit` type-checking only — conflicts with actually emitting files. Fixed in `tsconfig.build.json` itself (disabled that flag there, set explicit `rootDir`/`outDir`), not by weakening the check.
-2. **"Implement the first full DayDraw slice... with an idempotency key so a retry... cannot create a duplicate"** was rejected in one specific way during implementation: the instinct to wrap idempotency in a `BEGIN`/`COMMIT` transaction with a check-then-insert was replaced with a single `UNIQUE(room_id, participant_id, request_key)` database constraint plus a catch-and-compare on conflict — verified directly against `node:sqlite`'s actual constraint-violation error shape first, rather than assumed. Landed in [`cd58cb5`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/cd58cb53c8603631b451daf1c364c2ba57fea34b).
-3. **"Finish missing C8 behaviours before cosmetics... never fabricate counts"** drove the final audit-and-polish pass. One real, instructive failure here: a local Docker `--tmpfs /data` restart test "lost" a saved idea after `docker restart`. Investigated rather than reported as a bug — this is expected Docker behaviour (`--tmpfs` is remounted fresh on every container start, which is exactly why CI uses it for throwaway test data) and says nothing about Fly's real volume. The correction was methodological, not code: the actual persistence proof came from `flyctl machine restart` against the real deployed machine and volume, re-reading a previously-saved idea afterward. Landed in [`780f7ec`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/780f7ec3621abce2b110fc33e29bd65c89e12d26) / [`7075509`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/7075509bd747b92cd1c5e21b0b2442ca5e4f1da5).
-
-## Verification and its limits
-
-Automated (`pnpm check`, 39 tests): capacity to 12 and a rejected 13th; two simultaneous joins racing for the final seat accepting exactly one, tested both directly against SQLite and over real HTTP with independent cookie sessions; role balance swept at 2/3/4/5/6/9/12 members (largest-minus-smallest ≤ 1); a role never changing across repeated reads; starting requiring ≥2 members and being idempotent; an idempotency-key retry replaying the same row while a same-key-different-payload is rejected, not silently overwritten; credential/room isolation (a credential from one room is refused in another); and reopening the database file after a simulated restart, migrating twice without resetting anything. Run and passing identically in three places: locally, against the CI-equivalent Docker container (`docker build` + `docker run --tmpfs /data`), and against the live deployed app.
-
-Browser-level (`pnpm test:e2e`, 8 Playwright tests, run manually — not yet wired into CI): both exact viewports (1920×1080 and 390×844) with no horizontal overflow or clipped controls; an unsaved draft surviving a viewport resize; the create-room form fully keyboard-operable in tab order with Enter submitting; a focus ring that actually renders; the responsibility-card reveal timed under 800ms and disabled entirely under `prefers-reduced-motion: reduce`, never gating the idea form; and — the previously open gap — a real forced network failure in an actual browser keeping the typed draft and showing an error rather than a false "Saved", with a same-draft retry then succeeding exactly once.
-
-Deployed-volume persistence was checked two ways, deliberately kept separate: `rooms-db.test.ts` reopens a real SQLite file at the same path (proves migrations and the on-disk format survive a process restart); a real `flyctl machine restart` against the actual Fly machine and volume, with a distinctive idea saved before and read back after, proves the production volume itself (a local close/reopen is not evidence about that). The slice-3 deploy additionally landed on top of the already-populated slice-2 production database — the migration backfilled a real pre-existing participant's role from NULL to a balanced value without dropping any row, which is stronger evidence than a synthetic migration test alone.
-
-Unverified or named explicitly rather than hidden: a human peer-observation session (does a newcomer actually understand the three categories, feel invited rather than pressured) has not happened — that needs an actual person, not an automated check. The README's "Draw a responsibility card" wording was flagged as a possible mismatch against the automatic-assignment implementation, not silently resolved either way.
-
-## Current position
-
-Live and working against the real Fly volume: home page (create/join/Continue), room page (board, idea submission with idle/Saving/Saved/error states, participant roster with balanced roles, a start control gated on ≥2 members), `/readme/` serving the full README server-side, and a themed, keyboard-accessible, reduced-motion-aware interface. Deliberately unfinished: voting/shortlist/Reveal, real-time sync, and server-side logging are all out of scope for C8 by design (C9/C10 work); a human peer-observation session hasn't happened yet either.
-
-One next investigation for C9, not yet implemented: this codebase's capacity/idempotency correctness currently leans on an argument that's true today but worth re-examining — Node is single-threaded and `node:sqlite` calls are synchronous, so nothing can interleave between a tally query and the insert it feeds. Real-time sync over long-lived SSE connections doesn't threaten that argument directly (SSE push is still single-threaded JS), but it does mean far more concurrent open connections on the same 256 MB machine, which is worth load-checking before assuming it holds at C9's scale.
+Not yet verified at the time of writing: a real `docker build` of this app
+(Docker was unavailable in the working environment this was built in — see
+`docs/evidence-log.md`), so the Dockerfile's first real build-and-run
+happens in CI on push and must be watched there before the crit. The actual
+felt experience — does switching instrument really sound like it changes
+what another person is hearing, in under a second, in two real browser
+windows — is exactly what the crit's own side-by-side device check is for,
+and is named here as unverified by any automated test, consistent with
+`spec/README.md`'s own statement that some lines of the spec are a person's
+judgement call, not a script's.

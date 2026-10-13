@@ -1,8 +1,9 @@
 # syntax = docker/dockerfile:1
 
-# Small Node/TypeScript server (see docs/decisions/001-stack.md). Must serve
-# HTTP on 0.0.0.0:$PORT (fly.toml sets PORT) and publish README.md at /readme/
-# (spec/README.md says what's checked).
+# Small Node/TypeScript server. Must serve HTTP on 0.0.0.0:$PORT (fly.toml
+# sets PORT) and publish README.md at /readme/ (spec/README.md says what's
+# checked). State lives in-process (no database): see
+# docs/decisions/001-cell-conflict-resolution.md for why that's fine here.
 
 FROM node:24.21.0-alpine AS base
 WORKDIR /app

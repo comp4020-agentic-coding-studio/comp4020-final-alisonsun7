@@ -1,136 +1,81 @@
-# DayDraw evidence log
+# Evidence log — Crit 9 (NoteGrid)
 
-A factual working record for writing the process overview. Not a replacement for commits, a student's reflection or executable checks. Keep secrets, participant credentials and private personal information out of it.
+Concise record of what was prompted, what the agent produced, what failed,
+and what was corrected. Commit hashes link to the actual commits once this
+work lands (see PROCESS.md for the final list).
 
-## Milestone record — copy for each real slice
+## Direction
 
-- Date/time/timezone:
-- Goal:
-- Exact consequential prompt or link to the relevant prompt file/section:
-- Inputs actually inspected:
-- Decision made by Wen or agent; rationale and alternative:
-- Files changed:
-- Commands actually run, with exit/result:
-- Browser/deployed observations (include URL and viewport):
-- Failure or rejected attempt, if it occurred:
-- Root cause and code/harness/test correction:
-- Before/after evidence, if available:
-- Real commit URL:
-- What remains unverified:
+1. **Starting point**: the repo had just been reset to the bare course
+   template (the previous idea, DayDraw, removed) in the turn before this
+   work. Wen's prompt for Crit 9 was a rough product sketch: a 6×6 grid, 5
+   coloured note blocks, remove-a-cell, a nickname, a Play button, 3
+   switchable instruments (guitar/piano/sax), and the specific behaviour
+   that "另一个用户正在演奏的音乐会迅速在一秒钟之内产生变化" when someone
+   switches instrument mid-playback — i.e., Wen's own idea already *was* a
+   real-time multi-user requirement before the Crit 9 brief was even
+   checked.
+2. Before designing anything, the agent fetched the live Crit 9 spec
+   (`crits/09-all-at-once`) rather than assuming what "real-time" meant, and
+   quoted its exact definition ("within about a second, without a reload")
+   and its four example multi-user-decision areas back to Wen.
+3. Five clarifying questions were asked and answered before any code was
+   written, because each one changes the architecture materially:
+   - 36 cells as one 36-step loop (not 6 parallel tracks) — chosen for
+     simplicity and because it matches Wen's "连续的音乐" (continuous
+     melody) phrasing more literally than 6 simultaneous chords would.
+   - One single global shared board, no room codes — simplest fit for "多
+     个用户" filling one grid together.
+   - Pure Web Audio oscillator synthesis, no soundfont fetch — zero new
+     runtime dependency, zero network risk inside a 256 MB Fly machine.
+   - Global, server-authoritative playback (not each browser looping
+     independently) — this is the one decision the whole "instrument
+     switch changes what's playing for someone else" behaviour depends on;
+     independent per-browser loops would make that behaviour impossible to
+     build honestly.
+   - One global instrument, not per-user — consistent with the single
+     global transport above.
+   - Last-write-wins for simultaneous cell edits — chosen as the Crit 9
+     ADR topic; see `docs/decisions/001-cell-conflict-resolution.md`.
+4. A plan (server+state design, file list, verification steps) was written
+   and approved by Wen before any file was created, including the decision
+   to keep state in-process memory (not SQLite) since Crit 9 grades
+   real-time propagation, not restart persistence, and this app's "good" in
+   README explicitly limits itself to that scope.
 
-## Slice 1 — deploy baseline (real app, not placeholder)
+## Grounding
 
-- Date/time/timezone: 2026-10-07, ~03:20–03:55 AEDT (Australia/Sydney)
-- Goal: replace the busybox placeholder with a real server; `/` responds, `/readme/` serves the full root README with real headings and source links, built/deployed within the supplied Fly machine + volume constraints. No DB, join/room/roles work yet — that's the next slice.
-- Exact consequential prompt: agent instruction to "establish the smallest working production path: / responds; /readme/ renders the FULL actual root README in server HTML, including source links" and to prefer existing dependencies or justify a small Node/TypeScript + SQLite stack in docs/decisions/001-stack.md.
-- Inputs actually inspected: `package.json` (no runtime deps existed yet), `Dockerfile`/`fly.toml` (busybox placeholder; single machine, single volume at `/data`, PORT=8080), `tsconfig.json` (`noEmit`, bundler resolution), `.github/workflows/checks.yml` (exact CI build/run invocation), `mise.toml`/`mise.local.toml` (FLY_API_TOKEN present locally, value not read), `gh secret list` (confirmed the same secret exists on GitHub, value not read).
-- Decision made by agent, confirmed by Wen's go-ahead to implement: plain `node:http` (no framework) + TypeScript compiled by `tsc`, `marked` for README rendering, SQLite deferred to the next slice. Rationale and the rejected alternative (`better-sqlite3`, Express) are in docs/decisions/001-stack.md.
-- Files changed: `Dockerfile`, `package.json` (added `marked`, `build`/`start` scripts), `pnpm-lock.yaml`, `tsconfig.json` (added `src` to `include`), `tsconfig.build.json` (new), `src/server.ts` (new), `src/readme.ts` (new).
-- Commands actually run, with exit/result:
-  - `pnpm add marked` — added `marked@18.1.0`, exit 0.
-  - `pnpm typecheck` — exit 0.
-  - `pnpm build` (`tsc -p tsconfig.build.json`) — exit 0, emitted `dist/server.js`, `dist/readme.js`.
-  - `PORT=8099 node dist/server.js` then `curl` — `GET / -> 200`, `GET /readme/ -> 200`, body inspected directly (not a screenshot): real heading structure and live `<a href="https://www.robinsloan.com/...">`/`<a href="https://www.nngroup.com/...">` links present.
-  - `APP_URL=http://localhost:8099 pnpm check` — `2 passed (2)`, exit 0.
-  - `docker build -t daydraw-app .` — exit 0, image 71 MB.
-  - `docker run -d --init --name daydraw-test -p 8080:8080 -e PORT=8080 --tmpfs /data daydraw-app` (the same invocation CI uses) — container healthy; `curl` to `/` and `/readme/` both 200.
-  - `APP_URL=http://localhost:8080 pnpm check` against that container — `2 passed (2)`, exit 0.
-  - `pnpm check:evidence` — **failed**: "no reflection — each crit's cutoff reads its own: crit-8.md, crit-9.md, crit-10.md". Expected and unresolved here; `reflections/crit-8.md` is Wen's own writing, not fabricated by the agent.
-  - `mise exec -- flyctl status -a comp4020-final-alisonsun7` — confirmed the app identity already exists (owner `comp4020-agentic-coding-studio`, hostname `comp4020-final-alisonsun7.fly.dev`), one machine, previously `stopped`.
-  - `mise exec -- flyctl deploy --remote-only --ha=false -a comp4020-final-alisonsun7` — exit 0, rolling update of the existing machine, "Machine ... is now in a good state".
-- Browser/deployed observations: `curl https://comp4020-final-alisonsun7.fly.dev/` → 200; `curl https://comp4020-final-alisonsun7.fly.dev/readme/` → 200, response body contains the full rendered README (grepped for `<h1>`/`<h2>` and the two source links directly in the HTTP response, not a screenshot). `APP_URL=https://comp4020-final-alisonsun7.fly.dev pnpm check` → `2 passed (2)`.
-- Failure or rejected attempt: first `tsc -p tsconfig.build.json` run failed (`TS5096`/`TS5011`) because the base `tsconfig.json`'s `allowImportingTsExtensions` conflicts with actually emitting; fixed by disabling that flag and setting `rootDir`/`outDir` explicitly in `tsconfig.build.json`. Root cause: the base config's `.ts`-extension-import convention (for `noEmit` type-checking only) isn't valid once a config actually emits; the build config now uses plain `.js`-suffixed relative imports in `src/`, which both the bundler-mode type checker and the compiled output resolve correctly.
-- Root cause and correction: see above; fix lives in `tsconfig.build.json` itself (commit below), not a separate test, since there's no existing spec for the build step — `pnpm check` only exercises the running app, which is why both the local-node and dockerized runs above were checked independently.
-- Before/after evidence: before, `GET /` and `GET /readme/` were served by the busybox+sed placeholder (verbatim-escaped text, no real links, no headings structure); after, both routes are served by the real app with `marked`-rendered HTML.
-- Real commit: [`a6db826`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a6db82626b4a8c1ba406facd5fe75d339fa19c94) (engineering), preceded by [`d05a97f`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/d05a97f) (committing scaffolding — CLAUDE.md/README.md/PROCESS.md/docs/ — that was already on disk uncommitted before this slice started). Neither is pushed to `origin` yet; the links above resolve once pushed.
-- What remains unverified: no restart/redeploy readback test, because nothing is written to `/data` yet (no DB in this slice — that's next). `pnpm check:evidence` still fails pending `reflections/crit-8.md`. CI itself (`.github/workflows/checks.yml`) hasn't run, since the repository is still private and the `check`/`deploy` jobs are gated on `!github.event.repository.private`.
+- The exact Crit 9 spec lines were fetched from the course API
+  (`/api/crits/09-all-at-once.json`) rather than recalled from general
+  knowledge of the course, and are quoted verbatim in PROCESS.md and this
+  file.
+- `spec/README.md`'s existing contract (`/` returns 200, `/readme/` renders
+  README's headings in order) was re-read before writing `src/html.ts`, so
+  the README-rendering approach was built to that actual check, not a
+  guess.
+- The repo's own prior engineering choices (plain `node:http`, SSE with a
+  versioned broadcast state, no framework) were reused from the history of
+  the previous DayDraw idea's M1 slice — not because that code still
+  exists (it was deleted in the reset), but because the pattern itself (a
+  single in-memory `version`-stamped state object broadcast over SSE) is a
+  good, previously-proven fit for "push a new truth to every open tab
+  within budget," and reusing a known-good shape here was a deliberate
+  choice to avoid re-deriving it from scratch.
 
-## Slice 2 — create room, save an idea, reload and find it
+## Correction
 
-- Date/time/timezone: 2026-10-06 ~17:00 UTC (2026-10-07 early morning AEDT, Australia/Sydney)
-- Goal: a single visitor creates a named room with a nickname, receives a server identity and code, submits a WHERE/EAT/DO idea with idle/Saving/Saved/error feedback, and finds it again after reload — before anyone else joins. Real SQLite, prepared queries, membership checks, an idempotency key so a retry can't duplicate, escaped user text, no credentials in shared responses.
-- Exact consequential prompt: agent instruction to "Implement the first full DayDraw slice under CLAUDE.md: create a named room with nickname → receive server identity and code → submit a category/title idea → Saving/Saved/error → reload and find the saved idea," with an explicit idempotency-key requirement and isolated real-DB tests.
-- Inputs actually inspected: docs/acceptance.md's DD01/DD08/DD09/DD10 rows and data-bounds section (title 1-60, nickname 1-30, idea title 1-120); a `node:sqlite` probe for exact transaction/constraint-violation error shape (`err.code === 'ERR_SQLITE_ERROR'`, message `UNIQUE constraint failed: <table>.<columns>`) before writing src/rooms.ts, rather than guessing the API.
-- Decision made by agent: credential is a random secret, stored server-side only as its SHA-256 hash; membership check is (credential hash, room id) together, never a client-supplied participant id alone. Idempotency enforced at the DB layer via `UNIQUE(room_id, participant_id, request_key)`, with same-key/different-payload explicitly rejected (409) rather than silently replacing the row. Rationale and alternatives in docs/decisions/001-stack.md.
-- Files changed: `src/db.ts`, `src/ids.ts`, `src/validation.ts`, `src/html.ts`, `src/rooms.ts`, `src/cookies.ts`, `src/body.ts`, `src/pages.ts`, `src/client/submit-state.ts`, `src/client/room.ts`, `src/server.ts` (routing), `src/readme.ts` (refactored to share `src/html.ts`'s page shell), `.gitignore` (`.data/`), `spec/session.ts`, `spec/rooms-db.test.ts`, `spec/proposal.test.ts`, `spec/submit-state.test.ts`.
-- Commands actually run, with exit/result:
-  - `node --input-type=module -e "..."` against `node:sqlite` directly — confirmed `BEGIN`/`COMMIT`/`ROLLBACK` work via `.exec()`, and the exact shape of a unique-constraint error, before writing the real code.
-  - `pnpm typecheck` — failed twice first (`TS2339`: accessing `.requestKey` on a non-narrowed union in `src/client/room.ts`; `TS2352`: unsafe `as RoomRow` cast with insufficient overlap in `src/rooms.ts`), fixed by narrowing via an explicit status check and routing all `.get()`/`.all()` casts through a `asRow<T>(row: unknown): T` helper; exit 0 after.
-  - `pnpm build` then manual `curl` walkthrough against `node dist/server.js` (not a screenshot): create room → 303 + two httpOnly `Set-Cookie`s; GET room page as creator shows the idea form; `POST .../proposals` → 201; reload (fresh GET, same cookies) → idea present in the HTML; same-key retry → 200 with the *same* proposal id as the first insert; same-key different payload → 409, board unchanged; new-key distinct idea → 201; empty title / bad category → 400, nothing saved; `<script>...</script> & friends` title and `<b>Wen</b>` nickname both come back HTML-escaped in the response, never as live markup; second room's credential posting into the first room's code → 401, nothing saved; anonymous (no-cookie) GET shows the board but no `id="idea-form"`.
-  - `APP_URL=http://localhost:8099 pnpm check` — `19 passed (19)`, exit 0 (4 test files: course invariants, `rooms-db`, `proposal`, `submit-state`).
-  - `docker build` + `docker run --tmpfs /data` (CI-equivalent) then `APP_URL=http://localhost:8080 pnpm check` — `19 passed (19)`, exit 0; `docker exec daydraw-test ls -la /data` showed `daydraw.db`, `daydraw.db-shm`, `daydraw.db-wal` actually under the mount.
-  - `docker restart daydraw-test` then re-read the same room — **404, the idea was gone**. This is expected Docker behaviour (`--tmpfs` is remounted fresh on every container start, which is exactly why CI uses it for throwaway test data) and not a code defect; it is not evidence about Fly's real volume, so it's recorded here as a methodology note, not a DD04 result.
-  - `flyctl deploy --remote-only --ha=false -a comp4020-final-alisonsun7` — exit 0.
-  - Real deployed walkthrough: created room `M4RZNW` ("Fly Volume Proof" / Wen), submitted "Survives real redeploy", confirmed present via `curl`; ran `flyctl machine restart d89565db360758 -a comp4020-final-alisonsun7` against the actual machine/volume; re-`curl`'d the same room afterward — the idea was still there. `APP_URL=https://comp4020-final-alisonsun7.fly.dev pnpm check` — `19 passed (19)`.
-  - `pnpm check:evidence` — still fails on the missing `reflections/crit-8.md`, as in slice 1; unchanged and expected.
-- Browser/deployed observations: `https://comp4020-final-alisonsun7.fly.dev/rooms/M4RZNW` returns 200 and contains "Survives real redeploy" both before and after the real machine restart above.
-- Failure or rejected attempt: the local Docker `--tmpfs` restart test above "failed" (data gone) by design, not by bug — recorded so it isn't mistaken later for a real volume-persistence result. Root cause: tmpfs mounts are ephemeral per container start; the course's own CI comment says as much ("a throwaway `/data` in place of the volume"). No code or test needed correcting; the correction here was methodological (switch to testing the real Fly volume instead).
-- Before/after evidence: before this slice, `/rooms/*` didn't exist (every path 404 except `/` and `/readme/`); after, a visitor can create a room, save an idea and find it after reload, a real restart, and from a second independent cookie session that is correctly refused write access to someone else's room.
-- Real commit: [`cd58cb5`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/cd58cb53c8603631b451daf1c364c2ba57fea34b), preceded by `a6db826`/`d05a97f`/`4d058e4` (prior slices). Not yet pushed to `origin`; links resolve once pushed.
-- What remains unverified: join/second-participant flow, role assignment and capacity limits (next slice — not implemented yet, so untested here); the "Saving…"/"Saved"/retry-preserves-draft UI was verified at the HTTP level (curl) and as a pure, directly-tested state machine (`spec/submit-state.test.ts`, imported unmodified by the real browser script), but not yet driven through an actual browser — no Playwright/browser-automation tool is installed in this repo, so that remains a manual/tier-2 check for the verify-and-refine slice. Two exact viewports, keyboard-only pass and reduced-motion have not been checked (no UI polish done yet, by design — CLAUDE.md says build the complete loop before visual polish).
-
-## Slice 3 — join by code, capacity, balanced roles, start, Continue
-
-- Date/time/timezone: 2026-10-06 ~17:40 UTC (2026-10-07 early morning AEDT, Australia/Sydney)
-- Goal: extend the saved-idea slice with join by normalised code, up to 12 distinct server participants, persisted balanced responsibility cards, and a Recent room/Continue path — transactional capacity and role allocation, stable repeated draw, idempotent start, and the docs/acceptance.md behaviours (concurrent final-seat joins, concurrent proposal inserts, stable identity on reload, isolation across rooms).
-- Exact consequential prompt: agent instruction to extend the slice with join/capacity/roles/start/Continue, explicitly requiring normal+incognito-style isolated contexts for distinct identities, transactional capacity/role allocation, optional starting, explicit Refresh (no realtime/Live claims), and durable migrations.
-- Inputs actually inspected: docs/acceptance.md's DD06/DD07/DD14 rows and the "independent-session manual walkthrough" section; a direct `node:sqlite` probe confirming `INSERT ... SELECT ... WHERE (subquery count) < n` reports `changes: 0` when the condition fails (capacity gate) and that a conditional `UPDATE ... WHERE phase = 'collecting' AND (subquery count) >= 2` is a clean idempotent start, before writing src/rooms.ts — not assumed.
-- Decision made by agent: role assignment and the capacity check are the *same* SQL statement (role pre-computed from a tally query, then one gated INSERT), relying on `node:sqlite`'s synchronous, single-threaded execution for atomicity rather than a database-level lock — documented and deliberately tested (see "two simultaneous joins" below) rather than assumed. Migration 002's column-add is guarded independently of the outer `_migrations` table (via `pragma_table_info`), specifically so a crash between adding the column and finishing the backfill doesn't permanently break the next boot. Rationale in docs/decisions/001-stack.md.
-- Files changed: `src/roles.ts` (new), `src/db.ts` (migration 002 + backfill), `src/rooms.ts` (addParticipant/joinRoom/startRoom/tallyRoles/listParticipants, `createRoom` now a discriminated result), `src/pages.ts` (join form, Recent room, participants+roles, stage line, start control, shared-category label, inspiration examples, Refresh link), `src/server.ts` (`/join`, `/rooms/:code/start` routes, recent-room cookie re-authentication), `src/validation.ts` (`validateRoomCode`), `spec/session.ts` (`joinRoom`/`startRoom`/`homePage`), `spec/rooms-db.test.ts` and `spec/join.test.ts` (new).
-- Commands actually run, with exit/result:
-  - `node --input-type=module -e "..."` against `node:sqlite` directly — confirmed the gated-INSERT and gated-UPDATE patterns report `changes: 0` exactly when expected, before relying on them.
-  - `pnpm typecheck` — passed after fixing the fallout of `createRoom`'s return type becoming a discriminated union (spec/rooms-db.test.ts needed a `mustCreate` helper).
-  - `pnpm build` + `APP_URL=http://localhost:8099 pnpm check` — first run: 1 failure (`expected 2 to be 1` on a "Dumpling House"/"Korean BBQ" occurrence count). Root cause: the new per-category inspiration example text for EAT literally says "e.g. Korean BBQ, ...", which collided with an existing test fixture's idea title of the same name — a test-fixture naming collision, not a product bug. Fixed by renaming the fixture idea to "Dumpling House"; exit 0 after, 39/39 passed.
-  - Manual `curl` walkthrough: created a room, joined a second nickname via `POST /join`, fetched the room page as the creator — confirmed by eye (not just assertions) that the participant list shows "Wen (you) — WHERE" / "Alex — EAT", the DO section is labelled "(shared — no one's assigned here yet)", the Start button appears only once 2 members exist, and inspiration examples render under each category without being mistaken for saved ideas.
-  - `docker build` + `docker run --tmpfs /data` (CI-equivalent) then `APP_URL=http://localhost:8080 pnpm check` — 39/39 passed.
-  - `flyctl deploy --remote-only --ha=false -a comp4020-final-alisonsun7` — exit 0, deployed over the **real, already-populated** production database from slices 1–2.
-  - Read back the pre-existing slice-2 room `M4RZNW` (created before the `role` column existed) via `curl` after this deploy: its one participant, "Wen", now shows `role = EAT` — the real migration 002 backfill ran against real production data, not a synthetic fixture, and didn't drop the room, its proposal, or its participant.
-  - `APP_URL=https://comp4020-final-alisonsun7.fly.dev pnpm check` — first run: 2 timeouts (`joining an unknown code or a full room...` and the final-seat race test), both from vitest's 5s default being too short for 11+ sequential real HTTPS round trips to fill a room to capacity over the actual internet (these same tests run in under a second locally/in Docker over loopback). Not a product defect — extended those two tests' timeouts to 20s; rerun: 39/39 passed against the live app.
-- Browser/deployed observations: `https://comp4020-final-alisonsun7.fly.dev/rooms/M4RZNW` shows "Wen — EAT" in its participant list post-migration; a freshly created/joined/started room against the live URL shows the join, role-balance, and start behaviour identically to local/Docker.
-- Failure or rejected attempt: (1) the "Korean BBQ"/"Dumpling House" fixture collision above — test-only fix, no product code changed. (2) the two network-timeout failures against the live app above — test-infrastructure-only fix (raised those two tests' timeout to 20000ms); the assertions themselves were not weakened.
-- Before/after evidence: before this slice, only the room's creator could ever exist in a room and no room ever left "collecting"; after, up to 12 independent identities can join, get a persisted balanced role, see each other, and any pair can start — all demonstrated against both a fresh local DB and the real, previously-populated production database.
-- Real commit: [`649cd90`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/649cd9080c3bcc3597aa7f4cf0c097dd49d49067), following `cd58cb5`/`3c57f2f` (slice 2) and `a6db826`/`4d058e4` (slice 1). Not yet pushed to `origin`; links resolve once pushed.
-- What remains unverified: no browser-automation (Playwright etc.) pass yet — the "two independent browser contexts" requirement is covered here by independent `Session`/cookie-jar objects making real HTTP requests (genuinely independent credentials/identities, per docs/acceptance.md's definition), not by two actual rendered browser windows; that remains a manual/tier-2 check. Visual/viewport/keyboard/reduced-motion review is still pending (verify-and-refine slice, by design). `pnpm check:evidence` still fails on the missing `reflections/crit-8.md` — unchanged, Wen's writing.
-
-## Slice 4 — verify, refine, and audit before shipping prep
-
-- Date/time/timezone: 2026-10-07 ~05:00–05:20 UTC (2026-10-07 ~16:00 Australia/Sydney / ~15:15 Australia/Canberra course time)
-- Goal: audit the app against docs/acceptance.md and CLAUDE.md, finish any missing C8 behaviour first, then add the interface-quality polish (paper/ink theme, category accents, keyboard focus, mobile layout, reduced-motion quick card reveal), run every available check and report exactly what ran/passed/failed/was unavailable, audit README.md sentence by sentence against the implementation, flag written-evidence placeholders, scan git history for secrets without printing them, and run the course preflight check.
-- Exact consequential prompt: agent instruction to audit against acceptance/CLAUDE.md, finish missing C8 behaviours before cosmetics, add the specific interface-quality items, run pnpm check/check:evidence plus "required build/e2e commands", verify /readme/ from actual HTML, audit the README sentence by sentence, flag PROCESS.md/reflections placeholders and ask Wen for them in one bundle, scan history for secrets, and run course preflight/prepare-to-ship — explicitly not to mistake a green local build for a live submitted app.
-- Audit result (DD01–DD14, docs/acceptance.md): all 14 behaviours were already implemented and covered by spec/*.test.ts from slices 1–3 (see those slices' entries above). No missing C8 functional behaviour was found this slice; the only gap was the interface-quality items (CLAUDE.md's dedicated section) and genuine browser-level verification of the draft-preserving-on-failure claim, which is what this slice adds.
-- README.md sentence-by-sentence audit against the implementation: every sentence checked out **except one**, flagged below for Wen, not silently resolved:
-  - **Mismatch to resolve**: "This first version" says "Draw a responsibility card and add suggestions..." — phrased as something the visitor actively does. The actual implementation assigns the role automatically at room creation/join (no separate "Draw" button or action), then shows it with a quick CSS reveal animation when the room page first renders. This matches one of the two options docs/crit8-brief.md explicitly allowed ("Persist assignment on creation/join or first draw"), so it is not a broken promise, but the README's wording could read as implying player-initiated agency that doesn't exist. Wen should decide whether to adjust the README's wording or treat "draw" as "the card is already drawn, and revealed to you."
-  - Everything else matched: account-free entry, WHERE/EAT/DO division, roles guiding not restricting (DD05 test), honest "collects and remembers" framing (no voting implemented), refresh-not-live wording (explicit Refresh link, no realtime), Continue/return path, credential-vs-database-storage framing, the 12-person/identity/role/restart/category promises (all tested), and the deliberate-limits list (no chat/accounts/venue engine/voting — none implemented).
-- Interface-quality work (src/client/style.css, src/pages.ts, src/html.ts): warm paper (`#f6efe0`) / dark ink (`#2a2319`) theme; three distinct, named category accents (WHERE teal, EAT terracotta, DO olive) as left-border + tinted background on both the board sections and the viewer's own role card; all controls already had `<label for>`; added visible `:focus-visible` rings; single-column responsive layout under ~480px via CSS Grid auto-fit (no media-query hand-tuning needed for the 3-column board, one explicit breakpoint added for form/heading sizing); a CSS-only "quick reveal" keyframe (480ms) on the viewer's own `.role-card`, disabled entirely under `prefers-reduced-motion: reduce`, with no JS/network dependency so it cannot gate the idea form.
-- Commands actually run, with exit/result:
-  - `pnpm typecheck` — exit 0 (now also covers `e2e/`, added to tsconfig.json `include`).
-  - `pnpm build` (now also copies `src/client/style.css` into `dist/client/`) — exit 0.
-  - `APP_URL=http://localhost:8099 pnpm check` — **39/39 passed**, locally.
-  - `pnpm add -D -w @playwright/test` + `pnpm exec playwright install chromium` — installed; a genuinely new dependency, added specifically because CSS layout, keyboard focus order, `prefers-reduced-motion`, and a real browser's behaviour on an actual failed network request cannot be verified by spec/*.test.ts (HTTP-only) or a pure unit test of the state machine. Not wired into CI (see "what remains unverified" below).
-  - `APP_URL=http://localhost:8099 pnpm test:e2e` — **8/8 passed**: no horizontal overflow/clipped controls at exactly 1920×1080 and 390×844 (2 tests), an unsaved draft survives a resize up and back down, the create-room form is keyboard-operable in DOM tab order with Enter submitting, a focus ring's `outline-style` is actually non-`none` when focused, the role-card's `animation-duration` is ≤800ms and its `animation-name` becomes `none` under `prefers-reduced-motion: reduce`, the card reveal does not block an immediate idea submission, and — closing the previously-flagged gap — a `page.route(...)`-forced 500 on `/proposals` leaves the typed draft and shows "...try again...", never "Saved.", and a same-draft retry after removing the fault succeeds exactly once (board text occurrence count checked, not just a status code).
-  - Manual visual check: took real screenshots at both viewports with Playwright's own browser (not described from code alone) — one accidentally caught the card mid-animation (expected, given the deliberate 480ms reveal) and a second, taken after settling, confirmed final computed styles (`background-color`, `border-color`, `opacity: 1`) matched the intended palette before being deleted (not committed; scratch-only).
-  - `docker build` + `docker run --tmpfs /data` (CI-equivalent) then `APP_URL=http://localhost:8080 pnpm check` — **39/39 passed**; `APP_URL=http://localhost:8080 pnpm test:e2e` — **8/8 passed** against the dockerized app too.
-  - `pnpm check:evidence` — **still fails**: "no reflection — each crit's cutoff reads its own: crit-8.md, crit-9.md, crit-10.md". `reflections/crit-8.md` does not exist; `PROCESS.md` still has 6 bracketed template sections (lines 7, 11, 15, 19, 23, 27) and `docs/design-sources.md` still has 6 `[fill]` markers. None of these were written by the agent — flagged to Wen in one bundle, not invented.
-  - `curl http://localhost:8099/readme/` — verified directly from the returned HTML (200, full README headings and both citation links present as real `<a>` tags), not assumed from prior runs.
-  - Secret scan: no `trufflehog` binary available locally, so ran the course plugin's own `secret-scan.mjs` (`comp4020` plugin, v0.14.24) against the full repo — **clean**: "worktree and publishable history scanned". A manual heuristic grep across `git log --all -p` for key-shaped strings found one hit, inspected and confirmed harmless: the literal placeholder comment `#   FLY_API_TOKEN = "..."` in `mise.toml`, which documents where the real token goes (`mise.local.toml`, gitignored) rather than containing one. The authoritative scan (TruffleHog, verified + course-key-shape passes) still runs in CI on every push once the repo is public, per `.github/workflows/checks.yml`.
-  - `comp4020:preflight` skill run: plugin WARN (0.14.24 installed, 0.14.27 available — not blocking, informational); working tree FAIL at first run (fixed by the commit above), 7 then 8 local commits ahead of `origin/main` not yet pushed (FAIL, fixed by push — see commit list below); remote is GitHub (PASS); repo visibility PRIVATE (WARN, expected/normal pre-cutoff per the skill, not a blocker); `pnpm check:evidence` FAIL on the missing reflection (same as above — this is the actual shipping blocker, not an engineering one).
-  - `flyctl status -a comp4020-final-alisonsun7` (next): deployed app machine state as of the last deploy (slice 3) — see below for the fresh read taken alongside this slice's deploy.
-- Failure or rejected attempt: none this slice beyond the already-logged slice-3 test-infrastructure fixes; the e2e suite passed on its first full run against both local Node and the Docker container.
-- Before/after evidence: before this slice, the app had zero CSS (raw unstyled HTML) and no browser-level verification of keyboard/focus/viewport/reduced-motion/draft-preservation claims; after, it has a themed, responsive, keyboard-accessible interface and 8 passing Playwright checks covering exactly those previously-unverified claims.
-- Real commit: [`780f7ec`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/780f7ec3621abce2b110fc33e29bd65c89e12d26), following `759e074`/`649cd90` (slice 3), `3c57f2f`/`cd58cb5` (slice 2), `4d058e4`/`a6db826` (slice 1), `d05a97f` (scaffolding).
-- What remains unverified: e2e is a manual local/Docker check, not a CI job — it needs a browser install step CI doesn't currently have, and adding it was out of scope for this pass; flagged here rather than silently left out, per spec/README.md's own allowance for "a separate e2e invocation". Real two-rendered-browser-window verification (vs. independent HTTP sessions, already covered) for DD02/DD03/DD07 was not repeated here since it was already covered at the HTTP-session tier in slices 2–3. Human peer-observation (docs/evidence-log.md's own "Peer observation record" section) has not happened — that requires an actual person, which only Wen can arrange. `reflections/crit-8.md`, the remaining `PROCESS.md` sections and `docs/design-sources.md` notes are Wen's writing, not invented here.
-
-## Observation rules
-
-“Expected to pass” is not “passed”. Local DB close/reopen is not deployed redeploy proof. Two tabs sharing credentials are not two identities. A mock or seeded suggestion is not a visitor's saved contribution. A screenshot cannot establish that data survived a restart. A source summary is not evidence that Wen read it. Writing fields left blank are not complete submission evidence.
-
-## Peer observation record — only after an actual session
-
-- Consent to capture relevant feedback:
-- Task given without explaining controls:
-- What the peer did/said:
-- Where they hesitated:
-- Change justified by observation:
-- Commit/evidence link:
-
-Avoid naming peers unless needed and appropriate. Do not insert plausible feedback in advance.
+- The nickname form initially used no explicit `method`/`action`, which
+  would submit as a `GET` to the current page instead of `POST /nickname`
+  — caught before it reached a browser, by re-reading the rendered form
+  markup against the server's actual route table, and fixed in
+  `src/html.ts` by adding `method="post" action="/nickname"` directly.
+- Docker was not available in this working environment, so the Dockerfile
+  build (which mirrors CI's exact `docker build` + `docker run --tmpfs
+  /data` check) could not be verified locally before pushing. This is
+  named here rather than silently assumed to work: the first real Docker
+  build-and-run of this app happens in CI on push, and must be watched
+  before relying on the deployed app for the crit.
+- `pnpm check` (typecheck + the full spec suite, including the new
+  real-time SSE tests) was run and passed locally against the actual
+  compiled `dist/server.js` — not against `ts-node` or a dev-only path —
+  so what was checked is what `pnpm build && pnpm start` actually runs.

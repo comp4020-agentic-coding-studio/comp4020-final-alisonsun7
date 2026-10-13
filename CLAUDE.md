@@ -1,44 +1,76 @@
 # Your harness
 
-
-# DayDraw agent rules
-
-Merge these rules with the existing course harness; retain course instructions and preserve shipped tests. Read docs/crit8-brief.md and docs/acceptance.md before implementation. This file governs C8 work; future requirements are not current promises.
+# NoteGrid agent rules
 
 ## Purpose and scope
 
-DayDraw helps 2–12 friends contribute options for a shared outing, organised into WHERE, EAT and DO. This week's core interaction is a saved suggestion in a shared room. Build that complete loop before visual polish. Use English UI and explain progress to Wen in Chinese.
+NoteGrid is a single shared 6×6 step-sequencer grid: anyone who opens the
+page can fill a cell with one of 5 notes (or clear it), and anyone can press
+Play to start a shared, synchronised playback of all 36 cells in one 36-step
+loop, in one of 3 instruments (piano/guitar/sax, pure Web Audio synthesis —
+no samples). There are no rooms and no accounts: one global board for
+everyone who has the page open.
 
-Do not implement SSE/WebSockets, shortlist, voting, readiness coordination, telemetry, AI recommendations, external venue APIs, accounts, chat or final Reveal for C8. Do not show a working vote button, a Live badge, fabricated participants or seeded proposals. Explain briefly that this version collects ideas and that another session refreshes to see changes.
+## Current phase
+
+**Active: Crit 9 (real-time + one documented multi-user decision).** The
+grid, playback, instrument switching, and SSE-based real-time sync are now
+built. The documented decision is last-write-wins on simultaneous cell edits
+(`docs/decisions/001-cell-conflict-resolution.md`). Do not add accounts,
+persistence across a restart, undo, per-cell locking, or per-user rooms —
+README's "deliberate limits" says plainly none of that exists, and adding it
+now would contradict a promise already made in the shipped README.
 
 ## Product invariants
 
-- A room contains at most 12 registered participants. Two participants suffice to start; do not require all seats to fill. The creator can already save a suggestion alone, before inviting anyone, so a stranger can leave a trace immediately.
-- Room code, nickname and a browser credential are enough. Nickname is display text, never identity or authentication.
-- Roles allocate responsibility, not visibility or permission. Every joined participant sees all three categories and may contribute to any of them.
-- Role assignment is server-side, persisted, balanced, and idempotent. Repeated draw never rerolls. Starting twice never resets a room.
-- Show current stage and the next action. Later stages are visibly unavailable, not deceptive controls.
-- Treat DB state as authoritative. Browser storage only remembers a room and participant credential, never the sole proposal record.
-- Refresh, server restart and ordinary redeployment must preserve rooms, participants, roles and proposals. Never delete or reseed a production database on startup.
-- Render the complete root README at /readme/ in server-delivered HTML, with its headings and source links. Keep a visible navigation link and a route back to the app.
-- Only show Saved after server confirmation. Every mutation has pending, success and failure feedback. Preserve the typed suggestion on failure.
-- A retried proposal request uses the same client request key. New intentions use a new key. Concurrent distinct proposals must both survive.
+- One global board, not per-room or per-user copies. The whole point of the
+  product is several people editing and hearing the same thing.
+- Play/Stop and the current instrument are global, shared state — not
+  something each browser tracks independently. An instrument switch must be
+  able to change what another open session is currently hearing.
+- A client derives "which step is currently playing" from the server's
+  `startedAtMs` plus a fixed step duration — the server does not tick a
+  playback clock itself.
+- Simultaneous cell edits resolve last-write-wins, by design (see the ADR).
+  Do not add locking or version-conflict rejection without updating the ADR.
+- `/readme/` renders README.md's actual headings, in order, in server HTML —
+  keep `spec/invariants.test.ts` green.
+- The board lives in server memory only. Do not add a database or claim
+  persistence across a restart; README says explicitly that closing every
+  tab clears the board.
 
 ## Engineering constraints
 
-Inspect the actual template before selecting libraries. Prefer the shortest maintained stack compatible with the supplied runtime. Keep the course Fly app identity, URL, volume configuration and single-machine constraint. Put SQLite at the existing persistent mount, not in the image or working directory. Honour the declared host/port and health checks. Use migrations that preserve rows. Do not scale SQLite across machines.
+Plain `node:http`, no framework. Server-Sent Events for real-time push
+(`GET /events`), a single in-memory `BoardState` object in `src/state.ts` as
+the one source of truth, broadcast on every mutation. Keep the Fly app
+identity, URL and single-machine/256MB constraint; this app needs no volume
+mount since it keeps no persistent state.
 
-Use relational records for Room, Participant and Proposal, prepared SQL, foreign keys, server validation and transactions for capacity/assignment/state changes. Client-supplied room or participant IDs do not establish membership. A credential for room A cannot mutate room B. Escape user content in HTML. Do not leak participant credentials in shared state, URLs, logs, snapshots or committed evidence.
+Validate every mutation route's input server-side (cell index range, note
+enum, instrument enum) — never trust client-shaped JSON directly into shared
+state. Escape user-supplied text (nicknames) in rendered HTML.
 
-Do not overwrite unrelated user work, existing course skills or the harness. Preserve shipped spec assertions. Add product checks through the existing check entrypoint; do not skip or weaken tests to make CI green. If a build/test cannot be run, report it as unverified.
+Do not overwrite unrelated user work or the harness. Preserve shipped spec
+assertions (`spec/invariants.test.ts`). Add product checks through
+`spec/*.test.ts`; do not skip or weaken tests to make CI green. If a
+build/test cannot be run (e.g. Docker unavailable locally), report it as
+unverified rather than claiming it passed.
 
 ## Interface quality
 
-Warm paper, dark ink and three distinct category accents; readable, restrained card imagery. Use actual labelled forms and buttons. Full keyboard operation, visible focus, readable errors and text labels beside icons. Test at 1920×1080 and 390×844. No clipped form controls, horizontal overflow or layout shifts that erase a draft. Card reveal stays under 800ms, supports reduced motion, and never gates submitting an idea.
+Warm paper background, dark ink, five distinct note colours. Real labelled
+form controls (fieldset/legend for instruments, a real button grid). Full
+keyboard operability and visible focus. No fabricated "Live" claim — the
+status line should reflect an actually open SSE connection, and
+"Reconnecting…" should only show when the connection has actually dropped.
 
 ## Work and evidence
 
-Work in vertical slices: deploy baseline; save one idea; add join/roles/return; verify and refine. Commit actual milestones after verification; do not fabricate a development history or squash it into one dump. Log concise prompts, observed failures, corrections and real command results in docs/evidence-log.md. When a failure reveals a violated promise, fix the rule/test as well as the code. Record the test's failure and successful rerun when available.
+Work in verified vertical slices; commit real milestones, not one dump. Log
+prompts, failures and corrections in `docs/evidence-log.md`. When a failure
+reveals a violated promise, fix the rule/test as well as the code.
 
-
-Deployment can use the supplied private Fly app during work. Keep credentials outside git and logs. Before publishing, follow the installed course preflight/ship instructions, inspect the full history for secrets, and report blockers precisely. Do not invent course skill names or claim that building locally ships the prototype. External publication follows Wen's concrete deployment instruction and the actual installed workflow.
+Deployment follows the installed course preflight/ship workflow. Keep
+credentials outside git and logs. Before publishing, inspect history for
+secrets and report blockers precisely.
