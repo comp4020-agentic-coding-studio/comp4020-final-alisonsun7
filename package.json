@@ -7,7 +7,9 @@
     "typecheck": "tsc --noEmit",
     "check": "pnpm typecheck && pnpm test",
     "check:evidence": "node scripts/check-evidence.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json && mkdir -p dist/client && cp src/client/style.css dist/client/style.css",
+    "start": "node dist/server.js"
   },
   "devDependencies": {
     "@types/jsdom": "^30.0.0",
@@ -18,5 +20,8 @@
   },
   "engines": {
     "pnpm": ">=11"
+  },
+  "dependencies": {
+    "marked": "^18.1.0"
   }
 }

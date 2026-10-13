@@ -1,0 +1,159 @@
+:root {
+  --note-do: #e4572e;
+  --note-re: #f3a712;
+  --note-mi: #17bebb;
+  --note-fa: #2e86ab;
+  --note-so: #a23e99;
+  --ink: #1b1b1b;
+  --paper: #faf6ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+h1 {
+  margin-bottom: 0.25rem;
+}
+
+.status {
+  color: #555;
+  min-height: 1.5em;
+}
+
+form#name-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+form#name-form input {
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--note-fa);
+  outline-offset: 2px;
+}
+
+.layout {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.grid-wrap {
+  flex: 1 1 420px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  max-width: 480px;
+}
+
+.cell {
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: transparent;
+  transition: transform 0.1s ease;
+}
+
+.cell.playing {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px var(--ink);
+}
+
+.transport {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+#play-stop {
+  font-size: 1.1rem;
+  padding: 0.6rem 1.5rem;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+fieldset {
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.palette {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.swatch {
+  border-width: 3px;
+  border-color: var(--swatch-color, var(--ink));
+  background: color-mix(in srgb, var(--swatch-color, var(--ink)) 20%, var(--paper));
+  font-weight: 600;
+}
+
+.swatch[aria-pressed="true"] {
+  background: var(--swatch-color);
+  color: var(--paper);
+}
+
+.readme :is(h1, h2, h3) {
+  margin-top: 2rem;
+}
+
+@media (max-width: 640px) {
+  .layout {
+    flex-direction: column;
+  }
+  .palette {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
