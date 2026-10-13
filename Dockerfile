@@ -2,8 +2,8 @@
 
 # Small Node/TypeScript server. Must serve HTTP on 0.0.0.0:$PORT (fly.toml
 # sets PORT) and publish README.md at /readme/ (spec/README.md says what's
-# checked). State lives in-process (no database): see
-# docs/decisions/001-cell-conflict-resolution.md for why that's fine here.
+# checked). The SQLite database (node:sqlite, built into Node) lives on the
+# Fly volume at /data, never in the image.
 
 FROM node:24.21.0-alpine AS base
 WORKDIR /app

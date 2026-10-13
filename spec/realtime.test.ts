@@ -1,137 +1,90 @@
-import { expect, inject, it } from "vitest";
-import type { BoardState } from "../src/types.js";
-import { BoardEvents } from "./events.js";
+import { afterEach, expect, inject, it } from "vitest";
+import { Session, type GardenEvents } from "./session.js";
 
-// The crit's actual requirement: "a change one person makes reaches everyone
-// else within about a second, without a reload." These tests are the
-// automated proxy for that — two independent SSE connections stand in for
-// two people's open tabs, and each check only passes if the second
-// connection sees the first connection's change within budget.
+// Crit 9: "a change one person makes reaches everyone else within about a
+// second, without a reload." Two Sessions are two separate people; each test
+// passes only if the other person's open stream sees the change in budget.
 const baseUrl = inject("baseUrl");
 const BUDGET_MS = 1000;
+const open: GardenEvents[] = [];
+afterEach(() => open.splice(0).forEach((e) => e.cancel()));
 
-it("a cell change made by one session reaches another within a second", async () => {
-  const other = await BoardEvents.connect(baseUrl);
-  try {
-    await other.next(); // initial snapshot on connect
+async function watch(s: Session): Promise<GardenEvents> {
+  const ev = await s.events();
+  open.push(ev);
+  await ev.next(); // the snapshot sent on connect
+  return ev;
+}
 
-    // A cell index unlikely to collide with any other test's writes.
-    const index = 7;
-    const res = await fetch(new URL(`/cells/${index}`, baseUrl), {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ note: "mi" }),
-    });
-    expect(res.status).toBe(204);
+it("a note one person places reaches another person within a second", async () => {
+  const alice = await Session.join(baseUrl, "Alice");
+  const bob = await Session.join(baseUrl, "Bob");
+  const bobSees = await watch(bob);
 
-    const seen = await other.waitFor((state) => state.cells[index] === "mi", BUDGET_MS);
-    expect(seen.cells[index]).toBe("mi");
-  } finally {
-    other.cancel();
-  }
+  expect((await alice.setNote(1, 2, "C4")).status).toBe(204);
+  const seen = await bobSees.waitFor((s) => s.grid[1][2] === "C4", BUDGET_MS);
+  expect(seen.activity.some((a) => a.nickname === "Alice" && a.text.startsWith("placed C at row 2, step 3"))).toBe(true);
 });
 
-it("clearing a cell (last write wins) reaches another session within a second", async () => {
-  const index = 8;
-  await fetch(new URL(`/cells/${index}`, baseUrl), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ note: "so" }),
-  });
+it("a note one person erases disappears for another person within a second", async () => {
+  const alice = await Session.join(baseUrl, "Alice");
+  const bob = await Session.join(baseUrl, "Bob");
+  await alice.setNote(4, 4, "A4");
+  const aliceSees = await watch(alice);
 
-  const other = await BoardEvents.connect(baseUrl);
-  try {
-    const initial = await other.next();
-    expect(initial?.cells[index]).toBe("so");
-
-    await fetch(new URL(`/cells/${index}`, baseUrl), {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ note: null }),
-    });
-
-    const seen = await other.waitFor((state) => state.cells[index] === null, BUDGET_MS);
-    expect(seen.cells[index]).toBeNull();
-  } finally {
-    other.cancel();
-  }
+  expect((await bob.setNote(4, 4, null)).status).toBe(204);
+  await aliceSees.waitFor((s) => s.grid[4][4] === null, BUDGET_MS);
 });
 
-it("an instrument switch reaches another session within a second, mid-playback or not", async () => {
-  const other = await BoardEvents.connect(baseUrl);
-  try {
-    await other.next();
+it("an instrument switch reaches another person within a second", async () => {
+  const alice = await Session.join(baseUrl, "Alice");
+  const bob = await Session.join(baseUrl, "Bob");
+  await alice.setInstrument("piano");
+  const aliceSees = await watch(alice);
 
-    const target: BoardState["instrument"] = "sax";
-    const res = await fetch(new URL("/instrument", baseUrl), {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ instrument: target }),
-    });
-    expect(res.status).toBe(204);
-
-    const seen = await other.waitFor((state) => state.instrument === target, BUDGET_MS);
-    expect(seen.instrument).toBe(target);
-  } finally {
-    other.cancel();
-  }
+  expect((await bob.setInstrument("guitar")).status).toBe(204);
+  await aliceSees.waitFor((s) => s.instrument === "guitar", BUDGET_MS);
 });
 
-it("pressing play reaches another session within a second and gives a shared start time", async () => {
-  const other = await BoardEvents.connect(baseUrl);
-  try {
-    await other.next();
+it("simultaneous writes to one square converge: everyone ends on the last-applied value", async () => {
+  const alice = await Session.join(baseUrl, "Alice");
+  const bob = await Session.join(baseUrl, "Bob");
+  const aliceSees = await watch(alice);
+  const bobSees = await watch(bob);
 
-    await fetch(new URL("/stop", baseUrl), { method: "POST" });
-    await other.waitFor((state) => !state.playing, BUDGET_MS);
+  await Promise.all([alice.setNote(5, 0, "D4"), bob.setNote(5, 0, "G4")]);
 
-    const before = Date.now();
-    const res = await fetch(new URL("/play", baseUrl), { method: "POST" });
-    expect(res.status).toBe(204);
-
-    const seen = await other.waitFor((state) => state.playing, BUDGET_MS);
-    expect(seen.playing).toBe(true);
-    expect(seen.startedAtMs).not.toBeNull();
-    // The shared transport's clock should be close to "now", not stale —
-    // every open session derives its playhead from this one number.
-    expect(seen.startedAtMs! - before).toBeGreaterThanOrEqual(-50);
-    expect(seen.startedAtMs! - before).toBeLessThan(BUDGET_MS);
-  } finally {
-    other.cancel();
-    await fetch(new URL("/stop", baseUrl), { method: "POST" });
-  }
+  const final = await (await Session.join(baseUrl, "Carol")).events();
+  open.push(final);
+  const truth = (await final.next())!;
+  expect(["D4", "G4"]).toContain(truth.grid[5][0]);
+  await aliceSees.waitFor((s) => s.version >= truth.version && s.grid[5][0] === truth.grid[5][0], BUDGET_MS);
+  await bobSees.waitFor((s) => s.version >= truth.version && s.grid[5][0] === truth.grid[5][0], BUDGET_MS);
 });
 
-it("rejects an out-of-range cell index and an invalid note", async () => {
-  const badIndex = await fetch(new URL("/cells/99", baseUrl), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ note: "do" }),
-  });
-  expect(badIndex.status).toBe(400);
+it("presence counts people who have the page open", async () => {
+  const alice = await Session.join(baseUrl, "Alice");
+  const aliceSees = await alice.events();
+  open.push(aliceSees);
+  const before = (await aliceSees.next())!.online;
 
-  const badNote = await fetch(new URL("/cells/0", baseUrl), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ note: "ti" }),
-  });
-  expect(badNote.status).toBe(400);
+  const bob = await Session.join(baseUrl, "Bob");
+  const bobStream = await bob.events();
+  await aliceSees.waitFor((s) => s.online === before + 1, BUDGET_MS);
+  bobStream.cancel();
+  await aliceSees.waitFor((s) => s.online === before, 3000);
 });
 
-it("the home page serves the board once a nickname cookie is set", async () => {
-  const join = await fetch(new URL("/nickname", baseUrl), {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ nickname: "Riley" }).toString(),
-    redirect: "manual",
-  });
-  expect(join.status).toBe(303);
-  const cookie = join.headers.getSetCookie()[0]?.split(";")[0];
-  expect(cookie).toBeTruthy();
+it("a reconnecting client gets the full current garden, not just new events", async () => {
+  const alice = await Session.join(baseUrl, "Alice");
+  await alice.setNote(3, 5, "E4");
+  await alice.setInstrument("saxophone");
 
-  const page = await fetch(new URL("/", baseUrl), { headers: { cookie: cookie! } });
-  expect(page.status).toBe(200);
-  const html = await page.text();
-  expect(html).toContain('id="grid"');
-  expect(html).toContain("Riley");
+  const fresh = await alice.events();
+  open.push(fresh);
+  const snap = (await fresh.next())!;
+  expect(snap.grid[3][5]).toBe("E4");
+  expect(snap.instrument).toBe("saxophone");
+  expect(snap.grid).toHaveLength(6);
+  expect(snap.grid.every((row) => row.length === 6)).toBe(true);
 });
