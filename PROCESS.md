@@ -22,7 +22,11 @@ synchronised playback anyway. NoteGrid also shipped with a client that never
 loaded (below). I then wrote a much fuller design, SoundGarden: the pastel
 studio look, column-based playback, an eraser, a SQLite schema, anonymous
 session identity, structured logs, presence and an activity list. I asked for
-NoteGrid to be replaced with it. This document describes SoundGarden;
+NoteGrid to be replaced with it
+([`fcb3ec9`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/fcb3ec9)
+for the app and tests,
+[`3767403`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/3767403)
+for the docs). This document describes SoundGarden;
 `docs/evidence-log.md` records the prompts and corrections in between.
 
 ## The one documented decision
