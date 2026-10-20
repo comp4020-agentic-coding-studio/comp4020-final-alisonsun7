@@ -1,5 +1,6 @@
-import { COLS, ROWS, STEP_MS, type Cell, type GardenState, type Instrument, type Note } from "../types.js";
+import { COLS, LOOP_MS, ROWS, STEP_MS, type Cell, type GardenState, type Instrument, type Note } from "../types.js";
 import { audioTime, playNote, unlockAudio } from "./audio.js";
+import { createTimeline } from "./timeline.js";
 
 type Tool = Note | "eraser";
 
@@ -53,6 +54,7 @@ function onCellClick(row: number, col: number): void {
   // replaces it, if someone else's write landed after ours).
   state.grid[row][col] = note;
   paintCell(row, col, note, true);
+  timeline.setGrid(state.grid);
   if (note && !playing) previewNote(note);
 
   void fetch("/notes", {
@@ -126,22 +128,33 @@ let playing = false;
 let nextStep = 0;
 let nextStepTime = 0;
 let timer: number | null = null;
+// Where the timeline says playback starts, and, while playing, the audio
+// time the current run began and the time step 0 of its loop fell on.
+let cueStep = 0;
+let startedAt = 0;
+let loopZero = 0;
+// Bumped on every seek and stop, so beats already queued for the old
+// position don't light the grid at the new one.
+let epoch = 0;
+
+const columnNotes = (col: number): Note[] => (state ? state.grid.map((row) => row[col]).filter((n): n is Note => n !== null) : []);
 
 function schedule(): void {
   if (!state) return;
   while (nextStepTime < audioTime() + LOOKAHEAD_S) {
     const col = nextStep;
-    const column = state.grid.map((row) => row[col]).filter((n): n is Note => n !== null);
+    const column = columnNotes(col);
     for (const note of column) playNote(note, state.instrument, nextStepTime, column.length);
     const delayMs = Math.max(0, (nextStepTime - audioTime()) * 1000);
-    window.setTimeout(() => highlight(col), delayMs);
+    const run = epoch;
+    window.setTimeout(() => highlight(col, run), delayMs);
     nextStep = (nextStep + 1) % COLS;
     nextStepTime += STEP_MS / 1000;
   }
 }
 
-function highlight(col: number): void {
-  if (!playing) return;
+function highlight(col: number, run: number): void {
+  if (!playing || run !== epoch) return;
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const cell = cells[r][c];
@@ -157,14 +170,58 @@ function highlight(col: number): void {
   gridEl.dataset.step = String(col);
 }
 
+// Lights one column without the beat's ring, for a stopped cue or a scrub.
+function markColumn(col: number | null): void {
+  for (const row of cells) row.forEach((cell, c) => cell.classList.toggle("active-step", c === col));
+}
+
+// Start (or restart) the run at a step, a hair ahead of now.
+function runFrom(step: number): void {
+  epoch++;
+  nextStep = step;
+  nextStepTime = audioTime() + 0.05;
+  startedAt = nextStepTime;
+  loopZero = startedAt - (step * STEP_MS) / 1000;
+  schedule();
+}
+
+// Milliseconds into the loop: the audio clock while playing, the cue when not.
+function position(): number {
+  if (!playing) return cueStep * STEP_MS;
+  const t = Math.max(audioTime(), startedAt);
+  return ((((t - loopZero) * 1000) % LOOP_MS) + LOOP_MS) % LOOP_MS;
+}
+
+const timeline = createTimeline({
+  position,
+  onScrub(step) {
+    // Stopped: hear the column you're on, like dragging a needle over a record.
+    if (playing || !state) return;
+    markColumn(step);
+    unlockAudio();
+    const column = columnNotes(step);
+    for (const note of column) playNote(note, state.instrument, audioTime() + 0.01, column.length);
+  },
+  onSeek(step) {
+    if (playing) runFrom(step);
+    else {
+      cueStep = step;
+      markColumn(step === 0 ? null : step);
+    }
+  },
+  onCancel() {
+    if (!playing) markColumn(cueStep === 0 ? null : cueStep);
+  },
+});
+
 playBtn.addEventListener("click", () => {
   if (playing) return;
   unlockAudio();
   playing = true;
-  nextStep = 0;
-  nextStepTime = audioTime() + 0.05;
+  markColumn(null);
+  runFrom(cueStep);
   timer = window.setInterval(schedule, 25);
-  schedule();
+  timeline.play();
   playBtn.disabled = true;
   stopBtn.disabled = false;
   document.body.classList.add("is-playing");
@@ -172,9 +229,12 @@ playBtn.addEventListener("click", () => {
 
 stopBtn.addEventListener("click", () => {
   playing = false;
+  epoch++;
   if (timer !== null) window.clearInterval(timer);
   timer = null;
+  cueStep = 0; // Stop goes back to the start, like a tape deck
   for (const row of cells) for (const cell of row) cell.classList.remove("active-step", "ring");
+  timeline.stop();
   playBtn.disabled = false;
   stopBtn.disabled = true;
   document.body.classList.remove("is-playing");
@@ -188,6 +248,7 @@ function render(next: GardenState): void {
   if (state && next.version < state.version) return;
   state = next;
   for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) paintCell(r, c, next.grid[r][c], false);
+  timeline.setGrid(next.grid);
   renderInstrument(next.instrument);
   presenceEl.classList.remove("offline");
   presenceText.textContent = `${next.online} ${next.online === 1 ? "person" : "people"} creating`;

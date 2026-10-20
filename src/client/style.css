@@ -295,6 +295,77 @@ button:disabled { opacity: 0.45; cursor: default; }
 .cell.ring { animation: ring 0.4s ease-out; }
 @keyframes ring { 0% { filter: brightness(1.25); } 100% { filter: brightness(1); } }
 
+/* ---------- timeline ---------- */
+
+.timeline { max-width: 520px; margin: 22px auto 0; }
+.timeline-head {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;
+}
+.timeline-label {
+  font-family: "Fredoka", "Nunito", system-ui, sans-serif;
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 600;
+}
+.timeline-time { font-weight: 700; font-size: 0.9rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+#timeline-now { color: var(--ink); }
+.is-playing #timeline-now { color: var(--purple); }
+
+.timeline-track {
+  position: relative; height: 78px; padding: 6px 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 calc(100% / 6 - 1px), var(--line) calc(100% / 6 - 1px) calc(100% / 6)),
+    var(--cream);
+  border-radius: 14px; box-shadow: inset 0 0 0 2px var(--line);
+  cursor: pointer; touch-action: pan-y; user-select: none;
+  transition: box-shadow 0.15s ease;
+}
+.timeline-track:hover { box-shadow: inset 0 0 0 2px #cfc6b6; }
+.timeline-track.dragging { cursor: grabbing; box-shadow: inset 0 0 0 2px #cdbfff; }
+
+/* five pitch rows by six steps; higher notes sit higher */
+.timeline-roll {
+  position: absolute; inset: 6px 0;
+  display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr);
+  row-gap: 2px; pointer-events: none;
+}
+.tl-note {
+  margin: 0 18%; border-radius: 999px; background: var(--c);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+  display: grid; place-items: center;
+  font-size: 0.6rem; font-weight: 700; line-height: 1; color: rgba(43, 37, 64, 0.7);
+  transform-origin: center;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+.tl-note[data-count="0"] { opacity: 0; transform: scaleX(0.3); }
+.tl-note.lit:not([data-count="0"]) {
+  transform: scale(1.12);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12), 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent);
+}
+.timeline-roll.empty::after {
+  content: "Notes you place will appear here";
+  grid-area: 1 / 1 / -1 / -1; place-self: center;
+  color: var(--muted); font-size: 0.85rem;
+}
+
+.timeline-playhead {
+  position: absolute; top: -4px; bottom: -4px; left: -1.5px; width: 3px;
+  background: var(--purple); border-radius: 3px; pointer-events: none;
+  will-change: transform; opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+.timeline-playhead::before {
+  content: ""; position: absolute; top: -5px; left: 50%; width: 13px; height: 13px;
+  margin-left: -6.5px; border-radius: 50%; background: var(--purple);
+  box-shadow: 0 0 0 3px #fff, 0 2px 6px rgba(107, 79, 216, 0.4);
+}
+.timeline-track.live .timeline-playhead,
+.timeline-track:hover .timeline-playhead,
+.timeline-track:focus-visible .timeline-playhead { opacity: 1; }
+/* stopped, it eases to the step you picked; playing, it follows every frame */
+.timeline-track:not(.live) .timeline-playhead { transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1); }
+
+.timeline-ticks { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 6px; }
+.timeline-ticks span { font-size: 0.75rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+
 .transport { display: flex; justify-content: center; gap: 14px; margin-top: 24px; }
 .btn-play { min-width: 140px; }
 
@@ -384,6 +455,9 @@ button:disabled { opacity: 0.45; cursor: default; }
   .swatch-chip { width: 32px; height: 32px; }
   .swatch-solfege { display: none; }
   .step-labels, .grid { gap: 6px; }
+  .timeline { margin-top: 18px; }
+  .timeline-track { height: 52px; }
+  .tl-note { margin: 0 12%; font-size: 0; }
   .instruments { grid-template-columns: 1fr; }
   .topbar h1 { font-size: 1.6rem; }
 }

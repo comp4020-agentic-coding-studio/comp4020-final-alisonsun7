@@ -99,3 +99,46 @@ and how it was corrected. Commit links are in PROCESS.md.
   another session appeared on the welcome page's mini grid; the cover turned
   and the garden page arrived; no console errors, no 404s, no horizontal
   scroll.
+
+## 5. A music timeline under the grid
+
+- **Prompt:** a timeline showing where notes fall across the loop, a
+  playhead that moves with playback, click or drag to jump, the current time
+  and total length, live updates when anyone adds or erases a note, in the
+  existing style and responsive. Reuse the playback and state logic rather
+  than adding a second player.
+- **Design decisions:**
+  - `src/client/timeline.ts` only draws. `app.ts` keeps owning playback, and
+    the timeline reads the same `state.grid` the grid paints from, so a
+    remote edit reaches it through the existing `render()`.
+  - The playhead's position comes from the audio clock, the same clock the
+    notes are scheduled on, so the line and the sound can't drift apart.
+  - Seeking only moves this browser's loop. Playback stays personal, as the
+    README promises.
+  - Each run has an `epoch`. Beats already queued for the old position are
+    dropped after a seek, so the grid never lights two columns.
+  - While stopped, dragging previews each column you pass, and Play starts
+    from where you let go. Stop returns to 0:00.
+  - The track is a keyboard slider (arrows, Home, End) with a spoken
+    description of each step's notes.
+  - Under reduced motion the playhead steps column to column instead of
+    gliding.
+- **Checks:** `pnpm check` 25/25 against a local build on a temp database,
+  including two new tests: the page carries the timeline, and the clock
+  format. `client.test.ts` already follows `app.js`'s imports, so a missing
+  `/client/timeline.js` route would fail it.
+- **Real browser check:** two Chrome sessions, 1280 px and 390 px.
+  - A note Alice placed reached Bob's timeline in 60 ms, and an erase
+    reached it too.
+  - Clicking step 3 while stopped read 0:00.8, and Play started there.
+  - Dragging while playing jumped playback, and the grid's lit column
+    followed.
+  - Alice seeking left Bob's playback untouched.
+  - No horizontal scroll at 390 px.
+  - No console errors or failed requests on a clean rerun. The first run
+    logged one 401 and two 404s that a rerun logging their paths didn't
+    reproduce.
+- **Correction from a screenshot:** the first track was 64 px tall, so the
+  note bars were thin and the "×2" count was cramped. It is now 78 px.
+- **Not verified:** how it sounds and feels in real use (needs my ears), and
+  Docker/CI (CI will run it on push).

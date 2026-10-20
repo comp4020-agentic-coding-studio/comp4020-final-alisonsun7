@@ -13,6 +13,7 @@ const STATIC: Record<string, { file: URL; type: string }> = {
   "/client/app.js": { file: new URL("./client/app.js", import.meta.url), type: "text/javascript" },
   "/client/welcome.js": { file: new URL("./client/welcome.js", import.meta.url), type: "text/javascript" },
   "/client/audio.js": { file: new URL("./client/audio.js", import.meta.url), type: "text/javascript" },
+  "/client/timeline.js": { file: new URL("./client/timeline.js", import.meta.url), type: "text/javascript" },
   "/types.js": { file: new URL("./types.js", import.meta.url), type: "text/javascript" },
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
 };

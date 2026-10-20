@@ -1,4 +1,5 @@
 import { expect, inject, it } from "vitest";
+import { COLS, STEP_MS, formatTime } from "../src/types.js";
 import { Session } from "./session.js";
 
 const baseUrl = inject("baseUrl");
@@ -48,4 +49,24 @@ it("the garden page has the grid, five notes plus an eraser, play/stop and three
 it("a visitor without a session sees the join form", async () => {
   const html = await (await fetch(new URL("/", baseUrl))).text();
   expect(html).toContain('action="/join"');
+});
+
+// README: the timeline shows the whole loop, so its total is six steps long
+// and the playhead can be moved from the keyboard as well as by dragging.
+it("the garden page has a timeline: a seekable track, a playhead and the loop's length", async () => {
+  const s = await Session.join(baseUrl, "Timeline");
+  const html = await (await s.fetch("/")).text();
+  expect(html).toContain('id="timeline-track"');
+  expect(html).toMatch(/id="timeline-track"[^>]*role="slider"[^>]*tabindex="0"/);
+  expect(html).toContain('id="timeline-playhead"');
+  expect(html).toContain('id="timeline-now">0:00.0<');
+  expect(html).toContain(`id="timeline-total">${formatTime(COLS * STEP_MS)}<`);
+  expect(formatTime(COLS * STEP_MS)).toBe("0:02.4");
+});
+
+it("formats timeline clock readings as m:ss.t", () => {
+  expect(formatTime(0)).toBe("0:00.0");
+  expect(formatTime(399)).toBe("0:00.3");
+  expect(formatTime(1200)).toBe("0:01.2");
+  expect(formatTime(61_250)).toBe("1:01.2");
 });

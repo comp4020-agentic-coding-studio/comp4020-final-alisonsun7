@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { marked } from "marked";
-import { crowdLine, gardenLine, type PreviewState } from "./types.js";
+import { COLS, LOOP_MS, STEP_MS, crowdLine, formatTime, gardenLine, type PreviewState } from "./types.js";
 
 const readmeSource = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 
@@ -115,6 +115,17 @@ export function renderGarden(nickname: string): string {
       <div class="grid-frame">
         <div class="step-labels" aria-hidden="true">${[1, 2, 3, 4, 5, 6].map((n) => `<span>${n}</span>`).join("")}</div>
         <div class="grid" id="grid"></div>
+      </div>
+      <div class="timeline" id="timeline">
+        <div class="timeline-head">
+          <span class="timeline-label">Timeline</span>
+          <span class="timeline-time"><span id="timeline-now">0:00.0</span> / <span id="timeline-total">${formatTime(LOOP_MS)}</span></span>
+        </div>
+        <div class="timeline-track" id="timeline-track" role="slider" tabindex="0" aria-label="Playback position" aria-valuemin="1" aria-valuemax="${COLS}" aria-valuenow="1" aria-valuetext="Step 1 of ${COLS}">
+          <div class="timeline-roll" id="timeline-roll"></div>
+          <div class="timeline-playhead" id="timeline-playhead" aria-hidden="true"></div>
+        </div>
+        <div class="timeline-ticks" aria-hidden="true">${Array.from({ length: COLS }, (_, c) => `<span>${((c * STEP_MS) / 1000).toFixed(1)}s</span>`).join("")}</div>
       </div>
       <div class="transport">
         <button type="button" id="play" class="btn-primary btn-play"><span aria-hidden="true">▶</span> Play</button>
