@@ -30,6 +30,14 @@ it("changes without a session are refused", async () => {
   expect(res.status).toBe(401);
 });
 
+// ADR 002: a visitor who hasn't joined sees the music through /preview, but
+// never the stream that carries nicknames and activity.
+it("the garden stream, with nicknames and activity, needs a session", async () => {
+  const res = await fetch(new URL("/events", baseUrl));
+  expect(res.status).toBe(401);
+  await res.body?.cancel();
+});
+
 it("a forged session token is refused", async () => {
   const res = await fetch(new URL("/instrument", baseUrl), {
     method: "POST",
