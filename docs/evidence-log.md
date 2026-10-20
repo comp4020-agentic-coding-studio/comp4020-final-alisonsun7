@@ -74,3 +74,28 @@ and how it was corrected. Commit links are in PROCESS.md.
   - Every file the browser loads must be listed in `STATIC`.
   - A green spec doesn't prove the page works; check UI changes in a real
     browser with a second session.
+
+## 4. A welcome page that shows the garden
+
+- **Prompt:** the welcome page was empty: a stranger couldn't see what was
+  in the garden before typing a name. I asked for a read-only mini grid and
+  an "N people are creating right now" line, with a nicer page and a
+  book-like page turn into the garden. Done on `main` only, in a separate
+  worktree so the Bloom branch wasn't touched.
+- **Design decisions:**
+  - A new `/preview` SSE stream, the only one without a session. It sends
+    grid, instrument, online and version, but no activity, so nicknames stay
+    private until you join.
+  - Preview watchers are kept apart from `/events` streams, so presence still
+    counts only people creating.
+  - The page renders the grid on the server, so it works without JS; the
+    page turn only delays the form post by 0.9 s and is skipped under
+    reduced motion.
+- **Checks:** `spec/welcome.test.ts` adds five tests (mini grid rendered
+  with the real notes, welcome scripts load, preview live within a second
+  without a session, no nicknames in the preview, watchers not counted).
+  23/23 passed against a local server.
+- **Real browser check:** Chromium at 1280×900 and 390×844. A note placed by
+  another session appeared on the welcome page's mini grid; the cover turned
+  and the garden page arrived; no console errors, no 404s, no horizontal
+  scroll.

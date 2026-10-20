@@ -1,7 +1,7 @@
 import type { ServerResponse } from "node:http";
 import { db } from "./db.js";
 import { log } from "./log.js";
-import { COLS, ROWS, type Activity, type Cell, type GardenState, type Instrument, type Note } from "./types.js";
+import { COLS, ROWS, type Activity, type Cell, type GardenState, type Instrument, type Note, type PreviewState } from "./types.js";
 import type { User } from "./users.js";
 
 const NOTE_NAMES: Record<Note, string> = { C4: "C", D4: "D", E4: "E", G4: "G", A4: "A" };
@@ -9,6 +9,9 @@ const INSTRUMENT_NAMES: Record<Instrument, string> = { piano: "Piano", guitar: "
 
 // Open SSE streams, keyed so presence counts people, not tabs.
 const streams = new Map<ServerResponse, string>();
+// Read-only preview streams from the welcome page. Not people creating, so
+// they never count towards presence.
+const watchers = new Set<ServerResponse>();
 
 function onlineCount(): number {
   return new Set(streams.values()).size;
@@ -54,9 +57,19 @@ function describe(row: { id: number; nickname: string; action: string; details: 
   return { id: row.id, nickname: row.nickname, text, at: row.created_at };
 }
 
+const toPreview = ({ version, grid, instrument, online }: GardenState): PreviewState => ({ version, grid, instrument, online });
+
+export function preview(): PreviewState {
+  return toPreview(snapshot());
+}
+
 function broadcast(): void {
-  const frame = `data: ${JSON.stringify(snapshot())}\n\n`;
+  const state = snapshot();
+  const frame = `data: ${JSON.stringify(state)}\n\n`;
   for (const res of streams.keys()) res.write(frame);
+  if (watchers.size === 0) return;
+  const previewFrame = `data: ${JSON.stringify(toPreview(state))}\n\n`;
+  for (const res of watchers) res.write(previewFrame);
 }
 
 // Every mutation runs in one transaction that also bumps the version, so
@@ -118,4 +131,13 @@ export function unsubscribe(res: ServerResponse, user: User): void {
     log("user_disconnected", { user: user.id, nickname: user.nickname, online: onlineCount() });
   }
   broadcast();
+}
+
+export function watch(res: ServerResponse): void {
+  watchers.add(res);
+  res.write(`data: ${JSON.stringify(preview())}\n\n`);
+}
+
+export function unwatch(res: ServerResponse): void {
+  watchers.delete(res);
 }

@@ -28,3 +28,21 @@ export interface GardenState {
   online: number;
   activity: Activity[];
 }
+
+// What a visitor sees before joining: the music and how many are here, but no
+// nicknames, since they haven't chosen to take part yet.
+export type PreviewState = Pick<GardenState, "version" | "grid" | "instrument" | "online">;
+
+// Shared wording so the server-rendered welcome page and its live updates say
+// the same thing.
+export function crowdLine(online: number): string {
+  if (online === 0) return "Nobody's here right now. Be the first to plant a note";
+  return `${online} ${online === 1 ? "person is" : "people are"} creating right now`;
+}
+
+export function gardenLine(grid: Cell[][], instrument: Instrument): string {
+  const notes = grid.flat().filter((n) => n !== null).length;
+  if (notes === 0) return "The grid is empty, waiting for its first note";
+  const name = instrument[0].toUpperCase() + instrument.slice(1);
+  return `${notes} ${notes === 1 ? "note" : "notes"} in the garden · playing on ${name}`;
+}

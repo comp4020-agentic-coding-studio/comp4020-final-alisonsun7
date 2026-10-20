@@ -20,6 +20,10 @@ I hold SoundGarden to three principles.
 **Anyone can make music.** A first-time visitor should go from the link to
 hearing their own note in four steps: type a name, pick a colour, tap a
 square, press Play. No account, no instructions, no music theory.
+Before they even type a name, the welcome page shows the garden as it is
+right now: a small live copy of the grid and how many people are creating,
+so a stranger can see there's something here worth joining. It's read-only
+and silent, and it shows no nicknames until you choose to take part.
 
 **Music belongs to everyone.** There is one grid, and everyone on it can add,
 change or erase any note and switch the instrument. That's the point: the
@@ -46,7 +50,8 @@ Aurora Harley's [Visibility of System Status](https://www.nngroup.com/articles/v
 shapes the feedback. The grid shows your note the moment you tap; the
 playhead lights up the column that is sounding; the corner says how many
 people are actually connected right now, not how many have ever joined; and
-the activity list explains why the music just changed.
+the activity list explains why the music just changed Watching the welcome page
+doesn't count you as one of the people creating.
 
 ## How it works
 

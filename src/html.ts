@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { marked } from "marked";
+import { crowdLine, gardenLine, type PreviewState } from "./types.js";
 
 const readmeSource = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 
@@ -22,25 +23,60 @@ ${body}
 const escapeHtml = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-export function renderWelcome(error = ""): string {
+export function renderWelcome(preview: PreviewState, error = ""): string {
+  const cells = preview.grid
+    .flatMap((row, r) =>
+      row.map(
+        (note, c) =>
+          `<span class="mini-cell" data-row="${r}" data-col="${c}" data-note="${note ?? ""}"${note ? ` style="--c: var(--note-${note})"` : ""}></span>`,
+      ),
+    )
+    .join("");
+  const notes = preview.grid.flat().filter((n) => n !== null).length;
+
   return page(
     "SoundGarden",
     `<main class="welcome">
-  <div class="welcome-card">
-    <div class="welcome-notes" aria-hidden="true">
-      <span style="--c: var(--note-C4)"></span><span style="--c: var(--note-D4)"></span><span style="--c: var(--note-E4)"></span><span style="--c: var(--note-G4)"></span><span style="--c: var(--note-A4)"></span>
+  <div class="book" id="book">
+    <section class="inner-page" aria-hidden="true">
+      <div class="staff"><span></span><span></span><span></span><span></span><span></span></div>
+      <p class="inner-hello">Hello, <strong id="hello-name">friend</strong>!</p>
+      <p class="inner-sub">Turning to the garden…</p>
+      <div class="welcome-notes inner-notes">
+        <span style="--c: var(--note-C4)"></span><span style="--c: var(--note-D4)"></span><span style="--c: var(--note-E4)"></span><span style="--c: var(--note-G4)"></span><span style="--c: var(--note-A4)"></span>
+      </div>
+    </section>
+
+    <div class="cover" id="cover">
+      <section class="cover-front">
+        <div class="welcome-notes" aria-hidden="true">
+          <span style="--c: var(--note-C4)"></span><span style="--c: var(--note-D4)"></span><span style="--c: var(--note-E4)"></span><span style="--c: var(--note-G4)"></span><span style="--c: var(--note-A4)"></span>
+        </div>
+        <h1>Welcome to SoundGarden</h1>
+        <p class="tagline">Everyone contributes a note. Together, we make music.</p>
+
+        <figure class="mini">
+          <figcaption class="mini-live">
+            <span class="live-dot${preview.online === 0 ? " quiet" : ""}" id="live-dot" aria-hidden="true"></span>
+            <span id="crowd-line" aria-live="polite">${crowdLine(preview.online)}</span>
+          </figcaption>
+          <div class="mini-grid" id="mini-grid" role="img" aria-label="Live view of the shared grid: ${notes} ${notes === 1 ? "note" : "notes"}">${cells}</div>
+          <p class="mini-caption" id="garden-line">${gardenLine(preview.grid, preview.instrument)}</p>
+        </figure>
+
+        <form method="post" action="/join" class="join-form" id="join-form">
+          <label for="nickname">What should we call you?</label>
+          <input id="nickname" name="nickname" maxlength="24" required autocomplete="off" placeholder="Your name" autofocus />
+          ${error ? `<p class="form-error" role="alert">${escapeHtml(error)}</p>` : ""}
+          <button type="submit" class="btn-primary">Join the garden <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="small"><a href="/readme/">What is this?</a></p>
+      </section>
+      <div class="cover-back" aria-hidden="true"></div>
     </div>
-    <h1>Welcome to SoundGarden</h1>
-    <p class="tagline">Everyone contributes a note. Together, we make music.</p>
-    <form method="post" action="/join" class="join-form">
-      <label for="nickname">What should we call you?</label>
-      <input id="nickname" name="nickname" maxlength="24" required autocomplete="off" placeholder="Your name" autofocus />
-      ${error ? `<p class="form-error" role="alert">${escapeHtml(error)}</p>` : ""}
-      <button type="submit" class="btn-primary">Join the garden</button>
-    </form>
-    <p class="small"><a href="/readme/">What is this?</a></p>
   </div>
-</main>`,
+</main>
+<script type="module" src="/client/welcome.js"></script>`,
   );
 }
 

@@ -11,6 +11,7 @@ import { createUser, sessionCookie, userFromRequest } from "./users.js";
 // which is why spec/client.test.ts loads each one.
 const STATIC: Record<string, { file: URL; type: string }> = {
   "/client/app.js": { file: new URL("./client/app.js", import.meta.url), type: "text/javascript" },
+  "/client/welcome.js": { file: new URL("./client/welcome.js", import.meta.url), type: "text/javascript" },
   "/client/audio.js": { file: new URL("./client/audio.js", import.meta.url), type: "text/javascript" },
   "/types.js": { file: new URL("./types.js", import.meta.url), type: "text/javascript" },
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
@@ -58,7 +59,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
   if (method === "GET" && pathname === "/") {
     const user = userFromRequest(req);
-    send(res, 200, user ? renderGarden(user.nickname) : renderWelcome(), "text/html; charset=utf-8");
+    send(res, 200, user ? renderGarden(user.nickname) : renderWelcome(garden.preview()), "text/html; charset=utf-8");
     return;
   }
 
@@ -67,10 +68,24 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
+  // The welcome page's live mini grid. Read-only and nickname-free, so it is
+  // the one stream that needs no session.
+  if (method === "GET" && pathname === "/preview") {
+    res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
+    res.write("retry: 3000\n\n");
+    garden.watch(res);
+    const heartbeat = setInterval(() => res.write(": keep-alive\n\n"), 15000);
+    req.on("close", () => {
+      clearInterval(heartbeat);
+      garden.unwatch(res);
+    });
+    return;
+  }
+
   if (method === "POST" && pathname === "/join") {
     const nickname = (new URLSearchParams(await readBody(req)).get("nickname") ?? "").trim().slice(0, 24);
     if (!nickname) {
-      send(res, 400, renderWelcome("Please enter a name."), "text/html; charset=utf-8");
+      send(res, 400, renderWelcome(garden.preview(), "Please enter a name."), "text/html; charset=utf-8");
       return;
     }
     const { user, token } = createUser(nickname);

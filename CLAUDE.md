@@ -36,7 +36,13 @@ everyone, no rooms.
 - **Persistence.** Notes, instrument, users and activity live in SQLite at
   `/data/garden.db` on the Fly volume. Never delete or reseed it on startup.
 - **Presence is honest.** "N people creating" counts distinct users with an
-  open event stream right now.
+  open `/events` stream right now. Visitors watching the welcome page's
+  `/preview` stream are never counted.
+- **The welcome page shows the garden before you join.** It server-renders
+  the current grid and crowd line (so it works without JS), then `/preview`
+  keeps it live. `/preview` is the only stream without a session: read-only,
+  silent, and it carries grid, instrument, online and version only — never
+  nicknames or activity.
 - **Every action is logged** as one `[time] INFO event key=value` line on
   stdout, including the user id and nickname, so `flyctl logs` explains what
   happened.
@@ -47,6 +53,8 @@ Plain `node:http`, `node:sqlite`, SSE, TypeScript compiled with `tsc`; one
 runtime dependency (`marked`, for `/readme/`). Validate every input on the
 server (row/col integers 0–5, note and instrument from their enums, body size
 capped). Escape nicknames in HTML; set them via `textContent` in the client.
+The welcome page's book-turn animation is progressive: the join form must
+still post without JS, and `prefers-reduced-motion` skips the turn.
 
 Every file the browser loads must be listed in `STATIC` in `src/server.ts`.
 A missing module makes the page 200 while rendering nothing — that exact bug

@@ -12,6 +12,16 @@ const stopBtn = document.getElementById("stop") as HTMLButtonElement;
 const instrumentBtns = document.querySelectorAll<HTMLButtonElement>(".instrument");
 const activityEl = document.getElementById("activity")!;
 
+// Set by the welcome page's turning cover, so the garden lands like the next page.
+try {
+  if (sessionStorage.getItem("sg-arrive")) {
+    sessionStorage.removeItem("sg-arrive");
+    document.body.classList.add("arriving");
+  }
+} catch {
+  // storage blocked: no arrival animation, nothing else changes
+}
+
 let tool: Tool = "C4";
 let state: GardenState | null = null;
 const cells: HTMLButtonElement[][] = [];
