@@ -3,7 +3,9 @@
 # Small Node/TypeScript server. Must serve HTTP on 0.0.0.0:$PORT (fly.toml
 # sets PORT) and publish README.md at /readme/ (spec/README.md says what's
 # checked). The SQLite database (node:sqlite, built into Node) lives on the
-# Fly volume at /data, never in the image.
+# Fly volume at /data, never in the image. Scene images in public/scenes are
+# the processed, people-blurred derivatives; the original photos are never
+# in the repo, so never in the image.
 
 FROM node:24.21.0-alpine AS base
 WORKDIR /app
@@ -23,6 +25,7 @@ ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile --prod
 COPY --from=build /app/dist ./dist
+COPY public ./public
 COPY README.md ./README.md
 
 EXPOSE 8080

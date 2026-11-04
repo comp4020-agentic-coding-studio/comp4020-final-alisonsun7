@@ -1,86 +1,188 @@
-import type { Instrument, Note } from "../types.js";
+// The audio engine: one AudioContext, created only when the person presses
+// Enable sound (browsers block audio before a gesture, and the pack says sound
+// must never start on its own). Each placement is a looping voice with its
+// own gain and stereo pan, all summed through a limiter so twelve sounds at
+// full volume don't clip. Voices are scheduled a little ahead on the audio
+// clock and stopped by disconnecting their gain node, so nothing leaks when a
+// sound is removed or the page is hidden.
+import { SOUNDS, type SoundId } from "../shared/catalog.js";
+import { VOICES, playAmbience, type Ambience } from "./synth.js";
 
-// Simplified synthesised timbres, not real instrument models. No samples to
-// load, so a switched instrument applies on the very next note.
-const FREQ: Record<Note, number> = { C4: 261.63, D4: 293.66, E4: 329.63, G4: 392.0, A4: 440.0 };
+interface Source {
+  soundId: SoundId;
+  gain: number;
+  pan: number;
+  // how far "away" the sound is: placements in another view of the same
+  // place are heard through the wall, quieter and duller
+  away: boolean;
+}
 
-let ctx: AudioContext | null = null;
-let master: GainNode | null = null;
+interface Live {
+  src: Source;
+  node: GainNode;
+  panner: StereoPannerNode;
+  muffle: BiquadFilterNode;
+  next: number;
+  onPlay?: () => void;
+}
 
-// Must run inside a click: browsers keep audio suspended until a gesture.
-export function unlockAudio(): AudioContext {
-  if (!ctx) {
-    ctx = new AudioContext();
-    master = ctx.createGain();
-    master.gain.value = 0.5;
-    const comp = ctx.createDynamicsCompressor();
-    master.connect(comp).connect(ctx.destination);
+const LOOKAHEAD = 0.6;
+
+export class AudioEngine {
+  private ctx: AudioContext | null = null;
+  private master: GainNode | null = null;
+  private ambienceBus: GainNode | null = null;
+  private voices = new Map<string, Live>();
+  private timer: ReturnType<typeof setInterval> | null = null;
+  private ambienceNext = 0;
+  private ambienceOn = true;
+  private wanted = new Map<string, Source & { onPlay?: () => void }>();
+
+  constructor(private ambience: Ambience) {}
+
+  get enabled(): boolean {
+    return this.ctx !== null && this.ctx.state === "running";
   }
-  void ctx.resume();
-  return ctx;
-}
 
-export function audioTime(): number {
-  return ctx?.currentTime ?? 0;
-}
-
-function voice(type: OscillatorType, freq: number, gain: number, when: number, dur: number, out: AudioNode): OscillatorNode {
-  const osc = ctx!.createOscillator();
-  const g = ctx!.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  g.gain.value = gain;
-  osc.connect(g).connect(out);
-  osc.start(when);
-  osc.stop(when + dur);
-  return osc;
-}
-
-export function playNote(note: Note, instrument: Instrument, when: number, voices: number): void {
-  if (!ctx || !master) return;
-  const f = FREQ[note];
-  const env = ctx.createGain();
-  env.connect(master);
-  const level = 0.32 / Math.sqrt(Math.max(1, voices)); // chords shouldn't clip
-  env.gain.setValueAtTime(0, when);
-
-  if (instrument === "piano") {
-    env.gain.linearRampToValueAtTime(level, when + 0.005);
-    env.gain.exponentialRampToValueAtTime(level * 0.35, when + 0.15);
-    env.gain.exponentialRampToValueAtTime(0.0001, when + 1.1);
-    voice("sine", f, 1, when, 1.2, env);
-    voice("sine", f * 2, 0.35, when, 1.2, env);
-    voice("sine", f * 3, 0.12, when, 0.6, env);
-    voice("triangle", f * 4, 0.05, when, 0.25, env);
-  } else if (instrument === "guitar") {
-    const filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.Q.value = 2;
-    filter.frequency.setValueAtTime(3200, when);
-    filter.frequency.exponentialRampToValueAtTime(500, when + 0.4);
-    filter.connect(env);
-    env.gain.linearRampToValueAtTime(level, when + 0.003);
-    env.gain.exponentialRampToValueAtTime(0.0001, when + 0.9);
-    voice("sawtooth", f, 0.5, when, 1, filter);
-    voice("triangle", f * 1.003, 0.5, when, 1, filter); // slight detune = string shimmer
-  } else {
-    const filter = ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.value = f * 3;
-    filter.Q.value = 0.8;
-    filter.connect(env);
-    env.gain.linearRampToValueAtTime(level * 1.1, when + 0.06);
-    env.gain.setValueAtTime(level, when + 0.3);
-    env.gain.exponentialRampToValueAtTime(0.0001, when + 0.6);
-    const body = voice("sawtooth", f, 0.8, when, 0.65, filter);
-    voice("square", f, 0.15, when, 0.65, filter);
-    const lfo = ctx.createOscillator();
-    const depth = ctx.createGain();
-    lfo.frequency.value = 5;
-    depth.gain.setValueAtTime(0, when);
-    depth.gain.linearRampToValueAtTime(f * 0.012, when + 0.25); // vibrato blooms in
-    lfo.connect(depth).connect(body.frequency);
-    lfo.start(when);
-    lfo.stop(when + 0.65);
+  // Must be called from a click or keypress.
+  async enable(): Promise<boolean> {
+    try {
+      if (!this.ctx) {
+        const ctx = new AudioContext();
+        const limiter = ctx.createDynamicsCompressor();
+        limiter.threshold.value = -12;
+        limiter.knee.value = 6;
+        limiter.ratio.value = 12;
+        limiter.attack.value = 0.003;
+        limiter.release.value = 0.25;
+        const master = ctx.createGain();
+        master.gain.value = 0.9;
+        master.connect(limiter).connect(ctx.destination);
+        const bus = ctx.createGain();
+        bus.gain.value = 0.8;
+        bus.connect(master);
+        this.ctx = ctx;
+        this.master = master;
+        this.ambienceBus = bus;
+      }
+      await this.ctx.resume();
+      this.start();
+      return this.enabled;
+    } catch {
+      return false;
+    }
   }
+
+  async disable(): Promise<void> {
+    this.stop();
+    for (const id of [...this.voices.keys()]) this.drop(id);
+    await this.ctx?.suspend();
+  }
+
+  setAmbience(on: boolean): void {
+    this.ambienceOn = on;
+    if (this.ambienceBus && this.ctx) this.ambienceBus.gain.setTargetAtTime(on ? 0.8 : 0, this.ctx.currentTime, 0.2);
+  }
+
+  // The full set of sounds that should be playing now; anything not in it
+  // stops. Called after every change the page applies.
+  sync(sources: Map<string, Source & { onPlay?: () => void }>): void {
+    this.wanted = sources;
+    if (!this.enabled) return;
+    for (const id of [...this.voices.keys()]) if (!sources.has(id)) this.drop(id);
+    for (const [id, src] of sources) {
+      const live = this.voices.get(id);
+      if (live) {
+        live.src = src;
+        live.onPlay = src.onPlay;
+        this.shape(live);
+      } else this.add(id, src);
+    }
+  }
+
+  private add(id: string, src: Source & { onPlay?: () => void }): void {
+    const ctx = this.ctx!;
+    const node = ctx.createGain();
+    const panner = ctx.createStereoPanner();
+    const muffle = ctx.createBiquadFilter();
+    muffle.type = "lowpass";
+    node.connect(muffle).connect(panner).connect(this.master!);
+    // stagger starts so several new sounds don't all fire on one beat
+    const live: Live = { src, node, panner, muffle, next: ctx.currentTime + 0.05 + Math.random() * 0.8, onPlay: src.onPlay };
+    this.voices.set(id, live);
+    this.shape(live);
+  }
+
+  private shape(live: Live): void {
+    const ctx = this.ctx!;
+    const level = live.src.gain * (live.src.away ? 0.25 : 1);
+    live.node.gain.setTargetAtTime(level, ctx.currentTime, 0.08);
+    live.panner.pan.setTargetAtTime(live.src.away ? live.src.pan * 0.4 : live.src.pan, ctx.currentTime, 0.08);
+    live.muffle.frequency.setTargetAtTime(live.src.away ? 900 : 18000, ctx.currentTime, 0.1);
+  }
+
+  private drop(id: string): void {
+    const live = this.voices.get(id);
+    if (!live || !this.ctx) return;
+    live.node.gain.setTargetAtTime(0, this.ctx.currentTime, 0.05);
+    const { node } = live;
+    setTimeout(() => node.disconnect(), 400);
+    this.voices.delete(id);
+  }
+
+  private tick = (): void => {
+    const ctx = this.ctx;
+    if (!ctx || ctx.state !== "running") return;
+    const horizon = ctx.currentTime + LOOKAHEAD;
+    for (const live of this.voices.values()) {
+      while (live.next < horizon) {
+        const at = live.next;
+        live.next = at + Math.max(0.5, VOICES[live.src.soundId](ctx, live.node, at));
+        if (live.onPlay) {
+          const cb = live.onPlay;
+          setTimeout(cb, Math.max(0, (at - ctx.currentTime) * 1000));
+        }
+      }
+    }
+    if (this.ambienceNext < horizon) {
+      const at = Math.max(this.ambienceNext, ctx.currentTime);
+      this.ambienceNext = at + playAmbience(ctx, this.ambienceBus!, this.ambience, at);
+    }
+  };
+
+  private start(): void {
+    if (this.timer) return;
+    this.setAmbience(this.ambienceOn);
+    this.sync(this.wanted);
+    this.timer = setInterval(this.tick, 150);
+    this.tick();
+  }
+
+  private stop(): void {
+    if (this.timer) clearInterval(this.timer);
+    this.timer = null;
+  }
+
+  // Pause while the tab is hidden; nothing piles up to play on return.
+  async visibility(hidden: boolean): Promise<void> {
+    if (!this.ctx) return;
+    if (hidden) {
+      this.stop();
+      await this.ctx.suspend();
+    } else if (this.voicesWanted()) {
+      await this.ctx.resume();
+      const now = this.ctx.currentTime;
+      for (const live of this.voices.values()) live.next = Math.max(live.next, now + 0.1);
+      this.ambienceNext = Math.max(this.ambienceNext, now);
+      this.start();
+    }
+  }
+
+  private voicesWanted(): boolean {
+    return this.ctx !== null && this.ctx.state !== "closed";
+  }
+}
+
+export function soundLabel(id: SoundId): string {
+  return SOUNDS[id].label;
 }

@@ -1,22 +1,36 @@
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import * as garden from "./garden.js";
-import { renderGarden, renderReadme, renderWelcome } from "./html.js";
+import { renderAbout, renderArchive, renderExplore, renderLanding, renderMemory, renderNotFound, renderReadme, renderScene } from "./html.js";
 import { log } from "./log.js";
-import { COLS, INSTRUMENTS, NOTES, ROWS, type Instrument, type Note } from "./types.js";
-import { createUser, sessionCookie, userFromRequest } from "./users.js";
+import { getMemory, listMemories } from "./memories.js";
+import * as sessions from "./sessions.js";
+import { SCENES, findMode, findScene } from "./shared/catalog.js";
+import { AVATARS, type Avatar } from "./shared/protocol.js";
+import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users.js";
 
-// Every file the browser loads, including the modules app.js imports. A
-// missing entry here breaks the whole client silently (the page still 200s),
-// which is why spec/client.test.ts loads each one.
-const STATIC: Record<string, { file: URL; type: string }> = {
-  "/client/app.js": { file: new URL("./client/app.js", import.meta.url), type: "text/javascript" },
-  "/client/welcome.js": { file: new URL("./client/welcome.js", import.meta.url), type: "text/javascript" },
-  "/client/audio.js": { file: new URL("./client/audio.js", import.meta.url), type: "text/javascript" },
-  "/client/timeline.js": { file: new URL("./client/timeline.js", import.meta.url), type: "text/javascript" },
-  "/types.js": { file: new URL("./types.js", import.meta.url), type: "text/javascript" },
+// Every file the browser loads. A module missing here makes a page 200 while
+// rendering nothing (it happened once with NoteGrid), which is why
+// spec/pages.test.ts fetches each one.
+const js = (path: string): { file: URL; type: string } => ({ file: new URL(`.${path}`, import.meta.url), type: "text/javascript" });
+export const STATIC: Record<string, { file: URL; type: string }> = {
+  "/client/scene.js": js("/client/scene.js"),
+  "/client/memory.js": js("/client/memory.js"),
+  "/client/audio.js": js("/client/audio.js"),
+  "/client/synth.js": js("/client/synth.js"),
+  "/client/figures.js": js("/client/figures.js"),
+  "/client/stage.js": js("/client/stage.js"),
+  "/client/ops.js": js("/client/ops.js"),
+  "/shared/catalog.js": js("/shared/catalog.js"),
+  "/shared/protocol.js": js("/shared/protocol.js"),
+  "/shared/state.js": js("/shared/state.js"),
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
 };
+
+// Published scene images, processed from Wen's photos (people blurred, EXIF
+// gone) by scripts/build-scenes.mjs. Looked up by name, never by path, so a
+// request can't reach anything else on disk.
+const PUBLIC_DIR = new URL("../public/", import.meta.url);
+const SCENE_FILE = /^\/scenes\/([a-z0-9-]+\.webp)$/;
 
 const MAX_BODY = 4096;
 
@@ -24,16 +38,16 @@ async function readBody(req: IncomingMessage): Promise<string> {
   let body = "";
   for await (const chunk of req) {
     body += chunk;
-    if (body.length > MAX_BODY) throw new Error("body too large");
+    if (body.length > MAX_BODY) throw Object.assign(new Error("body too large"), { status: 413 });
   }
   return body;
 }
 
-async function readJson(req: IncomingMessage): Promise<Record<string, unknown> | null> {
+async function readJson(req: IncomingMessage): Promise<unknown> {
   try {
-    const parsed: unknown = JSON.parse((await readBody(req)) || "{}");
-    return parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : null;
-  } catch {
+    return JSON.parse((await readBody(req)) || "null");
+  } catch (err) {
+    if ((err as { status?: number }).status) throw err;
     return null;
   }
 }
@@ -43,13 +57,22 @@ function send(res: ServerResponse, status: number, body = "", type = "text/plain
   res.end(body);
 }
 
-const isNote = (v: unknown): v is Note => typeof v === "string" && (NOTES as readonly string[]).includes(v);
-const isInstrument = (v: unknown): v is Instrument => typeof v === "string" && (INSTRUMENTS as readonly string[]).includes(v);
-const inRange = (v: unknown, max: number): v is number => Number.isInteger(v) && (v as number) >= 0 && (v as number) < max;
+const html = (res: ServerResponse, body: string, status = 200): void => send(res, status, body, "text/html; charset=utf-8");
+const json = (res: ServerResponse, status: number, body: unknown): void => send(res, status, JSON.stringify(body), "application/json; charset=utf-8");
+
+const isAvatar = (v: unknown): v is Avatar => typeof v === "string" && (AVATARS as string[]).includes(v);
+
+// Only same-site paths, so a join form can't be used to bounce people off
+// to another site.
+function safeNext(next: string | null): string {
+  return next && /^\/[a-z0-9/_?=&.-]*$/i.test(next) && !next.startsWith("//") ? next : "/explore";
+}
 
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
-  const { pathname } = new URL(req.url ?? "/", "http://localhost");
+  const url = new URL(req.url ?? "/", "http://localhost");
+  const { pathname } = url;
   const method = req.method ?? "GET";
+  const user = userFromRequest(req);
 
   const asset = STATIC[pathname];
   if (method === "GET" && asset) {
@@ -58,101 +81,135 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
-  if (method === "GET" && pathname === "/") {
-    const user = userFromRequest(req);
-    send(res, 200, user ? renderGarden(user.nickname) : renderWelcome(garden.preview()), "text/html; charset=utf-8");
+  const sceneFile = method === "GET" && pathname.match(SCENE_FILE);
+  if (sceneFile) {
+    try {
+      const body = await readFile(new URL(`scenes/${sceneFile[1]}`, PUBLIC_DIR));
+      res.writeHead(200, { "content-type": "image/webp", "cache-control": "public, max-age=86400" });
+      res.end(body);
+    } catch {
+      send(res, 404, "not found");
+    }
     return;
   }
 
-  if (method === "GET" && pathname === "/readme/") {
-    send(res, 200, renderReadme(), "text/html; charset=utf-8");
-    return;
+  if (method === "GET" && pathname === "/") return html(res, renderLanding(user));
+  if (method === "GET" && pathname === "/readme/") return html(res, renderReadme());
+  if (method === "GET" && pathname === "/about") return html(res, renderAbout());
+  if (method === "GET" && pathname === "/explore") {
+    const places = SCENES.flatMap((s) => s.modes.map((m) => ({ sceneId: s.id, mode: m.id, ...sessions.placeSummary(s.id, m.id) })));
+    return html(res, renderExplore(user, places, url.searchParams.get("error")));
+  }
+  if (method === "GET" && pathname === "/archive") return html(res, renderArchive(listMemories()));
+
+  const memoryPage = method === "GET" && pathname.match(/^\/memory\/(mem_[a-f0-9]{16})$/);
+  if (memoryPage) {
+    const memory = getMemory(memoryPage[1]);
+    return memory ? html(res, renderMemory(memory)) : html(res, renderNotFound("That memory doesn't exist."), 404);
   }
 
-  // The welcome page's live mini grid. Read-only and nickname-free, so it is
-  // the one stream that needs no session.
-  if (method === "GET" && pathname === "/preview") {
-    res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
-    res.write("retry: 3000\n\n");
-    garden.watch(res);
-    const heartbeat = setInterval(() => res.write(": keep-alive\n\n"), 15000);
-    req.on("close", () => {
-      clearInterval(heartbeat);
-      garden.unwatch(res);
-    });
-    return;
+  const scenePage = method === "GET" && pathname.match(/^\/scene\/([a-z-]+)$/);
+  if (scenePage) {
+    const scene = findScene(scenePage[1]);
+    const mode = scene && findMode(scene, url.searchParams.get("mode") ?? scene.modes[0].id);
+    if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
+    const shotId = scene.shots.some((s) => s.id === url.searchParams.get("shot")) ? url.searchParams.get("shot")! : scene.shots[0].id;
+    const snap = sessions.snapshotFor(sessions.openSession(scene.id, mode.id), user);
+    return html(res, renderScene(scene, mode, shotId, snap, user));
   }
 
   if (method === "POST" && pathname === "/join") {
-    const nickname = (new URLSearchParams(await readBody(req)).get("nickname") ?? "").trim().slice(0, 24);
-    if (!nickname) {
-      send(res, 400, renderWelcome(garden.preview(), "Please enter a name."), "text/html; charset=utf-8");
+    const form = new URLSearchParams(await readBody(req));
+    const nickname = (form.get("nickname") ?? "").replace(/\s+/g, " ").trim().slice(0, 24);
+    const avatar = form.get("avatar");
+    const next = safeNext(form.get("next"));
+    if (!nickname || !isAvatar(avatar)) {
+      res.writeHead(303, { location: `/explore?error=${encodeURIComponent("Choose a name and a cat or a dog.")}` });
+      res.end();
       return;
     }
-    const { user, token } = createUser(nickname);
-    garden.recordJoin(user);
-    res.writeHead(303, { location: "/", "set-cookie": sessionCookie(token) });
+    const { user: created, token } = createUser(nickname, avatar);
+    log("user_joined", { user: created.id, nickname: created.nickname, avatar });
+    res.writeHead(303, { location: next, "set-cookie": sessionCookie(token) });
     res.end();
     return;
   }
 
-  // Everything below changes or streams the shared garden, so it needs a
-  // server-verified session; the acting user comes from that, never the body.
-  const user = userFromRequest(req);
-  if (!user) {
-    send(res, 401, "join the garden first");
+  if (method === "POST" && pathname === "/leave") {
+    res.writeHead(303, { location: "/explore", "set-cookie": clearCookie() });
+    res.end();
     return;
   }
 
-  if (method === "GET" && pathname === "/events") {
+  // ---- JSON API (pack docs/05) ------------------------------------------
+
+  if (method === "GET" && pathname === "/api/scenes") {
+    return json(res, 200, SCENES.map((s) => ({ id: s.id, title: s.title, evidence: s.evidence, modes: s.modes.map((m) => ({ id: m.id, label: m.label })) })));
+  }
+
+  if (method === "GET" && pathname === "/api/memories") return json(res, 200, listMemories());
+
+  const memoryApi = method === "GET" && pathname.match(/^\/api\/memories\/(mem_[a-f0-9]{16})$/);
+  if (memoryApi) {
+    const memory = getMemory(memoryApi[1]);
+    return memory ? json(res, 200, memory) : json(res, 404, { error: "no such memory" });
+  }
+
+  // The live stream for one place. Anyone may watch; only people who've
+  // joined are counted as here.
+  if (method === "GET" && pathname === "/api/stream") {
+    const scene = findScene(url.searchParams.get("scene") ?? "");
+    const mode = scene && findMode(scene, url.searchParams.get("mode") ?? "");
+    if (!scene || !mode) return json(res, 404, { error: "no such place" });
     res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
     res.write("retry: 1500\n\n");
-    garden.subscribe(res, user);
+    sessions.subscribe(res, scene.id, mode.id, user);
     const heartbeat = setInterval(() => res.write(": keep-alive\n\n"), 15000);
     req.on("close", () => {
       clearInterval(heartbeat);
-      garden.unsubscribe(res, user);
+      sessions.unsubscribe(res, scene.id, mode.id, user);
     });
     return;
   }
 
-  if (method === "POST" && pathname === "/notes") {
-    const body = await readJson(req);
-    if (!body || !inRange(body.row, ROWS) || !inRange(body.col, COLS)) {
-      send(res, 400, "row and col must be integers 0-5");
-      return;
-    }
-    if (body.note === null) garden.removeNote(user, body.row, body.col);
-    else if (isNote(body.note)) garden.placeNote(user, body.row, body.col, body.note);
-    else {
-      send(res, 400, "unknown note");
-      return;
-    }
-    send(res, 204);
-    return;
+  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})(\/ops|\/events)?$/);
+  if (method === "GET" && sessionApi && !sessionApi[2]) {
+    const snap = sessions.sessionSnapshot(sessionApi[1], user);
+    return snap ? json(res, 200, snap) : json(res, 404, { error: "no such session" });
+  }
+  if (method === "GET" && sessionApi?.[2] === "/events") {
+    const since = Number(url.searchParams.get("sinceSeq") ?? 0);
+    return json(res, 200, sessions.eventsSince(sessionApi[1], Number.isInteger(since) && since >= 0 ? since : 0));
   }
 
-  if (method === "POST" && pathname === "/instrument") {
-    const body = await readJson(req);
-    if (!body || !isInstrument(body.instrument)) {
-      send(res, 400, "unknown instrument");
-      return;
-    }
-    garden.changeInstrument(user, body.instrument);
-    send(res, 204);
-    return;
+  if (method === "POST" && sessionApi?.[2] === "/ops") {
+    // Every change needs a server-verified person; who acts comes from the
+    // session cookie, never the body.
+    if (!user) return json(res, 401, { ok: false, code: "no_session", message: "Join first: choose a name and a cat or a dog." });
+    const result = sessions.applyOp(user, sessionApi[1], await readJson(req));
+    const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "save_failed" ? 500 : result.code === "slow_down" ? 429 : 409;
+    return json(res, result.ok ? 200 : result.code === "bad_request" ? 400 : status, result);
   }
 
-  send(res, 404, "not found");
+  // Only when the app is started for the spec: makes the next memory write
+  // fail, to check the page never claims a save that didn't happen.
+  if (method === "POST" && pathname === "/test/fail-next-save" && process.env.SOAC_TEST_HOOKS === "1") {
+    sessions.failNextSaveForTest();
+    return send(res, 204);
+  }
+
+  html(res, renderNotFound("There's nothing at that address."), 404);
 }
 
 const server = createServer((req, res) => {
   handle(req, res).catch((err: unknown) => {
+    const status = (err as { status?: number }).status ?? 500;
     log("request_failed", { path: req.url ?? "", error: err instanceof Error ? err.message : String(err) });
-    if (!res.headersSent) send(res, 500, "something went wrong");
+    if (!res.headersSent) send(res, status, status === 413 ? "request too large" : "something went wrong");
     else res.end();
   });
 });
 
+sessions.recover();
 const port = Number(process.env.PORT ?? 8080);
 server.listen(port, "0.0.0.0", () => log("server_started", { port }));

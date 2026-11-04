@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "marie-main-photo-reference",
+      "path": "references/marie-reay/IMG_8100.jpeg",
+      "usage": "internal_reference_only",
+      "sceneId": "marie-reay-ground",
+      "shotId": "main-lift-wall",
+      "publicAllowed": false,
+      "rights": "user supplied; public reuse not assumed"
+    }
+  ]
+}

@@ -28,3 +28,10 @@ mise.local.toml
 # your course API key, and this repo goes public when you ship. Your tracked
 # harness is CLAUDE.md (and any AGENTS.md), not this directory.
 .claude/
+
+# Wen's original reference photos are development references only: the repo is
+# public, so they never get committed. Published scene images are processed
+# derivatives (people removed, metadata stripped) under public/scenes/.
+design/sound-of-a-city/references/**/*.jpeg
+design/sound-of-a-city/references/**/*.jpg
+design/sound-of-a-city/references/**/*.HEIC
