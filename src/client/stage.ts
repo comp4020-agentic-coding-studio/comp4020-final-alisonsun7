@@ -88,7 +88,7 @@ export function drawShot(stage: HTMLElement, scene: Scene, shot: Shot, placement
     const w = (h / shot.aspect) * figureAspect(pose);
     const flip = fx > 0.5 ? " flip" : "";
     html.push(`<div class="figure pose-${pose}${flip}${p.ownerId === opts.mineId ? " is-mine" : ""}" data-placement="${p.id}"
-      style="left:${pct(fx)};top:${pct(fy)};height:${pct(h)};width:${pct(w)};z-index:${Math.round(fy * 100)}"
+      style="left:${pct(fx)};top:${pct(fy)};height:${pct(h)};width:${pct(w)};z-index:${1 + Math.round(Math.min(1, fy) * 98)}"
       title="${esc(p.ownerName)} ${esc(SOUNDS[p.soundId].activity)}">${figureSvg(p.ownerAvatar, pose, p.ownerId)}</div>`);
   }
 

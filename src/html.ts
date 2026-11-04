@@ -204,11 +204,11 @@ ${modeNav}
     <label class="ambience"><input type="checkbox" id="ambience" disabled /> Background ${mode.ambience === "room" ? "room tone" : mode.ambience}</label>
   </aside>
 </main>
-<section class="tray" id="tray" aria-label="Add a sound">
+<section class="tray${user ? "" : " tray-join"}" id="tray" aria-label="Add a sound">
   ${
     user
       ? `<div class="tray-head"><h2>Add a sound</h2><button type="button" class="link-btn" id="tray-toggle" aria-expanded="true">Hide</button></div>
-  <div class="tray-body" id="tray-body"><div class="cats" id="cats" role="tablist" aria-label="Kinds of sound"></div><div class="chips" id="chips"></div></div>`
+  <div class="tray-body" id="tray-body"><div class="cats" id="cats" role="tablist" aria-label="Kinds of sound"></div><div class="chips" id="chips" role="tabpanel" aria-label="Sounds of this kind"></div></div>`
       : `<div class="tray-head"><h2>Join to add a sound</h2></div>${joinForm(next, null)}`
   }
 </section>

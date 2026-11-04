@@ -145,6 +145,26 @@ async function send(body: OpBody, waiting: string): Promise<boolean> {
   return true;
 }
 
+// A volume slider sends on every step, and a step sent before the last one
+// came back would carry an old revision and be refused as someone else's
+// change. So steps for one sound wait their turn, and only the latest waiting
+// value is sent, with the revision the previous step produced.
+const volumeWaiting = new Map<string, number>();
+
+async function setVolume(placementId: string, gain: number): Promise<void> {
+  const sending = volumeWaiting.has(placementId);
+  volumeWaiting.set(placementId, gain);
+  if (sending) return;
+  while (volumeWaiting.has(placementId)) {
+    const next = volumeWaiting.get(placementId)!;
+    const p = live.snapshot.placements.find((x) => x.id === placementId);
+    if (!p) break;
+    const ok = await send({ type: "sound.update", placementId, baseRevision: p.revision, gain: next }, "Saving…");
+    if (!ok || volumeWaiting.get(placementId) === next) break;
+  }
+  volumeWaiting.delete(placementId);
+}
+
 async function place(anchorId: string): Promise<void> {
   if (!choosing) return;
   const check = checkPlace(scene.id, shotId, anchorId, choosing);
@@ -217,6 +237,7 @@ function soundRow(p: Placement, mine: boolean): HTMLLIElement {
   li.dataset.placement = p.id;
   const name = document.createElement("button");
   name.type = "button";
+  name.dataset.focusKey = `name:${p.id}`;
   name.className = "sound-name";
   name.textContent = SOUNDS[p.soundId].label;
   name.onclick = () => {
@@ -235,11 +256,13 @@ function soundRow(p: Placement, mine: boolean): HTMLLIElement {
     vol.min = "0";
     vol.max = "100";
     vol.step = "5";
-    vol.value = String(Math.round(p.gain * 100));
+    vol.value = String(Math.round((volumeWaiting.get(p.id) ?? p.gain) * 100));
     vol.setAttribute("aria-label", `Volume of your ${SOUNDS[p.soundId].label.toLowerCase()}`);
-    vol.onchange = () => void send({ type: "sound.update", placementId: p.id, baseRevision: p.revision, gain: Number(vol.value) / 100 }, "Saving…");
+    vol.dataset.focusKey = `vol:${p.id}`;
+    vol.onchange = () => void setVolume(p.id, Number(vol.value) / 100);
     const remove = document.createElement("button");
     remove.type = "button";
+    remove.dataset.focusKey = `remove:${p.id}`;
     remove.className = "remove";
     remove.textContent = "Remove";
     remove.setAttribute("aria-label", `Remove your ${SOUNDS[p.soundId].label.toLowerCase()}`);
@@ -367,12 +390,25 @@ function renderTray(): void {
     const b = document.createElement("button");
     b.type = "button";
     b.role = "tab";
+    b.dataset.focusKey = `cat:${c}`;
     b.className = "cat";
     b.textContent = c;
     b.setAttribute("aria-selected", String(c === category));
+    b.setAttribute("aria-controls", "chips");
+    // One tab stop for the whole list: arrows move between kinds, Tab goes
+    // on to the sounds.
+    b.tabIndex = c === category ? 0 : -1;
     b.onclick = () => {
       category = c;
+      keepingFocus(renderTray);
+    };
+    b.onkeydown = (e) => {
+      const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      category = usedCats[(usedCats.indexOf(c) + step + usedCats.length) % usedCats.length];
       renderTray();
+      document.querySelector<HTMLElement>(`[data-focus-key="cat:${category}"]`)?.focus();
     };
     cats.append(b);
   }
@@ -381,6 +417,7 @@ function renderTray(): void {
   for (const id of available.filter((x) => SOUNDS[x].category === category)) {
     const b = document.createElement("button");
     b.type = "button";
+    b.dataset.focusKey = `chip:${id}`;
     b.className = `chip${choosing === id ? " active" : ""}${hereOk.has(id) ? "" : " elsewhere"}`;
     b.setAttribute("aria-pressed", String(choosing === id));
     b.innerHTML = `<span class="chip-name"></span><span class="chip-where"></span>`;
@@ -417,7 +454,25 @@ function syncAudio(): void {
   audio.sync(sources);
 }
 
+// Rebuilding the lists and tray replaces their controls; put focus back on
+// the same control, so a keyboard user's next key still means something.
+function keepingFocus(rebuild: () => void): void {
+  const active = document.activeElement as HTMLElement | null;
+  const key = active?.dataset.focusKey ?? (active?.dataset.anchor ? `anchor:${active.dataset.anchor}` : undefined);
+  rebuild();
+  if (key && !document.contains(active)) {
+    const again = key.startsWith("anchor:")
+      ? stage.querySelector<HTMLElement>(`.anchor[data-anchor="${CSS.escape(key.slice(7))}"]`)
+      : document.querySelector<HTMLElement>(`[data-focus-key="${CSS.escape(key)}"]`);
+    again?.focus();
+  }
+}
+
 function render(): void {
+  keepingFocus(draw);
+}
+
+function draw(): void {
   const shot = findShot(scene, shotId)!;
   drawShot(stage, scene, shot, live.snapshot.placements, {
     interactive: boot.joined,

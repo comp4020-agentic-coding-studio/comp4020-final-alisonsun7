@@ -105,6 +105,15 @@ try {
   // B can't remove A's sound: the UI offers no Remove for it, and the API refuses
   check("B is offered no Remove for A's sound", (await b.locator("#theirs .remove").count()) === 0);
 
+  // B is on a phone (390 × 844): nothing wider than the screen, controls big
+  // enough to tap
+  const overflow = await b.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  check("the phone layout doesn't scroll sideways", overflow <= 0, `${overflow}px wider than the screen`);
+  const small = await b.$$eval(".chip, .cat, #sound-toggle, .shot-link", (els) =>
+    els.filter((e) => e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height < 32).map((e) => e.textContent?.trim()),
+  );
+  check("tap targets on the phone are at least 32px tall", small.length === 0, small.slice(0, 4).join(", "));
+
   // B adds one too; A sees it
   await choose(b, "People", "Quiet talk");
   const t1 = Date.now();
@@ -118,6 +127,38 @@ try {
   const toast = await a.locator("#toast").textContent();
   check("a sound at the wrong spot is refused with a reason", /another part of this scene/.test(toast ?? ""), toast?.trim());
   await a.keyboard.press("Escape");
+
+  // Keyboard only: choose a kind, a sound, a spot; then turn it up with the
+  // arrow keys, fast, the way a held key sends steps
+  await a.focus(`.cat[tabindex="0"]`);
+  while ((await a.evaluate(() => document.activeElement?.textContent)) !== "Movement") await a.keyboard.press("ArrowRight");
+  check("arrow keys move between kinds of sound", true);
+  await a.keyboard.press("Enter");
+  check("focus stays on the tab after choosing it", await a.evaluate(() => document.activeElement?.textContent === "Movement"));
+  await a.keyboard.press("Tab");
+  await a.keyboard.press("Enter"); // Footsteps, the first Movement sound
+  const focusedAnchor = await a.evaluate(() => document.activeElement?.getAttribute("data-anchor"));
+  check("choosing a sound moves focus to a spot that accepts it", Boolean(focusedAnchor), focusedAnchor ?? "nothing focused");
+  await a.keyboard.press("Enter");
+  await b.waitForSelector(`#theirs :text("Footsteps")`, { timeout: 3000 }).then(
+    () => check("a sound placed with the keyboard reaches B", true),
+    () => check("a sound placed with the keyboard reaches B", false),
+  );
+  const slider = a.locator(`#mine .sound-row:has(.sound-name:text-is("Footsteps")) input[type=range]`);
+  await slider.focus();
+  for (let i = 0; i < 4; i++) await a.keyboard.press("ArrowRight");
+  check("focus stays on the slider while it saves", await a.evaluate(() => document.activeElement?.getAttribute("type") === "range"));
+  await b.waitForSelector(`#theirs .sound-row:has(.sound-name:text-is("Footsteps")) .vol:text("90%")`, { timeout: 3000 }).then(
+    () => check("four quick volume steps all land, none refused as someone else's change", true),
+    async () => check("four quick volume steps all land, none refused as someone else's change", false, `B shows ${await b.locator(`#theirs .sound-row:has(.sound-name:text-is("Footsteps")) .vol`).textContent()}, A's toast: ${await a.locator("#toast").textContent()}`),
+  );
+  await a.locator(`#mine .sound-row:has(.sound-name:text-is("Footsteps")) .sound-name`).focus();
+  await a.keyboard.press("Enter");
+  await a.keyboard.press("Delete");
+  await b.waitForFunction(() => !document.querySelector("#theirs")?.textContent?.includes("Footsteps"), null, { timeout: 3000 }).then(
+    () => check("Delete removes your selected sound", true),
+    () => check("Delete removes your selected sound", false),
+  );
 
   // The server goes down and comes back (a redeploy, a crash): both pages
   // say so, reconnect by themselves, and nothing placed is lost.

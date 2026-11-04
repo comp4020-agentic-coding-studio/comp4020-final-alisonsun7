@@ -904,7 +904,8 @@ h3 {
   display: flex;
   align-items: center;
   gap: 6px;
-  z-index: 3;
+  /* figures are 1-99, by depth; every control is above them */
+  z-index: 200;
   color: var(--ink);
 }
 
@@ -937,7 +938,7 @@ h3 {
 /* While placing, the places to put it come first: markers already standing
    on an anchor mustn't swallow the click. */
 .stage.choosing .anchor.accepts {
-  z-index: 6;
+  z-index: 230;
 }
 
 .stage.choosing .marker {
@@ -975,7 +976,7 @@ h3 {
 .shot-link {
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: 3;
+  z-index: 210;
   background: rgba(15, 13, 10, 0.72);
   color: var(--ink);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -1009,7 +1010,7 @@ h3 {
 .marker {
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: 4;
+  z-index: 220;
   background: none;
   border: 0;
   padding: 6px;
@@ -1083,7 +1084,7 @@ h3 {
   font-size: 12px;
   color: var(--ink-soft);
   white-space: nowrap;
-  z-index: 5;
+  z-index: 240;
 }
 
 .hint {
@@ -1317,6 +1318,12 @@ h3 {
   border-top: 1px solid var(--line);
   padding: 10px clamp(12px, 3vw, 28px) 14px;
   backdrop-filter: blur(6px);
+}
+
+/* Someone who hasn't joined is looking first: the join form waits below the
+   scene instead of covering it. */
+.tray.tray-join {
+  position: static;
 }
 
 .tray-head {
@@ -1654,9 +1661,26 @@ h3 {
     display: none;
   }
 
+  /* small to look at over the photo, but tall enough to tap: the border
+     sits on an inner layer and the button itself is 36px */
   .shot-link {
     font-size: 11px;
-    padding: 4px 9px;
+    padding: 0 9px;
+    line-height: 34px;
+    background: none;
+    border-color: transparent;
+    backdrop-filter: none;
+    isolation: isolate;
+  }
+
+  .shot-link::before {
+    content: "";
+    position: absolute;
+    inset: 7px 0;
+    z-index: -1;
+    border-radius: 999px;
+    background: rgba(15, 13, 10, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   .toast {
