@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "note": "Every asset the app publishes, where it came from, and what may be done with it. Original photos are development references only and are never in the repo or the image; only the processed derivatives below are published.",
+  "assets": [
+    {
+      "id": "marie-lift-wall",
+      "path": "public/scenes/marie-lift-wall.webp",
+      "thumb": "public/scenes/marie-lift-wall-thumb.webp",
+      "source": "IMG_8100, photographed by the project author (Wen) in Marie Reay Teaching Centre, ground floor",
+      "usage": "published_scene_background",
+      "sceneId": "marie-reay-ground",
+      "shotId": "lift-wall",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "resized to 1600 px max, WebP q0.8; one passer-by and one TV screen showing people mosaicked and blurred; all metadata removed"
+    },
+    {
+      "id": "marie-lift-detail",
+      "path": "public/scenes/marie-lift-detail.webp",
+      "thumb": "public/scenes/marie-lift-detail-thumb.webp",
+      "source": "IMG_8113, photographed by the project author",
+      "usage": "published_scene_background",
+      "sceneId": "marie-reay-ground",
+      "shotId": "lift-detail",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "resized, WebP; no people in frame; metadata removed"
+    },
+    {
+      "id": "marie-stair-front",
+      "path": "public/scenes/marie-stair-front.webp",
+      "thumb": "public/scenes/marie-stair-front-thumb.webp",
+      "source": "IMG_8104, photographed by the project author",
+      "usage": "published_scene_background",
+      "sceneId": "marie-reay-ground",
+      "shotId": "stair-front",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "resized, WebP; one person blurred; metadata removed"
+    },
+    {
+      "id": "marie-stairs",
+      "path": "public/scenes/marie-stairs.webp",
+      "thumb": "public/scenes/marie-stairs-thumb.webp",
+      "source": "IMG_8106, photographed by the project author",
+      "usage": "published_scene_background",
+      "sceneId": "marie-reay-ground",
+      "shotId": "stairs",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "resized, WebP; one person blurred; metadata removed"
+    },
+    {
+      "id": "marie-tea-point",
+      "path": "public/scenes/marie-tea-point.webp",
+      "thumb": "public/scenes/marie-tea-point-thumb.webp",
+      "source": "IMG_8101, photographed by the project author",
+      "usage": "published_scene_background",
+      "sceneId": "marie-reay-ground",
+      "shotId": "tea-point",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "resized, WebP; no people in frame; metadata removed"
+    },
+    {
+      "id": "marie-entry",
+      "path": "public/scenes/marie-entry.webp",
+      "thumb": "public/scenes/marie-entry-thumb.webp",
+      "source": "IMG_8098, photographed by the project author; the author confirmed it is taken through the door off the Chifley bridge",
+      "usage": "published_scene_background",
+      "sceneId": "marie-reay-ground",
+      "shotId": "entry",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "resized, WebP; two people blurred; metadata removed"
+    },
+    {
+      "id": "chifley-bridge",
+      "path": "public/scenes/chifley-bridge.webp",
+      "thumb": "public/scenes/chifley-bridge-thumb.webp",
+      "source": "IMG_8114 (HEIC), photographed by the project author at night on 4 November 2026 (EXIF); the author confirmed the building at right is Marie Reay",
+      "usage": "published_scene_background",
+      "sceneId": "chifley-path",
+      "shotId": "bridge",
+      "publicAllowed": true,
+      "rights": "author's own photo; publication approved by the author",
+      "processing": "converted from HEIC, resized, WebP; one person blurred; metadata removed. Morning and weekday modes are CSS colour grades of this night photo and say so on the page"
+    },
+    {
+      "id": "lab-cafe-placeholder",
+      "path": "src/client/stage.ts (drawPlaceholder)",
+      "source": "drawn in code by this project",
+      "usage": "published_placeholder",
+      "sceneId": "lab-cafe",
+      "shotId": "counter",
+      "publicAllowed": true,
+      "rights": "original",
+      "processing": "labelled 'Visual placeholder · not LAB ANU's real interior' on the stage; to be replaced with the author's photos"
+    },
+    {
+      "id": "figures",
+      "path": "src/client/figures.ts",
+      "source": "SVG cat and dog figures drawn in code by this project",
+      "usage": "published_characters",
+      "publicAllowed": true,
+      "rights": "original"
+    },
+    {
+      "id": "sounds",
+      "path": "src/client/synth.ts",
+      "source": "all 20 sounds and 5 ambiences synthesised with the Web Audio API in the browser; no samples or recordings",
+      "usage": "published_audio",
+      "publicAllowed": true,
+      "rights": "original"
+    },
+    {
+      "id": "font-inter",
+      "path": "https://fonts.googleapis.com (Inter)",
+      "source": "Google Fonts",
+      "usage": "published_font",
+      "publicAllowed": true,
+      "rights": "SIL Open Font License 1.1"
+    }
+  ],
+  "notUsed": [
+    {
+      "source": "LAB ANU official gallery (labanu.wordpress.com)",
+      "reason": "no licence for reuse; consulted as a reference only"
+    },
+    {
+      "source": "Wikimedia Commons photos of Chifley Library and Kambri",
+      "reason": "CC BY-SA and usable with attribution, but not needed: every published scene is the author's own photo"
+    },
+    {
+      "source": "social media (Xiaohongshu, Instagram, Facebook)",
+      "reason": "searched for layout facts only; no images used"
+    }
+  ]
+}

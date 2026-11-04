@@ -54,10 +54,13 @@ Source of truth: `design/sound-of-a-city/` (Wen's development pack, v1.0,
 | Catalog (shared) | `src/shared/catalog.ts` — scenes, modes, shots, anchors (normalised x/y + evidence), sounds |
 | Protocol (shared) | `src/shared/protocol.ts`, `src/shared/state.ts` (pure reducer, used by client and tests) |
 | Server | `src/server.ts`, `src/db.ts` (schema per doc 05), `src/sessions.ts` (live sessions, ops, timer, streams), `src/memories.ts`, `src/html.ts`, reused `users.ts`/`log.ts` |
-| Client | `src/client/scene.ts`, `audio.ts`, `synth.ts`, `figures.ts`, `memory.ts`, `style.css` |
+| Client | `src/client/scene.ts`, `stage.ts`, `ops.ts`, `audio.ts`, `synth.ts`, `figures.ts`, `memory.ts`, `style.css` |
 | Assets | `public/scenes/*.webp`, `public/assets-manifest.json`, `scripts/build-scenes.mjs` |
-| Tests | `spec/api.test.ts`, `spec/realtime.test.ts`, `spec/session-domain.test.ts`, `spec/state.test.ts`, `spec/pages.test.ts`; `e2e/two-browsers.mjs` |
-| Docs | `CLAUDE.md` (harness), `docs/decisions/003-*.md`, `IMPLEMENTATION_REPORT.md`; README/PROCESS left for Wen |
+| Tests | `spec/pages.test.ts`, `spec/live.test.ts`, `spec/lifecycle.test.ts` (own app, 3 s clock), `spec/helpers.ts`; `e2e/two-browsers.mjs`, `e2e/look.mjs` |
+| Docs | `CLAUDE.md` (harness), `docs/decisions/003-live-places-and-memories.md`, `IMPLEMENTATION_REPORT.md`; README/PROCESS left for Wen |
+
+(The table was revised after the build to list the files that exist; the
+first draft named test files that were later merged into these three.)
 
 ## Phases
 
@@ -70,11 +73,14 @@ Source of truth: `design/sound-of-a-city/` (Wen's development pack, v1.0,
   permitting); timeline replay on the memory page.
 - **P2 (not in scope)** recording/upload, free 3D walking, weather system.
 
-## Assumptions to confirm with Wen
+## Decisions confirmed with Wen (2026-11-05)
 
-- Memories are listed in the public archive. Every sound is synthesised, and
-  the join form says nicknames appear on memories.
-- Chifley morning and weekday are colour treatments of the one night photo
-  she supplied (IMG_8114). The page says so.
-- LAB ANU: no photo yet. Whatever ships is labelled as a placeholder unless
-  public research finds a licensed source.
+- Build on `origin/main`, keeping history.
+- Publish her photos as backgrounds, compressed, with people blurred.
+- IMG_8114's right-hand building is Marie Reay; IMG_8098 is taken through
+  that door.
+- Memories are public by default; the join form says nicknames appear on
+  them.
+- LAB ANU: she will photograph it; until then a labelled placeholder ships.
+- Chifley morning and weekday are colour treatments of her one night photo
+  (IMG_8114). The page says so.

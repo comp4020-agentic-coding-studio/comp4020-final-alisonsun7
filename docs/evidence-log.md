@@ -142,3 +142,63 @@ and how it was corrected. Commit links are in PROCESS.md.
   note bars were thin and the "×2" count was cramped. It is now 78 px.
 - **Not verified:** how it sounds and feels in real use (needs my ears), and
   Docker/CI (CI will run it on push).
+
+# Final project — Sound of a City (agent's record)
+
+Written by the agent from the session, as a factual record for Wen to draw
+on. Wen's prompts are quoted as she wrote them (some in Chinese, translated
+in brackets); everything else is what the agent did and what happened.
+
+## 6. Starting again from the design pack
+
+- **Prompt:** "根据Sound_of_a_City_Claude_Development_Pack 开发，你有不确定的地方就问我"
+  [build from the pack; ask me when unsure], with a pasted instruction to
+  read the pack, keep reusable code and history, prioritise a working loop,
+  accurate Marie Reay scenes from her photos, real-time sound collaboration
+  and persistent memories, and to report blockers honestly.
+- **Questions the agent asked, and Wen's answers:** build on `origin/main`
+  keeping history (yes); use her photos as backgrounds, compressed, people
+  blurred (yes); which building is on the right of IMG_8114 ("是 Marie Reay，
+  8098 就是这个门" [it's Marie Reay; 8098 is that door]); LAB with no photo
+  ("我去拍，先做占位" [I'll photograph it; placeholder for now]); memories
+  public or private (public, with a notice at join).
+- **Research:** Wen asked the agent to search the web and social media
+  itself. No image found had a licence for reuse in the app, so none was
+  used; what decided the scenes was Wen's photos and her answers above.
+- **Built** (`f103601`): photo scenes with anchors read off coordinate grids,
+  synthesised sounds, SSE + ops with docs/05 semantics, a server-timed
+  3-minute memory sealed into a public archive, replay, and three spec files
+  plus a two-browser Playwright run.
+
+## 7. Failures found by looking, and fixed
+
+- **Coordinate grid published.** The first scene images had the annotation
+  grid baked in: `build-scenes.mjs` drew the grid on the canvas before
+  encoding the published WebP. Seen in the first screenshots; the script now
+  encodes first. The originals' grids live only in `/tmp`.
+- **Replay showed no figures.** The memory page redrew the stage every frame,
+  so each figure restarted its fade-in and stayed invisible. The e2e check
+  had counted `.figure` elements and passed; it now checks computed opacity,
+  and fails (0 visible) without the fix.
+- **A false conflict.** Pressing the volume slider's arrow four times sent
+  four updates with the same `baseRevision`; three were refused and the page
+  said "Someone changed this sound". Updates for one sound now queue.
+- **Keyboard focus lost** after every re-render of the tray and sound list.
+- **"Saved" link replaced** at once by the next toast, so the other person
+  never saw the link to the memory.
+- **A false pass.** The first reconnect check used Playwright's
+  `setOffline`, which doesn't cut an open SSE stream, so "caught up after
+  reconnecting" passed without B ever disconnecting. Replaced by killing and
+  restarting the server with both pages open.
+- **Unverified claim removed.** The About page said the photos were taken in
+  November 2026; only IMG_8114 carries EXIF (4 Nov 2026, 22:40), so the page
+  now states only that.
+
+## 8. Results and what wasn't run
+
+- `pnpm check` 54/54; `pnpm e2e` 29/29 (click to other screen 40–60 ms;
+  reconnect about 1.3 s after the server returns). Mutation checks: removing
+  the owner check, the dedupe, the stage fix or the volume queue each turned
+  its test red.
+- **Not run:** Docker build (not installed), deploy (needs Wen's approval to
+  merge into `main`), listening to the sounds, a screen reader, a real phone.
