@@ -13,11 +13,10 @@ const get = (path: string, init?: RequestInit): Promise<Response> => fetch(new U
 const PAGES = [
   "/",
   "/explore",
-  "/archive",
   "/about",
   "/readme/",
   ...SCENES.flatMap((s) => s.modes.map((m) => `/scene/${s.id}?mode=${m.id}`)),
-  ...SCENES.flatMap((s) => s.shots.map((shot) => `/scene/${s.id}?shot=${shot.id}`)),
+  ...SCENES.flatMap((s) => s.zones.map((z) => `/scene/${s.id}?zone=${z.id}`)),
 ];
 
 const NOT_AFFILIATED = "Not affiliated with or endorsed by ANU or LAB ANU";
@@ -39,7 +38,7 @@ describe("pages", () => {
   );
 
   it("a scene page in an unknown mode is a 404", async () => {
-    expect((await get("/scene/chifley-path?mode=midnight")).status).toBe(404);
+    expect((await get("/scene/seaside?mode=midnight")).status).toBe(404);
   });
 });
 
@@ -88,40 +87,11 @@ describe("what the pages load", () => {
     const paths = [...loaded.keys()];
     // the two page scripts and the modules beneath them
     expect(paths).toEqual(
-      expect.arrayContaining(["/client/scene.js", "/client/memory.js", "/client/audio.js", "/client/world.js", "/client/cafe.js", "/vendor/three.module.min.js", "/vendor/addons/loaders/GLTFLoader.js", "/shared/catalog.js", "/client/style.css"]),
+      expect.arrayContaining(["/client/scene.js", "/client/world.js", "/client/cafe.js", "/vendor/three.module.min.js", "/vendor/addons/loaders/GLTFLoader.js", "/shared/catalog.js", "/client/style.css"]),
     );
     for (const [path, res] of loaded) {
       expect(res.status, `${path} didn't load`).toBe(200);
       expect(res.headers.get("content-type"), path).toMatch(path.endsWith(".css") ? /text\/css/ : /javascript/);
-    }
-  });
-
-  it("every scene photo in the catalogue is served as WebP", async () => {
-    const images = SCENES.flatMap((s) => s.shots.flatMap((shot) => [shot.image, shot.thumb])).filter((p): p is string => p !== null);
-    expect(images.length).toBeGreaterThan(10);
-    for (const path of images) {
-      const res = await get(path);
-      expect(res.status, path).toBe(200);
-      expect(res.headers.get("content-type"), path).toBe("image/webp");
-      // a WebP file starts RIFF....WEBP
-      const head = Buffer.from(await res.arrayBuffer()).subarray(0, 12).toString("latin1");
-      expect(head.startsWith("RIFF") && head.endsWith("WEBP"), path).toBe(true);
-    }
-  });
-
-  it("the placeholder scene says it's a placeholder", async () => {
-    const lab = SCENES.find((s) => s.evidence === "placeholder")!;
-    const text = new JSDOM(await (await get(`/scene/${lab.id}`)).text()).window.document.body.textContent ?? "";
-    expect(text).toMatch(/placeholder/i);
-  });
-
-  it("modes that are colour grades of a night photo say so on the page", async () => {
-    for (const scene of SCENES) {
-      for (const mode of scene.modes.filter((m) => m.note)) {
-        const html = await (await get(`/scene/${scene.id}?mode=${mode.id}`)).text();
-        const text = new JSDOM(html).window.document.body.textContent ?? "";
-        expect(text, `${scene.id} ${mode.id}`).toContain(mode.note);
-      }
     }
   });
 });
@@ -133,7 +103,8 @@ describe("joining", () => {
     expect(form?.getAttribute("method")).toBe("post");
     expect(form?.querySelector("input[name=nickname]")).not.toBeNull();
     expect(form?.querySelectorAll("input[name=avatar]").length).toBe(2);
-    expect(doc.body.textContent).toMatch(/public archive/);
+    // it says who sees your name
+    expect(doc.body.textContent).toMatch(/shown to people you meet/);
 
     const res = await get("/join", {
       method: "POST",

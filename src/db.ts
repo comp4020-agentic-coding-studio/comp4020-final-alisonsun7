@@ -1,7 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { SCENES, SOUNDS } from "./shared/catalog.js";
+import { SCENES } from "./shared/catalog.js";
 
 // Production: the Fly volume at /data (the only storage that survives a
 // redeploy). Locally: .data/, which is gitignored. A new file name, so the
@@ -12,7 +12,9 @@ mkdirSync(dirname(path), { recursive: true });
 export const db = new DatabaseSync(path);
 
 // Tables follow the pack's docs/05, plus `users` (the anonymous identity
-// SoundGarden already had, so a person is the same across visits).
+// SoundGarden already had, so a person is the same across visits). Since
+// sound was taken out (ADR 010) the app uses only users, scenes, sessions and
+// participants; the sound tables stay, with their rows, untouched.
 db.exec(`
   PRAGMA journal_mode = WAL;
   PRAGMA foreign_keys = ON;
@@ -111,24 +113,12 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS memories_public ON memories (visibility, saved_at);
 `);
 
-// Added for living places (ADR 008): who last turned a sound up or down.
-// Older databases get the column on start; nothing else changes.
-const placementColumns = (db.prepare("PRAGMA table_info(placements)").all() as { name: string }[]).map((c) => c.name);
-if (!placementColumns.includes("adjusted_by")) db.exec("ALTER TABLE placements ADD COLUMN adjusted_by TEXT");
-
 // Reference rows the foreign keys point at. Upserted from the catalogue on
-// every start, never deleted, so old memories keep resolving.
+// every start, never deleted, so old rows keep resolving.
 const upsertScene = db.prepare(
   "INSERT INTO scenes (id, title) VALUES (?, ?) ON CONFLICT (id) DO UPDATE SET title = excluded.title",
 );
 for (const s of SCENES) upsertScene.run(s.id, s.title);
-
-const upsertSound = db.prepare(
-  `INSERT INTO sound_assets (id, label, category, looping, license_name, attribution, publication_allowed)
-   VALUES (?, ?, ?, 1, 'Original Web Audio synthesis', 'Synthesised in the browser by this app; no recorded audio', 1)
-   ON CONFLICT (id) DO UPDATE SET label = excluded.label, category = excluded.category`,
-);
-for (const s of Object.values(SOUNDS)) upsertSound.run(s.id, s.label, s.category);
 
 export function inTransaction<T>(fn: () => T): T {
   db.exec("BEGIN IMMEDIATE");

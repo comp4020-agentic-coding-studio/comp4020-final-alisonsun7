@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { marked } from "marked";
-import { SCENES, SOUNDS, type Mode, type Scene } from "./shared/catalog.js";
-import type { MemorySnapshot, MemorySummary, Person, Snapshot } from "./shared/protocol.js";
+import { SCENES, findZone, type Mode, type Scene } from "./shared/catalog.js";
+import type { Snapshot } from "./shared/protocol.js";
 import type { User } from "./users.js";
 
 const readmeSource = readFileSync(new URL("../README.md", import.meta.url), "utf8");
@@ -20,7 +20,7 @@ const page = (title: string, bodyClass: string, body: string): string => `<!doct
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${escapeHtml(title)}</title>
-<meta name="description" content="A campus comes alive through the sounds we leave behind." />
+<meta name="description" content="Walk from a forest to the sea, and meet whoever else is there." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='5' fill='%23d9a25b'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23d9a25b' stroke-width='2' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23d9a25b' stroke-width='1.5' opacity='.3'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,8 +36,13 @@ ${body}
 
 const footer = `<footer class="site-footer">
   <p>${NOT_AFFILIATED}</p>
-  <p><a href="/about">Sources, sounds and privacy</a> · <a href="/readme/">About this app</a> · <a href="/archive">Archive</a></p>
+  <p><a href="/about">Sources and privacy</a> · <a href="/readme/">About this app</a></p>
 </footer>`;
+
+const nav = `<header class="site-bar">
+  <a class="brand" href="/">Sound of a City</a>
+  <nav><a href="/explore">Places</a> <a href="/about">About</a></nav>
+</header>`;
 
 const avatarMark = (avatar: string): string => `<span class="avatar-mark avatar-${avatar === "dog" ? "dog" : "cat"}" aria-hidden="true"></span>`;
 
@@ -52,7 +57,7 @@ function joinForm(next: string, error: string | null): string {
     <label><input type="radio" name="avatar" value="dog" /> ${avatarMark("dog")} A dog</label>
   </fieldset>
   ${error ? `<p class="form-error" role="alert">${escapeHtml(error)}</p>` : ""}
-  <p class="fine">No account. Your nickname is shown to people in the same place, and on any memory you help make, which is listed in the public archive.</p>
+  <p class="fine">No account. Your nickname is shown to people you meet in the place.</p>
   <button type="submit" class="btn primary">Join</button>
 </form>`;
 }
@@ -66,8 +71,7 @@ export function renderLanding(user: User | null): string {
   <div class="hero-text">
     <p class="kicker">From the forest to the sea</p>
     <h1>Sound of a City</h1>
-    <p class="subtitle">A campus comes alive through the sounds we leave behind.</p>
-    <p class="lede">Walk a trail through the trees down to the sea, leave an everyday sound, and meet whoever else is there. What you leave stays, for everyone.</p>
+    <p class="lede">Walk a trail through the trees down to the sea, and meet whoever else is there.</p>
     <p class="actions">
       <a class="btn primary" href="/scene/seaside">Enter the world</a>
       <a class="btn ghost" href="/about#how">How it Works</a>
@@ -84,65 +88,43 @@ export interface PlaceSummary {
   sceneId: string;
   mode: string;
   online: number;
-  sounds: number;
-  status: string;
 }
 
-function placeLine(p: PlaceSummary | undefined): string {
-  if (!p) return "";
-  const people = p.online === 0 ? "nobody here" : `${p.online} ${p.online === 1 ? "person" : "people"} here`;
-  const sounds = p.sounds === 0 ? "silent" : `${p.sounds} ${p.sounds === 1 ? "sound" : "sounds"}`;
-  const rec = p.status === "active" ? " · recording a memory" : "";
-  return `${people} · ${sounds}${rec}`;
-}
+const placeLine = (p: PlaceSummary | undefined): string =>
+  !p ? "" : p.online === 0 ? "nobody here" : `${p.online} ${p.online === 1 ? "person" : "people"} here`;
 
 export function renderExplore(user: User | null, places: PlaceSummary[], error: string | null): string {
   const find = (sceneId: string, mode: string): PlaceSummary | undefined => places.find((p) => p.sceneId === sceneId && p.mode === mode);
-  const cards = SCENES.filter((s) => !s.retired)
-    .map((scene) => {
-      const thumb = scene.shots[0].thumb;
-      const modes = scene.modes
-        .map(
-          (m) => `<li><a class="mode-link" href="/scene/${scene.id}?mode=${m.id}">
+  const cards = SCENES.map((scene) => {
+    const modes = scene.modes
+      .map(
+        (m) => `<li><a class="mode-link" href="/scene/${scene.id}?mode=${m.id}">
             <span class="mode-label">${m.label}</span>
-            <span class="place-live" data-scene="${scene.id}" data-mode="${m.id}">${placeLine(find(scene.id, m.id))}</span>
+            <span class="place-live">${placeLine(find(scene.id, m.id))}</span>
           </a></li>`,
-        )
-        .join("");
-      return `<article class="place-card${scene.evidence === "placeholder" ? " is-placeholder" : ""}">
-        <a class="place-image" href="/scene/${scene.id}?mode=${scene.modes[0].id}" tabindex="-1" aria-hidden="true">
-          ${thumb ? `<img src="${thumb}" alt="" loading="lazy" />` : `<span class="placeholder-art">Reference pending</span>`}
-        </a>
+      )
+      .join("");
+    return `<article class="place-card">
         <div class="place-body">
           <h2>${scene.title}</h2>
           <p>${scene.summary}</p>
-          ${
-            scene.evidence === "placeholder"
-              ? `<p class="badge">Placeholder: no photo of the real café yet</p>`
-              : scene.view === "world"
-                ? `<p class="badge real">Walkable · ${scene.id === "campus" ? "drawn from real photos" : "free CC0 models"}</p>`
-                : `<p class="badge real">From real photos</p>`
-          }
+          <p class="badge real">Walkable · free CC0 models</p>
           <ul class="modes">${modes}</ul>
         </div>
       </article>`;
-    })
-    .join("\n");
+  }).join("\n");
 
   return page(
     "Places — Sound of a City",
     "explore",
-    `<header class="site-bar">
-  <a class="brand" href="/">Sound of a City</a>
-  <nav><a href="/archive">Archive</a> <a href="/about">About</a></nav>
-</header>
+    `${nav}
 <main class="explore-main">
   <h1>Choose a place</h1>
-  <p class="lede">Each place starts silent. Whoever is there adds the everyday sounds that make it feel alive, and everyone in the place hears them.</p>
+  <p class="lede">Walk in, look around, and meet whoever else is there. Every time of day is the same place, with the same people.</p>
   ${
     user
       ? `<form method="post" action="/leave" class="you-are">${avatarMark(user.avatar)} You're <strong>${escapeHtml(user.nickname)}</strong>. <button class="link-btn" type="submit">Change</button></form>`
-      : `<details class="join-box"${error ? " open" : ""}><summary>Join to add sounds (you can look around first)</summary>${joinForm("/explore", error)}</details>`
+      : `<details class="join-box"${error ? " open" : ""}><summary>Join (you can look around first)</summary>${joinForm("/explore", error)}</details>`
   }
   <div class="places">${cards}</div>
 </main>
@@ -150,228 +132,69 @@ ${footer}`,
   );
 }
 
-const shotStrip = (scene: Scene, current: string): string =>
-  scene.shots.length < 2
-    ? ""
-    : `<nav class="shots" id="shots" aria-label="Views of this place">${scene.shots
-        .map(
-          (s) => `<a class="shot-thumb" href="?shot=${s.id}" data-shot="${s.id}"${s.id === current ? ' aria-current="true"' : ""}>
-      ${s.thumb ? `<img src="${s.thumb}" alt="" loading="lazy" />` : ""}<span>${s.title}</span><span class="count" data-count="${s.id}"></span></a>`,
-        )
-        .join("")}</nav>`;
-
-// The walkable world's stage: a 3D view you move through, "Go to" buttons
-// for each part of it, and the real photo of where you are.
-function worldStage(scene: Scene, shot: Scene["shots"][number]): string {
-  return `<div class="stage-frame world-frame" id="stage-frame">
-      <div class="stage world-stage" id="stage">
-        ${shot.thumb ? `<a class="postcard" id="postcard" data-shot="${shot.id}" href="${shot.thumb.replace("-thumb", "")}" target="_blank" rel="noopener"><img src="${shot.thumb}" alt="" /><span class="postcard-kicker">Real photo</span><span class="postcard-title">${escapeHtml(shot.title)}</span></a>` : ""}
-        <p class="world-help" aria-hidden="true"><span class="keys">Drag to look · W A S D or arrows to walk · click the floor to walk there</span><span class="touch">Drag to look · stick to walk · tap the floor to walk there</span></p>
-      </div>
-    </div>
-    <p class="hint" id="hint" aria-live="polite"></p>
-    <nav class="goto" id="shots" aria-label="Go to"><span class="goto-label">Go to</span>${scene.shots
-      .map((s) => `<a href="?shot=${s.id}" data-shot="${s.id}"${s.id === shot.id ? ' aria-current="true"' : ""}>${escapeHtml(s.title)}<span class="count" data-count="${s.id}"></span></a>`)
-      .join("")}</nav>
-    <p class="evidence" id="evidence"><span class="label">${shot.thumb ? "Drawn from" : "Here"}</span> <span id="evidence-text">${escapeHtml(shot.evidence)}</span></p>
-    ${scene.about ? `<p class="mode-note">${escapeHtml(scene.about)}</p>` : ""}`;
-}
-
-export function renderScene(scene: Scene, mode: Mode, shotId: string, snap: Snapshot, user: User | null): string {
-  const shot = scene.shots.find((s) => s.id === shotId)!;
-  const modeNav =
-    scene.modes.length > 1
-      ? `<nav class="mode-switch" aria-label="Time of day">${scene.modes
-          .map((m) => `<a href="/scene/${scene.id}?mode=${m.id}"${m.id === mode.id ? ' aria-current="page"' : ""}>${m.label}</a>`)
-          .join("")}</nav>`
-      : "";
-  const next = `/scene/${scene.id}?mode=${mode.id}`;
-  const listed = snap.placements
-    .map((p) => `<li>${escapeHtml(SOUNDS[p.soundId].label)} — ${escapeHtml(p.ownerName)}</li>`)
-    .join("");
-
+// The walkable world: a 3D view you move through, and "Go to" buttons for
+// each part of it.
+export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snapshot, user: User | null): string {
+  const zone = findZone(scene, zoneId) ?? scene.zones[0];
+  const modeNav = `<nav class="mode-switch" aria-label="Time of day">${scene.modes
+    .map((m) => `<a href="/scene/${scene.id}?mode=${m.id}"${m.id === mode.id ? ' aria-current="page"' : ""}>${m.label}</a>`)
+    .join("")}</nav>`;
   return page(
     `${scene.title} · ${mode.label} — Sound of a City`,
-    `scene-page scene-${scene.id} mode-${mode.id}${scene.view === "world" ? " is-world" : ""}`,
+    `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
   <a class="back" href="/explore"><span aria-hidden="true">←</span> Places</a>
   <div class="where"><h1>${scene.title}</h1><span class="mode-name">${mode.label}</span></div>
   <div class="people" id="people" aria-live="polite"></div>
-  <button type="button" class="sound-toggle" id="sound-toggle" aria-pressed="false" disabled>Enable sound</button>
 </header>
 ${modeNav}
-<main class="scene-main">
+<main class="scene-main world-only">
   <section class="stage-area" aria-label="The place">
-    ${scene.view === "world" ? worldStage(scene, shot) : `<div class="stage-frame" id="stage-frame">
-      <div class="stage" id="stage" style="--aspect:${shot.aspect}">
-        ${shot.image ? `<img class="photo" src="${shot.image}" alt="${escapeHtml(shot.evidence)}" />` : ""}
+    <div class="stage-frame world-frame" id="stage-frame">
+      <div class="stage world-stage" id="stage">
+        <p class="world-help" aria-hidden="true"><span class="keys">Drag to look · W A S D or arrows to walk · click the floor to walk there</span><span class="touch">Drag to look · stick to walk · tap the floor to walk there</span></p>
       </div>
     </div>
-    <p class="hint" id="hint" aria-live="polite">${snap.placements.length === 0 ? "This place has its shape, but not yet its sound. Add the first everyday moment." : ""}</p>
-    ${shotStrip(scene, shot.id)}
-    <p class="evidence" id="evidence"><span class="label">Photo</span> <span id="evidence-text">${escapeHtml(shot.evidence)}</span></p>
-    ${mode.note ? `<p class="mode-note">${escapeHtml(mode.note)}</p>` : ""}
-    ${scene.evidence === "placeholder" ? `<p class="placeholder-note">Visual placeholder. This is not LAB ANU's real interior: no licensed photo yet.</p>` : ""}`}
+    <nav class="goto" id="zones" aria-label="Go to"><span class="goto-label">Go to</span>${scene.zones
+      .map((z) => `<a href="?mode=${mode.id}&amp;zone=${z.id}" data-zone="${z.id}"${z.id === zone.id ? ' aria-current="true"' : ""}>${escapeHtml(z.title)}</a>`)
+      .join("")}</nav>
+    <p class="evidence"><span class="label">Here</span> <span id="zone-text">${escapeHtml(zone.description)}</span></p>
+    <p class="mode-note">${escapeHtml(scene.about)}</p>
     <p class="fine not-affiliated">${NOT_AFFILIATED} <a href="/about">Sources</a></p>
   </section>
-  <aside class="panel" aria-label="Sounds here">
-    <section class="session" id="session" aria-live="polite"></section>
-    <section class="now-playing">
-      <h2>Now playing</h2>
-      <h3>${scene.living ? "Chosen by you" : "Your sounds"}</h3>
-      <ul class="sound-list" id="mine"></ul>
-      <h3>${scene.living ? "Chosen by others" : "Others' sounds"}</h3>
-      <ul class="sound-list" id="theirs">${listed}</ul>
-    </section>
-    <label class="ambience"><input type="checkbox" id="ambience" disabled /> Background ${scene.living ? "sounds" : mode.ambience === "room" ? "room tone" : mode.ambience}</label>
-  </aside>
 </main>
-<section class="tray${user ? "" : " tray-join"}" id="tray" aria-label="Add a sound">
-  ${
-    user
-      ? `<div class="tray-head"><h2>Add a sound</h2><button type="button" class="link-btn" id="tray-toggle" aria-expanded="true">Hide</button></div>
-  <div class="tray-body" id="tray-body"><div class="cats" id="cats" role="tablist" aria-label="Kinds of sound"></div><div class="chips" id="chips" role="tabpanel" aria-label="Sounds of this kind"></div></div>`
-      : `<div class="tray-head"><h2>Join to add a sound</h2></div>${joinForm(next, null)}`
-  }
-</section>
 <div class="status" id="status" role="status" aria-live="polite"></div>
 <div class="toast" id="toast" aria-live="polite"></div>
-<noscript><p class="noscript">This place needs JavaScript to show people and play sound.</p></noscript>
-<script type="application/json" id="boot">${embed({ sceneId: scene.id, mode: mode.id, shotId: shot.id, snapshot: snap, joined: user !== null })}</script>
+<noscript><p class="noscript">This place needs JavaScript to show it and the people in it.</p></noscript>
+<script type="application/json" id="boot">${embed({ sceneId: scene.id, mode: mode.id, zoneId: zone.id, snapshot: snap, joined: user !== null })}</script>
 <script type="module" src="/client/scene.js"></script>`,
-  );
-}
-
-const personList = (people: Person[]): string =>
-  people.length === 0 ? "nobody" : people.map((p) => `${avatarMark(p.avatar)}${escapeHtml(p.name)}`).join(", ");
-
-export function renderMemory(m: MemorySnapshot): string {
-  const scene = SCENES.find((s) => s.id === m.sceneId);
-  const sounds = m.placements
-    .map((p) => {
-      const shot = scene?.shots.find((s) => s.id === p.shotId);
-      const anchor = shot?.anchors.find((a) => a.id === p.anchorId);
-      return `<li><strong>${escapeHtml(SOUNDS[p.soundId]?.label ?? p.soundId)}</strong> at ${escapeHtml(anchor?.label ?? p.anchorId)}${
-        shot ? ` (${escapeHtml(shot.title)})` : ""
-      } — ${escapeHtml(p.ownerName)}, volume ${Math.round(p.gain * 100)}%</li>`;
-    })
-    .join("");
-  const started = new Date(m.startedAt);
-  const changes = m.timeline.filter((e) => e.t > 0).length;
-
-  return page(
-    `${m.title} — Sound of a City`,
-    `memory-page scene-${m.sceneId} mode-${m.mode}`,
-    `<header class="site-bar">
-  <a class="brand" href="/">Sound of a City</a>
-  <nav><a href="/explore">Places</a> <a href="/archive">Archive</a></nav>
-</header>
-<main class="memory-main">
-  <p class="kicker">A shared memory</p>
-  <h1>${escapeHtml(m.title)}</h1>
-  <p class="when"><time datetime="${m.startedAt}">${started.toISOString().slice(0, 16).replace("T", " ")} UTC</time>
-    · <span id="local-time" data-iso="${m.startedAt}"></span> · ${Math.round(m.durationMs / 1000)} seconds</p>
-  <div class="memory-layout">
-    <section class="stage-area" aria-label="Replay">
-      ${
-        scene?.view === "world"
-          ? `<div class="stage-frame world-frame"><div class="stage world-stage" id="stage"><p class="world-help" aria-hidden="true"><span class="keys">Walk through the memory: drag to look, W A S D or arrows to walk</span><span class="touch">Walk through the memory: drag to look, stick to walk</span></p></div></div>`
-          : `<div class="stage-frame"><div class="stage" id="stage"></div></div>`
-      }
-      <div class="replay-bar">
-        <button type="button" class="btn primary" id="play" disabled>Play the memory</button>
-        <button type="button" class="btn ghost" id="final" disabled>Hear how it ended</button>
-        <input type="range" id="scrub" min="0" max="${m.durationMs}" value="${m.durationMs}" step="100" aria-label="Position in the memory" disabled />
-        <span class="clock" id="clock"></span>
-      </div>
-      <nav class="${scene?.view === "world" ? "goto" : "shots"}" id="shots" aria-label="${scene?.view === "world" ? "Go to" : "Views of this place"}"></nav>
-      <p class="fine">${changes > 0 ? `Replay rebuilds the place from the ${changes} changes people made while it was recording, at the moments they made them.` : "Nobody changed anything while it was recording, so replay plays the sounds as they were."}</p>
-    </section>
-    <aside class="panel">
-      <h2>Who made it</h2>
-      <p class="people-line">${personList(m.contributors)}</p>
-      ${m.listeners.length ? `<p class="fine">Also there, listening: ${personList(m.listeners)}</p>` : ""}
-      <h2>Sounds as it ended</h2>
-      <ul class="memory-sounds">${sounds || "<li>No sounds: this place stayed quiet.</li>"}</ul>
-      <p class="fine">Every sound is synthesised in your browser by this app (original, no recordings). Nothing anyone said was recorded.</p>
-      <p class="share"><a href="/memory/${m.memoryId}">Link to this memory</a></p>
-    </aside>
-  </div>
-</main>
-${footer}
-<script type="application/json" id="boot">${embed(m)}</script>
-<script type="module" src="/client/memory.js"></script>`,
-  );
-}
-
-export function renderArchive(memories: MemorySummary[]): string {
-  const cards = memories
-    .map((m) => {
-      const scene = SCENES.find((s) => s.id === m.sceneId);
-      const thumb = scene?.shots[0].thumb;
-      return `<li class="memory-card"><a href="/memory/${m.id}">
-        ${thumb ? `<img src="${thumb}" alt="" loading="lazy" />` : `<span class="placeholder-art">LAB ANU</span>`}
-        <span class="memory-title">${escapeHtml(m.title)}</span>
-        <span class="memory-meta"><time datetime="${m.savedAt}">${m.savedAt.slice(0, 16).replace("T", " ")} UTC</time> · ${m.sounds} ${m.sounds === 1 ? "sound" : "sounds"}</span>
-        <span class="memory-meta">${m.contributors.length ? `by ${m.contributors.map(escapeHtml).join(", ")}` : "nobody added a sound"}</span>
-      </a></li>`;
-    })
-    .join("");
-  return page(
-    "Archive — Sound of a City",
-    "archive",
-    `<header class="site-bar">
-  <a class="brand" href="/">Sound of a City</a>
-  <nav><a href="/explore">Places</a> <a href="/about">About</a></nav>
-</header>
-<main class="archive-main">
-  <h1>Archive</h1>
-  <p class="lede">Every visit leaves a different soundscape.</p>
-  ${cards ? `<ul class="memory-grid">${cards}</ul>` : `<p class="empty">No memories yet. Go to a place, add a sound, and start a 3-minute memory.</p>`}
-</main>
-${footer}`,
   );
 }
 
 export function renderAbout(): string {
   return page(
-    "Sources, sounds and privacy — Sound of a City",
+    "Sources and privacy — Sound of a City",
     "about",
-    `<header class="site-bar">
-  <a class="brand" href="/">Sound of a City</a>
-  <nav><a href="/explore">Places</a> <a href="/archive">Archive</a></nav>
-</header>
+    `${nav}
 <main class="prose">
-  <h1>Sources, sounds and privacy</h1>
+  <h1>Sources and privacy</h1>
   <p><strong>${NOT_AFFILIATED}</strong></p>
 
   <h2 id="how">How it works</h2>
   <ol>
-    <li>Pick a place. It starts silent: the shape of a real ANU space, without its sound.</li>
-    <li>Choose a name and a cat or a dog. No account.</li>
-    <li>Pick an everyday sound and put it where it belongs: a lift chime at the lifts, a tap at the sink. A figure appears doing that thing, and everyone in the place sees and hears it within about a second.</li>
-    <li>Anyone can start a 3-minute memory. The server keeps the clock, so everyone sees the same time. When it ends, the place is saved as it sounded, with everyone's names, and starts silent again.</li>
-    <li>Saved memories are in the <a href="/archive">archive</a>; replay rebuilds them change by change.</li>
+    <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
+    <li>Walk with W A S D or the arrow keys, drag to look, or use <em>Go to</em>. Wander far off the forest trail and a kangaroo comes to point you back.</li>
+    <li>Everyone in the place sees everyone else, at every time of day. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
   </ol>
-  <p>You can change or remove only your own sounds. Sound only starts after you press <em>Enable sound</em>.</p>
+  <p>Sound is being redesigned and isn't in the place for now.</p>
 
-  <h2>Where the pictures come from</h2>
-  <p>Every scene photo was taken by the project's author on the ANU campus (the Chifley bridge at night on 4 November 2026) and is published with their permission. Before publishing, everyone who appears in a photo, and a TV screen showing people, was blurred beyond recognition, and the photos' metadata (time, phone, location) was removed.</p>
-  <ul>
-    <li><strong>Marie Reay Teaching Centre, ground floor:</strong> six photos — the lift lobby, the lifts, the orange stair, the stair and tiered seats, the tea point, and the entrance from the Chifley bridge. The tea point faces the recycling bins (the author's own observation). The photos don't give distances or a floor plan, and none is implied: moving between views only changes which photo you're looking at.</li>
-    <li><strong>Chifley bridge:</strong> one photo, taken at night after rain. <em>Rainy Dusk</em> is that photo with falling rain added. <em>Early Morning</em> and <em>Busy Weekday</em> are colour grades of the same photo, not photographs taken at those times.</li>
-    <li><strong>LAB ANU:</strong> a placeholder drawing. There is no licensed photo of the café yet, so its real layout isn't shown or claimed.</li>
-  </ul>
-  <p>The people are drawn figures, not photographs, and are deliberately simple. They stand for the sounds people add, one figure per sound.</p>
-
-  <h2>Where the sounds come from</h2>
-  <p>Every sound is synthesised in your browser with the Web Audio API by this app's own code. There are no recordings, no music and no third-party audio. Nothing is recorded from your microphone.</p>
+  <h2>Where the place comes from</h2>
+  <p>It's imagined, not a real location. Ground, sand, timber, furniture, food, plants and skies are free CC0 (public domain) models, surfaces and HDR skies from <a href="https://polyhaven.com">Poly Haven</a>; each is listed with its author in <code>public/assets-manifest.json</code>. Trees, buildings and the water are drawn from simple shapes. The cats, dogs and the kangaroo are the app's own drawings.</p>
 
   <h2>What is stored</h2>
   <ul>
     <li>Your nickname, cat-or-dog choice, and a random session token (the server keeps only its hash). No email, no account, no location.</li>
-    <li>Which sounds you placed, where, at what volume and when.</li>
-    <li>Saved memories, with the nicknames of the people who made them, listed publicly in the archive.</li>
+    <li>Where you stand and what you say are never stored: they go to the people in the place as they happen, and are gone.</li>
   </ul>
 </main>
 ${footer}`,
@@ -382,10 +205,7 @@ export function renderReadme(): string {
   return page(
     "About — Sound of a City",
     "about",
-    `<header class="site-bar">
-  <a class="brand" href="/">Sound of a City</a>
-  <nav><a href="/explore">Places</a> <a href="/archive">Archive</a></nav>
-</header>
+    `${nav}
 <main class="prose readme">
 ${marked.parse(readmeSource, { async: false })}
 </main>

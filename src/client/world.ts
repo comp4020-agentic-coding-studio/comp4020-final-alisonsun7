@@ -1,35 +1,17 @@
-// The walkable world: a first-person view you move through, with the spots
-// you can put a sound on, everyone's sounds, and a figure making each one.
-// The live place and the memory replay both use it; only the live place
-// makes the spots clickable.
-//
-// The spots and sound markers are ordinary buttons laid over the canvas at
-// their projected positions, so they can be tabbed to, read by a screen
-// reader, and clicked, exactly like the photo version's anchors.
+// The walkable world: a first-person view you move through, the other
+// people in it, what they say over their heads, and the kangaroo who comes
+// when you wander off the trail. (Sound was taken out: ADR 010.)
 import * as THREE from "three";
-import { SOUNDS, type Anchor, type Pose, type Scene, type SoundId } from "../shared/catalog.js";
-import type { Person, Placement } from "../shared/protocol.js";
+import type { Scene } from "../shared/catalog.js";
+import type { Person } from "../shared/protocol.js";
 import { figureSvg, kangarooSvg, passerSvg } from "./figures.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
-import { cafeKit } from "./cafe.js";
-import { seasideKit } from "./seaside.js";
-import type { Ambience, Ground } from "./synth.js";
 import type { PlaceKit } from "./places.js";
-import { campusKit, canStand, type Built } from "./world-build.js";
+import { seasideKit } from "./seaside.js";
+import { canStand, type Built } from "./world-build.js";
 
-const KITS: Record<string, PlaceKit> = { campus: campusKit, cafe: cafeKit, seaside: seasideKit };
-
-export interface WorldDrawOptions {
-  interactive: boolean;
-  mineId: string | null;
-  choosing: SoundId | null;
-  selected: string | null;
-  onAnchor?: (shotId: string, anchorId: string) => void;
-  onMarker?: (placementId: string) => void;
-  // the spot whose card is open ("shot/anchor"), drawn as chosen
-  openSpot?: string | null;
-}
+const KITS: Record<string, PlaceKit> = { seaside: seasideKit };
 
 export interface Listener {
   x: number;
@@ -37,8 +19,6 @@ export interface Listener {
   z: number;
   yaw: number;
   inside: boolean;
-  // the background where you stand, when the place sets it
-  ambience?: Ambience;
 }
 
 interface Options {
@@ -47,20 +27,7 @@ interface Options {
   onListen?: (l: Listener) => void;
   // the nearest other person within talking distance, or null, when it changes
   onNear?: (person: Person | null) => void;
-  // a footstep: yours, or someone else's where they are (ADR 009)
-  onStep?: (step: Step) => void;
 }
-
-export interface Step {
-  mine: boolean;
-  x: number;
-  z: number;
-  ground: Ground;
-  wet: boolean;
-}
-
-// About one step every 0.72 m walked.
-const STRIDE = 0.72;
 
 // Someone else in the place, as the server last placed them.
 export interface Other extends Person {
@@ -78,27 +45,11 @@ interface OtherView {
   label: HTMLDivElement;
   bubble: HTMLDivElement;
   bubbleTimer?: ReturnType<typeof setTimeout>;
-  walked: number;
 }
 
 // Close enough to talk, and how long words stay over someone's head.
 const TALK = 3.5;
 const SAID_MS = 5000;
-
-interface Spot {
-  shotId: string;
-  anchor: Anchor;
-  el: HTMLButtonElement;
-  at: THREE.Vector3;
-  inside: boolean;
-}
-
-interface Figure {
-  key: string;
-  sprite: THREE.Sprite;
-  base: THREE.Vector3;
-  bounce: number;
-}
 
 interface Passer {
   sprite: THREE.Sprite;
@@ -162,9 +113,6 @@ export class WorldView {
   private sun = new THREE.DirectionalLight();
   private hemi = new THREE.HemisphereLight();
   private overlay: HTMLDivElement;
-  private spots: Spot[] = [];
-  private markers = new Map<string, { el: HTMLButtonElement; at: THREE.Vector3; inside: boolean }>();
-  private figures = new Map<string, Figure>();
   private passers: Passer[] = [];
   private rain: THREE.LineSegments | null = null;
   private raycaster = new THREE.Raycaster();
@@ -182,9 +130,7 @@ export class WorldView {
   private stuck = 0;
   private zone: string;
   private last = performance.now();
-  private occlusionAt = 0;
-  private drawOpts: WorldDrawOptions = { interactive: false, mineId: null, choosing: null, selected: null };
-  private placements: Placement[] = [];
+  private reportedAt = 0;
   private sunrise: { from: number; ms: number } | null = null;
   // with a photographed sky lighting the models, the drawn fill light is less
   private hemiScale = 1;
@@ -203,7 +149,6 @@ export class WorldView {
   private strayFor = 0;
   private others = new Map<string, OtherView>();
   private near: string | null = null;
-  private walked = 0;
   // zone changes are only reported once the page has its view
   private ready = false;
 
@@ -225,7 +170,7 @@ export class WorldView {
     canvas.setAttribute("role", "img");
     canvas.setAttribute(
       "aria-label",
-      `${scene.title}, drawn in 3D from Wen's photos. Walk with the arrow keys or W A S D, drag to look around, or use the Go to buttons.`,
+      `${scene.title}, drawn in 3D. Walk with the arrow keys or W A S D, drag to look around, or use the Go to buttons.`,
     );
     host.append(canvas);
 
@@ -236,7 +181,7 @@ export class WorldView {
     this.camera = new THREE.PerspectiveCamera(68, 1, 0.08, 600);
     this.camera.rotation.order = "YXZ";
 
-    this.kit = KITS[scene.id] ?? campusKit;
+    this.kit = KITS[scene.id] ?? seasideKit;
     this.built = this.kit.build();
     this.scene3.add(this.built.root);
 
@@ -282,7 +227,6 @@ export class WorldView {
     if (mode === "morning" && !reduced()) this.sunrise = { from: performance.now(), ms: 3800 };
     this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
 
-    this.buildSpots();
     this.buildPassers();
     if (mode === "rainy-dusk") this.buildRain();
 
@@ -300,35 +244,8 @@ export class WorldView {
 
   // ---- public ------------------------------------------------------------
 
-  draw(placements: Placement[], opts: WorldDrawOptions): void {
-    this.placements = placements;
-    this.drawOpts = opts;
-    this.host.classList.toggle("choosing", opts.choosing !== null);
-    this.syncFigures();
-    this.syncMarkers();
-    for (const s of this.spots) {
-      const accepts = opts.choosing !== null && s.anchor.sounds.includes(opts.choosing);
-      const key = `${s.shotId}/${s.anchor.id}`;
-      // every spot says what it is and how many sounds it has
-      const playing = placements.filter((p) => p.shotId === s.shotId && p.anchorId === s.anchor.id);
-      const n = playing.length;
-      // a living place's spot plays one sound: name it
-      const label = `${s.anchor.label} · ${n === 0 ? "quiet" : n === 1 && this.scene.living ? SOUNDS[playing[0].soundId].label : `${n} ${n === 1 ? "sound" : "sounds"}`}`;
-      s.el.querySelector(".spot-label")!.textContent = label;
-      s.el.classList.toggle("has-sounds", n > 0);
-      s.el.classList.toggle("open", opts.openSpot === key);
-      s.el.classList.toggle("accepts", accepts);
-      s.el.classList.toggle("dim", opts.choosing !== null && !accepts);
-      s.el.setAttribute(
-        "aria-label",
-        accepts ? `Put ${SOUNDS[opts.choosing!].label.toLowerCase()} at ${s.anchor.label.toLowerCase()}` : `${label}. Open to hear, add or change sounds here.`,
-      );
-    }
-    this.layoutOverlay(true);
-  }
-
   goTo(zoneId: string): void {
-    const shot = this.scene.shots.find((s) => s.id === zoneId);
+    const shot = this.scene.zones.find((s) => s.id === zoneId);
     if (!shot?.spawn) return;
     if (reduced()) return this.placeAt(zoneId);
     this.host.classList.add("fading");
@@ -340,25 +257,6 @@ export class WorldView {
 
   currentZone(): string {
     return this.zone;
-  }
-
-  // Where a placement is heard from, and whether it's indoors.
-  where(p: Pick<Placement, "id" | "shotId" | "anchorId">): { pos: [number, number, number]; inside: boolean } | null {
-    const m = this.markers.get(p.id);
-    if (m) return { pos: [m.at.x, m.at.y, m.at.z], inside: m.inside };
-    const spot = this.spots.find((s) => s.shotId === p.shotId && s.anchor.id === p.anchorId);
-    return spot ? { pos: [spot.at.x, spot.at.y, spot.at.z], inside: spot.inside } : null;
-  }
-
-  pulse(placementId: string): void {
-    const m = this.markers.get(placementId);
-    if (m) {
-      m.el.classList.remove("pulse");
-      void m.el.offsetWidth;
-      m.el.classList.add("pulse");
-    }
-    const f = this.figures.get(placementId);
-    if (f) f.bounce = 1;
   }
 
   focusCanvas(): void {
@@ -396,8 +294,6 @@ export class WorldView {
     try {
       await this.kit.furnish(this.built, (f) => (label.textContent = `Setting out the furniture… ${Math.round(f * 100)}%`));
       label.remove();
-      // figures were placed before the furniture's solids existed
-      this.layoutOverlay(true);
     } catch {
       label.textContent = "Some furniture didn't load. Everything else still works.";
       setTimeout(() => label.remove(), 6000);
@@ -444,124 +340,9 @@ export class WorldView {
     b.paving.metalness = l.wet ? 0.18 : 0;
     b.paving.color.setHex(l.wet ? 0x8f8d90 : 0xffffff);
     this.renderer.toneMappingExposure = l.exposure;
-    for (const f of this.figures.values()) (f.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
     for (const p of this.passers) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
   }
 
-  // ---- spots, markers, figures ------------------------------------------
-
-  private buildSpots(): void {
-    const ring = new THREE.RingGeometry(0.32, 0.42, 32);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xffd38a, transparent: true, opacity: 0.55, depthWrite: false });
-    for (const shot of this.scene.shots) {
-      for (const anchor of shot.anchors) {
-        if (!anchor.at) continue;
-        const el = document.createElement("button");
-        el.type = "button";
-        el.className = "anchor world-spot";
-        el.dataset.anchor = `${shot.id}/${anchor.id}`;
-        el.hidden = true;
-        el.innerHTML = `<span class="spot-dot" aria-hidden="true"></span><span class="spot-label"></span>`;
-        el.querySelector(".spot-label")!.textContent = anchor.label;
-        el.onclick = () => this.drawOpts.onAnchor?.(shot.id, anchor.id);
-        this.overlay.append(el);
-        const at = new THREE.Vector3(anchor.at.x, anchor.at.y, anchor.at.z);
-        this.spots.push({ shotId: shot.id, anchor, el, at, inside: shot.inside ?? false });
-        // a faint ring on the floor under the spot
-        if (anchor.foot) {
-          const r = new THREE.Mesh(ring, ringMat);
-          r.rotation.x = -Math.PI / 2;
-          r.position.set(anchor.foot.x, (anchor.foot.y ?? 0) + 0.03, anchor.foot.z);
-          this.built.root.add(r);
-        }
-      }
-    }
-  }
-
-  private spotOf(p: Placement): Spot | undefined {
-    return this.spots.find((s) => s.shotId === p.shotId && s.anchor.id === p.anchorId);
-  }
-
-  // The nth sound at one spot sits a little to the side of the others.
-  private offset(p: Placement): number {
-    const same = this.placements.filter((q) => q.shotId === p.shotId && q.anchorId === p.anchorId);
-    const i = same.indexOf(p);
-    return [0, 0.75, -0.75, 1.5, -1.5, 0.4][i % 6] ?? 0;
-  }
-
-  private syncMarkers(): void {
-    const seen = new Set<string>();
-    for (const p of this.placements) {
-      const spot = this.spotOf(p);
-      if (!spot) continue;
-      seen.add(p.id);
-      let m = this.markers.get(p.id);
-      if (!m) {
-        const el = document.createElement("button");
-        el.type = "button";
-        el.className = "marker world-marker";
-        el.dataset.placement = p.id;
-        el.innerHTML = `<span class="marker-ring" aria-hidden="true"></span><span class="marker-label"></span>`;
-        el.onclick = () => this.drawOpts.onMarker?.(p.id);
-        this.overlay.append(el);
-        m = { el, at: new THREE.Vector3(), inside: spot.inside };
-        this.markers.set(p.id, m);
-      }
-      const dx = this.offset(p);
-      m.at.set(spot.at.x + dx * 0.6, spot.at.y + 0.5, spot.at.z + dx * 0.25);
-      const mine = p.ownerId === this.drawOpts.mineId;
-      m.el.classList.toggle("mine", mine);
-      m.el.classList.toggle("selected", p.id === this.drawOpts.selected);
-      m.el.style.setProperty("--level", String(0.4 + p.gain * 0.6));
-      m.el.querySelector(".marker-label")!.textContent = SOUNDS[p.soundId].label;
-      m.el.setAttribute("aria-label", `${SOUNDS[p.soundId].label} at ${spot.anchor.label.toLowerCase()}, ${mine ? "yours" : `by ${p.ownerName}`}, volume ${Math.round(p.gain * 100)}%`);
-    }
-    for (const [id, m] of this.markers) {
-      if (seen.has(id)) continue;
-      m.el.remove();
-      this.markers.delete(id);
-    }
-  }
-
-  private syncFigures(): void {
-    const seen = new Set<string>();
-    // In a living place the cats and dogs are only the people who are here
-    // (ADR 008); a spot with a sound shows its glowing ring instead.
-    if (this.scene.living) {
-      for (const f of this.figures.values()) this.built.root.remove(f.sprite);
-      this.figures.clear();
-      return;
-    }
-    for (const p of this.placements) {
-      const spot = this.spotOf(p);
-      const foot = spot?.anchor.foot;
-      if (!spot || !foot) continue;
-      seen.add(p.id);
-      const pose: Pose = spot.anchor.stand.pose ?? SOUNDS[p.soundId].pose;
-      const key = `${p.ownerAvatar}:${pose}:${p.ownerId}`;
-      let f = this.figures.get(p.id);
-      if (f && f.key !== key) {
-        this.built.root.remove(f.sprite);
-        f = undefined;
-      }
-      if (!f) {
-        const sprite = figureSprite(key, figureSvg(p.ownerAvatar, pose, p.ownerId), pose === "umbrella", this.light.figureTint);
-        f = { key, sprite, base: new THREE.Vector3(), bounce: 0 };
-        this.built.root.add(sprite);
-        this.figures.set(p.id, f);
-      }
-      const dx = this.offset(p);
-      // sitting figures sit on the tier: their feet hang to the one below
-      const y = foot.y ? foot.y - 0.5 : 0;
-      f.base.set(foot.x + dx, y, foot.z + Math.abs(dx) * 0.2);
-      f.sprite.position.copy(f.base);
-    }
-    for (const [id, f] of this.figures) {
-      if (seen.has(id)) continue;
-      this.built.root.remove(f.sprite);
-      this.figures.delete(id);
-    }
-  }
 
   // Passers-by who make no sound: they only show how busy the hour is.
   private buildPassers(): void {
@@ -600,7 +381,7 @@ export class WorldView {
   // ---- moving ------------------------------------------------------------
 
   private placeAt(zoneId: string): void {
-    const shot = this.scene.shots.find((s) => s.id === zoneId) ?? this.scene.shots[0];
+    const shot = this.scene.zones.find((s) => s.id === zoneId) ?? this.scene.zones[0];
     const s = shot.spawn ?? { x: 0, z: 0, yaw: 0 };
     this.x = s.x;
     this.z = s.z;
@@ -726,21 +507,7 @@ export class WorldView {
   }
 
   private tryMove(dx: number, dz: number): boolean {
-    const ox = this.x;
-    const oz = this.z;
-    const moved = this.slide(dx, dz);
-    if (moved) {
-      this.walked += Math.hypot(this.x - ox, this.z - oz);
-      if (this.walked >= STRIDE) {
-        this.walked -= STRIDE;
-        this.opts.onStep?.(this.stepAt(this.x, this.z, true));
-      }
-    }
-    return moved;
-  }
-
-  private stepAt(x: number, z: number, mine: boolean): Step {
-    return { mine, x, z, ground: this.kit.groundAt?.(x, z) ?? "floor", wet: this.mode === "rainy-dusk" && !this.kit.isInside(x, z) };
+    return this.slide(dx, dz);
   }
 
   private slide(dx: number, dz: number): boolean {
@@ -842,12 +609,6 @@ export class WorldView {
     this.camera.rotation.set(this.pitch, this.yaw, 0);
     this.sky.position.copy(this.camera.position);
 
-    for (const f of this.figures.values()) {
-      if (f.bounce > 0) {
-        f.bounce = Math.max(0, f.bounce - dt * 3);
-        f.sprite.position.y = f.base.y + Math.sin(f.bounce * Math.PI) * 0.06;
-      }
-    }
     if (!reduced()) this.movePassers(dt);
     this.moveOthers(dt);
     if (this.rain && !reduced()) {
@@ -865,17 +626,17 @@ export class WorldView {
     }
 
     this.renderer.render(this.scene3, this.camera);
-    const recheck = now - this.occlusionAt > 160;
-    this.layoutOverlay(recheck);
-    // where you are, for the end-to-end checks
-    if (recheck) this.host.dataset.at = `${this.x.toFixed(1)},${this.z.toFixed(1)}`;
+    // where you are, for the end-to-end checks, a few times a second
+    if (now - this.reportedAt > 160) {
+      this.reportedAt = now;
+      this.host.dataset.at = `${this.x.toFixed(1)},${this.z.toFixed(1)}`;
+    }
     this.opts.onListen?.({
       x: this.x,
       y: EYE,
       z: this.z,
       yaw: this.yaw,
       inside: this.kit.isInside(this.x, this.z),
-      ambience: this.kit.ambienceAt?.(this.x, this.z, this.mode),
     });
   }
 
@@ -898,7 +659,7 @@ export class WorldView {
         bubble.className = "said-bubble";
         bubble.hidden = true;
         this.overlay.append(label, bubble);
-        o = { person: p, sprite, pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble, walked: 0 };
+        o = { person: p, sprite, pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble };
         this.others.set(p.id, o);
       }
       o.goal.set(p.x, 0, p.z);
@@ -933,14 +694,7 @@ export class WorldView {
       const before = o.at.clone();
       // ease towards where the server last put them
       o.at.lerp(o.goal, Math.min(1, dt * 8));
-      const step = before.distanceTo(o.at);
-      const speed = step / Math.max(dt, 1e-3);
-      // their footsteps, from where they are; a jump (Go to) makes none
-      o.walked = step > 3 ? 0 : o.walked + step;
-      if (o.walked >= STRIDE) {
-        o.walked -= STRIDE;
-        this.opts.onStep?.(this.stepAt(o.at.x, o.at.z, false));
-      }
+      const speed = before.distanceTo(o.at) / Math.max(dt, 1e-3);
       const pose = speed > 0.4 ? "walk" : "stand";
       if (pose !== o.pose) {
         o.pose = pose;
@@ -1250,34 +1004,5 @@ export class WorldView {
         map.offset.x = left ? 1 : 0;
       }
     }
-  }
-
-  // Put each spot and marker's button where its point is on screen; hide
-  // the ones behind you, too far, or behind a wall.
-  private layoutOverlay(checkWalls: boolean): void {
-    const w = this.host.clientWidth;
-    const h = this.host.clientHeight;
-    if (checkWalls) this.occlusionAt = performance.now();
-    const cam = this.camera.position;
-    const v = new THREE.Vector3();
-    const show = (el: HTMLElement, at: THREE.Vector3, maxD: number): void => {
-      const d = at.distanceTo(cam);
-      v.copy(at).project(this.camera);
-      let visible = d < maxD && v.z < 1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1;
-      if (visible && checkWalls) {
-        this.raycaster.set(cam, at.clone().sub(cam).normalize());
-        this.raycaster.far = d - 0.5;
-        visible = this.raycaster.intersectObjects(this.built.occluders, false).length === 0;
-        el.dataset.blocked = String(!visible);
-      } else if (visible) visible = el.dataset.blocked !== "true";
-      this.raycaster.far = Infinity;
-      if (el.hidden === visible) el.hidden = !visible;
-      if (!visible) return;
-      el.style.transform = `translate(${((v.x + 1) / 2) * w}px, ${((1 - v.y) / 2) * h}px) translate(-50%, -50%)`;
-      el.style.setProperty("--near", String(Math.max(0.55, Math.min(1.15, 6 / d))));
-    };
-    const choosing = this.drawOpts.choosing !== null;
-    for (const s of this.spots) show(s.el, s.at, choosing ? 34 : 15);
-    for (const m of this.markers.values()) show(m.el, m.at, 34);
   }
 }

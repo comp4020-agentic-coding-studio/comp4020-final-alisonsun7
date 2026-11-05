@@ -4,7 +4,8 @@
 // character art exists, and they never copy anyone from the photos.
 //
 // Every figure belongs to one placed sound and does what that sound is.
-import type { Pose } from "../shared/catalog.js";
+// How a figure stands.
+export type Pose = "stand" | "walk" | "talk" | "sit" | "back" | "umbrella" | "lean";
 import type { Avatar } from "../shared/protocol.js";
 
 // Muted colours that sit in a photo rather than on top of it.

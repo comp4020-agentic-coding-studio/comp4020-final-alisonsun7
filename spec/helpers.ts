@@ -1,7 +1,6 @@
 // What the spec files share: joining as a person, reading a place's live
-// stream, and sending operations, all over HTTP against a running app.
-import { randomBytes } from "node:crypto";
-import type { Committed, OpResult, ServerMessage, Snapshot } from "../src/shared/protocol.ts";
+// stream, all over HTTP against a running app.
+import type { ServerMessage, Snapshot } from "../src/shared/protocol.ts";
 
 export interface Person {
   name: string;
@@ -21,17 +20,6 @@ export async function join(baseUrl: string, name: string, avatar: "cat" | "dog" 
   const cookie = set.split(";")[0];
   if (!cookie.startsWith("soac_session=")) throw new Error(`join set no session cookie: ${set}`);
   return { name, cookie };
-}
-
-export const opId = (): string => `op_${randomBytes(8).toString("hex")}`;
-
-export async function sendOp(baseUrl: string, who: Person | null, sessionId: string, body: unknown): Promise<{ status: number; result: OpResult }> {
-  const res = await fetch(new URL(`/api/sessions/${sessionId}/ops`, baseUrl), {
-    method: "POST",
-    headers: { "content-type": "application/json", ...(who ? { cookie: who.cookie } : {}) },
-    body: JSON.stringify(body),
-  });
-  return { status: res.status, result: (await res.json()) as OpResult };
 }
 
 // One open /api/stream connection, collecting every message it receives.
@@ -107,16 +95,7 @@ export class Stream {
     return snaps[snaps.length - 1].msg as Snapshot;
   }
 
-  committed(): Committed[] {
-    return this.messages.map((m) => m.msg).filter((m): m is Committed => m.type === "committed");
-  }
-
   close(): void {
     this.controller.abort();
   }
 }
-
-export const isCommitted =
-  (kind: string) =>
-  (m: ServerMessage): m is Committed =>
-    m.type === "committed" && m.payload.kind === kind;

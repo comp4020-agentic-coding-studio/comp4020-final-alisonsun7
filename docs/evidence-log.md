@@ -453,3 +453,24 @@ heard 7 at 0.087 against her 0.55; Bo with footsteps off, none);
 `pnpm check` 94/94; `world-two-browsers` passes; `two-browsers` 29/29.
 
 **Not run:** listening by ear to the step sounds on each ground.
+
+## 19. Sound taken out (2026-11-05, ADR 010)
+
+**Prompt (Wen):** delete everything to do with sound; Wen will give a new
+design for it.
+
+**Done:** the scope was stated first (what goes, what stays, no data
+deleted, the old code tagged `before-sound-removal`). Removed the audio
+engine and synthesis, spots, labels, cards, sound map, sound and footsteps
+switches, sound ops, memories, archive and replay, the scenes that existed
+only for sound, and their tests; rewrote the page script, templates,
+catalogue, protocol and session module around what's left (the place,
+people, talk, joining). The about page no longer describes sound.
+
+**Corrections:** a join-form check still expected "public archive" in the
+fine print; it now checks the new wording.
+
+**Results:** `pnpm check` 37/37 (twice); `world-two-browsers` 9/9;
+`meet-and-talk` 14/14, including "nothing about sound is offered"; a new
+spec block checks the page has no sound controls and the sound routes are
+404.

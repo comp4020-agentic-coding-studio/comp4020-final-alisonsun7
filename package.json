@@ -12,7 +12,7 @@
     "start": "node dist/server.js",
     "dev": "pnpm build && node dist/server.js",
     "scenes": "node scripts/build-scenes.mjs",
-    "e2e": "node e2e/two-browsers.mjs"
+    "e2e": "node e2e/world-two-browsers.mjs && node e2e/meet-and-talk.mjs"
   },
   "devDependencies": {
     "@types/jsdom": "^30.0.0",

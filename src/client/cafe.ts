@@ -1,24 +1,18 @@
-// The corner café: an imagined place, not a real one. A brick and plaster
-// room with a timber floor, a counter with an espresso cart and the till,
-// round tables, a bar along the shop window, and the street outside. The
-// furniture, food, plants, surfaces and skies are CC0 models and textures
-// from Poly Haven (public/assets-manifest.json lists each one); walls,
-// windows and tables are simple shapes.
+// The café's room, which the seaside puts on its boardwalk: an imagined
+// place, not a real one. A brick and plaster room with a timber floor, a
+// counter with an espresso cart and the till, round tables, and a bar along
+// the glass front. The furniture, food, plants and surfaces are CC0 models
+// and textures from Poly Haven (public/assets-manifest.json lists each one);
+// walls, windows and tables are simple shapes.
 //
 // Metres: x east, y up, z south. The room is x 0..14, z 0..10; its glass
-// front faces the street at z = 10.
+// front is at z = 10.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import type { PlaceKit } from "./places.js";
-import { Builder, canvasTexture, std, type Built, type Rect } from "./world-build.js";
+import { Builder, canvasTexture, std, type Rect } from "./world-build.js";
 
-const ROOM: Rect = { x0: 0, x1: 14, z0: 0, z1: 10 };
 const H = 3.6;
 const DOOR = { x0: 6.1, x1: 7.9 };
-
-function inside(x: number, z: number): boolean {
-  return x > ROOM.x0 && x < ROOM.x1 && z > ROOM.z0 && z < ROOM.z1;
-}
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -189,66 +183,6 @@ export function buildCafeRoom(b: Builder): CafeRoom {
   };
 }
 
-function build(): Built {
-  const b = new Builder();
-  const room = buildCafeRoom(b);
-  const brickOut = surface("brick_wall_001", [5, 1.6]);
-  const plaster = surface("plastered_wall", [3, 1]);
-  const pavement = surface("brick_pavement_02", [10, 3]);
-  const asphalt = surface("asphalt_02", [8, 3]);
-  const blackMetal = std(0x1d1e20, { metalness: 0.6, roughness: 0.4 });
-  // windows across the street: some lit at dusk (the time of day sets how
-  // much), the rest dark glass
-  const windows = std(0x2a3038, { emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.3 });
-  const darkPanes = std(0x222830, { roughness: 0.25, metalness: 0.2 });
-  const lampHead = std(0x222222, { emissive: 0xffcf8a, emissiveIntensity: 0 });
-
-  // ---- outside -------------------------------------------------------------
-
-  b.box(brickOut, -6, -0.25, 0, 7, -2, 10.15, { occludes: true, solid: true });
-  b.box(plaster, 14.25, 22, 0, 6, -2, 10.15, { occludes: true, solid: true });
-  // footpath and road
-  const path = b.floor(pavement, -12, 26, 10.15, 14, 0.0);
-  path.receiveShadow = true;
-  b.box(std(0x8c8a86), -12, 26, 0, 0.14, 13.9, 14.05);
-  b.floor(asphalt, -12, 26, 14.05, 24, -0.14);
-  for (let x = -10; x < 26; x += 4) b.box(std(0xe8e4da), x, x + 2, -0.135, -0.13, 18.9, 19.1, { shadow: false });
-  // buildings across the street, their windows lit at dusk
-  for (const [x0, x1, h, colour] of [
-    [-12, -2, 10, 0x8d6e5a],
-    [-2, 9, 13, 0xb9a891],
-    [9, 17, 9, 0x6f7d84],
-    [17, 26, 12, 0xa58a6c],
-  ] as [number, number, number, number][]) {
-    b.box(std(colour, { roughness: 0.9 }), x0, x1, -0.14, h, 25, 31, { occludes: true });
-    for (let y = 1.5; y < h - 1; y += 3)
-      for (let x = x0 + 0.8; x < x1 - 1.4; x += 2.4)
-        b.box(Math.floor(x * 7 + y * 3) % 5 < 3 ? windows : darkPanes, x, x + 1.4, y, y + 1.8, 24.95, 25.0, { shadow: false });
-  }
-  // a street lamp by the kerb
-  b.cylinder(blackMetal, 3, 13.6, 0.07, 0, 4.6, 8);
-  b.box(lampHead, 2.75, 3.25, 4.5, 4.7, 13.35, 13.85);
-  const lamp = new THREE.PointLight(0xffcf8a, 0, 18, 1.6);
-  lamp.position.set(3, 4.3, 13.6);
-  b.root.add(lamp);
-  b.solids.push({ x0: 2.85, x1: 3.15, z0: 13.45, z1: 13.75 });
-
-  return {
-    root: b.root,
-    occluders: b.occluders,
-    floors: b.floors,
-    walkable: [...room.walkable, { x0: -5.5, x1: 21.5, z0: 10.4, z1: 13.7 }],
-    solids: b.solids,
-    paving: pavement,
-    glass: room.glass,
-    windows,
-    ceilingStrips: room.bulbs,
-    lampHead,
-    lamp,
-    ceilingLights: room.ceilingLights,
-  };
-}
-
 const TABLES: [number, number][] = [
   [2.2, 5.6],
   [4.6, 6.6],
@@ -288,10 +222,6 @@ const PROPS: Prop[] = [
   { id: "shrub_04", height: 0.75, at: [13.4, 3.4], y: 0.42, turn: 2 },
   { id: "shrub_04", height: 0.6, at: [-1.0, 11.0], y: 0.42, turn: 1 },
 ];
-
-async function furnish(built: Built, progress: (done: number) => void): Promise<void> {
-  await furnishCafe(built.root, built.solids, progress);
-}
 
 // Loads the café's furniture into `parent` (the room's root, wherever it has
 // been put), adding what can't be walked through to `solids`.
@@ -343,49 +273,3 @@ export async function furnishCafe(parent: THREE.Object3D, solids: Rect[], progre
     }
   }
 }
-
-export const cafeKit: PlaceKit = {
-  build,
-  furnish,
-  isInside: inside,
-  zoneAt(x, z) {
-    if (!inside(x, z)) return "street";
-    if (z < 4.8) return "counter";
-    if (z > 8.2) return "window";
-    return "tables";
-  },
-  passerPaths: [
-    [
-      [-5, 12.2],
-      [21, 12.4],
-    ],
-    [
-      [20, 11.4],
-      [7, 11.6],
-      [7, 9.4],
-      [7, 4.2],
-      [9.6, 3.6],
-    ],
-    [
-      [-4, 13.1],
-      [21, 13.0],
-    ],
-    [
-      [7.4, 9.2],
-      [7.4, 4.0],
-      [5.6, 3.6],
-    ],
-  ],
-  rainAt(r) {
-    return [-12 + r() * 38, 10.6 + r() * 14];
-  },
-  sunTarget: [7, 0, 10],
-  // the shop front faces the street to the south: a low morning sun comes in
-  // through the glass and across the floor
-  sunDirs: { morning: [0.62, 0.24, 0.75], weekday: [0.25, 0.88, 0.42] },
-  skies: {
-    morning: { url: "/assets/skies/qwantani_dawn_puresky.hdr", intensity: 1 },
-    weekday: { url: "/assets/skies/qwantani_noon_puresky.hdr", intensity: 1 },
-    "rainy-dusk": { url: "/assets/skies/kloppenheim_01_puresky.hdr", intensity: 0.28 },
-  },
-};

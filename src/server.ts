@@ -1,10 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { renderAbout, renderArchive, renderExplore, renderLanding, renderMemory, renderNotFound, renderReadme, renderScene } from "./html.js";
+import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme, renderScene } from "./html.js";
 import { log } from "./log.js";
-import { getMemory, listMemories } from "./memories.js";
 import * as sessions from "./sessions.js";
-import { SCENES, findMode, findScene } from "./shared/catalog.js";
+import { SCENES, findMode, findScene, findZone } from "./shared/catalog.js";
 import { AVATARS, type Avatar } from "./shared/protocol.js";
 import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users.js";
 
@@ -14,12 +13,7 @@ import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users
 const js = (path: string): { file: URL; type: string } => ({ file: new URL(`.${path}`, import.meta.url), type: "text/javascript" });
 export const STATIC: Record<string, { file: URL; type: string; cache?: string }> = {
   "/client/scene.js": js("/client/scene.js"),
-  "/client/memory.js": js("/client/memory.js"),
-  "/client/audio.js": js("/client/audio.js"),
-  "/client/synth.js": js("/client/synth.js"),
   "/client/figures.js": js("/client/figures.js"),
-  "/client/stage.js": js("/client/stage.js"),
-  "/client/ops.js": js("/client/ops.js"),
   "/client/world.js": js("/client/world.js"),
   "/client/world-build.js": js("/client/world-build.js"),
   "/client/sky.js": js("/client/sky.js"),
@@ -31,15 +25,10 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/vendor/three.module.min.js": { file: new URL("../node_modules/three/build/three.module.min.js", import.meta.url), type: "text/javascript", cache: "public, max-age=604800" },
   "/shared/catalog.js": js("/shared/catalog.js"),
   "/shared/protocol.js": js("/shared/protocol.js"),
-  "/shared/state.js": js("/shared/state.js"),
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
 };
 
-// Published scene images, processed from Wen's photos (people blurred, EXIF
-// gone) by scripts/build-scenes.mjs. Looked up by name, never by path, so a
-// request can't reach anything else on disk.
 const PUBLIC_DIR = new URL("../public/", import.meta.url);
-const SCENE_FILE = /^\/scenes\/([a-z0-9-]+\.webp)$/;
 
 // three.js add-ons (loaders), and the CC0 models, surfaces and skies the
 // places are built from (scripts/fetch-assets.mjs). Names are checked against
@@ -128,18 +117,6 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
-  const sceneFile = method === "GET" && pathname.match(SCENE_FILE);
-  if (sceneFile) {
-    try {
-      const body = await readFile(new URL(`scenes/${sceneFile[1]}`, PUBLIC_DIR));
-      res.writeHead(200, { "content-type": "image/webp", "cache-control": "public, max-age=86400" });
-      res.end(body);
-    } catch {
-      send(res, 404, "not found");
-    }
-    return;
-  }
-
   if (method === "GET" && pathname === "/") return html(res, renderLanding(user));
   if (method === "GET" && pathname === "/readme/") return html(res, renderReadme());
   if (method === "GET" && pathname === "/about") return html(res, renderAbout());
@@ -147,22 +124,17 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     const places = SCENES.flatMap((s) => s.modes.map((m) => ({ sceneId: s.id, mode: m.id, ...sessions.placeSummary(s.id, m.id) })));
     return html(res, renderExplore(user, places, url.searchParams.get("error")));
   }
-  if (method === "GET" && pathname === "/archive") return html(res, renderArchive(listMemories()));
-
-  const memoryPage = method === "GET" && pathname.match(/^\/memory\/(mem_[a-f0-9]{16})$/);
-  if (memoryPage) {
-    const memory = getMemory(memoryPage[1]);
-    return memory ? html(res, renderMemory(memory)) : html(res, renderNotFound("That memory doesn't exist."), 404);
-  }
 
   const scenePage = method === "GET" && pathname.match(/^\/scene\/([a-z-]+)$/);
   if (scenePage) {
     const scene = findScene(scenePage[1]);
     const mode = scene && findMode(scene, url.searchParams.get("mode") ?? scene.modes[0].id);
     if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
-    const shotId = scene.shots.some((s) => s.id === url.searchParams.get("shot")) ? url.searchParams.get("shot")! : scene.shots[0].id;
+    // ?zone= (or the older ?shot=) picks where you arrive
+    const asked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";
+    const zone = findZone(scene, asked) ?? scene.zones[0];
     const snap = sessions.snapshotFor(sessions.openSession(scene.id, mode.id), user);
-    return html(res, renderScene(scene, mode, shotId, snap, user));
+    return html(res, renderScene(scene, mode, zone.id, snap, user));
   }
 
   if (method === "POST" && pathname === "/join") {
@@ -199,15 +171,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   // ---- JSON API (pack docs/05) ------------------------------------------
 
   if (method === "GET" && pathname === "/api/scenes") {
-    return json(res, 200, SCENES.map((s) => ({ id: s.id, title: s.title, evidence: s.evidence, modes: s.modes.map((m) => ({ id: m.id, label: m.label })) })));
-  }
-
-  if (method === "GET" && pathname === "/api/memories") return json(res, 200, listMemories());
-
-  const memoryApi = method === "GET" && pathname.match(/^\/api\/memories\/(mem_[a-f0-9]{16})$/);
-  if (memoryApi) {
-    const memory = getMemory(memoryApi[1]);
-    return memory ? json(res, 200, memory) : json(res, 404, { error: "no such memory" });
+    return json(res, 200, SCENES.map((s) => ({ id: s.id, title: s.title, modes: s.modes.map((m) => ({ id: m.id, label: m.label })) })));
   }
 
   // The live stream for one place. Anyone may watch; only people who've
@@ -227,40 +191,15 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
-  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})(\/ops|\/events|\/move|\/say)?$/);
-  if (method === "GET" && sessionApi && !sessionApi[2]) {
-    const snap = sessions.sessionSnapshot(sessionApi[1], user);
-    return snap ? json(res, 200, snap) : json(res, 404, { error: "no such session" });
-  }
-  if (method === "GET" && sessionApi?.[2] === "/events") {
-    const since = Number(url.searchParams.get("sinceSeq") ?? 0);
-    return json(res, 200, sessions.eventsSince(sessionApi[1], Number.isInteger(since) && since >= 0 ? since : 0));
-  }
-
-  if (method === "POST" && sessionApi?.[2] === "/ops") {
-    // Every change needs a server-verified person; who acts comes from the
-    // session cookie, never the body.
-    if (!user) return json(res, 401, { ok: false, code: "no_session", message: "Join first: choose a name and a cat or a dog." });
-    const result = sessions.applyOp(user, sessionApi[1], await readJson(req));
-    const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "save_failed" ? 500 : result.code === "slow_down" ? 429 : 409;
-    return json(res, result.ok ? 200 : result.code === "bad_request" ? 400 : status, result);
-  }
-
+  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/(move|say)$/);
   // Where a person stands, and something they say to whoever is near (ADR
   // 007). Who it is comes from the cookie, as for every change.
-  if (method === "POST" && (sessionApi?.[2] === "/move" || sessionApi?.[2] === "/say")) {
+  if (method === "POST" && sessionApi) {
     if (!user) return json(res, 401, { ok: false, code: "no_session" });
     const body = await readJson(req);
-    const result = sessionApi[2] === "/move" ? sessions.move(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
+    const result = sessionApi[2] === "move" ? sessions.move(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
     const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
     return json(res, status, result);
-  }
-
-  // Only when the app is started for the spec: makes the next memory write
-  // fail, to check the page never claims a save that didn't happen.
-  if (method === "POST" && pathname === "/test/fail-next-save" && process.env.SOAC_TEST_HOOKS === "1") {
-    sessions.failNextSaveForTest();
-    return send(res, 204);
   }
 
   html(res, renderNotFound("There's nothing at that address."), 404);
@@ -275,6 +214,5 @@ const server = createServer((req, res) => {
   });
 });
 
-sessions.recover();
 const port = Number(process.env.PORT ?? 8080);
 server.listen(port, "0.0.0.0", () => log("server_started", { port }));

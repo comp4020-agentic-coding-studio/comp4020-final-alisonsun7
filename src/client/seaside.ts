@@ -664,20 +664,6 @@ export const seasideKit: PlaceKit = {
     weekday: { url: "/assets/skies/qwantani_noon_puresky.hdr", intensity: 1 },
     "rainy-dusk": { url: "/assets/skies/kloppenheim_01_puresky.hdr", intensity: 0.3 },
   },
-  ambienceAt(x, z, mode) {
-    if (inCafe(x, z)) return "cafe";
-    if (mode === "rainy-dusk") return "rain";
-    return z < -16 ? "forest" : "sea";
-  },
-  groundAt(x, z) {
-    if (inCafe(x, z)) return "floor";
-    // the footbridge, the boardwalk and the pier are timber
-    if (x > BRIDGE.x0 && x < BRIDGE.x1 && Math.abs(z - CREEK_Z) < CREEK_HALF + 0.8) return "wood";
-    if (z > -4 && z < 2.6) return "wood";
-    if (x > PIER.x0 && x < PIER.x1 && z > 2.6) return "wood";
-    if (z < -17) return distanceToTrail(x, z) < 1.3 ? "gravel" : "leaves";
-    return "sand";
-  },
   offTrail(x, z) {
     if (z > -18) return null;
     const n = nearestOnTrail(x, z);
