@@ -209,6 +209,9 @@ const REFUSED: Record<string, string> = {
   gone: "Someone has removed that one already.",
   slow_down: "One moment: wait a second between changes.",
   no_session: "Join first: give a name to change the place's sounds.",
+  // the page and the server disagree on the sounds on offer, as when one
+  // has been updated and the other not yet
+  bad_request: "The place doesn't know that sound yet: it may have just been updated. Reload the page and try again.",
 };
 const refused = (code?: string): string => (code && REFUSED[code]) || "That didn't work. Check your connection and try again.";
 

@@ -748,3 +748,21 @@ and back, cat and dog) and at 40 screenshots 120 ms apart from the sand
 facing the boardwalk: a passer-by's legs change between frames, facing
 the way they go. Not checked: a phone, and memory with many people
 walking (each walker loads up to 24 frames).
+
+## 30. Waves on the beach wouldn't stay (2026-11-06)
+
+**Prompt (Wen, translated):** I can't leave Waves on the beach on the
+sand; check the other sounds work too.
+
+**Cause:** the local server on :8080 was started on 2026-11-05 at 21:07,
+before `beach-waves` was added, so it still held six sounds; the page,
+built later, offered seven. A probe that joins, stands on the beach and
+leaves `beach-waves` got `400 bad_request` from it. The page then said
+"Check your connection", which pointed the wrong way.
+
+**Done:** against a fresh build and scratch database the same probe left
+all seven sounds on the beach (201 each) and removed them (200 each). The
+page now explains `bad_request` as the place not knowing that sound yet
+and asks for a reload. Wen needs to restart the local server.
+
+**Checks:** typecheck; the probe above, against the old and a fresh server.
