@@ -442,3 +442,14 @@ once Bo switches the place first; it now checks the place's sound.
 
 **Results:** `pnpm check` 94/94 (twice); `meet-and-talk` 31/31 (three
 runs); `world-two-browsers` 12/12; `two-browsers` 29/29.
+
+## 18. Footsteps as you walk (2026-11-05, ADR 009)
+
+**Prompt (Wen):** choosing footsteps should play my steps as I walk, and
+other people's as they pass, theirs quieter than mine.
+
+**Results:** `meet-and-talk` 36/36 (Ada's own steps 5 while walking; Bo's
+heard 7 at 0.087 against her 0.55; Bo with footsteps off, none);
+`pnpm check` 94/94; `world-two-browsers` passes; `two-browsers` 29/29.
+
+**Not run:** listening by ear to the step sounds on each ground.

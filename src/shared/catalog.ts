@@ -444,26 +444,26 @@ const SEASIDE: Scene = {
   ],
   shots: [
     zone("forest", "Forest trail", "Where the trail starts, among tall pines, ferns and fallen needles.", false, { x: 0, z: -130, yaw: Math.PI }, [
-      at("trail-start", "Trail", { x: 0.4, y: 0.5, z: -125 }, { x: 1.0, z: -124.4, pose: "walk" }, ["footsteps", "leaves", "quiet-talk"]),
+      at("trail-start", "Trail", { x: 0.4, y: 0.5, z: -125 }, { x: 1.0, z: -124.4, pose: "walk" }, ["leaves", "quiet-talk"]),
       at("tall-pines", "Tall pines", { x: -4.8, y: 3.4, z: -120.4 }, { x: -3.9, z: -119.8 }, ["birdsong", "wind", "leaves", "woodpecker"]),
       at("clearing-log", "Log in the clearing", { x: -9, y: 0.9, z: -93.7 }, { x: -9, z: -93.2, y: 0.42, pose: "sit" }, ["quiet-talk", "birdsong", "leaves"]),
       at("old-stump", "Old stump", { x: 6, y: 0.9, z: -85.2 }, { x: 5, z: -84 }, ["woodpecker", "leaves", "wind"]),
     ]),
     zone("creek", "Creek and footbridge", "A creek about twelve metres wide across the trail, crossed on a long timber footbridge.", false, { x: -1.7, z: -82, yaw: Math.PI }, [
       at("creek", "Creek", { x: 9, y: 0.1, z: -69 }, { x: 9, z: -62.2 }, ["creek", "leaves"]),
-      at("footbridge", "Footbridge", { x: -2, y: 0.8, z: -69 }, { x: -2.2, z: -69.6, pose: "walk" }, ["footsteps", "creek", "quiet-talk"]),
+      at("footbridge", "Footbridge", { x: -2, y: 0.8, z: -69 }, { x: -2.2, z: -69.6, pose: "walk" }, ["creek", "quiet-talk"]),
       at("mossy-boulder", "Boulder", { x: -12, y: 1.6, z: -54 }, { x: -10.6, z: -53 }, ["woodpecker", "birdsong", "wind"]),
     ]),
     zone("forest-edge", "Edge of the forest", "The trees thin out and the ground turns to sand and grass.", false, { x: 1, z: -38, yaw: Math.PI }, [
       at("edge-pines", "Last pines", { x: -6, y: 3, z: -30 }, { x: -5, z: -29 }, ["wind", "birdsong", "seagulls"]),
-      at("trail-end", "Trail's end", { x: 0.6, y: 0.5, z: -22 }, { x: 1.4, z: -21.4, pose: "walk" }, ["footsteps", "leaves", "quiet-talk"]),
+      at("trail-end", "Trail's end", { x: 0.6, y: 0.5, z: -22 }, { x: 1.4, z: -21.4, pose: "walk" }, ["leaves", "quiet-talk"]),
     ]),
     zone("boardwalk", "Boardwalk", "A timber boardwalk along the shore: the café, a kiosk, beach huts, lamps and benches.", false, { x: -3, z: 1.6, yaw: 0.95 }, [
-      at("boardwalk", "Boardwalk", { x: 14, y: 0.5, z: 0.5 }, { x: 14.6, z: 0.8, pose: "walk" }, ["footsteps", "bicycle", "puddle-steps", "quiet-talk"]),
+      at("boardwalk", "Boardwalk", { x: 14, y: 0.5, z: 0.5 }, { x: 14.6, z: 0.8, pose: "walk" }, ["bicycle", "quiet-talk"]),
       at("kiosk", "Kiosk", { x: 7.7, y: 1.4, z: -4 }, { x: 7.7, z: -3.1 }, ["chatter", "cups", "quiet-talk"]),
       at("beach-huts", "Beach huts", { x: 23.6, y: 1.6, z: -4.4 }, { x: 23.6, z: -3.4 }, ["door-slide", "wind", "quiet-talk"]),
       at("boardwalk-lamp", "Lamp post", { x: -1, y: 3, z: 2.25 }, { x: -1.6, z: 1.3 }, ["wind", "seagulls", "rain"]),
-      at("cafe-door", "Café door", { x: -17, y: 1.7, z: -3.8 }, { x: -15.6, z: -3.1 }, ["door-slide", "footsteps", "rain"]),
+      at("cafe-door", "Café door", { x: -17, y: 1.7, z: -3.8 }, { x: -15.6, z: -3.1 }, ["door-slide", "rain"]),
     ]),
     zone("counter", "Café counter", "Inside the café: the espresso cart, the counter with pastries and the till.", true, { x: -15.8, z: -9.4, yaw: 0.45 }, [
       inCafe("espresso-cart", "Espresso cart", { x: 2.2, y: 1.4, z: 1.6 }, { x: 3.2, z: 2.2, facing: Math.PI / 2, pose: "back" }, ["espresso", "grinder"]),
@@ -478,12 +478,12 @@ const SEASIDE: Scene = {
       inCafe("window-west", "Window bar", { x: 2.8, y: 1.3, z: 9.6 }, { x: 2.8, z: 8.95, y: 0.75, pose: "sit" }, ["typing", "page-turn", "quiet-talk", "rain", "waves"]),
     ]),
     zone("beach", "Beach", "The sand down to the water, a lifeguard tower, rocks at the tideline.", false, { x: 4, z: 19, yaw: Math.PI - 0.3 }, [
-      at("shoreline", "Water's edge", { x: 6, y: 0.4, z: 30 }, { x: 6.6, z: 29.2 }, ["waves", "seagulls", "footsteps"]),
+      at("shoreline", "Water's edge", { x: 6, y: 0.4, z: 30 }, { x: 6.6, z: 29.2 }, ["waves", "seagulls"]),
       at("lifeguard-tower", "Lifeguard tower", { x: 17, y: 3.2, z: 15 }, { x: 18.8, z: 16.2 }, ["seagulls", "wind", "quiet-talk"]),
-      at("sand", "Sand", { x: -6, y: 0.4, z: 13 }, { x: -6, z: 13.6 }, ["footsteps", "quiet-talk", "rain"]),
+      at("sand", "Sand", { x: -6, y: 0.4, z: 13 }, { x: -6, z: 13.6 }, ["quiet-talk", "rain"]),
     ]),
     zone("pier", "Pier", "A timber pier on posts, out over the water.", false, { x: -32.5, z: 8, yaw: Math.PI }, [
-      at("pier-middle", "Pier", { x: -32.5, y: 1, z: 38 }, { x: -32, z: 38.6 }, ["waves", "footsteps", "wind"]),
+      at("pier-middle", "Pier", { x: -32.5, y: 1, z: 38 }, { x: -32, z: 38.6 }, ["waves", "wind"]),
       at("pier-end", "End of the pier", { x: -32.5, y: 1.2, z: 68 }, { x: -32.5, z: 67, pose: "back" }, ["waves", "seagulls", "wind"]),
     ]),
   ],

@@ -60,6 +60,14 @@ const world =
           reportPosition(l.x, l.z, l.yaw);
         },
         onNear: (person) => showChat(person),
+        onStep: (step) => {
+          if (!footstepsOn) return;
+          if (step.mine) audio.myStep(step.ground, step.wet);
+          else audio.theirStep(step.x, step.z, step.ground, step.wet);
+          // for the end-to-end checks: what was heard, and how loud
+          const f = audio.steps;
+          Object.assign(stage.dataset, { mySteps: String(f.mine), theirSteps: String(f.theirs), myStepLevel: f.myLevel.toFixed(3), theirStepLevel: f.theirLevel.toFixed(3) });
+        },
       })
     : null;
 
@@ -110,6 +118,44 @@ chatInput.addEventListener("keydown", (e) => {
     world?.focusCanvas();
   }
 });
+
+// ---- footsteps: yours and other people's, as you walk (ADR 009) ---------
+
+// A choice each person makes for themselves, remembered in this browser.
+let footstepsOn = false;
+try {
+  footstepsOn = localStorage.getItem("soac-footsteps") === "on";
+} catch {
+  // storage blocked: start off
+}
+
+const stepsToggle = document.createElement("button");
+stepsToggle.type = "button";
+stepsToggle.className = "sound-toggle steps-toggle";
+stepsToggle.id = "steps-toggle";
+if (world) document.getElementById("sound-toggle")?.before(stepsToggle);
+
+function showFootsteps(): void {
+  stepsToggle.textContent = footstepsOn ? "Footsteps on" : "Footsteps off";
+  stepsToggle.setAttribute("aria-pressed", String(footstepsOn));
+  stepsToggle.title = "Hear your own steps as you walk, and other people's as they pass";
+}
+showFootsteps();
+
+async function setFootsteps(on: boolean): Promise<void> {
+  footstepsOn = on;
+  try {
+    localStorage.setItem("soac-footsteps", on ? "on" : "off");
+  } catch {
+    // not remembered; still on for now
+  }
+  // footsteps you can't hear would be no use: turning them on turns sound on
+  if (on && !audio.enabled) await turnSoundOn();
+  showFootsteps();
+  say(on ? "Footsteps on: you'll hear your own steps, and other people's, quieter, as they pass." : "Footsteps off.");
+  render();
+}
+stepsToggle.onclick = () => void setFootsteps(!footstepsOn);
 
 chat.onsubmit = async (e) => {
   e.preventDefault();
@@ -715,6 +761,17 @@ function renderTray(): void {
   }
 
   chips.textContent = "";
+  // in a living place footsteps aren't a place's sound: they're how you walk
+  if (living && category === "Movement") {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.focusKey = "chip:my-footsteps";
+    b.className = `chip${footstepsOn ? " active" : ""}`;
+    b.setAttribute("aria-pressed", String(footstepsOn));
+    b.innerHTML = `<span class="chip-name">Footsteps ${footstepsOn ? "on" : "off"}</span><span class="chip-where">yours and others', as you walk</span>`;
+    b.onclick = () => void setFootsteps(!footstepsOn);
+    chips.append(b);
+  }
   for (const id of available.filter((x) => SOUNDS[x].category === category)) {
     const b = document.createElement("button");
     b.type = "button";

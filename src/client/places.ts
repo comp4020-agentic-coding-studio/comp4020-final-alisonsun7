@@ -2,7 +2,7 @@
 // to tell which zone you're in and whether you're indoors, where passers-by
 // walk, where rain falls, and (optionally) a photographed sky per mode.
 import type { Light } from "./sky.js";
-import type { Ambience } from "./synth.js";
+import type { Ambience, Ground } from "./synth.js";
 import type { Built } from "./world-build.js";
 
 export interface PlaceKit {
@@ -30,6 +30,8 @@ export interface PlaceKit {
   // the background where you stand, if it changes across the place (the
   // forest, the sea, the café); undefined keeps the mode's own
   ambienceAt?(x: number, z: number, mode: string): Ambience | undefined;
+  // what's underfoot, for footsteps (default: floor)
+  groundAt?(x: number, z: number): Ground;
   // moving water and the like, every frame (seconds since the page opened)
   animate?(seconds: number): void;
   // If you've wandered too far from where you're meant to walk, the nearest

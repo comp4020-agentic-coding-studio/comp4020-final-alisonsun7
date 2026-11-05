@@ -81,6 +81,28 @@ check((await bubble.textContent().catch(() => "")) === "Want a coffee?", "his ne
 await a.waitForTimeout(5300);
 check(await bubble.count() === 0, "and are gone after 5 s");
 
+// Footsteps: Ada turns hers on and hears herself walk; Bo walks past her
+// and she hears him, quieter than herself. Bo, with footsteps off, hears none.
+await a.click("#steps-toggle");
+check((await a.locator("#steps-toggle").getAttribute("aria-pressed")) === "true", "Ada turns footsteps on");
+await a.locator("canvas.world-canvas").focus();
+await a.keyboard.down("a");
+await a.waitForTimeout(1200);
+await a.keyboard.up("a");
+const mySteps = Number((await a.locator("#stage").getAttribute("data-my-steps")) ?? 0);
+check(mySteps >= 2, `walking, Ada hears her own steps (${mySteps})`);
+await b.locator("canvas.world-canvas").focus();
+await b.keyboard.down("s");
+await b.waitForTimeout(1500);
+await b.keyboard.up("s");
+await a.waitForTimeout(600);
+const theirSteps = Number((await a.locator("#stage").getAttribute("data-their-steps")) ?? 0);
+const myLevel = Number(await a.locator("#stage").getAttribute("data-my-step-level"));
+const theirLevel = Number(await a.locator("#stage").getAttribute("data-their-step-level"));
+check(theirSteps >= 2, `Bo walks past and Ada hears his steps (${theirSteps})`);
+check(theirLevel > 0 && theirLevel < myLevel, `his steps are quieter than hers (${theirLevel} < ${myLevel})`);
+check((await b.locator("#stage").getAttribute("data-my-steps")) === null, "Bo, with footsteps off, hears none");
+
 // Ada clicks the label at the water's edge: its card says what can go
 // there; she listens, then adds waves, and hears them playing
 await a.locator("#chat-input").blur();

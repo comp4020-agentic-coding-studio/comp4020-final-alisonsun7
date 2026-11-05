@@ -2556,3 +2556,17 @@ h3 {
 .avatar-art svg {
   height: 54px;
 }
+
+/* your footsteps switch, beside the sound one */
+.steps-toggle {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  margin-right: 8px;
+}
+
+.steps-toggle[aria-pressed="true"] {
+  color: #1a140c;
+  background: var(--amber);
+  border-color: var(--amber);
+}

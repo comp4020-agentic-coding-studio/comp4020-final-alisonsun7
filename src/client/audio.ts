@@ -10,7 +10,7 @@
 // PannerNode from where it is, relative to where you stand and face, and
 // muffled when a wall is between you (one of you is indoors, the other not).
 import { SOUNDS, type SoundId } from "../shared/catalog.js";
-import { VOICES, playAmbience, type Ambience } from "./synth.js";
+import { VOICES, footstep, playAmbience, type Ambience, type Ground } from "./synth.js";
 
 interface Source {
   soundId: SoundId;
@@ -104,6 +104,61 @@ export class AudioEngine {
   // How many of the place's sounds are playing now.
   get playing(): number {
     return this.enabled ? this.voices.size : 0;
+  }
+
+  // ---- footsteps (ADR 009) ------------------------------------------------
+  //
+  // Your own steps are close and centred, a little left then right; other
+  // people's come from where they are, start quieter than yours and fade
+  // with distance, so yours are always the loudest.
+  static readonly MY_STEP = 0.55;
+  static readonly THEIR_STEP = 0.3;
+  static readonly STEP_HEARING = 20;
+  // what was played, for the end-to-end checks
+  readonly steps = { mine: 0, theirs: 0, myLevel: 0, theirLevel: 0 };
+  private foot = 1;
+
+  // Levels a step is heard at: yours as is; theirs as the panner will make
+  // it at that distance (inverse distance, reference 1.5 m, roll-off 1.4).
+  static theirLevel(distance: number): number {
+    const ref = 1.5;
+    return AudioEngine.THEIR_STEP * (ref / (ref + 1.4 * (Math.max(distance, ref) - ref)));
+  }
+
+  myStep(ground: Ground, wet: boolean): void {
+    const ctx = this.ctx;
+    if (!this.enabled || !ctx || !this.master) return;
+    const pan = ctx.createStereoPanner();
+    this.foot = -this.foot;
+    pan.pan.value = 0.12 * this.foot;
+    pan.connect(this.master);
+    footstep(ctx, pan, ctx.currentTime + 0.01, ground, wet, AudioEngine.MY_STEP);
+    setTimeout(() => pan.disconnect(), 1000);
+    this.steps.mine++;
+    this.steps.myLevel = AudioEngine.MY_STEP;
+  }
+
+  theirStep(x: number, z: number, ground: Ground, wet: boolean): void {
+    const ctx = this.ctx;
+    const at = this.listenerAt;
+    if (!this.enabled || !ctx || !this.master || !at) return;
+    const d = Math.hypot(x - at[0], z - at[1]);
+    if (d > AudioEngine.STEP_HEARING) return;
+    const p = ctx.createPanner();
+    p.panningModel = "HRTF";
+    p.distanceModel = "inverse";
+    p.refDistance = 1.5;
+    p.rolloffFactor = 1.4;
+    if (p.positionX) {
+      p.positionX.value = x;
+      p.positionY.value = 0.2;
+      p.positionZ.value = z;
+    } else p.setPosition(x, 0.2, z);
+    p.connect(this.master);
+    footstep(ctx, p, ctx.currentTime + 0.01, ground, wet, AudioEngine.THEIR_STEP);
+    setTimeout(() => p.disconnect(), 1000);
+    this.steps.theirs++;
+    this.steps.theirLevel = AudioEngine.theirLevel(d);
   }
 
   // One occurrence of a sound, for this person only, to hear before adding

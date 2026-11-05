@@ -14,7 +14,7 @@ import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { cafeKit } from "./cafe.js";
 import { seasideKit } from "./seaside.js";
-import type { Ambience } from "./synth.js";
+import type { Ambience, Ground } from "./synth.js";
 import type { PlaceKit } from "./places.js";
 import { campusKit, canStand, type Built } from "./world-build.js";
 
@@ -47,7 +47,20 @@ interface Options {
   onListen?: (l: Listener) => void;
   // the nearest other person within talking distance, or null, when it changes
   onNear?: (person: Person | null) => void;
+  // a footstep: yours, or someone else's where they are (ADR 009)
+  onStep?: (step: Step) => void;
 }
+
+export interface Step {
+  mine: boolean;
+  x: number;
+  z: number;
+  ground: Ground;
+  wet: boolean;
+}
+
+// About one step every 0.72 m walked.
+const STRIDE = 0.72;
 
 // Someone else in the place, as the server last placed them.
 export interface Other extends Person {
@@ -65,6 +78,7 @@ interface OtherView {
   label: HTMLDivElement;
   bubble: HTMLDivElement;
   bubbleTimer?: ReturnType<typeof setTimeout>;
+  walked: number;
 }
 
 // Close enough to talk, and how long words stay over someone's head.
@@ -189,6 +203,7 @@ export class WorldView {
   private strayFor = 0;
   private others = new Map<string, OtherView>();
   private near: string | null = null;
+  private walked = 0;
   // zone changes are only reported once the page has its view
   private ready = false;
 
@@ -711,6 +726,24 @@ export class WorldView {
   }
 
   private tryMove(dx: number, dz: number): boolean {
+    const ox = this.x;
+    const oz = this.z;
+    const moved = this.slide(dx, dz);
+    if (moved) {
+      this.walked += Math.hypot(this.x - ox, this.z - oz);
+      if (this.walked >= STRIDE) {
+        this.walked -= STRIDE;
+        this.opts.onStep?.(this.stepAt(this.x, this.z, true));
+      }
+    }
+    return moved;
+  }
+
+  private stepAt(x: number, z: number, mine: boolean): Step {
+    return { mine, x, z, ground: this.kit.groundAt?.(x, z) ?? "floor", wet: this.mode === "rainy-dusk" && !this.kit.isInside(x, z) };
+  }
+
+  private slide(dx: number, dz: number): boolean {
     const nx = this.x + dx;
     const nz = this.z + dz;
     if (this.free(nx, nz)) {
@@ -865,7 +898,7 @@ export class WorldView {
         bubble.className = "said-bubble";
         bubble.hidden = true;
         this.overlay.append(label, bubble);
-        o = { person: p, sprite, pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble };
+        o = { person: p, sprite, pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble, walked: 0 };
         this.others.set(p.id, o);
       }
       o.goal.set(p.x, 0, p.z);
@@ -900,7 +933,14 @@ export class WorldView {
       const before = o.at.clone();
       // ease towards where the server last put them
       o.at.lerp(o.goal, Math.min(1, dt * 8));
-      const speed = before.distanceTo(o.at) / Math.max(dt, 1e-3);
+      const step = before.distanceTo(o.at);
+      const speed = step / Math.max(dt, 1e-3);
+      // their footsteps, from where they are; a jump (Go to) makes none
+      o.walked = step > 3 ? 0 : o.walked + step;
+      if (o.walked >= STRIDE) {
+        o.walked -= STRIDE;
+        this.opts.onStep?.(this.stepAt(o.at.x, o.at.z, false));
+      }
       const pose = speed > 0.4 ? "walk" : "stand";
       if (pose !== o.pose) {
         o.pose = pose;

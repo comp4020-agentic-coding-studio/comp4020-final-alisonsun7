@@ -379,3 +379,35 @@ export function playAmbience(ctx: BaseAudioContext, out: AudioNode, kind: Ambien
   }
   return dur - 2;
 }
+
+// ---- footsteps, as people walk (ADR 009) ----------------------------------
+
+export type Ground = "leaves" | "gravel" | "wood" | "sand" | "floor";
+
+// One step on this ground, at this level. Each sounds a little different
+// every time, so walking doesn't tick like a clock.
+export function footstep(ctx: BaseAudioContext, out: AudioNode, when: number, ground: Ground, wet: boolean, level: number): void {
+  const v = rand(0.8, 1.15);
+  switch (ground) {
+    case "leaves":
+      burst(ctx, out, when, { type: "highpass", freq: rand(1500, 2300), decay: 0.11 * v, level: 0.5 * level });
+      burst(ctx, out, when + 0.01, { type: "bandpass", freq: 500, q: 1, decay: 0.05, level: 0.35 * level });
+      break;
+    case "gravel":
+      burst(ctx, out, when, { type: "bandpass", freq: rand(1100, 1600), q: 0.8, decay: 0.07 * v, level: 0.55 * level });
+      burst(ctx, out, when + 0.025, { type: "highpass", freq: 2600, decay: 0.05, level: 0.3 * level });
+      break;
+    case "wood":
+      burst(ctx, out, when, { type: "bandpass", freq: rand(300, 420), q: 3, decay: 0.08 * v, level: 0.8 * level });
+      tone(ctx, out, when, rand(150, 190), { decay: 0.07, level: 0.12 * level, type: "triangle" });
+      break;
+    case "sand":
+      burst(ctx, out, when, { type: "lowpass", freq: rand(700, 1000), decay: 0.14 * v, level: 0.45 * level, attack: 0.02 });
+      break;
+    case "floor":
+      burst(ctx, out, when, { type: "bandpass", freq: rand(450, 600), q: 2, decay: 0.06 * v, level: 0.65 * level });
+      burst(ctx, out, when, { type: "highpass", freq: 3200, decay: 0.012, level: 0.25 * level });
+      break;
+  }
+  if (wet) burst(ctx, out, when + 0.02, { type: "highpass", freq: rand(2000, 3000), decay: 0.16, level: 0.3 * level });
+}
