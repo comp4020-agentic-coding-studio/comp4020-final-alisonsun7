@@ -73,7 +73,10 @@ function connect(): void {
       snapshot = { ...snapshot, online: msg.online };
       renderPeople();
     } else if (msg.type === "moves") world.setOthers(msg.people.filter((p) => p.id !== me()?.id) as Other[]);
-    else if (msg.type === "said" && msg.by !== me()?.id) world.showSaid(msg.by, msg.text);
+    else if (msg.type === "said" && msg.by !== me()?.id) {
+      world.showSaid(msg.by, msg.text);
+      heard(msg.name, msg.text);
+    }
     else if (msg.type === "sound-left") soundLeft(msg.sound);
     else if (msg.type === "sound-removed") soundRemoved(msg);
     if (!connected) {
@@ -128,6 +131,24 @@ function showChat(person: Person | null): void {
   chatInput.placeholder = person ? `Say something to ${person.name}…` : "";
   // don't snatch the box away from someone mid-sentence
   chat.hidden = !person && document.activeElement !== chatInput && chatInput.value === "";
+}
+
+// What others say, low in the view, whether or not they're in sight: a
+// bubble over the head of someone beside or behind you can't be seen.
+const heardLog = document.createElement("div");
+heardLog.className = "heard-log";
+heardLog.setAttribute("aria-live", "polite");
+stage.append(heardLog);
+const HEARD_MS = 8000;
+
+function heard(name: string, text: string): void {
+  const line = document.createElement("p");
+  const who = document.createElement("strong");
+  who.textContent = `${name}: `;
+  line.append(who, text);
+  heardLog.append(line);
+  while (heardLog.children.length > 4) heardLog.firstElementChild!.remove();
+  setTimeout(() => line.remove(), HEARD_MS);
 }
 
 chatInput.addEventListener("blur", () => showChat(nearPerson));

@@ -53,7 +53,8 @@ their rules in `shared/sounds.ts`.
   modes redirect to the sunny day.
 - **People see each other and talk when they meet (ADR 007).** Positions and
   words live in memory only; words go only to people within 12 m, appear
-  over the speaker for 5 s or until replaced, and are never stored or
+  over the speaker for 5 s or until replaced, and low in each listener's
+  view for 8 s (the speaker may be out of sight), and are never stored or
   logged (the log has who spoke and how many characters).
 - **Joining:** a name and a cat or a dog, from the arrival card (in place,
   `POST /join` answering JSON) or the explore page's form. Identity comes

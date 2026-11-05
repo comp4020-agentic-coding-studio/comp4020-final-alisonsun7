@@ -71,6 +71,11 @@ say something else or for 5 seconds. You see your own words under the box.
 Nothing said is stored. The log records that someone spoke, how many
 characters, and how many people heard, never the words.
 
+Amended 2026-11-05: what others say also appears low in each listener's
+view, as "Bo: …", for 8 s (at most four lines). Two people arriving at the
+same spot, or someone beside or behind you, are out of sight, and so was
+the bubble over their head: Wen talked to someone who never saw it.
+
 ### 6. Spots you can see, and a card for each (same day, after Wen tried it)
 
 Wen saw labels only where sounds already were, heard nothing, and couldn't

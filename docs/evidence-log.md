@@ -583,3 +583,27 @@ regulars went from `seasideKit`.
 mode); `pnpm e2e` 40/40, with Bo now arriving by an old rainy-dusk link.
 On Wen's local app after a restart, the old link redirects and the three
 sounds Wen left (trickle, evening forest, guitar) are still there.
+
+## 24. Words reach people who can't see the speaker (2026-11-05)
+
+**Prompt (Wen, translated):** when I meet someone and talk, they don't see
+what I send.
+
+**Found:** the server had sent both of Wen's lines (`said … heard=1` in the
+log), so the words reached the other page. There they showed only in a
+bubble over the speaker's head, hidden whenever the speaker was out of
+view: beside you, behind you, or on the same spot (everyone arriving at a
+zone starts on the same spot). The e2e passed because Bo walked in front
+of Ada, and it checked the bubble's text, not that it could be seen.
+
+**Done:** what others say also goes in a list low in the view ("Bo: …"),
+8 s a line, at most four, whether or not the speaker is in sight. ADR 007
+and the harness say so.
+
+**Check:** `e2e/meet-and-talk.mjs` now turns Ada's back on Bo and needs his
+words actually visible on her screen. It failed before the fix (with the
+fix taken out, again) and passes with it. A first version of the check
+picked the hidden bubble and failed with the fix in; it now accepts any
+visible place the words are shown.
+
+**Results:** `pnpm check` 39/39; `pnpm e2e` 42/42.

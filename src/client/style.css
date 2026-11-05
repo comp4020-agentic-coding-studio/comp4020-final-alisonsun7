@@ -1087,6 +1087,34 @@ h3 {
   border-top-color: #fffaf0;
 }
 
+/* what others said, low in the view, whether or not they're in sight */
+.heard-log {
+  position: absolute;
+  left: 50%;
+  bottom: 150px;
+  transform: translateX(-50%);
+  z-index: 8;
+  width: min(440px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.heard-log p {
+  margin: 0;
+  align-self: flex-start;
+  max-width: 100%;
+  background: #fffaf0;
+  color: #2a241c;
+  font-size: 13px;
+  line-height: 1.35;
+  padding: 6px 11px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  overflow-wrap: anywhere;
+}
+
 /* the talk box, when someone is close enough to talk to */
 .chat-bar {
   position: absolute;

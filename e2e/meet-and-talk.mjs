@@ -81,6 +81,22 @@ check((await bubble.textContent().catch(() => "")) === "Want a coffee?", "his ne
 await a.waitForTimeout(5300);
 check(await bubble.count() === 0, "and are gone after 5 s");
 
+// Ada turns her back on Bo: what he says must still reach her eyes, not
+// just a bubble over a head she can't see.
+await a.locator("canvas.world-canvas").focus();
+await a.keyboard.down("q");
+await a.waitForTimeout(1650);
+await a.keyboard.up("q");
+await a.waitForTimeout(300);
+check(!(await a.locator(".other-name", { hasText: "Bo" }).isVisible()), "(Bo is behind Ada now)");
+await b.fill("#chat-input", "Behind you!");
+await b.press("#chat-input", "Enter");
+// any place on her screen will do: his bubble is there too, but out of sight
+const shown = a.getByText("Behind you!").filter({ visible: true });
+await shown.first().waitFor({ timeout: 3000 }).catch(() => undefined);
+check(await shown.count() > 0, "with Bo behind her, Ada still sees what he says");
+if (out) await a.screenshot({ path: `${out}/talk-behind.jpg`, type: "jpeg", quality: 72 });
+
 check(await a.getByText("Enable sound").count() === 0 && (await a.locator("#sound-toggle, #steps-toggle, .world-spot, .spot-card, #tray").count()) === 0, "the sound controls from before ADR 010 stay gone");
 
 // Someone new comes straight to the world: the arrival card asks their
