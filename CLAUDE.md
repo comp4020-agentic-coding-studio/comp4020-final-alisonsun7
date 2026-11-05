@@ -6,8 +6,9 @@ The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) was the starting point. The decisions in `docs/decisions/`
 record where the build went from there: 004 to 007 the walkable place, the
 CC0 assets, the forest and sea, seeing each other and talk; 010 took the old
-sound out; 011 is Wen's new sound design; 012 keeps only the sunny day
-(003, 008 and 009 are history).
+sound out; 011 is Wen's new sound design; 012 keeps only the sunny day;
+013 makes the toilets and showers one person at a time, with a sound for
+while they're in (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -37,6 +38,11 @@ their rules in `shared/sounds.ts`.
   rules on your own: Wen chooses every sound by ear. The tables from before
   ADR 010 stay untouched (`before-sound-removal` tag); `placed_sounds` rows
   are never deleted (removing sets `removed_at`).
+- **Toilets and showers are one at a time (ADR 013).** A red light and a
+  shut, locked door while anyone is in; the sound left for a stay
+  (`whileInside`, `placed_sounds.while_in`) is ended by the server as soon
+  as its person isn't inside, never by the page. The hut layout lives in
+  `shared/huts.ts` for both sides.
 - **Imagined places say so (ADR 005).** The place's page shows its `about`
   text: not a real place, and where its pieces come from.
 - **Only CC0 or public-domain assets, all recorded.** Models, surfaces and
