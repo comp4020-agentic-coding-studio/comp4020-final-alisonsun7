@@ -5,7 +5,7 @@
 import * as THREE from "three";
 import type { Scene } from "../shared/catalog.js";
 import type { Avatar, Person } from "../shared/protocol.js";
-import { figureAspect, figureSvg, KID_ASPECT, kidSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
+import { figureAspect, figureSvg, KID_ASPECT, kidAspect, kidSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
 import { beachBallTexture } from "./huts.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
@@ -78,6 +78,8 @@ interface RegularView {
   // there, so the chair or bench they sit on is behind them, not through them
   at: THREE.Vector3;
   sits: boolean;
+  // staff who walk to another spot now and then (`roam`), and back
+  roam: { home: THREE.Vector3; away: THREE.Vector3; gait: Gait; going: "away" | "home" | null; wait: number } | null;
   // their usual pose's texture and the one they change to, if any
   keys: [string, string] | null;
   // seconds for one round, the share of it spent in the second pose, and
@@ -96,22 +98,35 @@ interface Gait {
   phase: number;
   facing: Facing;
   left: boolean;
+  // a child, drawn by kidSvg
+  kid?: boolean;
 }
 type Facing = "walk" | "walk-front" | "walk-back";
 const FRAMES = 8;
 
-// Children passing a beach ball: who has it, who it's going to, and how far
-// through the throw it is (or how long it's been held).
+// Children passing a beach ball. Now and then a throw goes wide: the ball
+// lands, bounces and rolls, and the child it was for runs to fetch it and
+// brings it back to their place.
+interface Kid {
+  sprite: THREE.Sprite;
+  keys: [string, string];
+  hop: number;
+  home: THREE.Vector3;
+  gait: Gait;
+}
 interface BallGame {
-  kids: { sprite: THREE.Sprite; keys: [string, string]; hop: number }[];
+  kids: Kid[];
   ball: THREE.Mesh;
   shadow: THREE.Mesh;
+  state: "held" | "flying" | "bouncing" | "fetching" | "returning";
   from: number;
   to: number;
   // seconds into the flight, or (while held) seconds left before the throw
   t: number;
   flight: number;
-  held: boolean;
+  // a wide throw's landing place, and the ball's speed once it's down
+  lands: THREE.Vector3 | null;
+  velocity: THREE.Vector3;
 }
 const KID_H = 1.15;
 
@@ -157,7 +172,9 @@ function show(sprite: THREE.Sprite, tex: THREE.Texture): void {
 }
 
 function strideTexture(g: Gait, facing: Facing, frame: number): THREE.Texture {
-  return svgTexture(`${g.seed}:${facing}:${frame}`, figureSvg(g.avatar, facing, g.seed, frame / FRAMES), 600 * figureAspect(facing));
+  const key = `${g.seed}:${facing}:${frame}`;
+  if (g.kid) return svgTexture(key, kidSvg(g.avatar, facing, g.seed, frame / FRAMES), 648 * kidAspect(facing), 648);
+  return svgTexture(key, figureSvg(g.avatar, facing, g.seed, frame / FRAMES), 600 * figureAspect(facing));
 }
 
 // All of one view's frames at once, so they've loaded by the time they're
@@ -166,8 +183,8 @@ function loadStride(g: Gait, facing: Facing): void {
   for (let f = 0; f < FRAMES; f++) strideTexture(g, facing, f);
 }
 
-const newGait = (avatar: Avatar, seed: string): Gait => {
-  const g: Gait = { avatar, seed, phase: Math.random(), facing: "walk", left: false };
+const newGait = (avatar: Avatar, seed: string, kid = false): Gait => {
+  const g: Gait = { avatar, seed, phase: Math.random(), facing: "walk", left: false, kid };
   loadStride(g, "walk");
   return g;
 };
@@ -504,7 +521,8 @@ export class WorldView {
       const second: Pose | undefined = r.pose === "guitar" ? "strum" : r.pose === "talk" ? "stand" : r.alt;
       if (second) svgTexture(`${seed}:${second}`, figureSvg(avatar, second, seed));
       const [period, share] = r.pose === "guitar" ? [0.52, 0.5] : r.pose === "talk" ? [2 + (i % 3) * 0.5, 0.45] : [7 + (i % 4) * 1.5, 0.35];
-      this.regulars.push({ sprite, height: sprite.scale.y, at: new THREE.Vector3(r.x, 0, r.z), sits: r.pose === "sit" || r.pose === "guitar", keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
+      const roam = r.roam ? { home: new THREE.Vector3(r.x, 0, r.z), away: new THREE.Vector3(r.roam[0], 0, r.roam[1]), gait: newGait(avatar, seed), going: null, wait: 6 + Math.random() * 10 } : null;
+      this.regulars.push({ sprite, height: sprite.scale.y, at: new THREE.Vector3(r.x, 0, r.z), sits: r.pose === "sit" || r.pose === "guitar", roam, keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
     }
   }
 
@@ -523,23 +541,26 @@ export class WorldView {
       sprite.scale.set(KID_H * KID_ASPECT, KID_H, 1);
       sprite.position.set(x, 0, z);
       this.built.root.add(sprite);
-      return { sprite, keys, hop: 0 };
+      return { sprite, keys, hop: 0, home: new THREE.Vector3(x, 0, z), gait: newGait(avatar, seed, true) };
     });
     const ball = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 14), new THREE.MeshStandardMaterial({ map: beachBallTexture(), roughness: 0.45 }));
     ball.castShadow = true;
     const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.2, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25, depthWrite: false }));
     shadow.rotation.x = -Math.PI / 2;
     this.built.root.add(ball, shadow);
-    this.game = { kids, ball, shadow, from: 0, to: 1, t: 0.8, flight: 1, held: true };
+    this.game = { kids, ball, shadow, state: "held", from: 0, to: 1, t: 0.8, flight: 1, lands: null, velocity: new THREE.Vector3() };
     this.playBall(0);
   }
 
-  // The ball's place: in the holder's raised hands, or on its arc to the
-  // catcher, turning as it goes. Whoever is about to catch it reaches up and
-  // hops; the thrower's arms come down once it's away.
+  // The ball's place: in the holder's raised hands, on its arc to the
+  // catcher (turning as it goes), or, after a wide throw, bouncing and
+  // rolling on the sand until the child it was meant for fetches it.
+  // Whoever is about to catch it reaches up and hops; the thrower's arms
+  // come down once it's away.
   private playBall(dt: number): void {
     const g = this.game;
     if (!g) return;
+    const R = 0.17;
     const hands = (i: number): THREE.Vector3 => {
       const p = g.kids[i].sprite.position;
       // over their head, a little towards you so it's in front of the
@@ -547,47 +568,112 @@ export class WorldView {
       const toEye = new THREE.Vector3(this.x - p.x, 0, this.z - p.z).normalize().multiplyScalar(0.05);
       return new THREE.Vector3(p.x + toEye.x, p.y + KID_H + 0.14, p.z + toEye.z);
     };
-    let up = new Set<number>();
-    if (g.held) {
+    const roll = (v: THREE.Vector3): void => {
+      // turning about the axis across its path, by the distance covered
+      g.ball.rotateOnWorldAxis(new THREE.Vector3(v.z, 0, -v.x).normalize(), (v.length() * dt) / R);
+    };
+    const up = new Set<number>();
+    let runner = -1;
+
+    if (g.state === "held") {
       g.t -= dt;
       g.ball.position.copy(hands(g.from));
-      up = new Set([g.from]);
+      up.add(g.from);
       if (g.t <= 0) {
-        // throw to anyone else
+        // throw to anyone else; about one throw in five goes wide
         g.to = (g.from + 1 + Math.floor(Math.random() * (g.kids.length - 1))) % g.kids.length;
-        const d = g.kids[g.from].sprite.position.distanceTo(g.kids[g.to].sprite.position);
-        g.flight = 0.7 + d * 0.12;
+        const a = g.kids[g.from].home;
+        const b = g.kids[g.to].home;
+        g.lands = null;
+        if (Math.random() < 0.2) {
+          const along = new THREE.Vector3().subVectors(b, a).setY(0).normalize();
+          const across = new THREE.Vector3(-along.z, 0, along.x);
+          g.lands = b.clone().addScaledVector(along, 1.2 + Math.random()).addScaledVector(across, (Math.random() - 0.5) * 1.6).setY(R);
+        }
+        g.flight = 0.7 + a.distanceTo(g.lands ?? b) * 0.12;
         g.t = 0;
-        g.held = false;
+        g.state = "flying";
       }
-    } else {
+    } else if (g.state === "flying") {
       g.t += dt;
       const u = Math.min(1, g.t / g.flight);
       const a = hands(g.from);
-      const b = hands(g.to);
+      const b = g.lands ?? hands(g.to);
       const peak = 1.2 + a.distanceTo(b) * 0.15;
       g.ball.position.lerpVectors(a, b, u);
       g.ball.position.y += 4 * peak * u * (1 - u);
       g.ball.rotation.x += dt * 7;
       g.ball.rotation.z += dt * 3;
       if (u < 0.2) up.add(g.from);
-      if (u > 0.55) up.add(g.to);
-      if (u >= 1) {
+      // the catcher reaches for it, even for one that goes over
+      if (u > 0.55 && u < 0.85) up.add(g.to);
+      if (u > 0.55 && !g.lands) up.add(g.to);
+      if (u >= 1 && !g.lands) {
         g.from = g.to;
-        g.held = true;
+        g.state = "held";
         g.t = 0.5 + Math.random() * 1.2;
         g.kids[g.from].hop = 0.35;
+      } else if (u >= 1) {
+        // it lands moving on the way it was going, and bounces
+        const along = new THREE.Vector3().subVectors(b, a).setY(0).normalize();
+        g.velocity.copy(along).multiplyScalar(2.2).setY(3);
+        g.state = "bouncing";
+      }
+    } else if (g.state === "bouncing") {
+      g.velocity.y -= 9.8 * dt;
+      g.ball.position.addScaledVector(g.velocity, dt);
+      if (g.ball.position.y <= R) {
+        g.ball.position.y = R;
+        // each bounce lower, until it only rolls; sand slows it
+        g.velocity.y = Math.abs(g.velocity.y) > 0.8 ? -g.velocity.y * 0.42 : 0;
+        g.velocity.x *= 1 - Math.min(1, dt * 2.5);
+        g.velocity.z *= 1 - Math.min(1, dt * 2.5);
+      }
+      roll(g.velocity);
+      if (g.velocity.y === 0 && Math.hypot(g.velocity.x, g.velocity.z) < 0.08) {
+        g.state = "fetching";
+        g.t = 0.4; // a moment before anyone moves
+      }
+    } else if (g.state === "fetching" || g.state === "returning") {
+      // the child it was for runs to it, picks it up, and takes it home
+      const k = g.kids[g.to];
+      runner = g.to;
+      if (g.state === "fetching" && g.t > 0) g.t -= dt;
+      else {
+        const goal = g.state === "fetching" ? g.ball.position.clone().setY(0) : k.home;
+        const from = k.sprite.position.clone().setY(0);
+        const left = from.distanceTo(goal) - (g.state === "fetching" ? 0.3 : 0);
+        const step = Math.min(Math.max(left, 0), 2.6 * dt);
+        const to = from.clone().add(goal.clone().sub(from).setY(0).normalize().multiplyScalar(step));
+        k.sprite.position.set(to.x, 0, to.z);
+        if (step > 0) this.stride(k.sprite, k.gait, from, to, dt);
+        // carried home in front of them, at the chest, so they can run
+        if (g.state === "returning") g.ball.position.copy(hands(g.to)).setY(k.sprite.position.y + KID_H * 0.55);
+        if (left <= 0.01) {
+          if (g.state === "fetching") {
+            g.state = "returning";
+            k.hop = 0.35;
+          } else {
+            k.sprite.position.copy(k.home);
+            g.from = g.to;
+            g.state = "held";
+            g.t = 0.4 + Math.random() * 0.6;
+          }
+        }
       }
     }
+
     g.shadow.position.set(g.ball.position.x, 0.02, g.ball.position.z);
-    const lift = Math.max(0, g.ball.position.y - 0.17);
+    const lift = Math.max(0, g.ball.position.y - R);
     g.shadow.scale.setScalar(1 / (1 + lift * 0.25));
     (g.shadow.material as THREE.MeshBasicMaterial).opacity = 0.28 / (1 + lift * 0.5);
     g.kids.forEach((k, i) => {
-      show(k.sprite, textureCache.get(k.keys[up.has(i) ? 1 : 0])!);
       // a little jump on the catch
       k.hop = Math.max(0, k.hop - dt);
       k.sprite.position.y = Math.sin((k.hop / 0.35) * Math.PI) * 0.12;
+      // a running child's frames are the stride's
+      if (i === runner && !(g.state === "fetching" && g.t > 0)) return;
+      show(k.sprite, textureCache.get(k.keys[up.has(i) ? 1 : 0])!);
     });
   }
 
@@ -603,12 +689,47 @@ export class WorldView {
     }
   }
 
+  // Staff now and then walk to another spot (the other end of the counter,
+  // the fryers, the shelves), stay a while, and walk back.
+  private moveRegulars(dt: number): void {
+    for (const r of this.regulars) {
+      const m = r.roam;
+      if (!m) continue;
+      if (!m.going) {
+        m.wait -= dt;
+        if (m.wait > 0) continue;
+        m.going = r.sprite.position.distanceTo(m.home) < 0.05 ? "away" : "home";
+      }
+      const goal = m.going === "away" ? m.away : m.home;
+      const from = r.sprite.position.clone();
+      const left = from.distanceTo(goal);
+      const to = from.clone().add(goal.clone().sub(from).normalize().multiplyScalar(Math.min(left, 0.9 * dt)));
+      r.sprite.position.copy(to);
+      this.stride(r.sprite, m.gait, from, to, dt);
+      if (left <= 0.9 * dt) {
+        r.sprite.position.copy(goal);
+        // a few seconds at the other spot, longer at home
+        m.wait = m.going === "away" ? 3 + Math.random() * 4 : 10 + Math.random() * 12;
+        m.going = null;
+      }
+    }
+  }
+
   private idle(now: number): void {
     const t = now / 1000;
     for (const [i, r] of this.regulars.entries()) {
       // a breath every three or four seconds
       r.sprite.scale.y = r.height * (1 + 0.007 * Math.sin(t * (1.6 + (i % 3) * 0.2) + i * 1.3));
-      if (!r.keys) continue;
+      if (r.roam?.going) continue;
+      // away from home, at work: turned to it
+      if (r.roam && r.sprite.position.distanceTo(r.roam.home) > 0.05 && r.keys) {
+        show(r.sprite, textureCache.get(r.keys[1])!);
+        continue;
+      }
+      if (!r.keys) {
+        if (r.roam) show(r.sprite, textureCache.get(`regular-${i}:stand`) ?? (r.sprite.material as THREE.SpriteMaterial).map!);
+        continue;
+      }
       const second = (t / r.period + r.offset) % 1 > 1 - r.share;
       show(r.sprite, textureCache.get(r.keys[second ? 1 : 0])!);
     }
@@ -899,6 +1020,7 @@ export class WorldView {
 
     if (!reduced()) {
       this.movePassers(dt);
+      this.moveRegulars(dt);
       this.idle(now);
       this.playBall(dt);
     }

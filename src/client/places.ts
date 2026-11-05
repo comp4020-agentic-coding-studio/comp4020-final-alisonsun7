@@ -21,6 +21,8 @@ export interface Regular {
   pose: Pose;
   // a pose they turn to now and then, like a barista to the machine
   alt?: Pose;
+  // somewhere else they walk to now and then, and back (staff at work)
+  roam?: [number, number];
 }
 
 export interface PlaceKit {

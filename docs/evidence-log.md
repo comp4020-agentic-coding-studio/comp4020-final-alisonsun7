@@ -947,3 +947,29 @@ with a few coins. Both are solid.
 
 **Checks:** spec and e2e against a fresh server; screenshots from the
 boardwalk, along it, and from the sand behind.
+
+## 38. Staff walk about, and a wide throw gets fetched (2026-11-06)
+
+**Prompt (Wen, translated):** let the café and fish and chip staff walk
+about now and then, not only turn; let the children's ball sometimes fall
+to the ground and be picked up, so it looks more natural.
+
+**Done:** `Regular.roam`: the barista walks to the other end of the
+counter, the cook to the fryers, the shopkeeper to the shelves, every 10
+to 22 s; they stay 3 to 7 s turned to the work, then walk back, with the
+stride frames (entry 29), so they don't slide. Children can now walk and
+run: `kidSvg` draws side and front/back strides with shorts to the knee
+and bare shins that move with the legs. About one throw in five goes wide:
+the ball lands beyond the catcher, bounces lower each time, rolls to a
+stop in the sand (turning by the distance it rolls); the child it was for
+runs over (2.6 m/s), picks it up with a hop, runs back carrying it at the
+chest, and throws again.
+
+**Failure and correction:** the first version had the child carry the
+ball home overhead, which used one still drawing, so the child slid; now
+they carry it at the chest and the legs keep their stride.
+
+**Checks:** spec and e2e against a fresh server; the child's strides drawn
+flat; 24 screenshots 300 ms apart of a wide throw being fetched (with the
+miss forced, in a throwaway build), and 10 of the cook going to the
+fryers and back (with the wait shortened).

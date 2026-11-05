@@ -220,13 +220,23 @@ export function figureAspect(pose: Pose): number {
 const KID_COLOURS = ["#e63946", "#f4a261", "#2a9d8f", "#457be0", "#f2c14e", "#9b5de5"];
 export const KID_ASPECT = 60 / 216;
 
-export function kidSvg(avatar: Avatar, pose: Pose, seed: string): string {
+export function kidSvg(avatar: Avatar, pose: Pose, seed: string, phase = 0): string {
   const h = hash(seed);
   const l = { ...lookFor(seed), top: KID_COLOURS[h % KID_COLOURS.length], bottom: KID_COLOURS[(h >>> 3) % KID_COLOURS.length] };
-  const bare = `<path d="M19 140 L28.9 140 L28.6 186 L20 186 Z" fill="${l.fur}"/><path d="M31 140 L41 140 L40 186 L31.4 186 Z" fill="${l.fur}"/>`;
-  let inner = standing(avatar, l, pose)
-    .replace('<g class="head">', '<g class="head" transform="translate(30 40) scale(1.5) translate(-30 -40)">')
-    .replace('<path d="M17 44', `${bare}<path d="M17 44`);
+  const side = pose === "walk";
+  const towards = pose === "walk-front" || pose === "walk-back";
+  let inner = side ? walking(avatar, l, phase) : standing(avatar, l, pose, towards ? phase : undefined);
+  const neck = side ? 31 : 30;
+  inner = inner.replace('<g class="head">', `<g class="head" transform="translate(${neck} 40) scale(1.5) translate(-${neck} -40)">`);
+  if (side) {
+    // shorts to the knee, bare shins below, swinging with the leg
+    inner = inner.replace(/(<path d="M25\.8 144 L34\.2 144 L33 186 L25\.4 186 Z" fill=")[^"]+"/g, `$1${l.fur}"`);
+  } else {
+    // bare legs below the shorts, inside each leg so they lift with it
+    const bareL = `<path d="M19 140 L28.9 140 L28.6 186 L20 186 Z" fill="${l.fur}"/>`;
+    const bareR = `<path d="M31 140 L41 140 L40 186 L31.4 186 Z" fill="${l.fur}"/>`;
+    inner = inner.replace(/(<g class="leg leg-l"[^>]*>[\s\S]*?)(<\/g>)/, `$1${bareL}$2`).replace(/(<g class="leg leg-r"[^>]*>[\s\S]*?)(<\/g>)/, `$1${bareR}$2`);
+  }
   // with the bigger head, raised hands reach above it
   if (pose === "arms-up")
     inner = inner
@@ -234,8 +244,10 @@ export function kidSvg(avatar: Avatar, pose: Pose, seed: string): string {
       .replace('cx="49" cy="8"', 'cx="48" cy="-12"')
       .replace("C16 38 13 22 13 10 L9 10 C8 24", "C16 32 14 6 14 -10 L10 -10 C8 8")
       .replace('cx="11" cy="8"', 'cx="12" cy="-12"');
-  return `<svg viewBox="0 -16 60 216" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${SHADOW}${inner}</svg>`;
+  return `<svg viewBox="${side ? "-10 -16 80 216" : "0 -16 60 216"}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${SHADOW}${inner}</svg>`;
 }
+
+export const kidAspect = (pose: Pose): number => (pose === "walk" ? 80 / 216 : KID_ASPECT);
 
 // Faint passers-by for an outdoor mode's crowd. They make no sound and
 // aren't anyone's: they only show how busy the hour is.

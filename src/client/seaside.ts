@@ -1024,10 +1024,10 @@ const KIOSK = { x0: 4.5, x1: 11, z0: -10, z1: -4.4 };
 // someone behind its counter, turning now and then to the fryers, and
 // someone waiting at it
 const CHIPPY: Regular[] = [
-  { x: KIOSK.x0 + 2.4, z: KIOSK.z1 - 1.1, pose: "stand", alt: "back" },
+  { x: KIOSK.x0 + 2.4, z: KIOSK.z1 - 1.1, pose: "stand", alt: "back", roam: [KIOSK.x0 + 1.4, KIOSK.z0 + 1.15] },
   { x: KIOSK.x1 - 1.6, z: KIOSK.z1 + 0.8, pose: "back" },
   // and someone minding the souvenir shop
-  { x: SHOPKEEPER.x, z: SHOPKEEPER.z, pose: "stand", alt: "back" },
+  { x: SHOPKEEPER.x, z: SHOPKEEPER.z, pose: "stand", alt: "back", roam: [SHOPKEEPER.x - 1.6, SHOPKEEPER.z - 0.1] },
 ];
 // a bench just west of the café's door, between two lamps
 const BUSKER_BENCH = -20.5;
@@ -1049,7 +1049,10 @@ export const seasideKit: PlaceKit = {
   },
   zoneAt,
   regulars: {
-    weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER, ...CHIPPY],
+    weekday: [
+      // the barista goes along to the other end of the counter now and then
+      ...regularsOf(["barista", [0]]).map((r) => ({ ...r, roam: [CAFE_AT.x + 5.2, CAFE_AT.z + 1.4] as [number, number] })),
+      ...regularsOf(["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER, ...CHIPPY],
   },
   // five children with a beach ball on the sand, between the boardwalk and
   // the lifeguard tower
