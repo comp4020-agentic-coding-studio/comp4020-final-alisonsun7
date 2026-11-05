@@ -291,3 +291,32 @@ Screenshots of every mode and zone looked at.
 
 **Not run:** Docker build, deploy, a real phone, listening to the sound.
 README.md still describes the ANU edition (Wen's to rewrite).
+
+## 11. From the forest to the sea (2026-11-05, ADR 006)
+
+**Prompt (Wen, Chinese, summarised):** start in a forest, walk a trail
+through it, and at its end reach buildings by the sea, including the café,
+on a beach. Rebuild the scene that way.
+
+**Built:** `client/seaside.ts`, nine zones, 24 spots; the café refactored
+into a room any place can position; five new synthesised sounds and two
+backgrounds; 18 more CC0 assets (now 37, 88 MB).
+
+**Corrections:**
+
+- **The trail was invisible:** its ribbon's triangles faced down and were
+  culled. Winding reversed.
+- **Pale plastic pines:** needle colours darkened.
+- **The sea was white:** first the water reflected the bright dawn sky
+  (reflection turned down), then the morning mist hid it from 18 m (the
+  place now sets its own mist distances).
+- **A blank white wall:** the café's side seen from the boardwalk was its
+  inside plaster. Brick added outside.
+- **A test still held the campus's bounds** (-26 m to 38 m); it now checks
+  the seaside's.
+
+**Results:** `pnpm check` 87/87; `node e2e/world-two-browsers.mjs` 6/6,
+including W walking from the forest's edge onto the boardwalk.
+Screenshots of every zone and mode looked at.
+
+**Not run:** Docker build, deploy, a real phone, listening to the new sounds.

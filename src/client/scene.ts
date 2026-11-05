@@ -53,7 +53,7 @@ const world =
           history.replaceState(null, "", `/scene/${scene.id}?mode=${mode.id}&shot=${zone}`);
           render();
         },
-        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside),
+        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside, l.ambience),
       })
     : null;
 

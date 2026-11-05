@@ -26,7 +26,12 @@ export type SoundId =
   | "espresso"
   | "grinder"
   | "cups"
-  | "chatter";
+  | "chatter"
+  | "waves"
+  | "seagulls"
+  | "leaves"
+  | "woodpecker"
+  | "creek";
 
 export type SoundCategory = "Nature" | "People" | "Movement" | "Places" | "Objects";
 export const CATEGORIES: SoundCategory[] = ["Nature", "People", "Movement", "Places", "Objects"];
@@ -64,6 +69,11 @@ export const SOUNDS: Record<SoundId, SoundDef> = {
   grinder: { id: "grinder", label: "Coffee grinder", category: "Objects", activity: "grinds beans", pose: "back" },
   cups: { id: "cups", label: "Cups and saucers", category: "Objects", activity: "clears cups", pose: "stand" },
   chatter: { id: "chatter", label: "Café chatter", category: "People", activity: "chats over coffee", pose: "talk" },
+  waves: { id: "waves", label: "Waves", category: "Nature", activity: "watches the waves come in", pose: "stand" },
+  seagulls: { id: "seagulls", label: "Seagulls", category: "Nature", activity: "looks up at the gulls", pose: "stand" },
+  leaves: { id: "leaves", label: "Rustling leaves", category: "Nature", activity: "walks through the leaves", pose: "walk" },
+  woodpecker: { id: "woodpecker", label: "Woodpecker", category: "Nature", activity: "listens for the woodpecker", pose: "stand" },
+  creek: { id: "creek", label: "Creek", category: "Nature", activity: "stops by the water", pose: "stand" },
 };
 
 export const SOUND_IDS = Object.keys(SOUNDS) as SoundId[];
@@ -120,7 +130,7 @@ export interface Mode {
   label: string;
   // shown under the scene: what the picture is, honestly
   note: string;
-  ambience: "room" | "birds" | "crowd" | "rain" | "cafe";
+  ambience: "room" | "birds" | "crowd" | "rain" | "cafe" | "forest" | "sea";
 }
 
 export interface Scene {
@@ -165,8 +175,8 @@ function spot(
   at: { x: number; y: number; z: number },
   foot: { x: number; z: number; y?: number; facing?: number; pose?: Pose },
   sounds: SoundId[],
+  b: { minX: number; maxX: number; minZ: number; maxZ: number } = WORLD_BOUNDS,
 ): Anchor {
-  const b = WORLD_BOUNDS;
   const fx = (v: number): number => Math.round(((v - b.minX) / (b.maxX - b.minX)) * 1000) / 1000;
   const fz = (v: number): number => Math.round(((v - b.minZ) / (b.maxZ - b.minZ)) * 1000) / 1000;
   return {
@@ -295,6 +305,7 @@ const WORLD: Scene = {
 // x 0..14, z 0..10, its glass front on the street at z = 10.
 const CAFE: Scene = {
   id: "cafe",
+  retired: true,
   title: "The Corner Café",
   kind: "indoor",
   summary: "A small café on a street corner: an espresso cart, a counter, round tables and a bar along the window.",
@@ -379,7 +390,102 @@ const CAFE: Scene = {
   ],
 };
 
+// ---- From the forest to the sea (ADR 006) -----------------------------------
+//
+// One imagined place, laid out in client/seaside.ts: a trail through a pine
+// forest, a creek and footbridge, then a boardwalk with the café, a kiosk and
+// beach huts, the sand, the sea and a pier. Metres, the sea to the south.
+export const SEASIDE_BOUNDS = { minX: -60, maxX: 60, minZ: -160, maxZ: 80 };
+const at = (
+  id: string,
+  label: string,
+  pos: { x: number; y: number; z: number },
+  foot: { x: number; z: number; y?: number; facing?: number; pose?: Pose },
+  sounds: SoundId[],
+): Anchor => spot(id, label, pos, foot, sounds, SEASIDE_BOUNDS);
+// the café's room sits at x -24, z -14 (its own spots are written in its
+// coordinates and moved here)
+const inCafe = (id: string, label: string, pos: { x: number; y: number; z: number }, foot: { x: number; z: number; y?: number; facing?: number; pose?: Pose }, sounds: SoundId[]): Anchor =>
+  at(id, label, { ...pos, x: pos.x - 24, z: pos.z - 14 }, { ...foot, x: foot.x - 24, z: foot.z - 14 }, sounds);
+
+const zone = (id: string, title: string, evidence: string, inside: boolean, spawn: { x: number; z: number; yaw: number }, anchors: Anchor[]): Shot => ({
+  id,
+  title,
+  image: null,
+  thumb: null,
+  aspect: 4 / 3,
+  evidence,
+  horizon: 0.5,
+  inside,
+  spawn,
+  anchors,
+  links: [],
+});
+
+const SEASIDE: Scene = {
+  id: "seaside",
+  title: "From the Forest to the Sea",
+  kind: "outdoor",
+  summary: "Start on a trail through a pine forest, cross the creek, and come out by the sea: a boardwalk with a café, a kiosk and beach huts, the sand, and a pier.",
+  evidence: "photo",
+  view: "world",
+  maxSounds: 32,
+  about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes.",
+  indoorAmbience: "cafe",
+  modes: [
+    { id: "morning", label: "Early Morning", note: "", ambience: "forest" },
+    { id: "weekday", label: "Sunny Day", note: "", ambience: "sea" },
+    { id: "rainy-dusk", label: "Rainy Dusk", note: "", ambience: "rain" },
+  ],
+  shots: [
+    zone("forest", "Forest trail", "Where the trail starts, among tall pines, ferns and fallen needles.", false, { x: 0, z: -146, yaw: Math.PI }, [
+      at("trail-start", "Trail", { x: 0.6, y: 0.5, z: -140 }, { x: 1.2, z: -139.4, pose: "walk" }, ["footsteps", "leaves", "quiet-talk"]),
+      at("tall-pines", "Tall pines", { x: -4.5, y: 3.4, z: -134 }, { x: -3.6, z: -133.4 }, ["birdsong", "wind", "leaves", "woodpecker"]),
+      at("clearing-log", "Log in the clearing", { x: -9, y: 0.9, z: -100.6 }, { x: -9, z: -100.1, y: 0.42, pose: "sit" }, ["quiet-talk", "birdsong", "leaves"]),
+      at("old-stump", "Old stump", { x: 6, y: 0.9, z: -90 }, { x: 5, z: -88.8 }, ["woodpecker", "leaves", "wind"]),
+    ]),
+    zone("creek", "Creek and footbridge", "A creek across the trail, crossed on a timber footbridge.", false, { x: -1.5, z: -76, yaw: Math.PI }, [
+      at("creek", "Creek", { x: 9, y: 0.1, z: -66 }, { x: 9, z: -63.8 }, ["creek", "leaves"]),
+      at("footbridge", "Footbridge", { x: -2, y: 0.8, z: -66 }, { x: -2.2, z: -66.6, pose: "walk" }, ["footsteps", "creek", "quiet-talk"]),
+      at("mossy-boulder", "Boulder", { x: -12, y: 1.6, z: -54 }, { x: -10.6, z: -53 }, ["woodpecker", "birdsong", "wind"]),
+    ]),
+    zone("forest-edge", "Edge of the forest", "The trees thin out and the ground turns to sand and grass.", false, { x: 1, z: -38, yaw: Math.PI }, [
+      at("edge-pines", "Last pines", { x: -6, y: 3, z: -30 }, { x: -5, z: -29 }, ["wind", "birdsong", "seagulls"]),
+      at("trail-end", "Trail's end", { x: 0.6, y: 0.5, z: -22 }, { x: 1.4, z: -21.4, pose: "walk" }, ["footsteps", "leaves", "quiet-talk"]),
+    ]),
+    zone("boardwalk", "Boardwalk", "A timber boardwalk along the shore: the café, a kiosk, beach huts, lamps and benches.", false, { x: -3, z: 1.6, yaw: 0.95 }, [
+      at("boardwalk", "Boardwalk", { x: 14, y: 0.5, z: 0.5 }, { x: 14.6, z: 0.8, pose: "walk" }, ["footsteps", "bicycle", "puddle-steps", "quiet-talk"]),
+      at("kiosk", "Kiosk", { x: 7.7, y: 1.4, z: -4 }, { x: 7.7, z: -3.1 }, ["chatter", "cups", "quiet-talk"]),
+      at("beach-huts", "Beach huts", { x: 23.6, y: 1.6, z: -4.4 }, { x: 23.6, z: -3.4 }, ["door-slide", "wind", "quiet-talk"]),
+      at("boardwalk-lamp", "Lamp post", { x: -1, y: 3, z: 2.25 }, { x: -1.6, z: 1.3 }, ["wind", "seagulls", "rain"]),
+      at("cafe-door", "Café door", { x: -17, y: 1.7, z: -3.8 }, { x: -15.6, z: -3.1 }, ["door-slide", "footsteps", "rain"]),
+    ]),
+    zone("counter", "Café counter", "Inside the café: the espresso cart, the counter with pastries and the till.", true, { x: -15.8, z: -9.4, yaw: 0.45 }, [
+      inCafe("espresso-cart", "Espresso cart", { x: 2.2, y: 1.4, z: 1.6 }, { x: 3.2, z: 2.2, facing: Math.PI / 2, pose: "back" }, ["espresso", "grinder"]),
+      inCafe("pastries", "Pastries", { x: 7, y: 1.25, z: 2.6 }, { x: 7, z: 3.6 }, ["cups", "chatter", "cup-down"]),
+      inCafe("till", "Till", { x: 10.6, y: 1.35, z: 2.6 }, { x: 10.4, z: 3.6 }, ["cups", "chatter"]),
+    ]),
+    zone("tables", "Café tables", "Round tables with wooden chairs under hanging lamps.", true, { x: -17, z: -6.2, yaw: 0.6 }, [
+      inCafe("corner-table", "Corner table", { x: 2.2, y: 1.0, z: 5.6 }, { x: 2.2, z: 6.35, y: 0.47, pose: "sit" }, ["chatter", "typing", "page-turn", "cup-down", "quiet-talk"]),
+      inCafe("far-table", "Far table", { x: 11.8, y: 1.0, z: 5.6 }, { x: 11.8, z: 6.35, y: 0.47, pose: "sit" }, ["chatter", "typing", "page-turn", "cup-down", "quiet-talk"]),
+    ]),
+    zone("window", "Café window", "A bar along the café's glass front, looking out over the boardwalk to the sea.", true, { x: -17, z: -5.4, yaw: Math.PI }, [
+      inCafe("window-west", "Window bar", { x: 2.8, y: 1.3, z: 9.6 }, { x: 2.8, z: 8.95, y: 0.75, pose: "sit" }, ["typing", "page-turn", "quiet-talk", "rain", "waves"]),
+    ]),
+    zone("beach", "Beach", "The sand down to the water, a lifeguard tower, rocks at the tideline.", false, { x: 4, z: 19, yaw: Math.PI - 0.3 }, [
+      at("shoreline", "Water's edge", { x: 6, y: 0.4, z: 30 }, { x: 6.6, z: 29.2 }, ["waves", "seagulls", "footsteps"]),
+      at("lifeguard-tower", "Lifeguard tower", { x: 17, y: 3.2, z: 15 }, { x: 18.8, z: 16.2 }, ["seagulls", "wind", "quiet-talk"]),
+      at("sand", "Sand", { x: -6, y: 0.4, z: 13 }, { x: -6, z: 13.6 }, ["footsteps", "quiet-talk", "rain"]),
+    ]),
+    zone("pier", "Pier", "A timber pier on posts, out over the water.", false, { x: -32.5, z: 8, yaw: Math.PI }, [
+      at("pier-middle", "Pier", { x: -32.5, y: 1, z: 38 }, { x: -32, z: 38.6 }, ["waves", "footsteps", "wind"]),
+      at("pier-end", "End of the pier", { x: -32.5, y: 1.2, z: 68 }, { x: -32.5, z: 67, pose: "back" }, ["waves", "seagulls", "wind"]),
+    ]),
+  ],
+};
+
 export const SCENES: Scene[] = [
+  SEASIDE,
   CAFE,
   WORLD,
   {

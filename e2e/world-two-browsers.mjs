@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// The café through the UI, in two Chrome sessions: both join, one goes to
-// the counter and puts the espresso machine on the espresso cart, the other
-// sees its marker arrive; then walking with the keyboard carries you from
-// the window to the counter.
+// The seaside place through the UI, in two Chrome sessions: both join, one
+// goes to the café counter and puts the espresso machine on the espresso
+// cart, the other sees its marker arrive; walking with the keyboard carries
+// you from the café window to the counter, and out of the forest onto the
+// boardwalk.
 //
 //   APP_URL=http://localhost:8080 node e2e/world-two-browsers.mjs [shotsDir]
 import { mkdirSync } from "node:fs";
@@ -34,8 +35,8 @@ async function person(name, avatar) {
 
 const a = await person("Ada", "cat");
 const b = await person("Bo", "dog");
-await a.goto(`${base}/scene/cafe?mode=weekday&shot=street`);
-await b.goto(`${base}/scene/cafe?mode=weekday&shot=tables`);
+await a.goto(`${base}/scene/seaside?mode=weekday&shot=boardwalk`);
+await b.goto(`${base}/scene/seaside?mode=weekday&shot=tables`);
 await a.waitForSelector("canvas.world-canvas");
 await b.waitForSelector("canvas.world-canvas");
 
@@ -64,6 +65,18 @@ await b.keyboard.up("s");
 await b.waitForTimeout(300);
 check(b.url().includes("shot=counter"), `walking back with S moves Bo from the window to the counter (${new URL(b.url()).searchParams.get("shot")})`);
 if (out) await b.screenshot({ path: `${out}/world-b-walked.jpg`, type: "jpeg", quality: 70 });
+
+// The forest and the shore are one place: from the forest's edge, W walks
+// down the trail and out onto the boardwalk.
+await b.click('#shots a[data-shot="forest-edge"]');
+await b.waitForTimeout(500);
+await b.locator("canvas.world-canvas").focus();
+await b.keyboard.down("w");
+await b.waitForTimeout(8500);
+await b.keyboard.up("w");
+await b.waitForTimeout(300);
+check(b.url().includes("shot=boardwalk"), `W walks Bo out of the forest onto the boardwalk (${new URL(b.url()).searchParams.get("shot")})`);
+if (out) await b.screenshot({ path: `${out}/world-b-boardwalk.jpg`, type: "jpeg", quality: 70 });
 
 check(errors.length === 0, `no page errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
 await browser.close();

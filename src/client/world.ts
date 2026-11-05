@@ -13,10 +13,12 @@ import { figureSvg, passerSvg } from "./figures.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { cafeKit } from "./cafe.js";
+import { seasideKit } from "./seaside.js";
+import type { Ambience } from "./synth.js";
 import type { PlaceKit } from "./places.js";
 import { campusKit, canStand, type Built } from "./world-build.js";
 
-const KITS: Record<string, PlaceKit> = { campus: campusKit, cafe: cafeKit };
+const KITS: Record<string, PlaceKit> = { campus: campusKit, cafe: cafeKit, seaside: seasideKit };
 
 export interface WorldDrawOptions {
   interactive: boolean;
@@ -33,6 +35,8 @@ export interface Listener {
   z: number;
   yaw: number;
   inside: boolean;
+  // the background where you stand, when the place sets it
+  ambience?: Ambience;
 }
 
 interface Options {
@@ -219,7 +223,7 @@ export class WorldView {
 
     const base = lightFor(mode);
     const sunDir = this.kit.sunDirs?.[mode];
-    this.light = sunDir ? { ...base, sunDir } : base;
+    this.light = { ...base, ...(sunDir ? { sunDir } : {}), ...this.kit.light?.[mode] };
     if (mode === "morning" && !reduced()) this.sunrise = { from: performance.now(), ms: 3800 };
     this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
 
@@ -505,7 +509,8 @@ export class WorldView {
   }
 
   private buildRain(): void {
-    const n = reduced() ? 600 : 2400;
+    const full = this.kit.rainCount ?? 2400;
+    const n = reduced() ? Math.round(full / 4) : full;
     const pos = new Float32Array(n * 6);
     for (let i = 0; i < n; i++) {
       const [x, z] = this.kit.rainAt(Math.random);
@@ -728,6 +733,8 @@ export class WorldView {
     for (let i = 0; i < steps; i++) this.move(dt / steps);
     const bobY = Math.sin(this.bob) * 0.035;
     this.camera.position.set(this.x, EYE + bobY, this.z);
+    this.kit.animate?.(now / 1000);
+    this.followSun();
     this.camera.rotation.set(this.pitch, this.yaw, 0);
     this.sky.position.copy(this.camera.position);
 
@@ -754,7 +761,29 @@ export class WorldView {
 
     this.renderer.render(this.scene3, this.camera);
     this.layoutOverlay(now - this.occlusionAt > 160);
-    this.opts.onListen?.({ x: this.x, y: EYE, z: this.z, yaw: this.yaw, inside: this.kit.isInside(this.x, this.z) });
+    this.opts.onListen?.({
+      x: this.x,
+      y: EYE,
+      z: this.z,
+      yaw: this.yaw,
+      inside: this.kit.isInside(this.x, this.z),
+      ambience: this.kit.ambienceAt?.(this.x, this.z, this.mode),
+    });
+  }
+
+  // Shadows are drawn for about 40 m around the sun's target; in a place
+  // bigger than that, the target follows you (in 8 m steps, so the shadows
+  // don't shimmer as you walk).
+  private followSun(): void {
+    const [tx, , tz] = this.kit.sunTarget;
+    const far = Math.abs(this.x - tx) > 30 || Math.abs(this.z - tz) > 30;
+    const x = far ? Math.round(this.x / 8) * 8 : tx;
+    const z = far ? Math.round(this.z / 8) * 8 : tz;
+    const t = this.sun.target.position;
+    if (t.x === x && t.z === z) return;
+    const offset = this.sun.position.clone().sub(t);
+    t.set(x, 0, z);
+    this.sun.position.copy(t).add(offset);
   }
 
   // A slow device gets a lighter picture rather than a slideshow: if frames

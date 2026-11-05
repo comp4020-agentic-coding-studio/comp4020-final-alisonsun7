@@ -23,7 +23,7 @@ function inside(x: number, z: number): boolean {
 const textureLoader = new THREE.TextureLoader();
 
 // A Poly Haven surface: colour, normal and AO/roughness/metal maps.
-function surface(id: string, repeat: [number, number], more: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial {
+export function surface(id: string, repeat: [number, number], more: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial {
   const load = (map: string, colour = false): THREE.Texture => {
     const t = textureLoader.load(`/assets/textures/${id}/${map}.jpg`);
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -43,25 +43,26 @@ function surface(id: string, repeat: [number, number], more: THREE.MeshStandardM
   });
 }
 
-function build(): Built {
-  const b = new Builder();
+// The room itself, its shop front facing +z: everything but the street. A
+// place puts it wherever it likes by moving the Builder's root.
+export interface CafeRoom {
+  glass: THREE.MeshStandardMaterial;
+  bulbs: THREE.MeshStandardMaterial;
+  ceilingLights: THREE.PointLight[];
+  walkable: Rect[];
+}
+
+export function buildCafeRoom(b: Builder): CafeRoom {
   const planks = surface("brown_planks_05", [6, 4]);
   const brick = surface("brick_wall_001", [5, 1.6]);
   const brickOut = surface("brick_wall_001", [5, 1.6]);
   const plaster = surface("plastered_wall", [3, 1]);
-  const pavement = surface("brick_pavement_02", [10, 3]);
-  const asphalt = surface("asphalt_02", [8, 3]);
   const wood = std(0x6b4630, { roughness: 0.6 });
   const darkWood = std(0x3b281c, { roughness: 0.55 });
   const blackMetal = std(0x1d1e20, { metalness: 0.6, roughness: 0.4 });
   const ceiling = std(0x2a2826);
   const glass = new THREE.MeshStandardMaterial({ color: 0xbfd2dc, transparent: true, opacity: 0.16, roughness: 0.05, metalness: 0.1, depthWrite: false });
-  // windows across the street: some lit at dusk (the time of day sets how
-  // much), the rest dark glass
-  const windows = std(0x2a3038, { emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.3 });
-  const darkPanes = std(0x222830, { roughness: 0.25, metalness: 0.2 });
   const bulbs = std(0xfff1dc, { emissive: 0xffc98a, emissiveIntensity: 0.4 });
-  const lampHead = std(0x222222, { emissive: 0xffcf8a, emissiveIntensity: 0 });
 
   // ---- inside --------------------------------------------------------------
 
@@ -173,11 +174,37 @@ function build(): Built {
     ceilingLights.push(l);
   }
 
-  // ---- outside -------------------------------------------------------------
-
   // the café's own front, above and around the glass, in brick
   b.box(brickOut, -0.25, 14.25, H + 0.6, H + 1.4, 9.85, 10.15, { occludes: true });
   b.box(std(0x2a2826), -0.25, 14.25, H + 0.02, H + 0.3, -0.25, 9.85, { occludes: true });
+
+  return {
+    glass,
+    bulbs,
+    ceilingLights,
+    walkable: [
+      { x0: 0.3, x1: 13.7, z0: 0.3, z1: 9.75 }, // the room
+      { x0: DOOR.x0 + 0.1, x1: DOOR.x1 - 0.1, z0: 9.5, z1: 10.6 }, // the door
+    ],
+  };
+}
+
+function build(): Built {
+  const b = new Builder();
+  const room = buildCafeRoom(b);
+  const brickOut = surface("brick_wall_001", [5, 1.6]);
+  const plaster = surface("plastered_wall", [3, 1]);
+  const pavement = surface("brick_pavement_02", [10, 3]);
+  const asphalt = surface("asphalt_02", [8, 3]);
+  const blackMetal = std(0x1d1e20, { metalness: 0.6, roughness: 0.4 });
+  // windows across the street: some lit at dusk (the time of day sets how
+  // much), the rest dark glass
+  const windows = std(0x2a3038, { emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.3 });
+  const darkPanes = std(0x222830, { roughness: 0.25, metalness: 0.2 });
+  const lampHead = std(0x222222, { emissive: 0xffcf8a, emissiveIntensity: 0 });
+
+  // ---- outside -------------------------------------------------------------
+
   b.box(brickOut, -6, -0.25, 0, 7, -2, 10.15, { occludes: true, solid: true });
   b.box(plaster, 14.25, 22, 0, 6, -2, 10.15, { occludes: true, solid: true });
   // footpath and road
@@ -210,19 +237,15 @@ function build(): Built {
     root: b.root,
     occluders: b.occluders,
     floors: b.floors,
-    walkable: [
-      { x0: 0.3, x1: 13.7, z0: 0.3, z1: 9.75 }, // the room
-      { x0: DOOR.x0 + 0.1, x1: DOOR.x1 - 0.1, z0: 9.5, z1: 10.6 }, // the door
-      { x0: -5.5, x1: 21.5, z0: 10.4, z1: 13.7 }, // the footpath
-    ],
+    walkable: [...room.walkable, { x0: -5.5, x1: 21.5, z0: 10.4, z1: 13.7 }],
     solids: b.solids,
     paving: pavement,
-    glass,
+    glass: room.glass,
     windows,
-    ceilingStrips: bulbs,
+    ceilingStrips: room.bulbs,
     lampHead,
     lamp,
-    ceilingLights,
+    ceilingLights: room.ceilingLights,
   };
 }
 
@@ -267,6 +290,12 @@ const PROPS: Prop[] = [
 ];
 
 async function furnish(built: Built, progress: (done: number) => void): Promise<void> {
+  await furnishCafe(built.root, built.solids, progress);
+}
+
+// Loads the café's furniture into `parent` (the room's root, wherever it has
+// been put), adding what can't be walked through to `solids`.
+export async function furnishCafe(parent: THREE.Object3D, solids: Rect[], progress: (done: number) => void): Promise<void> {
   const loader = new GLTFLoader();
   const ids = [...new Set(PROPS.map((p) => p.id))];
   const models = new Map<string, THREE.Object3D>();
@@ -298,17 +327,19 @@ async function furnish(built: Built, progress: (done: number) => void): Promise<
     holder.add(m);
     holder.rotation.y = p.turn ?? 0;
     holder.position.set(p.at[0], p.y ?? 0, p.at[1]);
-    built.root.add(holder);
+    parent.add(holder);
+    parent.updateMatrixWorld(true);
     if (p.id === "shrub_04") {
       const c = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.19, 0.42, 16), pot);
       c.position.set(p.at[0], 0.21, p.at[1]);
       c.castShadow = c.receiveShadow = true;
-      built.root.add(c);
-      built.solids.push({ x0: p.at[0] - 0.3, x1: p.at[0] + 0.3, z0: p.at[1] - 0.3, z1: p.at[1] + 0.3 });
+      parent.add(c);
+      const at = parent.localToWorld(new THREE.Vector3(p.at[0], 0, p.at[1]));
+      solids.push({ x0: at.x - 0.3, x1: at.x + 0.3, z0: at.z - 0.3, z1: at.z + 0.3 });
     }
     if (p.id === "CoffeeCart_01" || p.id === "steel_frame_shelves_01") {
       const half = new THREE.Box3().setFromObject(holder);
-      built.solids.push({ x0: half.min.x, x1: half.max.x, z0: half.min.z, z1: half.max.z });
+      solids.push({ x0: half.min.x, x1: half.max.x, z0: half.min.z, z1: half.max.z });
     }
   }
 }

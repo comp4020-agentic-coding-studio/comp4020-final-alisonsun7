@@ -55,12 +55,13 @@ export class AudioEngine {
 
   // Where you are in the world, each frame. Indoors the background is the
   // room's; sounds on the other side of the glass are muffled.
-  listen(x: number, y: number, z: number, yaw: number, inside: boolean): void {
+  listen(x: number, y: number, z: number, yaw: number, inside: boolean, ambience?: Ambience): void {
     if (inside !== this.listenerInside) {
       this.listenerInside = inside;
-      this.ambience = inside ? this.indoorAmbience : this.outdoorAmbience;
       if (this.ctx) for (const live of this.voices.values()) this.shape(live);
     }
+    // the place may say what its background is where you stand
+    this.ambience = ambience ?? (inside ? this.indoorAmbience : this.outdoorAmbience);
     const ctx = this.ctx;
     if (!ctx || ctx.state !== "running") return;
     const l = ctx.listener;

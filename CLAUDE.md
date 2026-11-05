@@ -4,25 +4,27 @@
 
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) defines the product. `docs/decisions/003-live-places-and-memories.md`,
-`004-walkable-drawn-world.md` and `005-imagined-places-from-cc0-assets.md`
-record where this build follows it and where it departs (005 drops the ANU
-theme). Read both before
+`004-walkable-drawn-world.md`, `005-imagined-places-from-cc0-assets.md` and
+`006-forest-to-sea.md` record where this build follows it and where it
+departs (005 drops the ANU theme). Read both before
 changing behaviour. Explain progress to Wen in Chinese; the UI, code, commits
 and repo docs are English. README.md, PROCESS.md, reflections and the research
 note are Wen's to write: offer outlines and checks, never draft them.
 
 ## What it is
 
-Sound of a City. Imagined places you walk through in first person (first:
-The Corner Café), built from CC0 models, with drawn cat and dog figures in
-them. People add everyday
+Sound of a City. One imagined place you walk through in first person, From
+the Forest to the Sea: a forest trail, a creek, a boardwalk with a café,
+kiosk and beach huts, the beach and a pier. Built from CC0 assets, with
+drawn cat and dog figures in it. People add everyday
 sounds at fixed spots in a scene; everyone in the same place hears them. A
 3-minute memory, timed by the server, is saved with everyone's names, can be
 replayed, and appears in a public archive.
 
 Walkable places (`view: "world"`, three.js, three modes each) are the only
 ones listed; each has a `PlaceKit` (`client/places.ts`; the café in
-`client/cafe.ts`). The ANU campus and the older photo scenes are `retired`:
+`client/cafe.ts`, `client/seaside.ts`). The café's own street, the ANU
+campus and the older photo scenes are `retired`:
 unlisted, but their pages and memories still work.
 
 ## Product invariants
@@ -99,9 +101,9 @@ without Wen's go-ahead.
   temp DB, test hooks) for sealing, failed saves and restarts.
 - `pnpm build && pnpm e2e` drives two Chrome sessions through the UI.
 - `node e2e/look.mjs <dir>` saves screenshots for a person to look at;
-  `SCENE=cafe SHOTS=street,counter,tables,window node e2e/look-world.mjs <dir>`
-  does every mode and zone of a walkable place.
-- `node e2e/world-two-browsers.mjs` drives the café in two Chrome sessions.
+  `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
+  does every mode and those zones of a walkable place.
+- `node e2e/world-two-browsers.mjs` drives the seaside in two Chrome sessions.
   The world e2e scripts use the GPU (`--use-angle=metal`): in software
   rendering the café runs at well under 1 fps.
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

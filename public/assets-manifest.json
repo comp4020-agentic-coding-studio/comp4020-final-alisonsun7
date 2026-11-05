@@ -306,6 +306,166 @@
       "processing": "unchanged; 1k textures (skies 2k HDR)"
     },
     {
+      "id": "polyhaven-fern_02",
+      "path": "public/assets/models/fern_02/fern_02.gltf",
+      "files": [
+        "public/assets/models/fern_02/fern_02.gltf",
+        "public/assets/models/fern_02/textures/fern_02_arm_1k.jpg",
+        "public/assets/models/fern_02/textures/fern_02_diff_1k.jpg",
+        "public/assets/models/fern_02/textures/fern_02_nor_gl_1k.jpg",
+        "public/assets/models/fern_02/fern_02.bin"
+      ],
+      "source": "Poly Haven, \"Fern 02\" by Rob Tuytel, Rico Cilliers: https://polyhaven.com/a/fern_02",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-grass_medium_02",
+      "path": "public/assets/models/grass_medium_02/grass_medium_02.gltf",
+      "files": [
+        "public/assets/models/grass_medium_02/grass_medium_02.gltf",
+        "public/assets/models/grass_medium_02/textures/grass_medium_02_nor_gl_1k.jpg",
+        "public/assets/models/grass_medium_02/textures/grass_medium_02_diff_1k.jpg",
+        "public/assets/models/grass_medium_02/textures/grass_medium_02_arm_1k.jpg",
+        "public/assets/models/grass_medium_02/grass_medium_02.bin"
+      ],
+      "source": "Poly Haven, \"Grass Medium 02\" by Rico Cilliers: https://polyhaven.com/a/grass_medium_02",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-rock_07",
+      "path": "public/assets/models/rock_07/rock_07.gltf",
+      "files": [
+        "public/assets/models/rock_07/rock_07.gltf",
+        "public/assets/models/rock_07/rock_07.bin",
+        "public/assets/models/rock_07/textures/rock_07_arm_1k.jpg",
+        "public/assets/models/rock_07/textures/rock_07_diff_1k.jpg",
+        "public/assets/models/rock_07/textures/rock_07_nor_gl_1k.jpg"
+      ],
+      "source": "Poly Haven, \"Rock 07\" by Jenelle van Heerden: https://polyhaven.com/a/rock_07",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-boulder_01",
+      "path": "public/assets/models/boulder_01/boulder_01.gltf",
+      "files": [
+        "public/assets/models/boulder_01/boulder_01.gltf",
+        "public/assets/models/boulder_01/textures/boulder_01_arm_1k.jpg",
+        "public/assets/models/boulder_01/textures/boulder_01_diff_1k.jpg",
+        "public/assets/models/boulder_01/boulder_01.bin",
+        "public/assets/models/boulder_01/textures/boulder_01_nor_gl_1k.jpg"
+      ],
+      "source": "Poly Haven, \"Boulder 01\" by Rico Cilliers: https://polyhaven.com/a/boulder_01",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-dead_tree_trunk",
+      "path": "public/assets/models/dead_tree_trunk/dead_tree_trunk.gltf",
+      "files": [
+        "public/assets/models/dead_tree_trunk/dead_tree_trunk.gltf",
+        "public/assets/models/dead_tree_trunk/textures/dead_tree_trunk_arm_1k.jpg",
+        "public/assets/models/dead_tree_trunk/textures/dead_tree_trunk_nor_gl_1k.jpg",
+        "public/assets/models/dead_tree_trunk/textures/dead_tree_trunk_diff_1k.jpg",
+        "public/assets/models/dead_tree_trunk/dead_tree_trunk.bin"
+      ],
+      "source": "Poly Haven, \"Dead Tree Trunk\" by Rob Tuytel: https://polyhaven.com/a/dead_tree_trunk",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-tree_stump_01",
+      "path": "public/assets/models/tree_stump_01/tree_stump_01.gltf",
+      "files": [
+        "public/assets/models/tree_stump_01/tree_stump_01.gltf",
+        "public/assets/models/tree_stump_01/tree_stump_01.bin",
+        "public/assets/models/tree_stump_01/textures/tree_stump_01_diff_1k.jpg",
+        "public/assets/models/tree_stump_01/textures/tree_stump_01_nor_gl_1k.jpg",
+        "public/assets/models/tree_stump_01/textures/tree_stump_01_arm_1k.jpg"
+      ],
+      "source": "Poly Haven, \"Tree Stump 01\" by Rob Tuytel: https://polyhaven.com/a/tree_stump_01",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-shrub_02",
+      "path": "public/assets/models/shrub_02/shrub_02.gltf",
+      "files": [
+        "public/assets/models/shrub_02/shrub_02.gltf",
+        "public/assets/models/shrub_02/textures/shrub_02_arm_1k.jpg",
+        "public/assets/models/shrub_02/textures/shrub_02_nor_gl_1k.jpg",
+        "public/assets/models/shrub_02/shrub_02.bin",
+        "public/assets/models/shrub_02/textures/shrub_02_diff_1k.jpg"
+      ],
+      "source": "Poly Haven, \"Shrub 02\" by Rico Cilliers: https://polyhaven.com/a/shrub_02",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-Lantern_01",
+      "path": "public/assets/models/Lantern_01/Lantern_01.gltf",
+      "files": [
+        "public/assets/models/Lantern_01/Lantern_01.gltf",
+        "public/assets/models/Lantern_01/textures/Lantern_01_brass_arm_1k.jpg",
+        "public/assets/models/Lantern_01/Lantern_01.bin",
+        "public/assets/models/Lantern_01/textures/Lantern_01_brass_nor_gl_1k.jpg",
+        "public/assets/models/Lantern_01/textures/Lantern_01_brass_diff_1k.jpg"
+      ],
+      "source": "Poly Haven, \"Lantern 01\" by Rajil Jose Macatangay: https://polyhaven.com/a/Lantern_01",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-wooden_crate_01",
+      "path": "public/assets/models/wooden_crate_01/wooden_crate_01.gltf",
+      "files": [
+        "public/assets/models/wooden_crate_01/wooden_crate_01.gltf",
+        "public/assets/models/wooden_crate_01/textures/wooden_crate_01_diff_1k.jpg",
+        "public/assets/models/wooden_crate_01/textures/wooden_crate_01_nor_gl_1k.jpg",
+        "public/assets/models/wooden_crate_01/wooden_crate_01.bin",
+        "public/assets/models/wooden_crate_01/textures/wooden_crate_01_arm_1k.jpg"
+      ],
+      "source": "Poly Haven, \"Wooden Crate 01\" by James Ray Cock: https://polyhaven.com/a/wooden_crate_01",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-lifebuoy",
+      "path": "public/assets/models/lifebuoy/lifebuoy.gltf",
+      "files": [
+        "public/assets/models/lifebuoy/lifebuoy.gltf",
+        "public/assets/models/lifebuoy/textures/lifebuoy_nor_gl_1k.jpg",
+        "public/assets/models/lifebuoy/textures/lifebuoy_diff_1k.jpg",
+        "public/assets/models/lifebuoy/textures/lifebuoy_arm_1k.jpg",
+        "public/assets/models/lifebuoy/lifebuoy.bin"
+      ],
+      "source": "Poly Haven, \"Lifebuoy\" by Hank Kaamura: https://polyhaven.com/a/lifebuoy",
+      "usage": "model",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
       "id": "polyhaven-brown_planks_05",
       "path": "public/assets/textures/brown_planks_05/diffuse.jpg",
       "files": [
@@ -370,6 +530,118 @@
         "public/assets/textures/asphalt_02/arm.jpg"
       ],
       "source": "Poly Haven, \"Asphalt 02\" by Rob Tuytel: https://polyhaven.com/a/asphalt_02",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-forest_leaves_02",
+      "path": "public/assets/textures/forest_leaves_02/diffuse.jpg",
+      "files": [
+        "public/assets/textures/forest_leaves_02/diffuse.jpg",
+        "public/assets/textures/forest_leaves_02/nor_gl.jpg",
+        "public/assets/textures/forest_leaves_02/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Forest Leaves 02\" by Rob Tuytel: https://polyhaven.com/a/forest_leaves_02",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-stony_dirt_path",
+      "path": "public/assets/textures/stony_dirt_path/diffuse.jpg",
+      "files": [
+        "public/assets/textures/stony_dirt_path/diffuse.jpg",
+        "public/assets/textures/stony_dirt_path/nor_gl.jpg",
+        "public/assets/textures/stony_dirt_path/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Stony Dirt Path\" by eye-candy.xyz: https://polyhaven.com/a/stony_dirt_path",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-pine_bark",
+      "path": "public/assets/textures/pine_bark/diffuse.jpg",
+      "files": [
+        "public/assets/textures/pine_bark/diffuse.jpg",
+        "public/assets/textures/pine_bark/nor_gl.jpg",
+        "public/assets/textures/pine_bark/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Pine Bark\" by Dimitrios Savva: https://polyhaven.com/a/pine_bark",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-coast_sand_01",
+      "path": "public/assets/textures/coast_sand_01/diffuse.jpg",
+      "files": [
+        "public/assets/textures/coast_sand_01/diffuse.jpg",
+        "public/assets/textures/coast_sand_01/nor_gl.jpg",
+        "public/assets/textures/coast_sand_01/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Coast Sand 01\" by Rob Tuytel: https://polyhaven.com/a/coast_sand_01",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-damp_beach_sand",
+      "path": "public/assets/textures/damp_beach_sand/diffuse.jpg",
+      "files": [
+        "public/assets/textures/damp_beach_sand/diffuse.jpg",
+        "public/assets/textures/damp_beach_sand/nor_gl.jpg",
+        "public/assets/textures/damp_beach_sand/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Damp Beach Sand\" by Dimitrios Savva: https://polyhaven.com/a/damp_beach_sand",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-weathered_planks",
+      "path": "public/assets/textures/weathered_planks/diffuse.jpg",
+      "files": [
+        "public/assets/textures/weathered_planks/diffuse.jpg",
+        "public/assets/textures/weathered_planks/nor_gl.jpg",
+        "public/assets/textures/weathered_planks/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Weathered Planks\" by Dario Barresi, Dimitrios Savva: https://polyhaven.com/a/weathered_planks",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-blue_painted_planks",
+      "path": "public/assets/textures/blue_painted_planks/diffuse.jpg",
+      "files": [
+        "public/assets/textures/blue_painted_planks/diffuse.jpg",
+        "public/assets/textures/blue_painted_planks/nor_gl.jpg",
+        "public/assets/textures/blue_painted_planks/arm.jpg"
+      ],
+      "source": "Poly Haven, \"Blue Painted Planks\" by Rob Tuytel: https://polyhaven.com/a/blue_painted_planks",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
+      "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "polyhaven-white_planks_clean",
+      "path": "public/assets/textures/white_planks_clean/diffuse.jpg",
+      "files": [
+        "public/assets/textures/white_planks_clean/diffuse.jpg",
+        "public/assets/textures/white_planks_clean/nor_gl.jpg",
+        "public/assets/textures/white_planks_clean/arm.jpg"
+      ],
+      "source": "Poly Haven, \"White Planks Clean\" by Rob Tuytel: https://polyhaven.com/a/white_planks_clean",
       "usage": "texture",
       "publicAllowed": true,
       "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",

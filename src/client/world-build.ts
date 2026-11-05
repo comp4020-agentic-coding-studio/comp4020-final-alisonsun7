@@ -22,6 +22,8 @@ export interface Built {
   // where you can stand, and what you can't walk through
   walkable: Rect[];
   solids: Rect[];
+  // round things you can't walk through, like tree trunks
+  circles?: { x: number; z: number; r: number }[];
   // things the time of day changes
   paving: THREE.MeshStandardMaterial;
   glass: THREE.MeshStandardMaterial;
@@ -470,8 +472,9 @@ export function buildWorld(): Built {
 }
 
 // Can a person of radius r stand at (x, z)?
-export function canStand(built: Pick<Built, "walkable" | "solids">, x: number, z: number, r = 0.28): boolean {
+export function canStand(built: Pick<Built, "walkable" | "solids" | "circles">, x: number, z: number, r = 0.28): boolean {
   if (!built.walkable.some((w) => x >= w.x0 && x <= w.x1 && z >= w.z0 && z <= w.z1)) return false;
+  if (built.circles?.some((c) => (x - c.x) ** 2 + (z - c.z) ** 2 < (c.r + r) ** 2)) return false;
   return !built.solids.some((s) => x > s.x0 - r && x < s.x1 + r && z > s.z0 - r && z < s.z1 + r);
 }
 

@@ -7,7 +7,7 @@
 // mechanical.
 import type { SoundId } from "../shared/catalog.js";
 
-export type Ambience = "room" | "birds" | "crowd" | "rain" | "cafe";
+export type Ambience = "room" | "birds" | "crowd" | "rain" | "cafe" | "forest" | "sea";
 
 let noiseBuffer: AudioBuffer | null = null;
 
@@ -290,6 +290,57 @@ export const VOICES: Record<SoundId, Voice> = {
     murmur(ctx, out, when + rand(0.3, 1.2), Math.round(rand(8, 14)), rand(200, 260), 0.06);
     return a + rand(1, 3);
   },
+  // a swell that builds, breaks into hiss, and draws back
+  waves: (ctx, out, when) => {
+    const dur = rand(5, 8);
+    wash(ctx, out, when, dur, { type: "lowpass", freq: 420, level: 0.2, fade: dur * 0.45 });
+    wash(ctx, out, when + dur * 0.4, dur * 0.5, { type: "highpass", freq: 1800, level: 0.09, fade: dur * 0.2 });
+    return dur * rand(0.75, 0.95);
+  },
+  // two or three cries that rise and fall
+  seagulls: (ctx, out, when) => {
+    let t = when;
+    const n = Math.round(rand(2, 4));
+    for (let i = 0; i < n; i++) {
+      const osc = ctx.createOscillator();
+      osc.type = "sawtooth";
+      const f = rand(1100, 1500);
+      osc.frequency.setValueAtTime(f * 0.8, t);
+      osc.frequency.linearRampToValueAtTime(f * 1.25, t + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.7, t + 0.42);
+      const band = ctx.createBiquadFilter();
+      band.type = "bandpass";
+      band.frequency.value = 1500;
+      band.Q.value = 2.5;
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0, t);
+      env.gain.linearRampToValueAtTime(0.07, t + 0.05);
+      env.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+      osc.connect(band).connect(env).connect(out);
+      osc.start(t);
+      osc.stop(t + 0.5);
+      t += rand(0.45, 0.8);
+    }
+    return t - when + rand(3, 7);
+  },
+  leaves: (ctx, out, when) => {
+    const dur = rand(2, 4);
+    wash(ctx, out, when, dur, { type: "highpass", freq: 2600, level: 0.07, fade: 0.6, wobble: 0.5 });
+    return dur + rand(1.5, 4);
+  },
+  // a quick drumroll on a trunk
+  woodpecker: (ctx, out, when) => {
+    const n = Math.round(rand(10, 18));
+    for (let i = 0; i < n; i++) burst(ctx, out, when + i * 0.055, { type: "bandpass", freq: 900, q: 4, decay: 0.03, level: 0.35 * (1 - i / (n * 1.4)) });
+    return n * 0.055 + rand(3, 7);
+  },
+  // water over stones: a bright wash with small bubbles in it
+  creek: (ctx, out, when) => {
+    const dur = rand(5, 8);
+    wash(ctx, out, when, dur, { type: "bandpass", freq: 2400, q: 0.8, level: 0.11, fade: 0.8, wobble: 0.35 });
+    for (let t = 0.3; t < dur - 0.5; t += rand(0.12, 0.4)) tone(ctx, out, when + t, rand(500, 1300), { decay: 0.05, level: 0.03 });
+    return dur - 0.6;
+  },
 };
 
 // The bed underneath everything, one per mode. Quiet, and separately mutable.
@@ -314,6 +365,16 @@ export function playAmbience(ctx: BaseAudioContext, out: AudioNode, kind: Ambien
     case "cafe":
       wash(ctx, out, when, dur, { type: "lowpass", freq: 700, level: 0.05, fade: 2 });
       murmur(ctx, out, when + rand(0, 3), 12, rand(160, 230), 0.02);
+      break;
+    case "forest":
+      wash(ctx, out, when, dur, { type: "bandpass", freq: 450, level: 0.04, fade: 2, wobble: 0.5 });
+      if (Math.random() < 0.5) VOICES.birdsong(ctx, out, when + rand(1, 7));
+      if (Math.random() < 0.4) VOICES.leaves(ctx, out, when + rand(0, 6));
+      break;
+    case "sea":
+      VOICES.waves(ctx, out, when);
+      VOICES.waves(ctx, out, when + rand(4, 6));
+      if (Math.random() < 0.25) VOICES.seagulls(ctx, out, when + rand(1, 7));
       break;
   }
   return dur - 2;

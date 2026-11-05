@@ -28,8 +28,33 @@ const MODELS = [
   "hanging_industrial_lamp",
   "steel_frame_shelves_01",
   "shrub_04",
+  // the forest and the shore
+  "fern_02",
+  "grass_medium_02",
+  "rock_07",
+  "boulder_01",
+  "dead_tree_trunk",
+  "tree_stump_01",
+  "shrub_02",
+  "Lantern_01",
+  "wooden_crate_01",
+  "lifebuoy",
 ];
-const TEXTURES = ["brown_planks_05", "brick_wall_001", "plastered_wall", "brick_pavement_02", "asphalt_02"];
+const TEXTURES = [
+  "brown_planks_05",
+  "brick_wall_001",
+  "plastered_wall",
+  "brick_pavement_02",
+  "asphalt_02",
+  "forest_leaves_02",
+  "stony_dirt_path",
+  "pine_bark",
+  "coast_sand_01",
+  "damp_beach_sand",
+  "weathered_planks",
+  "blue_painted_planks",
+  "white_planks_clean",
+];
 const SKIES = ["qwantani_dawn_puresky", "qwantani_noon_puresky", "kloppenheim_01_puresky"];
 
 const md5 = (buf) => createHash("md5").update(buf).digest("hex");

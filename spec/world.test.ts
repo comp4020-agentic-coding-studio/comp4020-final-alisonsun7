@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, inject, it } from "vitest";
-import { PER_PERSON, SCENES, WORLD_BOUNDS, maxSoundsIn } from "../src/shared/catalog.ts";
+import { PER_PERSON, SCENES, SEASIDE_BOUNDS, maxSoundsIn } from "../src/shared/catalog.ts";
 import type { Snapshot } from "../src/shared/protocol.ts";
 import { cafeKit } from "../src/client/cafe.ts";
+import { seasideKit } from "../src/client/seaside.ts";
 import { campusKit } from "../src/client/world-build.ts";
 import { Stream, join, opId, sendOp } from "./helpers.ts";
 
@@ -10,7 +11,7 @@ import { Stream, join, opId, sendOp } from "./helpers.ts";
 // metres. The server checks their spots exactly as it checks a photo's
 // anchors, and a place holds more sounds than one photo did.
 const baseUrl = inject("baseUrl");
-const world = SCENES.find((s) => s.id === "cafe")!;
+const world = SCENES.find((s) => s.id === "seaside")!;
 
 async function snapshot(mode: string): Promise<Snapshot> {
   const stream = await Stream.open(baseUrl, world.id, mode, null);
@@ -38,14 +39,16 @@ describe("the walkable world", () => {
         expect(a.at, `${shot.id}/${a.id}`).toBeDefined();
         expect(a.foot, `${shot.id}/${a.id}`).toBeDefined();
         for (const v of [a.x, a.y, a.stand.x, a.stand.y]) expect(v >= 0 && v <= 1, `${shot.id}/${a.id}`).toBe(true);
-        expect(a.at!.x).toBeGreaterThanOrEqual(WORLD_BOUNDS.minX);
-        expect(a.at!.x).toBeLessThanOrEqual(WORLD_BOUNDS.maxX);
+        expect(a.at!.x).toBeGreaterThanOrEqual(SEASIDE_BOUNDS.minX);
+        expect(a.at!.x).toBeLessThanOrEqual(SEASIDE_BOUNDS.maxX);
+        expect(a.at!.z).toBeGreaterThanOrEqual(SEASIDE_BOUNDS.minZ);
+        expect(a.at!.z).toBeLessThanOrEqual(SEASIDE_BOUNDS.maxZ);
       }
     }
   });
 
   it("Go to puts you inside the part of the place it names", () => {
-    const kits = { cafe: cafeKit, campus: campusKit } as const;
+    const kits = { cafe: cafeKit, campus: campusKit, seaside: seasideKit } as const;
     for (const scene of SCENES.filter((s) => s.view === "world")) {
       const kit = kits[scene.id as keyof typeof kits];
       for (const shot of scene.shots) expect(kit.zoneAt(shot.spawn!.x, shot.spawn!.z), `${scene.id}/${shot.id}`).toBe(shot.id);
@@ -104,8 +107,8 @@ describe("the walkable world", () => {
       operationId: opId(),
       type: "sound.add",
       soundId: "espresso",
-      shotId: "street",
-      anchorId: "footpath",
+      shotId: "beach",
+      anchorId: "sand",
       gain: 0.6,
     });
     expect(wrong.result.ok).toBe(false);
@@ -118,7 +121,7 @@ describe("the walkable world", () => {
     while (placed < 14) {
       const who = await join(baseUrl, `Filler ${n++}`);
       for (let i = 0; i < PER_PERSON && placed < 14; i++) {
-        const r = await sendOp(baseUrl, who, sessionId, { operationId: opId(), type: "sound.add", soundId: "footsteps", shotId: "street", anchorId: "footpath", gain: 0.5 });
+        const r = await sendOp(baseUrl, who, sessionId, { operationId: opId(), type: "sound.add", soundId: "footsteps", shotId: "boardwalk", anchorId: "boardwalk", gain: 0.5 });
         expect(r.result.ok, JSON.stringify(r.result)).toBe(true);
         placed++;
       }

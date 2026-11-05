@@ -34,7 +34,7 @@ const world =
     ? new WorldView(stage, scene, mode.id, {
         startZone: shotId,
         onZone: (z) => (shotId = z),
-        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside),
+        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside, l.ambience),
       })
     : null;
 let t = memory.durationMs;
