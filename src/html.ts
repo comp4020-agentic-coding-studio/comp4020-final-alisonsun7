@@ -59,21 +59,21 @@ function joinForm(next: string, error: string | null): string {
 
 export function renderLanding(user: User | null): string {
   return page(
-    "Sound of a City — ANU Edition",
+    "Sound of a City",
     "landing",
     `<main class="hero">
   <div class="hero-photo" aria-hidden="true"></div>
   <div class="hero-text">
-    <p class="kicker">ANU Edition</p>
+    <p class="kicker">From the forest to the sea</p>
     <h1>Sound of a City</h1>
     <p class="subtitle">A campus comes alive through the sounds we leave behind.</p>
-    <p class="lede">Walk through ANU, add an everyday sound, and create a shared memory of place.</p>
+    <p class="lede">Walk a trail through the trees down to the sea, leave an everyday sound, and meet whoever else is there. What you leave stays, for everyone.</p>
     <p class="actions">
-      <a class="btn primary" href="/explore">Enter the Campus</a>
+      <a class="btn primary" href="/scene/seaside">Enter the world</a>
       <a class="btn ghost" href="/about#how">How it Works</a>
     </p>
     ${user ? `<p class="fine">Welcome back, ${escapeHtml(user.nickname)}.</p>` : ""}
-    <p class="independent">An independent student project inspired by ANU.</p>
+    <p class="independent">An independent student project.</p>
   </div>
 </main>
 ${footer}`,

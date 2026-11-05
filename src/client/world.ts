@@ -923,7 +923,7 @@ export class WorldView {
       if (visible) o.label.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
       if (!o.bubble.hidden || o.bubble.dataset.shown === "1") {
         o.bubble.style.visibility = visible ? "visible" : "hidden";
-        if (visible) o.bubble.style.transform = `translate(${x}px, ${y - 22}px) translate(-50%, -100%)`;
+        if (visible) this.keepInView(o.bubble, x, y - 22);
       }
     }
     const id = nearest?.person.id ?? null;
@@ -1107,10 +1107,24 @@ export class WorldView {
     const onScreen = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
     // off screen it sits at the top of the view, so it's never missed
     const w = this.host.clientWidth;
-    const h = this.host.clientHeight;
     const x = onScreen ? ((v.x + 1) / 2) * w : w / 2;
-    const y = onScreen ? ((1 - v.y) / 2) * h : 70;
-    roo.bubble.style.transform = `translate(${Math.max(140, Math.min(w - 140, x))}px, ${Math.max(70, y)}px) translate(-50%, -100%)`;
+    const y = onScreen ? ((1 - v.y) / 2) * this.host.clientHeight : 0;
+    this.keepInView(roo.bubble, x, y);
+  }
+
+  // Put a bubble's tail at (x, y) on the view, but never let any of it fall
+  // outside: near the top, the whole bubble moves down rather than being cut.
+  private keepInView(el: HTMLElement, x: number, y: number): void {
+    const w = this.host.clientWidth;
+    const h = this.host.clientHeight;
+    const bw = el.offsetWidth;
+    const bh = el.offsetHeight;
+    const margin = 10;
+    const left = Math.max(margin, Math.min(w - bw - margin, x - bw / 2));
+    const top = Math.max(margin, Math.min(h - bh - margin, y - bh - 8));
+    el.style.transform = `translate(${left}px, ${top}px)`;
+    // the tail only points at the speaker when the bubble is where it should be
+    el.classList.toggle("moved", Math.abs(left - (x - bw / 2)) > 1 || Math.abs(top - (y - bh - 8)) > 1);
   }
 
   // Shadows are drawn for about 40 m around the sun's target; in a place

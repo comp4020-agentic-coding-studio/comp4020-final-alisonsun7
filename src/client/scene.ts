@@ -8,6 +8,7 @@ import { applyCommitted, formatClock, remainingMs, type LiveState } from "../sha
 import { AudioEngine } from "./audio.js";
 import { newOperationId, sendOp, type OpBody } from "./ops.js";
 import { drawShot, drawWeather, pulse } from "./stage.js";
+import { figureSvg } from "./figures.js";
 import { WorldView, type Other } from "./world.js";
 
 interface Boot {
@@ -866,22 +867,97 @@ toggle.onclick = async () => {
   } else await turnSoundOn();
 };
 
-// Arriving in a walkable place: one clear choice about sound (browsers need
-// a click before anything plays, and sound never starts by itself).
+// Arriving in a walkable place: say who you are (a name and a cat or a dog)
+// and whether to come in with sound, in one step, without leaving the page,
+// so the click that sound needs is still the click that starts it. Sound
+// never starts by itself.
 if (world) {
   const enter = document.createElement("div");
   enter.className = "enter-card";
-  enter.innerHTML = `<div class="enter-box"><h2></h2><p>Walk with W A S D or the arrow keys, and drag to look around. Every label is a place for a sound: click one to hear what's there and add your own.</p><div class="enter-actions"><button type="button" class="btn primary" data-sound="on">Enter with sound</button><button type="button" class="btn ghost" data-sound="off">Enter quietly</button></div></div>`;
+  const you = live.snapshot.you;
+  const art = (a: "cat" | "dog"): string => figureSvg(a, "stand", "preview");
+  enter.innerHTML = `<form class="enter-box">
+    <h2></h2>
+    <p class="enter-intro">Walk with W A S D, drag to look. Click any label to hear and add sounds; meet someone to talk.</p>
+    ${
+      you
+        ? `<p class="enter-welcome">Welcome back, <strong class="enter-name"></strong>. <button type="button" class="link-btn" data-leave>Not you?</button></p>`
+        : `<label class="enter-field">Your name <input name="nickname" maxlength="24" autocomplete="nickname" /></label>
+    <fieldset class="enter-avatars"><legend>Come as</legend>
+      <label class="avatar-choice"><input type="radio" name="avatar" value="cat" checked /><span class="avatar-art">${art("cat")}</span><span>A cat</span></label>
+      <label class="avatar-choice"><input type="radio" name="avatar" value="dog" /><span class="avatar-art">${art("dog")}</span><span>A dog</span></label>
+    </fieldset>
+    <p class="enter-note">Others see your name. What you add stays for everyone.</p>`
+    }
+    <p class="enter-error" role="alert" hidden></p>
+    <div class="enter-actions"><button type="submit" class="btn primary" data-sound="on">Enter with sound</button><button type="submit" class="btn ghost" data-sound="off">Enter quietly</button></div>
+    ${you ? "" : `<p class="enter-look"><button type="button" class="link-btn" data-look>Just look around first</button></p>`}
+  </form>`;
   enter.querySelector("h2")!.textContent = scene.title;
+  if (you) enter.querySelector(".enter-name")!.textContent = you.name;
   stage.append(enter);
-  const go = async (withSound: boolean): Promise<void> => {
+  const form = enter.querySelector<HTMLFormElement>("form")!;
+  const error = enter.querySelector<HTMLParagraphElement>(".enter-error")!;
+  const nameInput = form.querySelector<HTMLInputElement>('input[name="nickname"]');
+  (nameInput ?? form.querySelector<HTMLButtonElement>('[data-sound="on"]'))!.focus();
+
+  const done = (): void => {
     enter.remove();
-    if (withSound) await turnSoundOn();
     world.focusCanvas();
   };
-  enter.querySelector<HTMLButtonElement>('[data-sound="on"]')!.onclick = () => void go(true);
-  enter.querySelector<HTMLButtonElement>('[data-sound="off"]')!.onclick = () => void go(false);
-  enter.querySelector<HTMLButtonElement>('[data-sound="on"]')!.focus();
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const withSound = (e.submitter as HTMLElement | null)?.dataset.sound !== "off";
+    // start sound first, while this is still the click
+    const sound = withSound ? turnSoundOn() : Promise.resolve(false);
+    if (!you) {
+      const nickname = nameInput!.value.replace(/\s+/g, " ").trim();
+      const avatar = (form.querySelector<HTMLInputElement>('input[name="avatar"]:checked')?.value ?? "cat") as "cat" | "dog";
+      if (!nickname) {
+        error.textContent = "Choose a name first.";
+        error.hidden = false;
+        nameInput!.focus();
+        return;
+      }
+      const res = await fetch("/join", {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
+        body: new URLSearchParams({ nickname, avatar, next: location.pathname }),
+      }).catch(() => null);
+      if (!res?.ok) {
+        error.textContent = "That didn't work. Check your connection and try again.";
+        error.hidden = false;
+        return;
+      }
+      becomeJoined();
+    }
+    await sound;
+    done();
+  };
+  enter.querySelector<HTMLButtonElement>("[data-look]")?.addEventListener("click", done);
+  enter.querySelector<HTMLButtonElement>("[data-leave]")?.addEventListener("click", () => {
+    const f = document.createElement("form");
+    f.method = "post";
+    f.action = "/leave";
+    document.body.append(f);
+    f.submit();
+  });
+}
+
+// Joined from the arrival card: the page becomes a joined person's page
+// without reloading, and the stream reconnects so the server knows you.
+function becomeJoined(): void {
+  boot.joined = true;
+  if (living) stage.append(chat);
+  const tray = document.getElementById("tray");
+  if (tray) {
+    tray.classList.remove("tray-join");
+    tray.innerHTML = `<div class="tray-head"><h2>Add a sound</h2><button type="button" class="link-btn" id="tray-toggle" aria-expanded="true">Hide</button></div>
+  <div class="tray-body" id="tray-body"><div class="cats" id="cats" role="tablist" aria-label="Kinds of sound"></div><div class="chips" id="chips" role="tabpanel" aria-label="Sounds of this kind"></div></div>`;
+    wireTrayToggle();
+  }
+  connect();
+  render();
 }
 
 const ambience = $<HTMLInputElement>("ambience");
@@ -889,8 +965,9 @@ ambience.disabled = false;
 ambience.checked = true;
 ambience.onchange = () => audio.setAmbience(ambience.checked);
 
-const trayToggle = document.getElementById("tray-toggle");
-if (trayToggle) {
+function wireTrayToggle(): void {
+  const trayToggle = document.getElementById("tray-toggle");
+  if (!trayToggle) return;
   trayToggle.onclick = () => {
     const open = trayToggle.getAttribute("aria-expanded") !== "true";
     trayToggle.setAttribute("aria-expanded", String(open));
@@ -898,6 +975,7 @@ if (trayToggle) {
     $("tray-body").hidden = !open;
   };
 }
+wireTrayToggle();
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && openSpot) {

@@ -124,5 +124,30 @@ await card.locator(".remove").first().click().catch(() => undefined);
 await a.waitForTimeout(400);
 check((await card.locator(".card-list li.empty").count()) === 1, "Remove on the card takes it away");
 
+// Someone new comes straight to the world: the arrival card asks their
+// name and cat or dog, and they're in, with sound, without a reload.
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 840 } });
+const c = await ctx.newPage();
+c.on("pageerror", (e) => errors.push(`Cy: ${e.message}`));
+await c.goto(`${base}/scene/seaside?mode=weekday&shot=beach`);
+await c.waitForSelector(".enter-card input[name=nickname]");
+check(await c.locator(".enter-card .avatar-choice").count() === 2, "a newcomer is asked for a name and a cat or a dog before entering");
+if (out) await c.screenshot({ path: `${out}/arrive.jpg`, type: "jpeg", quality: 75 });
+await c.click('.enter-card [data-sound="on"]');
+check(await c.locator(".enter-error:not([hidden])").count() === 1, "without a name they're asked for one");
+await c.fill(".enter-card input[name=nickname]", "Cy");
+await c.check('.enter-card input[value="dog"]', { force: true });
+const loads = [];
+c.on("framenavigated", (f) => f === c.mainFrame() && loads.push(f.url()));
+await c.click('.enter-card [data-sound="on"]');
+await c.waitForSelector(".enter-card", { state: "detached", timeout: 5000 }).catch(() => undefined);
+check(await c.locator(".enter-card").count() === 0 && loads.length === 0, "a name and Enter with sound take them in, without leaving the page");
+check((await c.locator("#sound-toggle").getAttribute("aria-pressed")) === "true", "with sound on");
+await c.locator(".person.is-you", { hasText: "Cy" }).waitFor({ timeout: 4000 }).catch(() => undefined);
+check(await c.locator(".person.is-you", { hasText: "Cy" }).count() === 1, "they're here as Cy");
+check(await c.locator("#chips .chip").count() > 0, "and can add sounds straight away");
+check(await c.locator("#ambience").isChecked() && await c.locator("#ambience").isEnabled(), "the background sounds switch is on and works");
+await ctx.close();
+
 check(errors.length === 0, `no page errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
 await browser.close();

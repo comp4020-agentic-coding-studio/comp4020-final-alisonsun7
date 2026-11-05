@@ -397,3 +397,32 @@ shows it. `pnpm check` 93/93; `world-two-browsers` 9/9 (it now dismisses
 the arrival card); `two-browsers` 29/29.
 
 **Not run:** listening by ear (headless Chrome plays to no device).
+
+## 16. Name and look before entering; the kangaroo's words cut off (2026-11-05)
+
+**Prompts (Wen):** let people enter their name and choose how they look
+before entering the world; the kangaroo's speech bubble was cut off at the
+top of the view (screenshot).
+
+**Done:** the arrival card asks for a name and a cat or a dog (with a
+picture of each), then "Enter with sound" or "Enter quietly" joins without
+leaving the page (`POST /join` answers JSON when asked), so the same click
+still starts sound. Returning people see "Welcome back" and "Not you?". The
+landing page now says what the place is and goes straight in. Bubbles (the
+kangaroo's, and words over people's heads) are now kept wholly inside the
+view, using their own size; when moved, their tail is hidden.
+
+**Corrections:**
+
+- **Cause of the cut-off bubble:** only its bottom edge was kept in view,
+  never its height. The new check fails on the old code: the bubble's top
+  went above the view when looking up at a close kangaroo.
+- **Native `required` pre-empted the card's own message** for a blank name.
+- **The card overflowed an 840 px window** (buttons half hidden); made
+  compact, checked on desktop and phone sizes.
+- **Removed the background-sounds switch by mistake** while replacing the
+  arrival code (seen as an empty, dead checkbox in a screenshot). Restored,
+  with a check that it's on and enabled.
+
+**Results:** `pnpm check` 94/94; `meet-and-talk` 26/26;
+`world-two-browsers` 11/11; `two-browsers` 29/29.

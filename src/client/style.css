@@ -2415,3 +2415,144 @@ h3 {
     max-height: 60%;
   }
 }
+
+.roo-bubble.moved::after,
+.said-bubble.moved::after {
+  display: none;
+}
+
+/* arriving: who you are, and sound */
+.enter-box {
+  max-height: calc(100% - 8px);
+  overflow: auto;
+}
+
+.enter-intro {
+  font-size: 13px;
+}
+
+.enter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+
+.enter-field input {
+  font: 400 15px var(--font);
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+
+.enter-field input:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+
+.enter-avatars {
+  border: 0;
+  padding: 0;
+  margin: 0 0 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.enter-avatars legend {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 auto 6px;
+}
+
+.avatar-choice {
+  flex: 1;
+  max-width: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  background: var(--bg-2);
+}
+
+.avatar-choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.avatar-choice:has(input:checked) {
+  border-color: var(--amber);
+  background: rgba(217, 162, 91, 0.12);
+}
+
+.avatar-choice:has(input:focus-visible) {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.avatar-art svg {
+  height: 92px;
+  width: auto;
+  display: block;
+}
+
+.enter-note {
+  font-size: 12px !important;
+  color: var(--ink-faint) !important;
+}
+
+.enter-welcome {
+  font-size: 15px !important;
+}
+
+.enter-error {
+  color: var(--danger) !important;
+  font-size: 13px !important;
+}
+
+.enter-error[hidden] {
+  display: none;
+}
+
+.enter-look {
+  margin: 10px 0 0 !important;
+}
+
+/* keep the arrival card within a short view */
+.enter-box {
+  padding: 16px 18px;
+}
+
+.enter-box h2 {
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+
+.enter-box p {
+  margin-bottom: 10px;
+}
+
+.enter-field {
+  margin-bottom: 8px;
+}
+
+.avatar-choice {
+  flex-direction: row;
+  justify-content: center;
+  padding: 6px 10px;
+}
+
+.avatar-art svg {
+  height: 54px;
+}

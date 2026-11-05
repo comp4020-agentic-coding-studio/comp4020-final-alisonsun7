@@ -112,6 +112,22 @@ try {
   rooCame = false;
 }
 check(rooCame, `a kangaroo comes to say Bo has wandered off the trail (Bo at x ${strayX})`);
+if (rooCame) {
+  const stageBox = await b.locator("#stage").boundingBox();
+  const bubbleBox = await bubble.boundingBox();
+  const inside = bubbleBox.x >= stageBox.x && bubbleBox.y >= stageBox.y && bubbleBox.x + bubbleBox.width <= stageBox.x + stageBox.width && bubbleBox.y + bubbleBox.height <= stageBox.y + stageBox.height;
+  check(inside, `the kangaroo's words are all inside the view (top ${Math.round(bubbleBox.y - stageBox.y)} px from the view's top)`);
+  // look up close: its head is above the view, and the words still fit
+  await b.locator("canvas.world-canvas").focus();
+  const box = await b.locator("canvas.world-canvas").boundingBox();
+  await b.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await b.mouse.down();
+  await b.mouse.move(box.x + box.width / 2, box.y + box.height / 2 - 200, { steps: 8 });
+  await b.mouse.up();
+  await b.waitForTimeout(300);
+  const after = await bubble.boundingBox();
+  check(after.y >= stageBox.y && after.y + after.height <= stageBox.y + stageBox.height, `still inside after looking away (top ${Math.round(after.y - stageBox.y)} px)`);
+}
 if (out) await b.screenshot({ path: `${out}/world-b-kangaroo.jpg`, type: "jpeg", quality: 72 });
 if (rooCame) {
   await bubble.locator(".roo-back").click();

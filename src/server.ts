@@ -170,13 +170,21 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     const nickname = (form.get("nickname") ?? "").replace(/\s+/g, " ").trim().slice(0, 24);
     const avatar = form.get("avatar");
     const next = safeNext(form.get("next"));
+    // The arrival card joins without leaving the page, and asks for JSON.
+    const wantsJson = (req.headers.accept ?? "").includes("application/json");
     if (!nickname || !isAvatar(avatar)) {
+      if (wantsJson) return json(res, 400, { ok: false, error: "Choose a name and a cat or a dog." });
       res.writeHead(303, { location: `/explore?error=${encodeURIComponent("Choose a name and a cat or a dog.")}` });
       res.end();
       return;
     }
     const { user: created, token } = createUser(nickname, avatar);
     log("user_joined", { user: created.id, nickname: created.nickname, avatar });
+    if (wantsJson) {
+      res.writeHead(200, { "content-type": "application/json; charset=utf-8", "set-cookie": sessionCookie(token) });
+      res.end(JSON.stringify({ ok: true, name: created.nickname, avatar }));
+      return;
+    }
     res.writeHead(303, { location: next, "set-cookie": sessionCookie(token) });
     res.end();
     return;

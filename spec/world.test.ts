@@ -128,6 +128,18 @@ afterAll(async () => {
 });
 
 describe("a living place (ADR 007)", () => {
+  it("lets the arrival card join without leaving the page (JSON), and refuses a blank name", async () => {
+    const post = (body: Record<string, string>) =>
+      fetch(new URL("/join", baseUrl), { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", accept: "application/json" }, body: new URLSearchParams(body), redirect: "manual" });
+    const ok = await post({ nickname: "  Wren  ", avatar: "dog" });
+    expect(ok.status).toBe(200);
+    expect(ok.headers.get("set-cookie") ?? "").toMatch(/^soac_session=/);
+    expect(await ok.json()).toEqual({ ok: true, name: "Wren", avatar: "dog" });
+    const blank = await post({ nickname: "   ", avatar: "cat" });
+    expect(blank.status).toBe(400);
+    expect(blank.headers.get("set-cookie")).toBeNull();
+  });
+
   it("is one world at every time of day: a sound added in the morning is there at dusk", async () => {
     const morning = await snapshot("morning");
     const dusk = await snapshot("rainy-dusk");
