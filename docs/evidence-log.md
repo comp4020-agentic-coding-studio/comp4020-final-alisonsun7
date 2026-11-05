@@ -607,3 +607,52 @@ picked the hidden bubble and failed with the fix in; it now accepts any
 visible place the words are shown.
 
 **Results:** `pnpm check` 39/39; `pnpm e2e` 42/42.
+
+## 25. More layered trees and a softer coast (2026-11-05)
+
+**Prompt (Wen):** 现在你帮我把画面设计的更漂亮一些，树啊 海啊 等。
+
+**Done:** eight irregular bough layers per pine, seeded variations in shape
+and green, slimmer trunks, instanced grass beside the trail and beach,
+a gently varying trail width, warmer sand and sunlight. The sea now has
+a shallow-to-deep colour gradient, procedural ripple normals and swells;
+the creek uses quieter ripples. Wet sand and foam follow a gently curved
+shore. Tree positions, collision rules, sound placement/removal, presence
+and chat are unchanged. No new external assets or dependencies.
+
+**Corrections:** the first water pass was too bright and regular, and the
+wet-sand band too broad. Reduced those effects and checked forest, creek,
+forest edge, beach, pier and boardwalk screenshots, plus forest and beach
+at a mobile viewport. Browser captures reported no page errors. These
+are viewport checks, not a real-phone performance test or listening test.
+
+**Results:** build and typecheck pass; `git diff --check` clean. On a
+separate local database, world and conversation browser checks passed.
+Running the sound browser check concurrently with unit tests caused one
+notification assertion to fail; its serial rerun passed all 17 checks.
+The serial `pnpm check` result is 38/39: the sound lifecycle test at
+`spec/world.test.ts:141` still exceeds its 5000 ms timeout. No timeout or
+unrelated interaction code was changed to hide that failure. No deployment.
+
+## 26. Waves moving toward the beach (2026-11-05)
+
+**Prompt (Wen):** make the waves animated, and suggest more sounds.
+
+**Done:** stronger swells travel toward shore; animated ripple normals;
+three staggered whitewater fronts advance and dissolve, and the shore wash
+runs farther up and down the sand. More mesh rows are concentrated near
+shore without adding vertices. Reduced-motion preference freezes this
+animation. Sound suggestions remain proposals: no audio added or played
+automatically, and the six approved sounds and placement rules are intact.
+
+**Checks:** build, typecheck and diff whitespace check pass. Inspected three
+beach captures 1.5 seconds apart; wave highlights change, with no browser
+or shader errors. A water-area screenshot crop stayed identical across
+1.5 seconds with reduced motion enabled. Full interaction tests, real-phone
+performance and listening tests were not rerun for this visual-only change.
+
+**Rerun before committing (2026-11-06):** on a fresh scratch database,
+serially, `pnpm check` 39/39 (the sound lifecycle test from entry 25 passed
+within its timeout; the spec runs against the server only, so these
+client-side visuals can't affect it) and `pnpm e2e` 42/42. Forest, boardwalk
+and beach screenshots render with no page errors.

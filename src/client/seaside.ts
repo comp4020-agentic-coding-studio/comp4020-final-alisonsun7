@@ -25,6 +25,7 @@ const inCafe = (x: number, z: number): boolean => {
 };
 
 const WATERLINE = 31;
+const coastOffset = (x: number): number => Math.sin(x * 0.13) * 0.45 + Math.sin(x * 0.37) * 0.22;
 // where the lifeguard tower stands
 const T_LIFE = { x: 17, z: 15 };
 const PIER = { x0: -34, x1: -31, z0: 1.5, z1: 72 };
@@ -122,45 +123,97 @@ function plantTrees(): Tree[] {
 }
 
 function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
-  const trunkGeo = new THREE.CylinderGeometry(0.16, 0.34, 1, 7);
+  const trunkGeo = new THREE.CylinderGeometry(0.045, 0.22, 1, 9);
   trunkGeo.translate(0, 0.5, 0);
   const trunks = new THREE.InstancedMesh(trunkGeo, bark, trees.length);
-  // three tiers of needles, darker at the bottom
-  const tiers = [
-    { at: 0.32, h: 0.42, w: 0.3 },
-    { at: 0.52, h: 0.36, w: 0.23 },
-    { at: 0.7, h: 0.32, w: 0.15 },
-  ];
-  const needles = tiers.map(() => {
-    const g = new THREE.ConeGeometry(1, 1, 8);
-    g.translate(0, 0.5, 0);
-    return new THREE.InstancedMesh(g, std(0xffffff, { roughness: 0.9 }), trees.length);
-  });
+  // Scalloped, overlapping boughs instead of three solid cones. All crowns
+  // share geometry and one draw call; the original tree locations stay put.
+  const layers = 8;
+  const crown = new THREE.ConeGeometry(1, 1, 14, 3);
+  crown.translate(0, 0.5, 0);
+  const vertices = crown.attributes.position;
+  for (let i = 0; i < vertices.count; i++) {
+    const x = vertices.getX(i), y = vertices.getY(i), z = vertices.getZ(i);
+    const a = Math.atan2(z, x);
+    const edge = 1 + 0.16 * Math.sin(a * 7 + y * 3) + 0.08 * Math.cos(a * 5 - y * 6);
+    vertices.setXYZ(i, x * edge, y + (1 - y) * 0.065 * Math.sin(a * 7), z * edge);
+  }
+  crown.computeVertexNormals();
+  const needles = new THREE.InstancedMesh(crown, std(0xffffff, { roughness: 0.95 }), trees.length * layers);
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const c = new THREE.Color();
   const r = mulberry(5);
   trees.forEach((t, i) => {
     q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t.turn);
-    m.compose(new THREE.Vector3(t.x, 0, t.z), q, new THREE.Vector3(1 + t.h / 20, t.h, 1 + t.h / 20));
+    m.compose(new THREE.Vector3(t.x, 0, t.z), q, new THREE.Vector3(1.25, t.h * 0.94, 1.25));
     trunks.setMatrixAt(i, m);
-    tiers.forEach((tier, k) => {
-      const w = t.h * tier.w;
-      m.compose(new THREE.Vector3(t.x, t.h * tier.at, t.z), q, new THREE.Vector3(w, t.h * tier.h, w));
-      needles[k].setMatrixAt(i, m);
-      // dark, slightly blue-green needles, lighter towards the top
-      c.setHSL(0.31 + r() * 0.06, 0.38 + r() * 0.18, 0.06 + k * 0.025 + r() * 0.035);
-      needles[k].setColorAt(i, c);
-    });
+    const hue = 0.30 + r() * 0.055;
+    const width = 0.85 + r() * 0.3;
+    for (let k = 0; k < layers; k++) {
+      const progress = k / (layers - 1);
+      const w = t.h * (0.185 - progress * 0.145) * width * (0.9 + r() * 0.2);
+      q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t.turn + k * 2.4);
+      m.compose(new THREE.Vector3(t.x + (r() - 0.5) * 0.28, t.h * (0.28 + progress * 0.60), t.z + (r() - 0.5) * 0.28), q,
+        new THREE.Vector3(w, t.h * (0.19 - progress * 0.065), w * (0.85 + r() * 0.25)));
+      needles.setMatrixAt(i * layers + k, m);
+      c.setHSL(hue, 0.29 + r() * 0.15, 0.075 + progress * 0.045 + r() * 0.025);
+      needles.setColorAt(i * layers + k, c);
+    }
   });
-  for (const mesh of [trunks, ...needles]) {
+  for (const mesh of [trunks, needles]) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
+    mesh.computeBoundingSphere();
     b.root.add(mesh);
   }
 }
 
 // ---- small shapes -----------------------------------------------------
+
+// Small native-looking tufts break up the hard path edge and frame the
+// beach. Decorative only: no new obstacles, assets or extra draw per plant.
+function edgeGrass(b: Builder): void {
+  const r = mulberry(88);
+  const positions: number[] = [];
+  for (let blade = 0; blade < 7; blade++) {
+    const a = blade * 2.4;
+    const x = Math.cos(a), z = Math.sin(a);
+    const h = 0.35 + r() * 0.5;
+    positions.push(x * 0.12 - z * 0.04, 0, z * 0.12 + x * 0.04,
+      x * 0.12 + z * 0.04, 0, z * 0.12 - x * 0.04,
+      x * 0.42, h, z * 0.42);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  g.computeVertexNormals();
+  const points: { x: number; z: number; coastal: boolean }[] = [];
+  for (let i = 0; i < trailPoints.length - 1; i++) {
+    const p = trailPoints[i], next = trailPoints[i + 1];
+    if (p.z > -18 || Math.abs(p.z - CREEK_Z) < CREEK_HALF + 1.1) continue;
+    const dir = new THREE.Vector3().subVectors(next, p).normalize();
+    for (const side of [-1, 1]) {
+      const d = 1.5 + r() * 1.3;
+      points.push({ x: p.x - dir.z * d * side, z: p.z + dir.x * d * side, coastal: false });
+    }
+  }
+  for (let i = 0; i < 180; i++) points.push({ x: (r() > 0.5 ? 1 : -1) * (39 + r() * 17), z: 5 + r() * 21, coastal: true });
+  const mesh = new THREE.InstancedMesh(g, std(0xffffff, { side: THREE.DoubleSide, roughness: 1 }), points.length);
+  const dummy = new THREE.Object3D();
+  const color = new THREE.Color();
+  points.forEach((p, i) => {
+    dummy.position.set(p.x, 0.025, p.z);
+    dummy.rotation.y = r() * Math.PI * 2;
+    dummy.scale.setScalar((p.coastal ? 0.65 : 0.45) + r() * 0.55);
+    dummy.updateMatrix();
+    mesh.setMatrixAt(i, dummy.matrix);
+    color.setHSL(p.coastal ? 0.17 : 0.23, 0.24 + r() * 0.12, 0.12 + r() * 0.10);
+    mesh.setColorAt(i, color);
+  });
+  mesh.receiveShadow = true;
+  mesh.computeBoundingSphere();
+  b.root.add(mesh);
+}
 
 // A gabled roof over x0..x1, z0..z1, ridge running along x.
 function gable(b: Builder, mat: THREE.Material, x0: number, x1: number, z0: number, z1: number, y: number, rise: number): void {
@@ -205,33 +258,65 @@ function bench(b: Builder, wood: THREE.Material, metal: THREE.Material, x: numbe
 
 let seaTime: { value: number } | null = null;
 let foamMaterial: THREE.MeshStandardMaterial | null = null;
+let shoreFoam: THREE.Mesh | null = null;
+const breakers: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>[] = [];
+const rippleMaps: THREE.Texture[] = [];
 
 // Water: a standard material (so it reflects the sky) with gentle waves
 // added in the vertex shader.
-function water(colour: number, amp: number, scale: number, roughness: number, reflect = 0.45): THREE.MeshStandardMaterial {
+function water(colour: number, amp: number, scale: number, roughness: number, reflect = 0.45, ocean = false): THREE.MeshStandardMaterial {
   // a bright sky would otherwise turn the water white at a low angle
   const mat = new THREE.MeshStandardMaterial({ color: colour, roughness, metalness: 0, envMapIntensity: reflect });
-  const time = { value: 0 };
-  seaTime ??= time;
+  seaTime ??= { value: 0 };
+  // Small ripples catch the sky between broad geometric swells.
+  const ripple = canvasTexture(128, 128, (g) => {
+    const pixels = g.createImageData(128, 128);
+    for (let y = 0; y < 128; y++) for (let x = 0; x < 128; x++) {
+      const u = x / 128 * Math.PI * 2, v = y / 128 * Math.PI * 2;
+      const i = (y * 128 + x) * 4;
+      pixels.data[i] = 128 + 24 * Math.cos(u * 3 + v * 2 + Math.sin(v * 3)) + 15 * Math.sin(u * 7 - v * 4);
+      pixels.data[i + 1] = 128 + 23 * Math.sin(v * 4 + u * 2 + Math.cos(u * 5));
+      pixels.data[i + 2] = 245;
+      pixels.data[i + 3] = 255;
+    }
+    g.putImageData(pixels, 0, 0);
+  }, ocean ? [240, 120] : [32, 4]);
+  ripple.colorSpace = THREE.NoColorSpace;
+  mat.normalMap = ripple;
+  rippleMaps.push(ripple);
+  mat.normalScale.set(0.32, 0.32);
+  mat.customProgramCacheKey = () => `coastal-water-${scale}-${amp}-${ocean}`;
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = seaTime!;
     shader.vertexShader = shader.vertexShader
-      .replace("#include <common>", "#include <common>\nuniform float uTime;")
+      .replace("#include <common>", "#include <common>\nuniform float uTime;\nvarying vec3 vWaterWorld;")
       .replace(
         "#include <begin_vertex>",
         `vec3 transformed = vec3(position);
          vec4 wp = modelMatrix * vec4(position, 1.0);
          float w1 = sin(wp.x * ${(0.18 * scale).toFixed(3)} + uTime * 0.9);
-         float w2 = sin(wp.z * ${(0.27 * scale).toFixed(3)} - uTime * 1.3 + wp.x * 0.05);
-         transformed.z += (w1 * 0.6 + w2 * 0.4) * ${amp.toFixed(3)};`,
+         float w2 = sin(wp.z * ${(0.27 * scale).toFixed(3)} + uTime * 1.3 + wp.x * 0.05);
+         float shore = ${ocean ? `smoothstep(${WATERLINE.toFixed(1)}, ${(WATERLINE + 12).toFixed(1)}, wp.z)` : "1.0"};
+         transformed.z += (w1 * 0.6 + w2 * 0.4) * ${amp.toFixed(3)} * shore;
+         vWaterWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;`,
       )
       .replace(
         "#include <beginnormal_vertex>",
         `vec4 wpn = modelMatrix * vec4(position, 1.0);
          float dx = cos(wpn.x * ${(0.18 * scale).toFixed(3)} + uTime * 0.9) * ${(0.18 * scale * 0.6 * amp).toFixed(4)};
-         float dz = cos(wpn.z * ${(0.27 * scale).toFixed(3)} - uTime * 1.3 + wpn.x * 0.05) * ${(0.27 * scale * 0.4 * amp).toFixed(4)};
+         float dz = cos(wpn.z * ${(0.27 * scale).toFixed(3)} + uTime * 1.3 + wpn.x * 0.05) * ${(0.27 * scale * 0.4 * amp).toFixed(4)};
          vec3 objectNormal = normalize(vec3(-dx, dz, 1.0));`,
       );
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", "#include <common>\nuniform float uTime;\nvarying vec3 vWaterWorld;")
+      .replace("#include <color_fragment>", `#include <color_fragment>
+        float rippleLight = sin(vWaterWorld.x * 1.3 + vWaterWorld.z * 2.1 + uTime * 0.7)
+          * sin(vWaterWorld.x * 0.8 - vWaterWorld.z * 1.5 - uTime * 0.5);
+        ${ocean ? `float depth = smoothstep(${WATERLINE.toFixed(1)}, ${(WATERLINE + 95).toFixed(1)}, vWaterWorld.z);
+        vec3 shallow = vec3(0.025, 0.18, 0.19);
+        vec3 deep = vec3(0.009, 0.065, 0.13);
+        diffuseColor.rgb = mix(shallow, deep, depth);
+        diffuseColor.rgb += (1.0 - depth) * pow(max(0.0, rippleLight), 8.0) * 0.065;` : "diffuseColor.rgb *= 1.0 + rippleLight * 0.09;"}`);
   };
   return mat;
 }
@@ -239,8 +324,12 @@ function water(colour: number, amp: number, scale: number, roughness: number, re
 // ---- building it -----------------------------------------------------------
 
 function build(): Built {
+  seaTime = { value: 0 };
+  breakers.length = 0;
+  rippleMaps.length = 0;
   const b = new Builder();
   const forestFloor = surface("forest_leaves_02", [40, 40]);
+  forestFloor.color.setHex(0xc0c8ad);
   const trailMat = surface("stony_dirt_path", [1, 60]);
   const bark = surface("pine_bark", [1, 3]);
   const sand = surface("coast_sand_01", [30, 14]);
@@ -270,7 +359,8 @@ function build(): Built {
       const next = trailPoints[Math.min(i + 1, trailPoints.length - 1)];
       const prev = trailPoints[Math.max(i - 1, 0)];
       const dir = new THREE.Vector3().subVectors(next, prev).normalize();
-      const side = new THREE.Vector3(-dir.z, 0, dir.x).multiplyScalar(1.3);
+      const width = 1.3 + Math.sin(i * 0.23) * 0.09 + Math.sin(i * 0.71) * 0.035;
+      const side = new THREE.Vector3(-dir.z, 0, dir.x).multiplyScalar(width);
       if (i > 0) along += p.distanceTo(prev);
       pos.push(p.x - side.x, 0.015, p.z - side.z, p.x + side.x, 0.015, p.z + side.z);
       uv.push(0, along / 3, 1, along / 3);
@@ -290,11 +380,12 @@ function build(): Built {
   }
   const trees = plantTrees();
   buildTrees(b, trees, bark);
+  edgeGrass(b);
 
   // the creek, below the forest floor, with a footbridge where the trail
   // crosses it
   b.floor(mud, -62, 62, CREEK_Z - CREEK_HALF, CREEK_Z + CREEK_HALF, -0.6);
-  const creekWater = water(0x24382f, 0.04, 3, 0.35);
+  const creekWater = water(0x356b60, 0.035, 3, 0.26, 0.4);
   const creek = new THREE.Mesh(new THREE.PlaneGeometry(124, CREEK_HALF * 2, 120, 6), creekWater);
   creek.rotation.x = -Math.PI / 2;
   creek.position.set(0, -0.32, CREEK_Z);
@@ -312,33 +403,68 @@ function build(): Built {
   }
 
   // ---- the shore ----
-  b.floor(sand, -62, 62, -17, WATERLINE + 3, 0);
-  b.floor(wetSand, -62, 62, WATERLINE - 4, WATERLINE + 3, 0.006);
+  sand.color.setHex(0xf1e3c6);
+  wetSand.color.setHex(0xd8c9af);
+  wetSand.roughness = 0.62;
+  b.floor(sand, -62, 62, -17, WATERLINE - 0.9, 0);
+  const shoreGeometry = new THREE.PlaneGeometry(124, 2.7, 124, 1);
+  const shoreVertices = shoreGeometry.attributes.position;
+  for (let i = 0; i < shoreVertices.count; i++) shoreVertices.setY(i, shoreVertices.getY(i) - coastOffset(shoreVertices.getX(i)));
+  const shoreline = new THREE.Mesh(shoreGeometry, wetSand);
+  shoreline.rotation.x = -Math.PI / 2;
+  shoreline.position.set(0, 0.006, WATERLINE - 1.25);
+  shoreline.receiveShadow = true;
+  b.root.add(shoreline);
+  b.floors.push(shoreline);
   // the sea, out to the horizon
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry(1600, 800, 240, 120), water(0x0d4f63, 0.16, 1, 0.22, 0.28));
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(1600, 800, 240, 120), water(0xffffff, 0.34, 1, 0.25, 0.38, true));
   sea.rotation.x = -Math.PI / 2;
   sea.position.set(0, -0.12, WATERLINE + 400);
+  const seaVertices = sea.geometry.attributes.position;
+  for (let i = 0; i < seaVertices.count; i++) {
+    // Spend most rows near shore, where viewers can actually see the swell.
+    const distance = (400 - seaVertices.getY(i)) / 800;
+    const y = 400 - distance * distance * 800;
+    seaVertices.setY(i, y - coastOffset(seaVertices.getX(i)) * Math.max(0, (y - 380) / 20));
+  }
   sea.receiveShadow = true;
   b.root.add(sea);
   // foam where the waves run up the sand
   const foamTex = canvasTexture(
-    256,
-    32,
+    512,
+    128,
     (g) => {
       const r = mulberry(3);
-      g.clearRect(0, 0, 256, 32);
-      for (let i = 0; i < 900; i++) {
-        g.fillStyle = `rgba(255,255,255,${0.2 + r() * 0.6})`;
-        g.fillRect(r() * 256, 8 + r() * 16 * r(), 2 + r() * 5, 1 + r() * 2);
+      g.clearRect(0, 0, 512, 128);
+      for (let x = 0; x < 512; x++) {
+        const edge = 57 + Math.sin(x / 512 * Math.PI * 8) * 12 + Math.sin(x / 512 * Math.PI * 18) * 5;
+        for (let j = 0; j < 12; j++) {
+          g.fillStyle = `rgba(242,255,250,${(1 - j / 12) * (0.3 + r() * 0.45)})`;
+          g.fillRect(x, edge + j * 2 + r() * 5, 1 + r() * 2, 1.5);
+        }
       }
     },
-    [12, 1],
+    [8, 1],
   );
   foamMaterial = std(0xffffff, { map: foamTex, transparent: true, opacity: 0.8, depthWrite: false, roughness: 0.6 });
-  const foam = new THREE.Mesh(new THREE.PlaneGeometry(124, 2.2), foamMaterial);
+  const foamGeometry = new THREE.PlaneGeometry(124, 2.2, 124, 1);
+  const foamVertices = foamGeometry.attributes.position;
+  for (let i = 0; i < foamVertices.count; i++) foamVertices.setY(i, foamVertices.getY(i) - coastOffset(foamVertices.getX(i)));
+  const foam = new THREE.Mesh(foamGeometry, foamMaterial);
   foam.rotation.x = -Math.PI / 2;
   foam.position.set(0, 0.02, WATERLINE + 0.6);
   b.root.add(foam);
+  shoreFoam = foam;
+  // Staggered, broken whitewater fronts approach the sand, then dissolve.
+  // Sharing the texture and geometry adds only three small draw calls.
+  for (let i = 0; i < 3; i++) {
+    const front = new THREE.Mesh(foamGeometry, foamMaterial.clone());
+    front.rotation.x = -Math.PI / 2;
+    front.position.set(0, 0.04 + i * 0.004, WATERLINE + 3);
+    front.scale.y = 1.3;
+    b.root.add(front);
+    breakers.push(front);
+  }
 
   // the boardwalk, with lamps and benches
   const walk = b.box(boards, -52, 52, -0.06, 0.04, -4, 2.6, { shadow: false });
@@ -691,9 +817,9 @@ export const seasideKit: PlaceKit = {
   rainCount: 7000,
   sunTarget: [0, 0, -10],
   // a high sun, a little south of east
-  sunDirs: { weekday: [0.3, 0.85, 0.35] },
+  sunDirs: { weekday: [0.45, 0.72, 0.35] },
   // mist that still lets you see the sea and the end of the pier
-  light: { weekday: { fogNear: 90, fogFar: 700 } },
+  light: { weekday: { fogNear: 85, fogFar: 650, sunColor: 0xffefd5, sunIntensity: 2.8, hemiGround: 0x718367, hemiIntensity: 1.5, exposure: 0.98 } },
   skies: { weekday: { url: "/assets/skies/qwantani_noon_puresky.hdr", intensity: 1 } },
   offTrail(x, z) {
     if (z > -18) return null;
@@ -704,10 +830,20 @@ export const seasideKit: PlaceKit = {
     return z > -18 || nearestOnTrail(x, z).d < RETURNED;
   },
   animate(t) {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) t = 0;
     if (seaTime) seaTime.value = t;
+    for (const map of rippleMaps) map.offset.set(t * 0.008, t * 0.013);
+    breakers.forEach((front, i) => {
+      const phase = (t / 8 + i / 3) % 1;
+      front.position.z = WATERLINE + 7 * (1 - phase);
+      front.position.x = Math.sin(t * 0.22 + i * 2) * 0.45;
+      front.scale.y = 0.8 + phase * 1.1;
+      front.material.opacity = Math.sin(phase * Math.PI) ** 2 * 0.78;
+    });
     if (foamMaterial?.map) {
       // the wash running up the sand and back
       const s = Math.sin(t * 0.7);
+      if (shoreFoam) shoreFoam.position.z = WATERLINE - 0.4 + s * 0.65;
       foamMaterial.map.offset.set(t * 0.01, 0);
       foamMaterial.opacity = 0.45 + 0.35 * (0.5 + 0.5 * s);
     }
