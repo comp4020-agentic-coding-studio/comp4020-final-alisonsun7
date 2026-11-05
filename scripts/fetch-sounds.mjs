@@ -31,6 +31,12 @@ const SOUNDS = [
   { id: "trickle", label: "Trickling stream", family: "geophony", kind: "loop", zones: ["creek", "forest-edge"], file: "Hemlock stream.ogg", from: 0, seconds: 16 },
   // the beach and the pier
   { id: "beach-waves", label: "Waves on the beach", family: "geophony", kind: "loop", zones: ["beach", "pier"], file: "Beach sounds South Carolina.ogg", from: 4, seconds: 54 },
+  // the children playing on the beach
+  { id: "children-playing", label: "Children playing", family: "anthrophony", kind: "loop", zones: ["beach"], file: "209901 foongaz city-playground-boxhagenerplatz-berlin.wav", from: 6, seconds: 80 },
+  // the toilets and showers along the boardwalk (the flush starts at 2.1 s,
+  // just after the loop's 2 s fade in)
+  { id: "toilet-flush", label: "Toilet flushing", family: "anthrophony", kind: "loop", zones: ["boardwalk"], file: "Flushing the toilet.ogg", from: 0, seconds: 70 },
+  { id: "shower", label: "Someone showering", family: "anthrophony", kind: "loop", zones: ["boardwalk"], file: "Shower Sound Ambience.ogg", from: 10, seconds: 60 },
   // the boardwalk and the café
   { id: "cafe-chatter", label: "Café chatter", family: "anthrophony", kind: "loop", zones: ["boardwalk", "counter", "tables", "window"], file: "Restaurant ambience.ogg", from: 5, seconds: 40 },
   { id: "espresso", label: "Espresso machine", family: "anthrophony", kind: "loop", zones: ["counter", "tables"], file: "Espresso machine.ogg", from: 0, seconds: 26 },

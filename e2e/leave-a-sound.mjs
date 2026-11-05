@@ -51,7 +51,7 @@ for (let i = 0; i < 8 && (await a.locator(".sound-label.in-reach .sound-remove")
 
 const before = await marks(b);
 await a.click("#leave-sound");
-check(await a.locator("#sound-palette:not([hidden]) li").count() === 7, "Leave a sound opens the seven sounds to choose from");
+check(await a.locator("#sound-palette:not([hidden]) li").count() === 10, "Leave a sound opens the ten sounds to choose from");
 check((await a.locator("#sound-palette li").first().textContent()).includes("suits here"), "those that suit the boardwalk come first");
 await a.locator("#sound-palette li", { hasText: "Café chatter" }).getByText("Listen").click();
 await a.waitForTimeout(600);

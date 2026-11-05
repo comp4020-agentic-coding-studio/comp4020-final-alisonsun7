@@ -711,6 +711,33 @@
       "processing": "mono, 54 s from 4 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
     },
     {
+      "id": "commons-children-playing",
+      "path": "public/assets/sounds/children-playing.mp3",
+      "source": "Wikimedia Commons, \"209901 foongaz city-playground-boxhagenerplatz-berlin.wav\" by foongaz: https://commons.wikimedia.org/wiki/File:209901_foongaz_city-playground-boxhagenerplatz-berlin.wav",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "processing": "mono, 80 s from 6 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-toilet-flush",
+      "path": "public/assets/sounds/toilet-flush.mp3",
+      "source": "Wikimedia Commons, \"Flushing the toilet.ogg\" by gradha: https://commons.wikimedia.org/wiki/File:Flushing_the_toilet.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "processing": "mono, 70 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-shower",
+      "path": "public/assets/sounds/shower.mp3",
+      "source": "Wikimedia Commons, \"Shower Sound Ambience.ogg\" by Wilfredor: https://commons.wikimedia.org/wiki/File:Shower_Sound_Ambience.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "processing": "mono, 60 s from 10 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
       "id": "commons-cafe-chatter",
       "path": "public/assets/sounds/cafe-chatter.mp3",
       "source": "Wikimedia Commons, \"Restaurant ambience.ogg\" by stephan: https://commons.wikimedia.org/wiki/File:Restaurant_ambience.ogg",

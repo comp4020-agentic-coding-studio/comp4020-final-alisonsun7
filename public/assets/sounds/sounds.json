@@ -32,6 +32,36 @@
     "seconds": 54
   },
   {
+    "id": "children-playing",
+    "label": "Children playing",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "beach"
+    ],
+    "seconds": 80
+  },
+  {
+    "id": "toilet-flush",
+    "label": "Toilet flushing",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "boardwalk"
+    ],
+    "seconds": 70
+  },
+  {
+    "id": "shower",
+    "label": "Someone showering",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "boardwalk"
+    ],
+    "seconds": 60
+  },
+  {
     "id": "cafe-chatter",
     "label": "Café chatter",
     "family": "anthrophony",
