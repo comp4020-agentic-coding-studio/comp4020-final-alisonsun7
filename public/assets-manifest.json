@@ -702,6 +702,15 @@
       "processing": "mono, 16 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
     },
     {
+      "id": "commons-beach-waves",
+      "path": "public/assets/sounds/beach-waves.mp3",
+      "source": "Wikimedia Commons, \"Beach sounds South Carolina.ogg\" by Anthropic42 at en.wikipedia: https://commons.wikimedia.org/wiki/File:Beach_sounds_South_Carolina.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "processing": "mono, 54 s from 4 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
       "id": "commons-cafe-chatter",
       "path": "public/assets/sounds/cafe-chatter.mp3",
       "source": "Wikimedia Commons, \"Restaurant ambience.ogg\" by stephan: https://commons.wikimedia.org/wiki/File:Restaurant_ambience.ogg",

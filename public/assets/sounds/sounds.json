@@ -1,7 +1,7 @@
 [
   {
     "id": "evening-forest",
-    "label": "Evening forest",
+    "label": "Bird sounds",
     "family": "biophony",
     "kind": "loop",
     "zones": [
@@ -19,6 +19,17 @@
       "forest-edge"
     ],
     "seconds": 16
+  },
+  {
+    "id": "beach-waves",
+    "label": "Waves on the beach",
+    "family": "geophony",
+    "kind": "loop",
+    "zones": [
+      "beach",
+      "pier"
+    ],
+    "seconds": 54
   },
   {
     "id": "cafe-chatter",

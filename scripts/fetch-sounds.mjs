@@ -26,9 +26,11 @@ const UA = "SoundOfACity/0.1 (COMP4020 coursework; https://comp4020-final-alison
 // without listening: adjust them by ear.
 const SOUNDS = [
   // the forest
-  { id: "evening-forest", label: "Evening forest", family: "biophony", kind: "loop", zones: ["forest"], file: "Waidachswald Oberschefflenz Abend 20250616 2005.ogg", from: 20, seconds: 40 },
+  { id: "evening-forest", label: "Bird sounds", family: "biophony", kind: "loop", zones: ["forest"], file: "Waidachswald Oberschefflenz Abend 20250616 2005.ogg", from: 20, seconds: 40 },
   // the creek (only the trickle for now)
   { id: "trickle", label: "Trickling stream", family: "geophony", kind: "loop", zones: ["creek", "forest-edge"], file: "Hemlock stream.ogg", from: 0, seconds: 16 },
+  // the beach and the pier
+  { id: "beach-waves", label: "Waves on the beach", family: "geophony", kind: "loop", zones: ["beach", "pier"], file: "Beach sounds South Carolina.ogg", from: 4, seconds: 54 },
   // the boardwalk and the café
   { id: "cafe-chatter", label: "Café chatter", family: "anthrophony", kind: "loop", zones: ["boardwalk", "counter", "tables", "window"], file: "Restaurant ambience.ogg", from: 5, seconds: 40 },
   { id: "espresso", label: "Espresso machine", family: "anthrophony", kind: "loop", zones: ["counter", "tables"], file: "Espresso machine.ogg", from: 0, seconds: 26 },

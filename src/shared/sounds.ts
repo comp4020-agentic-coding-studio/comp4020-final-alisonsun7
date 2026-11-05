@@ -25,8 +25,9 @@ export interface SoundKind {
 }
 
 export const SOUNDS: SoundKind[] = [
-  { id: "evening-forest", label: "Evening forest", family: "biophony", zones: ["forest"] },
+  { id: "evening-forest", label: "Bird sounds", family: "biophony", zones: ["forest"] },
   { id: "trickle", label: "Trickling stream", family: "geophony", zones: ["creek", "forest-edge"] },
+  { id: "beach-waves", label: "Waves on the beach", family: "geophony", zones: ["beach", "pier"] },
   { id: "cafe-chatter", label: "Café chatter", family: "anthrophony", zones: ["boardwalk", "counter", "tables", "window"] },
   { id: "espresso", label: "Espresso machine", family: "anthrophony", zones: ["counter", "tables"] },
   { id: "cafe-music", label: "Café music", family: "anthrophony", zones: ["tables", "window", "counter"] },
