@@ -1,0 +1,71 @@
+[
+  {
+    "id": "evening-forest",
+    "label": "Evening forest",
+    "family": "biophony",
+    "kind": "loop",
+    "zones": [
+      "forest"
+    ],
+    "seconds": 40
+  },
+  {
+    "id": "trickle",
+    "label": "Trickling stream",
+    "family": "geophony",
+    "kind": "loop",
+    "zones": [
+      "creek",
+      "forest-edge"
+    ],
+    "seconds": 16
+  },
+  {
+    "id": "cafe-chatter",
+    "label": "Café chatter",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "boardwalk",
+      "counter",
+      "tables",
+      "window"
+    ],
+    "seconds": 40
+  },
+  {
+    "id": "espresso",
+    "label": "Espresso machine",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "counter",
+      "tables"
+    ],
+    "seconds": 26
+  },
+  {
+    "id": "cafe-music",
+    "label": "Café music",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "tables",
+      "window",
+      "counter"
+    ],
+    "seconds": 98
+  },
+  {
+    "id": "guitar",
+    "label": "Someone playing guitar",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "boardwalk",
+      "beach",
+      "pier"
+    ],
+    "seconds": 130
+  }
+]

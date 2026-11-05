@@ -1,6 +1,7 @@
 // The walkable world: a first-person view you move through, the other
 // people in it, what they say over their heads, and the kangaroo who comes
-// when you wander off the trail. (Sound was taken out: ADR 010.)
+// when you wander off the trail. The sounds people leave are drawn and
+// played by client/soundscape.ts, through the few things this lends it.
 import * as THREE from "three";
 import type { Scene } from "../shared/catalog.js";
 import type { Person } from "../shared/protocol.js";
@@ -261,6 +262,32 @@ export class WorldView {
 
   focusCanvas(): void {
     this.renderer.domElement.focus();
+  }
+
+  // What client/soundscape.ts draws with: the world to add its lights to,
+  // the camera to place labels by, the layer over the view to put them in.
+  get root(): THREE.Object3D {
+    return this.built.root;
+  }
+
+  get eye(): THREE.Camera {
+    return this.camera;
+  }
+
+  get labels(): HTMLElement {
+    return this.overlay;
+  }
+
+  get size(): { w: number; h: number } {
+    return { w: this.host.clientWidth, h: this.host.clientHeight };
+  }
+
+  isInside(x: number, z: number): boolean {
+    return this.kit.isInside(x, z);
+  }
+
+  zoneAt(x: number, z: number): string {
+    return this.kit.zoneAt(x, z);
   }
 
   // ---- loading -----------------------------------------------------------

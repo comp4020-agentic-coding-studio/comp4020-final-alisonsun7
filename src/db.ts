@@ -12,9 +12,9 @@ mkdirSync(dirname(path), { recursive: true });
 export const db = new DatabaseSync(path);
 
 // Tables follow the pack's docs/05, plus `users` (the anonymous identity
-// SoundGarden already had, so a person is the same across visits). Since
-// sound was taken out (ADR 010) the app uses only users, scenes, sessions and
-// participants; the sound tables stay, with their rows, untouched.
+// SoundGarden already had, so a person is the same across visits). The app
+// uses users, scenes, sessions, participants and placed_sounds (ADR 011); the
+// sound tables from before ADR 010 stay, with their rows, untouched.
 db.exec(`
   PRAGMA journal_mode = WAL;
   PRAGMA foreign_keys = ON;
@@ -111,6 +111,21 @@ db.exec(`
     snapshot_json TEXT NOT NULL
   );
   CREATE INDEX IF NOT EXISTS memories_public ON memories (visibility, saved_at);
+
+  -- Sounds people leave where they stand (ADR 011). Removing one fills in
+  -- removed_by and removed_at; no row is ever deleted.
+  CREATE TABLE IF NOT EXISTS placed_sounds (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL REFERENCES sessions(id),
+    sound_id TEXT NOT NULL,
+    x REAL NOT NULL,
+    z REAL NOT NULL,
+    placed_by TEXT NOT NULL REFERENCES participants(id),
+    placed_at TEXT NOT NULL,
+    removed_by TEXT REFERENCES participants(id),
+    removed_at TEXT
+  );
+  CREATE INDEX IF NOT EXISTS placed_sounds_live ON placed_sounds (session_id, removed_at);
 `);
 
 // Reference rows the foreign keys point at. Upserted from the catalogue on

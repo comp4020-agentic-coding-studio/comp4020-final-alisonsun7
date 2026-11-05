@@ -25,23 +25,27 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/vendor/three.module.min.js": { file: new URL("../node_modules/three/build/three.module.min.js", import.meta.url), type: "text/javascript", cache: "public, max-age=604800" },
   "/shared/catalog.js": js("/shared/catalog.js"),
   "/shared/protocol.js": js("/shared/protocol.js"),
+  "/shared/sounds.js": js("/shared/sounds.js"),
+  "/client/soundscape.js": js("/client/soundscape.js"),
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
 };
 
 const PUBLIC_DIR = new URL("../public/", import.meta.url);
 
-// three.js add-ons (loaders), and the CC0 models, surfaces and skies the
-// places are built from (scripts/fetch-assets.mjs). Names are checked against
+// three.js add-ons (loaders), the CC0 models, surfaces and skies the places
+// are built from (scripts/fetch-assets.mjs), and the sounds people can leave
+// in them (scripts/fetch-sounds.mjs). Names are checked against
 // a pattern with no "..", so a request can't leave these folders.
 const ADDON_FILE = /^\/vendor\/addons\/((?:[A-Za-z0-9_]+\/)*[A-Za-z0-9_]+\.js)$/;
 const ADDONS_DIR = new URL("../node_modules/three/examples/jsm/", import.meta.url);
-const ASSET_FILE = /^\/assets\/((?:models|textures|skies)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+\.(gltf|bin|jpg|png|hdr))$/;
+const ASSET_FILE = /^\/assets\/((?:models|textures|skies|sounds)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+\.(gltf|bin|jpg|png|hdr|mp3))$/;
 const ASSET_TYPES: Record<string, string> = {
   gltf: "model/gltf+json",
   bin: "application/octet-stream",
   jpg: "image/jpeg",
   png: "image/png",
   hdr: "image/vnd.radiance",
+  mp3: "audio/mpeg",
 };
 
 const MAX_BODY = 4096;
@@ -199,6 +203,16 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     const body = await readJson(req);
     const result = sessionApi[2] === "move" ? sessions.move(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
     const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
+    return json(res, status, result);
+  }
+
+  // Leaving a sound where you stand, and removing one you stand beside
+  // (ADR 011).
+  const soundApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/sounds(?:\/(snd_[a-f0-9]{16}))?$/);
+  if (soundApi && ((method === "POST" && !soundApi[2]) || (method === "DELETE" && soundApi[2]))) {
+    if (!user) return json(res, 401, { ok: false, code: "no_session" });
+    const result = soundApi[2] ? sessions.removeSound(user, soundApi[1], soundApi[2]) : sessions.leaveSound(user, soundApi[1], await readJson(req));
+    const status = result.ok ? (soundApi[2] ? 200 : 201) : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
     return json(res, status, result);
   }
 

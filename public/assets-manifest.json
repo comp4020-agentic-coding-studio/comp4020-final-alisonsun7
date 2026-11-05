@@ -682,6 +682,60 @@
       "publicAllowed": true,
       "rights": "CC0 1.0 (public domain); Poly Haven asset licence: https://polyhaven.com/license",
       "processing": "unchanged; 1k textures (skies 2k HDR)"
+    },
+    {
+      "id": "commons-evening-forest",
+      "path": "public/assets/sounds/evening-forest.mp3",
+      "source": "Wikimedia Commons, \"Waidachswald Oberschefflenz Abend 20250616 2005.ogg\" by Evillan: https://commons.wikimedia.org/wiki/File:Waidachswald_Oberschefflenz_Abend_20250616_2005.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "processing": "mono, 40 s from 20 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-trickle",
+      "path": "public/assets/sounds/trickle.mp3",
+      "source": "Wikimedia Commons, \"Hemlock stream.ogg\" by Dirtslayer: https://commons.wikimedia.org/wiki/File:Hemlock_stream.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "processing": "mono, 16 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-cafe-chatter",
+      "path": "public/assets/sounds/cafe-chatter.mp3",
+      "source": "Wikimedia Commons, \"Restaurant ambience.ogg\" by stephan: https://commons.wikimedia.org/wiki/File:Restaurant_ambience.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "processing": "mono, 40 s from 5 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-espresso",
+      "path": "public/assets/sounds/espresso.mp3",
+      "source": "Wikimedia Commons, \"Espresso machine.ogg\" by hugh: https://commons.wikimedia.org/wiki/File:Espresso_machine.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "processing": "mono, 26 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-cafe-music",
+      "path": "public/assets/sounds/cafe-music.mp3",
+      "source": "Wikimedia Commons, \"John Bartmann - Mellow Cafe Vibe.ogg\" by John Bartmann: https://commons.wikimedia.org/wiki/File:John_Bartmann_-_Mellow_Cafe_Vibe.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "processing": "mono, 98 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-guitar",
+      "path": "public/assets/sounds/guitar.mp3",
+      "source": "Wikimedia Commons, \"El Noi de la Mare (guitar).ogg\" by Jujutacular: https://commons.wikimedia.org/wiki/File:El_Noi_de_la_Mare_(guitar).ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "processing": "mono, 130 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
     }
   ],
   "notUsed": [

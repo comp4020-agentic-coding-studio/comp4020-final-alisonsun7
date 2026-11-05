@@ -1,9 +1,10 @@
-// The live place: the walkable world, who's in it, and talking to whoever is
-// near. Sound was taken out (ADR 010); what's here is the place and the
-// people in it.
+// The live place: the walkable world, who's in it, talking to whoever is
+// near, and the sounds people leave where they stand (ADR 011).
 import { findScene, findZone, type Scene } from "../shared/catalog.js";
-import type { Person, ServerMessage, Snapshot } from "../shared/protocol.js";
+import type { Person, PlacedSound, ServerMessage, Snapshot, SoundRemoved } from "../shared/protocol.js";
+import { FAMILIES, SOUNDS, findSound } from "../shared/sounds.js";
 import { figureSvg } from "./figures.js";
+import { Soundscape } from "./soundscape.js";
 import { WorldView, type Other } from "./world.js";
 
 interface Boot {
@@ -35,9 +36,20 @@ const world = new WorldView(stage, scene, mode.id, {
     history.replaceState(null, "", `/scene/${scene.id}?mode=${mode.id}&zone=${zone}`);
     renderZone();
   },
-  onListen: (l) => reportPosition(l.x, l.z, l.yaw),
+  onListen: (l) => {
+    reportPosition(l.x, l.z, l.yaw);
+    soundscape.frame(l);
+    here = { x: l.x, z: l.z };
+  },
   onNear: (person) => showChat(person),
 });
+let here = { x: 0, z: 0 };
+
+const soundscape = new Soundscape(world, stage, {
+  canChange: () => boot.joined,
+  onRemove: (sound) => void removeSound(sound),
+});
+soundscape.setAll(snapshot.sounds);
 
 // ---- the server's stream --------------------------------------------------
 
@@ -55,12 +67,15 @@ function connect(): void {
     if (msg.type === "snapshot") {
       snapshot = msg;
       renderPeople();
+      soundscape.setAll(msg.sounds);
     } else if (msg.sessionId !== snapshot.sessionId) return;
     else if (msg.type === "presence") {
       snapshot = { ...snapshot, online: msg.online };
       renderPeople();
     } else if (msg.type === "moves") world.setOthers(msg.people.filter((p) => p.id !== me()?.id) as Other[]);
     else if (msg.type === "said" && msg.by !== me()?.id) world.showSaid(msg.by, msg.text);
+    else if (msg.type === "sound-left") soundLeft(msg.sound);
+    else if (msg.type === "sound-removed") soundRemoved(msg);
     if (!connected) {
       connected = true;
       renderStatus();
@@ -146,6 +161,160 @@ chat.onsubmit = async (e) => {
   if (result.heard === 0) say("Nobody was close enough to hear that.");
 };
 
+// ---- sounds people leave (ADR 011) -----------------------------------------
+
+const soundName = (id: string): string => findSound(id)?.label ?? "A sound";
+const zoneTitle = (x: number, z: number): string => findZone(scene, world.zoneAt(x, z))?.title ?? "the place";
+// Your own changes are told when the server answers; others' as they
+// arrive, whichever comes first.
+function soundLeft(sound: PlacedSound): void {
+  if (soundscape.has(sound.id)) return;
+  soundscape.add(sound);
+  if (sound.byId !== me()?.id) say(`${sound.by} left ${soundName(sound.soundId)} at ${zoneTitle(sound.x, sound.z)}.`);
+}
+
+function soundRemoved(msg: SoundRemoved): void {
+  if (!soundscape.has(msg.id)) return;
+  soundscape.remove(msg.id);
+  if (msg.byId !== me()?.id) say(`${msg.by} removed ${soundName(msg.soundId)}.`);
+}
+
+const REFUSED: Record<string, string> = {
+  not_here: "Take a step first, so the place knows where you're standing.",
+  too_close: "That sound is already playing right here. Walk a few steps away and leave it there.",
+  crowded: "There are already six sounds around here. Remove one, or find a quieter spot.",
+  place_full: "The place is full of sounds. Remove one somewhere first.",
+  too_far: "Walk up to it first: you can only remove a sound you're standing beside.",
+  gone: "Someone has removed that one already.",
+  slow_down: "One moment: wait a second between changes.",
+  no_session: "Join first: give a name to change the place's sounds.",
+};
+const refused = (code?: string): string => (code && REFUSED[code]) || "That didn't work. Check your connection and try again.";
+
+async function post(path: string, method: string, body?: unknown): Promise<{ ok: boolean; code?: string; sound?: PlacedSound } | null> {
+  const res = await fetch(`/api/sessions/${snapshot.sessionId}/${path}`, {
+    method,
+    headers: { "content-type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  }).catch(() => null);
+  return res ? ((await res.json().catch(() => null)) as { ok: boolean; code?: string; sound?: PlacedSound } | null) : null;
+}
+
+async function leaveSound(soundId: string): Promise<void> {
+  // leaving a sound is a click, so it can turn sound on
+  if (!soundscape.on) setSound(true);
+  const result = await post("sounds", "POST", { soundId });
+  if (!result?.ok || !result.sound) return say(refused(result?.code));
+  soundscape.add(result.sound);
+  closePalette();
+  say(`You left ${soundName(soundId)} here. Everyone in the place can hear it now.`);
+}
+
+async function removeSound(sound: PlacedSound): Promise<void> {
+  const result = await post(`sounds/${sound.id}`, "DELETE");
+  if (!result?.ok) return say(refused(result?.code));
+  soundscape.remove(sound.id);
+  say(`You removed ${soundName(sound.soundId)}.`);
+}
+
+// The sound switch in the header: remembered in this browser.
+const soundSwitch = $<HTMLButtonElement>("sound-switch");
+const SOUND_KEY = "soac-sound";
+const remembered = (): string | null => {
+  try {
+    return localStorage.getItem(SOUND_KEY);
+  } catch {
+    return null;
+  }
+};
+function setSound(on: boolean): void {
+  soundscape.setOn(on);
+  soundSwitch.setAttribute("aria-pressed", String(on));
+  soundSwitch.textContent = on ? "Sound on" : "Sound off";
+  try {
+    localStorage.setItem(SOUND_KEY, on ? "on" : "off");
+  } catch {
+    // not remembered; that's all
+  }
+}
+soundSwitch.onclick = () => setSound(!soundscape.on);
+
+// "Leave a sound here", and the sounds to choose from: those that suit
+// where you're standing first.
+const leaveBtn = document.createElement("button");
+leaveBtn.type = "button";
+leaveBtn.className = "btn primary leave-sound";
+leaveBtn.id = "leave-sound";
+leaveBtn.textContent = "+ Leave a sound here";
+const palette = document.createElement("div");
+palette.className = "sound-palette";
+palette.id = "sound-palette";
+palette.hidden = true;
+palette.setAttribute("role", "dialog");
+palette.setAttribute("aria-label", "Leave a sound here");
+if (boot.joined) stage.append(leaveBtn, palette);
+
+function openPalette(): void {
+  const zone = world.zoneAt(here.x, here.z);
+  const sorted = [...SOUNDS].sort((a, b) => Number(b.zones.includes(zone)) - Number(a.zones.includes(zone)));
+  palette.textContent = "";
+  const head = document.createElement("div");
+  head.className = "palette-head";
+  const title = document.createElement("h2");
+  title.textContent = `Leave a sound at ${zoneTitle(here.x, here.z)}`;
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "link-btn";
+  close.textContent = "Close";
+  close.onclick = () => closePalette();
+  head.append(title, close);
+  const list = document.createElement("ul");
+  for (const kind of sorted) {
+    const li = document.createElement("li");
+    li.style.setProperty("--family", FAMILIES[kind.family].colour);
+    const text = document.createElement("div");
+    text.className = "palette-text";
+    const name = document.createElement("strong");
+    name.textContent = kind.label;
+    const fam = document.createElement("span");
+    fam.className = "palette-family";
+    fam.textContent = kind.zones.includes(zone) ? `${FAMILIES[kind.family].label} · suits here` : FAMILIES[kind.family].label;
+    text.append(name, fam);
+    const listen = document.createElement("button");
+    listen.type = "button";
+    listen.className = "btn ghost";
+    listen.textContent = "Listen";
+    listen.onclick = () => void soundscape.listen(kind.id);
+    const leave = document.createElement("button");
+    leave.type = "button";
+    leave.className = "btn primary";
+    leave.dataset.sound = kind.id;
+    leave.textContent = "Leave it here";
+    leave.onclick = () => void leaveSound(kind.id);
+    li.append(text, listen, leave);
+    list.append(li);
+  }
+  const note = document.createElement("p");
+  note.className = "palette-note";
+  note.textContent = "It stays where you're standing until someone removes it. Listen plays a few seconds just for you.";
+  palette.append(head, list, note);
+  palette.hidden = false;
+  leaveBtn.hidden = true;
+  list.querySelector<HTMLButtonElement>("button")?.focus();
+}
+
+function closePalette(): void {
+  soundscape.stopPreview();
+  palette.hidden = true;
+  leaveBtn.hidden = false;
+  world.focusCanvas();
+}
+
+leaveBtn.onclick = () => openPalette();
+palette.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closePalette();
+});
+
 // ---- the page around the world --------------------------------------------
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
@@ -227,8 +396,11 @@ const error = enter.querySelector<HTMLParagraphElement>(".enter-error")!;
 const nameInput = form.querySelector<HTMLInputElement>('input[name="nickname"]');
 (nameInput ?? form.querySelector<HTMLButtonElement>("[data-enter]"))!.focus();
 
+// Entering is a click, so it can start the sound, unless this browser
+// turned it off last time.
 const done = (): void => {
   enter.remove();
+  setSound(remembered() !== "off");
   world.focusCanvas();
 };
 form.onsubmit = async (e) => {
@@ -268,7 +440,7 @@ enter.querySelector<HTMLButtonElement>("[data-leave]")?.addEventListener("click"
 // Joined from the arrival card: the stream reconnects so the server knows you.
 function becomeJoined(): void {
   boot.joined = true;
-  stage.append(chat);
+  stage.append(chat, leaveBtn, palette);
   connect();
 }
 

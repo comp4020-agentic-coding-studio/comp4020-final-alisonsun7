@@ -1,16 +1,18 @@
 // Places and the people in them: who is here (presence), where they stand
-// (moves), and what they say to whoever is near (talk). Sound was taken out
-// (ADR 010), so a place's session is now only the room people share.
+// (moves), what they say to whoever is near (talk), and the sounds they
+// leave (ADR 011).
 //
 // A place is one room at every time of day (ADR 007). The session row in the
 // database gives the room an id and lets a person keep the same participant
-// id across visits; positions and words are kept in memory only.
+// id across visits; positions and words are kept in memory only, sounds in
+// placed_sounds.
 import type { ServerResponse } from "node:http";
 import { randomBytes } from "node:crypto";
-import { db, nowIso } from "./db.js";
+import { db, inTransaction, nowIso } from "./db.js";
 import { log } from "./log.js";
 import { placeMode, roomKey } from "./shared/catalog.js";
-import type { Avatar, Person, Snapshot } from "./shared/protocol.js";
+import type { Avatar, Person, PlacedSound, Snapshot } from "./shared/protocol.js";
+import { CROWD_MAX, CROWD_RADIUS, PLACE_MAX, REACH, SAME_APART, findSound } from "./shared/sounds.js";
 import type { User } from "./users.js";
 
 const newId = (prefix: string): string => `${prefix}_${randomBytes(8).toString("hex")}`;
@@ -81,6 +83,7 @@ export function snapshotFor(session: SessionRow, user: User | null): Snapshot {
     serverNow: nowIso(),
     online: onlineIn(session.scene_id, session.mode, session),
     you: user ? ensureParticipant(session, user) : null,
+    sounds: liveSounds(session.id),
   };
 }
 
@@ -230,3 +233,98 @@ export function say(user: User, sessionId: string, raw: unknown): { ok: boolean;
   return { ok: true, heard: listeners.length - 1 };
 }
 
+
+// ---- sounds people leave (ADR 011) ----------------------------------------
+//
+// A sound is left where the server last saw you stand, and only someone
+// standing beside it can remove it, so each change happens in the place, in
+// front of whoever is there. Everything else is free: anyone may leave or
+// remove any sound, and nothing fades.
+
+interface PlacedRow {
+  id: string;
+  sound_id: string;
+  x: number;
+  z: number;
+  name: string;
+  placed_by: string;
+  placed_at: string;
+}
+
+const placedFrom = (r: PlacedRow): PlacedSound => ({ id: r.id, soundId: r.sound_id, x: r.x, z: r.z, by: r.name, byId: r.placed_by, at: r.placed_at });
+
+function liveSounds(sessionId: string): PlacedSound[] {
+  const rows = db
+    .prepare(
+      `SELECT s.id, s.sound_id, s.x, s.z, p.display_name AS name, s.placed_by, s.placed_at FROM placed_sounds s
+       JOIN participants p ON p.id = s.placed_by WHERE s.session_id = ? AND s.removed_at IS NULL ORDER BY s.placed_at`,
+    )
+    .all(sessionId) as unknown as PlacedRow[];
+  return rows.map(placedFrom);
+}
+
+const soundTimes = new Map<string, number>();
+
+// At most one change a second per person; the same sound needs room; a spot
+// can't crowd up; nor can the whole place.
+export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: boolean; code?: string; sound?: PlacedSound } {
+  const session = getSession(sessionId);
+  if (!session) return { ok: false, code: "no_session" };
+  const kind = findSound((raw as Record<string, unknown> | null)?.soundId);
+  if (!kind) return { ok: false, code: "bad_request" };
+  const key = roomKey(session.scene_id, session.mode);
+  const me = standing.get(key)?.get(user.id);
+  if (!me) return { ok: false, code: "not_here" };
+  const now = Date.now();
+  if (now - (soundTimes.get(user.id) ?? 0) < 1000) return { ok: false, code: "slow_down" };
+
+  const result = inTransaction((): { ok: boolean; code?: string; sound?: PlacedSound } => {
+    const live = liveSounds(session.id);
+    if (live.length >= PLACE_MAX) return { ok: false, code: "place_full" };
+    const near = live.filter((p) => Math.hypot(p.x - me.x, p.z - me.z) <= CROWD_RADIUS);
+    if (near.some((p) => p.soundId === kind.id && Math.hypot(p.x - me.x, p.z - me.z) < SAME_APART)) return { ok: false, code: "too_close" };
+    if (near.length >= CROWD_MAX) return { ok: false, code: "crowded" };
+    const sound: PlacedSound = { id: newId("snd"), soundId: kind.id, x: Math.round(me.x * 100) / 100, z: Math.round(me.z * 100) / 100, by: me.person.name, byId: me.person.id, at: nowIso() };
+    db.prepare("INSERT INTO placed_sounds (id, session_id, sound_id, x, z, placed_by, placed_at) VALUES (?, ?, ?, ?, ?, ?, ?)").run(
+      sound.id,
+      session.id,
+      sound.soundId,
+      sound.x,
+      sound.z,
+      me.person.id,
+      sound.at,
+    );
+    return { ok: true, sound };
+  });
+  if (!result.ok) return result;
+  soundTimes.set(user.id, now);
+  const sound = result.sound!;
+  sendAll(session.scene_id, session.mode, { type: "sound-left", sessionId: session.id, sound });
+  log("sound_left", { user: user.id, nickname: user.nickname, session: session.id, sound: sound.soundId, id: sound.id, x: sound.x, z: sound.z });
+  return result;
+}
+
+export function removeSound(user: User, sessionId: string, soundRowId: string): { ok: boolean; code?: string } {
+  const session = getSession(sessionId);
+  if (!session) return { ok: false, code: "no_session" };
+  const key = roomKey(session.scene_id, session.mode);
+  const me = standing.get(key)?.get(user.id);
+  if (!me) return { ok: false, code: "not_here" };
+  const now = Date.now();
+  if (now - (soundTimes.get(user.id) ?? 0) < 1000) return { ok: false, code: "slow_down" };
+  const row = db
+    .prepare(
+      `SELECT s.id, s.sound_id, s.x, s.z, p.display_name AS name, s.placed_by, s.placed_at FROM placed_sounds s
+       JOIN participants p ON p.id = s.placed_by WHERE s.id = ? AND s.session_id = ? AND s.removed_at IS NULL`,
+    )
+    .get(soundRowId, session.id) as PlacedRow | undefined;
+  if (!row) return { ok: false, code: "gone" };
+  if (Math.hypot(row.x - me.x, row.z - me.z) > REACH) return { ok: false, code: "too_far" };
+  // only the first of two people removing it at once removes it
+  const changed = db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(me.person.id, nowIso(), row.id);
+  if (Number(changed.changes) === 0) return { ok: false, code: "gone" };
+  soundTimes.set(user.id, now);
+  sendAll(session.scene_id, session.mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: me.person.name, byId: me.person.id });
+  log("sound_removed", { user: user.id, nickname: user.nickname, session: session.id, sound: row.sound_id, id: row.id, left_by: row.name });
+  return { ok: true };
+}

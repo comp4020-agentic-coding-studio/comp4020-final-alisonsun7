@@ -2,8 +2,7 @@
 // Shared by server (validation) and client (drawing), so the two can't
 // disagree about what exists.
 //
-// Sound was taken out entirely (ADR 010) while a new design for it is
-// worked out; what's left is the place itself and the people in it.
+// The sounds people can leave in a place are in shared/sounds.ts (ADR 011).
 
 export interface Mode {
   id: string;
@@ -42,7 +41,7 @@ const SEASIDE: Scene = {
   id: "seaside",
   title: "From the Forest to the Sea",
   summary: "Start on a trail through a pine forest, cross the creek, and come out by the sea: a boardwalk with a café, a kiosk and beach huts, the sand, and a pier.",
-  about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes.",
+  about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes. The sounds are CC0 or public-domain recordings from Wikimedia Commons.",
   modes: [
     { id: "morning", label: "Early Morning" },
     { id: "weekday", label: "Sunny Day" },

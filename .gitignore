@@ -35,3 +35,6 @@ mise.local.toml
 design/sound-of-a-city/references/**/*.jpeg
 design/sound-of-a-city/references/**/*.jpg
 design/sound-of-a-city/references/**/*.HEIC
+
+# originals the sounds are cut from (scripts/fetch-sounds.mjs)
+.cache/

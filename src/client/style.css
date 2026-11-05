@@ -1354,3 +1354,194 @@ h3 {
   font-size: 12px;
   color: var(--ink-faint);
 }
+
+/* ---- sounds people leave (ADR 011) ---------------------------------------- */
+
+.sound-switch {
+  white-space: nowrap;
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+.sound-switch[aria-pressed="true"] {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* what a light is, when you're near it */
+.sound-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 10px 5px;
+  border-radius: 10px;
+  background: rgba(15, 13, 10, 0.66);
+  border-bottom: 2px solid var(--family);
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.sound-label[hidden] {
+  display: none;
+}
+
+.sound-label strong {
+  font-size: 12px;
+  color: var(--family);
+}
+
+.sound-by {
+  color: #d8d0c4;
+}
+
+.sound-label.far .sound-by {
+  display: none;
+}
+
+.sound-label.in-reach {
+  pointer-events: auto;
+}
+
+.sound-label.pinned::before {
+  content: "Beside you";
+  font-size: 10px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sound-remove {
+  margin-top: 4px;
+  font: 600 11px var(--font);
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  padding: 3px 10px;
+  min-height: 26px;
+  cursor: pointer;
+}
+
+.sound-remove:hover,
+.sound-remove:focus-visible {
+  border-color: var(--danger);
+  color: #ffd9cd;
+}
+
+.sound-remove[hidden] {
+  display: none;
+}
+
+/* "Leave a sound here", and the sounds to choose from */
+.leave-sound {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 7;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.leave-sound[hidden] {
+  display: none;
+}
+
+.sound-palette {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 9;
+  width: min(400px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+  background: rgba(15, 13, 10, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.sound-palette[hidden] {
+  display: none;
+}
+
+.palette-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.palette-head h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.sound-palette ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sound-palette li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0 8px 12px;
+  border-left: 4px solid var(--family);
+  margin: 6px 0;
+}
+
+.sound-palette li .btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  min-height: 32px;
+}
+
+.palette-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.palette-text strong {
+  font-size: 13px;
+}
+
+.palette-family {
+  font-size: 11px;
+  color: var(--family);
+}
+
+.palette-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 560px) {
+  .sound-palette li {
+    grid-template-columns: 1fr auto;
+  }
+
+  .sound-palette li .palette-text {
+    grid-column: 1 / -1;
+  }
+}
+
+/* the thumb stick has the bottom left on touch screens */
+@media (pointer: coarse) {
+  .leave-sound {
+    left: auto;
+    right: 16px;
+  }
+}

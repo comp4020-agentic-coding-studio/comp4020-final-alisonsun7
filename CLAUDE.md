@@ -5,8 +5,8 @@
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) was the starting point. The decisions in `docs/decisions/`
 record where the build went from there: 004 to 007 the walkable place, the
-CC0 assets, the forest and sea, seeing each other and talk; 010 took sound
-out entirely while Wen designs it again (003, 008 and 009 are history).
+CC0 assets, the forest and sea, seeing each other and talk; 010 took the old
+sound out; 011 is Wen's new sound design (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -14,29 +14,36 @@ checks, never draft them.
 
 ## What it is
 
-Sound of a City, for now without sound (ADR 010). One imagined place you
-walk through in first person, From the Forest to the Sea: a forest trail, a
-creek and footbridge, a boardwalk with a café, kiosk and beach huts, the
-beach and a pier. Built from CC0 assets, with drawn cat and dog figures for
-the people in it, who see each other and can talk when they meet.
+Sound of a City. One imagined place you walk through in first person, From
+the Forest to the Sea: a forest trail, a creek and footbridge, a boardwalk
+with a café, kiosk and beach huts, the beach and a pier. Built from CC0 assets, with drawn cat and dog figures for
+the people in it, who see each other and can talk when they meet, and
+leave sounds where they stand for everyone to hear (ADR 011).
 
 The place (`seaside`, three.js, three times of day) is the only one. Its
 `PlaceKit` is in `client/seaside.ts` (the café's room in `client/cafe.ts`);
-the toolkit in `client/world-build.ts`; the view in `client/world.ts`.
+the toolkit in `client/world-build.ts`; the view in `client/world.ts`; the
+sounds people leave in `client/soundscape.ts`, with the sounds on offer and
+their rules in `shared/sounds.ts`.
 
 ## Product invariants
 
 - **The standard (Wen):** suits people playing together; keeps what they do,
   so tomorrow shows today's changes; what others change, you see.
-- **No sound until Wen's new design (ADR 010).** Don't add any back on your
-  own. The database's sound tables and rows stay untouched; the code from
-  before is tagged `before-sound-removal`.
+- **Sound is Wen's design (ADR 011).** Sounds are left where you stand and
+  removed from beside them; only the room rules in ADR 011, no owners or
+  quotas; no background bed; nothing fades. Don't add sounds, a bed or new
+  rules on your own: Wen chooses every sound by ear. The tables from before
+  ADR 010 stay untouched (`before-sound-removal` tag); `placed_sounds` rows
+  are never deleted (removing sets `removed_at`).
 - **Imagined places say so (ADR 005).** The place's page shows its `about`
   text: not a real place, and where its pieces come from.
-- **Only CC0 assets, all recorded.** Models, surfaces and skies come from
-  Poly Haven via `scripts/fetch-assets.mjs` (MD5-checked) and each is in
-  `public/assets-manifest.json`. Never add an asset that isn't CC0 or whose
-  site refuses scripted downloads; never get around such a refusal.
+- **Only CC0 or public-domain assets, all recorded.** Models, surfaces and
+  skies come from Poly Haven via `scripts/fetch-assets.mjs` (MD5-checked);
+  sounds from Wikimedia Commons via `scripts/fetch-sounds.mjs` (SHA-1
+  checked, needs ffmpeg); each is in `public/assets-manifest.json`. Never
+  add an asset that isn't CC0 or public domain, or whose site refuses
+  scripted downloads; never get around such a refusal (so not YouTube).
 - **Published images are processed derivatives only.** `public/scenes/`
   (Wen's photos, blurred, no metadata) is unused now but stays. The
   originals are gitignored and must never be committed: this repo is public.
@@ -61,7 +68,7 @@ Plain `node:http`, `node:sqlite`, SSE, TypeScript compiled with `tsc`; two
 runtime dependencies: `marked` (for `/readme/`) and `three` (served from
 `node_modules` at `/vendor/three.module.min.js`, loaders at
 `/vendor/addons/`, both via the import map). Assets are served only from
-`public/assets/{models,textures,skies}` by pattern. Validate what people
+`public/assets/{models,textures,skies,sounds}` by pattern. Validate what people
 send on the server (positions finite and bounded, words cleaned and cut to
 120, rate limits). Escape nicknames in HTML and in embedded JSON; set them
 with `textContent` in the client.
@@ -78,7 +85,8 @@ without Wen's go-ahead.
 - `pnpm check` runs `spec/` against the app at `APP_URL`.
 - `pnpm build && pnpm e2e` runs `e2e/world-two-browsers.mjs` (Go to,
   walking, the footbridge, the kangaroo) and `e2e/meet-and-talk.mjs`
-  (seeing each other, talk, joining from the arrival card, no sound), each
+  (seeing each other, talk, joining from the arrival card) and
+  `e2e/leave-a-sound.mjs` (leaving, hearing and removing sounds), each
   in two Chrome sessions on the GPU (`--use-angle=metal`): in software
   rendering the place runs at well under 1 fps.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`

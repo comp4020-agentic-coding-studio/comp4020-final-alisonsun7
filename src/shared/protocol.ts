@@ -1,6 +1,6 @@
 // The wire shapes between server and client: SSE (server → client) plus JSON
-// POSTs (client → server). With sound taken out (ADR 010), a place's live
-// state is who is there, where they stand, and what they say.
+// POSTs (client → server). A place's live state is who is there, where they
+// stand, what they say, and the sounds people have left in it (ADR 011).
 
 export type Avatar = "cat" | "dog";
 export const AVATARS: Avatar[] = ["cat", "dog"];
@@ -13,6 +13,17 @@ export interface Person {
   avatar: Avatar;
 }
 
+// A sound someone left, where they stood when they left it (ADR 011).
+export interface PlacedSound {
+  id: string;
+  soundId: string;
+  x: number;
+  z: number;
+  by: string; // the name of whoever left it
+  byId: string; // their participant id
+  at: string; // when, ISO
+}
+
 // Sent on every (re)connect.
 export interface Snapshot {
   type: "snapshot";
@@ -21,6 +32,7 @@ export interface Snapshot {
   serverNow: string;
   online: Person[];
   you: Person | null; // null for someone looking before they've joined
+  sounds: PlacedSound[];
 }
 
 export interface Presence {
@@ -47,4 +59,19 @@ export interface Said {
   text: string;
 }
 
-export type ServerMessage = Snapshot | Presence | Moves | Said;
+export interface SoundLeft {
+  type: "sound-left";
+  sessionId: string;
+  sound: PlacedSound;
+}
+
+export interface SoundRemoved {
+  type: "sound-removed";
+  sessionId: string;
+  id: string;
+  soundId: string;
+  by: string; // the name of whoever removed it
+  byId: string;
+}
+
+export type ServerMessage = Snapshot | Presence | Moves | Said | SoundLeft | SoundRemoved;

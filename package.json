@@ -12,7 +12,8 @@
     "start": "node dist/server.js",
     "dev": "pnpm build && node dist/server.js",
     "scenes": "node scripts/build-scenes.mjs",
-    "e2e": "node e2e/world-two-browsers.mjs && node e2e/meet-and-talk.mjs"
+    "e2e": "node e2e/world-two-browsers.mjs && node e2e/meet-and-talk.mjs && node e2e/leave-a-sound.mjs",
+    "sounds": "node scripts/fetch-sounds.mjs"
   },
   "devDependencies": {
     "@types/jsdom": "^30.0.0",

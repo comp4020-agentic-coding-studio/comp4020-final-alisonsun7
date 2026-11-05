@@ -1,13 +1,14 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, inject, it } from "vitest";
 import { SCENES } from "../src/shared/catalog.ts";
-import type { Snapshot } from "../src/shared/protocol.ts";
+import type { PlacedSound, Snapshot } from "../src/shared/protocol.ts";
+import { SOUNDS, soundUrl } from "../src/shared/sounds.ts";
 import { seasideKit } from "../src/client/seaside.ts";
 import { Stream, join, type Person } from "./helpers.ts";
 
-// The walkable place (ADR 004 to 007; sound taken out by ADR 010): one world
-// whatever the time of day, with zones to go to, people who see each other,
-// and talk between people who are near.
+// The walkable place (ADR 004 to 007, 011): one world whatever the time of
+// day, with zones to go to, people who see each other, talk between people
+// who are near, and the sounds people leave in it.
 const baseUrl = inject("baseUrl");
 const world = SCENES.find((s) => s.id === "seaside")!;
 
@@ -54,10 +55,10 @@ describe("the walkable world", () => {
   });
 });
 
-describe("sound is gone (ADR 010)", () => {
-  it("the place's pages carry no sound controls, and the sound routes are gone", async () => {
+describe("the old sound stays gone (ADR 010)", () => {
+  it("the routes and scripts of the sound before ADR 010 are 404", async () => {
     const html = await (await fetch(new URL(`/scene/${world.id}?mode=weekday`, baseUrl))).text();
-    for (const gone of ["sound-toggle", "Enable sound", "Add a sound", "Now playing", "3-minute"]) expect(html, gone).not.toContain(gone);
+    for (const gone of ["Enable sound", "Now playing", "3-minute"]) expect(html, gone).not.toContain(gone);
     const snap = await snapshot("weekday");
     expect(snap).not.toHaveProperty("placements");
     for (const [method, path] of [
@@ -73,6 +74,120 @@ describe("sound is gone (ADR 010)", () => {
       expect((await fetch(new URL(path, baseUrl), { method })).status, `${method} ${path}`).toBe(404);
     }
   });
+});
+
+// Sounds people leave where they stand, and remove from beside them (ADR
+// 011). Each test works far out at sea (x, z around 900), away from where
+// anyone walks, and removes what it leaves.
+describe("sounds people leave (ADR 011)", () => {
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  let sessionId = "";
+  const call = async (who: Person | null, method: string, path: string, body?: unknown) => {
+    if (!sessionId) sessionId = (await snapshot("weekday")).sessionId;
+    return fetch(new URL(`/api/sessions/${sessionId}/${path}`, baseUrl), {
+      method,
+      headers: { "content-type": "application/json", ...(who ? { cookie: who.cookie } : {}) },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  };
+  // a move, then long enough for the next to count (moves closer than 90 ms
+  // apart are dropped)
+  const stand = async (who: Person, x: number, z: number) => {
+    await call(who, "POST", "move", { x, z, yaw: 0 });
+    await wait(120);
+  };
+  const leave = async (who: Person, soundId: string) => {
+    const res = await call(who, "POST", "sounds", { soundId });
+    const body = (await res.json()) as { ok: boolean; code?: string; sound?: PlacedSound };
+    await wait(1050); // one change a second per person
+    return { status: res.status, ...body };
+  };
+  const remove = async (who: Person, id: string) => {
+    const res = await call(who, "DELETE", `sounds/${id}`);
+    const body = (await res.json()) as { ok: boolean; code?: string };
+    await wait(1050);
+    return { status: res.status, ...body };
+  };
+  // whatever a run that failed half way left out here
+  const clearAround = async (who: Person, x: number, z: number) => {
+    for (const s of (await snapshot("weekday")).sounds.filter((s) => Math.hypot(s.x - x, s.z - z) < 20)) {
+      await stand(who, s.x, s.z);
+      await remove(who, s.id);
+    }
+  };
+
+  it("every sound on offer is served, and is recorded as CC0 or public domain", async () => {
+    const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8")) as { assets: { id: string; path: string; rights: string; source: string }[] };
+    for (const kind of SOUNDS) {
+      const entry = manifest.assets.find((a) => a.id === `commons-${kind.id}`);
+      expect(entry, kind.id).toBeDefined();
+      expect(entry!.rights).toMatch(/^(CC0|Public domain)/);
+      expect(entry!.source).toMatch(/commons\.wikimedia\.org/);
+      const res = await fetch(new URL(soundUrl(kind.id), baseUrl));
+      expect(res.status, kind.id).toBe(200);
+      expect(res.headers.get("content-type")).toBe("audio/mpeg");
+    }
+    expect((await fetch(new URL("/assets/sounds/../../package.json", baseUrl))).status).toBe(404);
+  });
+
+  it("refuses someone who hasn't joined, or isn't standing anywhere yet, or names no sound", async () => {
+    expect((await call(null, "POST", "sounds", { soundId: "guitar" })).status).toBe(401);
+    const nowhere = await join(baseUrl, "Nowhere");
+    expect(await leave(nowhere, "guitar")).toMatchObject({ status: 409, code: "not_here" });
+    await stand(nowhere, 900, 900);
+    expect(await leave(nowhere, "a-whale")).toMatchObject({ status: 400, code: "bad_request" });
+  });
+
+  it("leaves a sound where you stand, shows it to everyone at once, keeps it, and lets someone beside it remove it", async () => {
+    const ari = await join(baseUrl, "Ari");
+    const ben = await join(baseUrl, "Ben");
+    const watcher = await Stream.open(baseUrl, world.id, "rainy-dusk", null);
+    await clearAround(ari, 905, 905);
+    await stand(ari, 905, 905);
+    const sentAt = performance.now();
+    const left = await leave(ari, "guitar");
+    expect(left).toMatchObject({ status: 201, ok: true, sound: { soundId: "guitar", x: 905, z: 905, by: "Ari" } });
+    const id = left.sound!.id;
+    // someone watching at another time of day sees it within a second
+    const seen = await watcher.next((m) => m.type === "sound-left" && m.sound.id === id, 1000);
+    expect(seen.type === "sound-left" && seen.sound).toMatchObject({ soundId: "guitar", by: "Ari", x: 905, z: 905 });
+    expect(watcher.messages.find((m) => m.msg.type === "sound-left" && m.msg.sound.id === id)!.at - sentAt).toBeLessThan(1000);
+    // and it is there for whoever comes next
+    expect((await snapshot("morning")).sounds.some((s) => s.id === id)).toBe(true);
+
+    // Ben, 10 m away, can't remove it; beside it, he can, once
+    await stand(ben, 915, 905);
+    expect(await remove(ben, id)).toMatchObject({ status: 409, code: "too_far" });
+    await stand(ben, 907, 906);
+    expect(await remove(ben, id)).toMatchObject({ status: 200, ok: true });
+    const gone = await watcher.next((m) => m.type === "sound-removed" && m.id === id, 1000);
+    expect(gone.type === "sound-removed" && gone.by).toBe("Ben");
+    expect(await remove(ben, id)).toMatchObject({ status: 409, code: "gone" });
+    expect((await snapshot("morning")).sounds.some((s) => s.id === id)).toBe(false);
+    watcher.close();
+  });
+
+  it("needs room between two of the same sound, and keeps any spot from crowding", async () => {
+    const cy = await join(baseUrl, "Cy");
+    const ids: string[] = [];
+    await clearAround(cy, 950, 950);
+    await stand(cy, 950, 950);
+    const first = await leave(cy, "trickle");
+    expect(first.ok).toBe(true);
+    ids.push(first.sound!.id);
+    await stand(cy, 951, 951);
+    expect(await leave(cy, "trickle")).toMatchObject({ status: 409, code: "too_close" });
+    // other sounds can share the spot, up to six around it
+    for (const soundId of ["guitar", "espresso", "cafe-music", "cafe-chatter", "evening-forest"]) {
+      const r = await leave(cy, soundId);
+      expect(r.ok, soundId).toBe(true);
+      ids.push(r.sound!.id);
+    }
+    await stand(cy, 956, 950);
+    expect(await leave(cy, "trickle")).toMatchObject({ status: 409, code: "crowded" });
+    await stand(cy, 950.5, 950.5);
+    for (const id of ids) expect((await remove(cy, id)).ok).toBe(true);
+  }, 40_000);
 });
 
 describe("people in the place (ADR 007)", () => {

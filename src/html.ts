@@ -146,6 +146,7 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
   <a class="back" href="/explore"><span aria-hidden="true">←</span> Places</a>
   <div class="where"><h1>${scene.title}</h1><span class="mode-name">${mode.label}</span></div>
   <div class="people" id="people" aria-live="polite"></div>
+  <button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false">Sound off</button>
 </header>
 ${modeNav}
 <main class="scene-main world-only">
@@ -185,16 +186,18 @@ export function renderAbout(): string {
     <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
     <li>Walk with W A S D or the arrow keys, drag to look, or use <em>Go to</em>. Wander far off the forest trail and a kangaroo comes to point you back.</li>
     <li>Everyone in the place sees everyone else, at every time of day. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
+    <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone, at every time of day, until someone standing beside it removes it. Anyone can leave or remove any sound, and everyone is told who did.</li>
   </ol>
-  <p>Sound is being redesigned and isn't in the place for now.</p>
 
   <h2>Where the place comes from</h2>
   <p>It's imagined, not a real location. Ground, sand, timber, furniture, food, plants and skies are free CC0 (public domain) models, surfaces and HDR skies from <a href="https://polyhaven.com">Poly Haven</a>; each is listed with its author in <code>public/assets-manifest.json</code>. Trees, buildings and the water are drawn from simple shapes. The cats, dogs and the kangaroo are the app's own drawings.</p>
+  <p>The sounds are recordings from <a href="https://commons.wikimedia.org">Wikimedia Commons</a> that are CC0 or in the public domain, cut into loops; each is listed with its author and what was done to it in <code>public/assets-manifest.json</code>.</p>
 
   <h2>What is stored</h2>
   <ul>
     <li>Your nickname, cat-or-dog choice, and a random session token (the server keeps only its hash). No email, no account, no location.</li>
     <li>Where you stand and what you say are never stored: they go to the people in the place as they happen, and are gone.</li>
+    <li>Sounds you leave are stored with your nickname, where and when, and stay public until someone removes them; who removed one is stored too.</li>
   </ul>
 </main>
 ${footer}`,

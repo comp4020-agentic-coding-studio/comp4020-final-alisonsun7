@@ -474,3 +474,72 @@ fine print; it now checks the new wording.
 `meet-and-talk` 14/14, including "nothing about sound is offered"; a new
 spec block checks the page has no sound controls and the sound routes are
 404.
+
+## 20. Sounds for the new design, from Wikimedia Commons (2026-11-05)
+
+**Prompt (Wen, translated):** free placement; no background bed (Wen will
+be the first person to add sounds); sounds don't fade; no recording yet,
+so find the sounds on YouTube or other platforms.
+
+**Done:** YouTube wasn't used: its audio is mostly copyrighted and its terms
+forbid downloading, and the harness allows only free assets from sites that
+permit scripted downloads. Searched Wikimedia Commons through its API for
+each sound, kept only files whose licence field is CC0 or public domain,
+and checked author, licence and length of each. `scripts/fetch-sounds.mjs`
+downloads 21 of them (SHA-1 checked against Commons), cuts each with ffmpeg
+into a mono MP3 (a loop with its last 2 s crossfaded into its start, or a
+short clip for sounds heard now and then), brings each to -20 LUFS in two
+passes, strips metadata, and records each in `public/assets-manifest.json`.
+Originals stay in the gitignored `.cache/sounds/`.
+
+**Results:** 21 files, 9.3 MB, all within 0.6 LU of -20 LUFS except
+`trickle` (-26.9: its 19 s original is peak-limited). Not yet listened to
+by ear: the cuts were chosen without listening. Nothing in the app plays
+them yet.
+
+**Correction (Wen, after listening):** kept 6 of the 21: café chatter,
+evening forest, trickling stream, espresso machine, café music, someone
+playing guitar. The other 15 were taken out of the script, their files
+and manifest entries removed.
+
+## 21. Sounds people leave where they stand (2026-11-05, ADR 011)
+
+**Prompt (Wen, translated):** the asset rule can become CC0 or public
+domain; start the code with these six sounds; more sounds later.
+
+**Done:** ADR 011 records the design. Server: a new `placed_sounds` table
+(removal sets `removed_at`, nothing deleted; the old sound tables untouched),
+`POST /api/sessions/:id/sounds` (left where the server last saw you stand)
+and `DELETE /api/sessions/:id/sounds/:sid` (only within 4 m), room rules
+(same sound 4 m apart, 6 within 10 m, 150 in all, one change a second),
+`sound-left` and `sound-removed` on the stream, sounds in every snapshot,
+`sound_left` and `sound_removed` log lines. Client: `client/soundscape.ts`
+(spatial loops of the nearest 12 within 40 m, muffled through the café's
+walls, a limiter; a coloured light per sound by family), the "Leave a sound
+here" palette, labels with Remove, the header's sound switch, notices of
+others' changes. `shared/sounds.ts` holds the sounds and rules for both.
+
+**Corrections:**
+- Leaving a sound and the stream's copy of it race: whichever arrived first,
+  the page could tell you "Ada left…" about yourself. Events now carry the
+  participant id, and only others' changes are announced from the stream.
+- Standing on a sound (just after leaving it) put its label behind the
+  camera, so it couldn't be removed: found by the e2e, fixed by pinning the
+  nearest sound's label low in the view.
+- From far off the lights were barely visible in daylight (additive glow
+  washed out, tone mapping dimmed them): the screenshot showed it. Now a
+  solid core, a glow and a thin column, without fog or tone mapping.
+- Labels of neighbouring sounds piled up: beyond 4 m only the name shows.
+- Dates showed in the browser's language ("11月5日"); now English.
+- A spec test removed sounds from 5 m away, which the 4 m rule refused, and
+  left them behind for the next run: the test now stands beside them, and
+  each test first clears what a failed run left.
+- My `pkill -f dist/server.js` also stopped a server another session had
+  running on port 8081. Servers are now stopped by their own PID only.
+
+**Results:** `pnpm check` 41/41. With the reach and crowding checks taken
+out, the two tests that cover them fail (`too_far`, `crowded`), and pass
+again with them back. `pnpm e2e` 40/40 across the three scripts, on a
+fresh database, including `leave-a-sound` (16 checks; Bo sees Ada's sound
+within 1.5 s, his page plays it). Screenshots in `docs/screenshots/11-*`.
+Not run: listening by ear, a real phone, a screen reader, Docker.

@@ -4,7 +4,8 @@
 // they're close the talk box opens; what one says appears over their head
 // for the other, is replaced by what they say next, and is gone after 5 s.
 // A newcomer is asked for a name and a cat or a dog, and joins in place.
-// Nothing about sound is offered (ADR 010).
+// The sound controls from before ADR 010 stay gone (ADR 011 has its own,
+// checked by e2e/leave-a-sound.mjs).
 //
 //   APP_URL=http://localhost:8080 node e2e/meet-and-talk.mjs [shotsDir]
 import { mkdirSync } from "node:fs";
@@ -79,7 +80,7 @@ check((await bubble.textContent().catch(() => "")) === "Want a coffee?", "his ne
 await a.waitForTimeout(5300);
 check(await bubble.count() === 0, "and are gone after 5 s");
 
-check(await a.getByText("Enable sound").count() === 0 && (await a.locator("#sound-toggle, #steps-toggle, .world-spot, .spot-card, #tray").count()) === 0, "nothing about sound is offered");
+check(await a.getByText("Enable sound").count() === 0 && (await a.locator("#sound-toggle, #steps-toggle, .world-spot, .spot-card, #tray").count()) === 0, "the sound controls from before ADR 010 stay gone");
 
 // Someone new comes straight to the world: the arrival card asks their
 // name and cat or dog, and they're in, without a reload.
