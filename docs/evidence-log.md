@@ -342,3 +342,11 @@ too far, and ask them back to the trail.
   for people (sprite canvases now take the drawing's proportions).
 
 **Results:** `pnpm check` 87/87; `node e2e/world-two-browsers.mjs` 9/9.
+
+## 13. More creek, less trail (2026-11-05)
+
+**Prompt (Wen):** shorten the forest trail before the creek again and give
+what's cut to the creek's width. No amount given: took 6 m (creek 6.4 m to
+12.4 m, trail to the bank about 61 m to 55 m), said so, easy to change
+(`CREEK_HALF` in `client/seaside.ts`). `pnpm check` 87/87; the UI test's
+crossing check (banks now z -75.2 and -62.8) passes, -82 to -58.

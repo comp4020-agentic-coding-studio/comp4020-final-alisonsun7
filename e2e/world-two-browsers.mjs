@@ -74,12 +74,12 @@ await b.locator("canvas.world-canvas").focus();
 const zAt = async () => Number((await b.locator("#stage").getAttribute("data-at")).split(",")[1]);
 const northZ = await zAt();
 await b.keyboard.down("w");
-await b.waitForTimeout(5000);
+await b.waitForTimeout(7500);
 await b.keyboard.up("w");
 await b.waitForTimeout(300);
 const southZ = await zAt();
-// the creek runs along z -66, its south bank at -62.8
-check(northZ < -69.2 && southZ > -62.8, `W carries Bo over the footbridge (z ${northZ} → ${southZ})`);
+// the creek's banks are at z -75.2 and -62.8
+check(northZ < -75.2 && southZ > -62.8, `W carries Bo over the footbridge (z ${northZ} → ${southZ})`);
 
 // The forest and the shore are one place: from the forest's edge, W walks
 // down the trail and out onto the boardwalk.

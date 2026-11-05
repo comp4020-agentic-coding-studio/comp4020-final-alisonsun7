@@ -27,9 +27,10 @@ const WATERLINE = 31;
 // where the lifeguard tower stands
 const T_LIFE = { x: 17, z: 15 };
 const PIER = { x0: -34, x1: -31, z0: 1.5, z1: 72 };
-const CREEK_Z = -66;
-// half the creek's width: 6.4 m from bank to bank
-const CREEK_HALF = 3.2;
+// The creek runs east-west; its south bank is at z -62.8, and it's 12.4 m
+// from bank to bank (the trail before it gave up 6 m to it)
+const CREEK_HALF = 6.2;
+const CREEK_Z = -62.8 - CREEK_HALF;
 const BRIDGE = { x0: -3.7, x1: -0.3 };
 
 // The trail, as points it bends through.
@@ -40,8 +41,8 @@ const TRAIL: [number, number][] = [
   [-5, -91.5],
   [4, -80.5],
   // lined up with the footbridge
-  [-1.6, -72],
-  [-2, -66],
+  [-1.8, -78],
+  [-2, -69],
   [-3, -58],
   [3, -44],
   [1, -30],
@@ -306,7 +307,7 @@ function build(): Built {
   b.floors.push(bridge);
   for (const x of [BRIDGE.x0, BRIDGE.x1]) {
     b.box(darkWood, x - 0.05, x + 0.05, 0.14, 0.95, CREEK_Z - span, CREEK_Z + span, { shadow: true });
-    for (const z of [CREEK_Z - span + 0.1, CREEK_Z - 1.6, CREEK_Z + 1.6, CREEK_Z + span - 0.1]) b.box(darkWood, x - 0.07, x + 0.07, -0.6, 0.95, z - 0.07, z + 0.07);
+    for (let z = CREEK_Z - span + 0.1; z <= CREEK_Z + span; z += (2 * span - 0.2) / 5) b.box(darkWood, x - 0.07, x + 0.07, -0.6, 0.95, z - 0.07, z + 0.07);
   }
 
   // ---- the shore ----
@@ -590,7 +591,7 @@ function zoneAt(x: number, z: number): string {
     const lz = cafeLocal(x, z)[1];
     return lz < 4.8 ? "counter" : lz > 8.2 ? "window" : "tables";
   }
-  if (z < -79) return "forest";
+  if (z < -84) return "forest";
   if (z < -40) return "creek";
   if (z < -16) return "forest-edge";
   if (x > PIER.x0 - 0.5 && x < PIER.x1 + 0.5 && z > 3) return "pier";
@@ -610,8 +611,8 @@ export const seasideKit: PlaceKit = {
       [-8.5, -104.4],
       [-4.5, -91.6],
       [3.5, -80.5],
-      [-1.6, -72],
-      [-2, -66],
+      [-1.8, -78],
+      [-2, -69],
       [2.5, -44],
       [0.5, -20],
     ],

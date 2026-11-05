@@ -69,6 +69,9 @@ the café inside it, rain everywhere outdoors at dusk.
 - **The trail before the creek is four fifths as long** (about 64 m from
   the start instead of 80): everything north of the creek moved towards it
   in proportion, with the trail lined up to meet the bridge.
+- **Then 6 m more of the trail went to the creek:** its south bank stays at
+  z -62.8 and its north bank moved north, so it's 12.4 m wide and the trail
+  from the start to the water is about 55 m.
 - **A kangaroo comes when you wander off the trail.** In the forest, more
   than 10 m from the trail for over a second, a kangaroo hops in from the
   distance, stops a few metres away where a trunk doesn't hide it, and says

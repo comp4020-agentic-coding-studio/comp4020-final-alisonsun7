@@ -444,9 +444,9 @@ const SEASIDE: Scene = {
       at("clearing-log", "Log in the clearing", { x: -9, y: 0.9, z: -93.7 }, { x: -9, z: -93.2, y: 0.42, pose: "sit" }, ["quiet-talk", "birdsong", "leaves"]),
       at("old-stump", "Old stump", { x: 6, y: 0.9, z: -85.2 }, { x: 5, z: -84 }, ["woodpecker", "leaves", "wind"]),
     ]),
-    zone("creek", "Creek and footbridge", "A creek about six metres wide across the trail, crossed on a timber footbridge.", false, { x: -1.5, z: -76, yaw: Math.PI }, [
-      at("creek", "Creek", { x: 9, y: 0.1, z: -66 }, { x: 9, z: -62.2 }, ["creek", "leaves"]),
-      at("footbridge", "Footbridge", { x: -2, y: 0.8, z: -66 }, { x: -2.2, z: -66.6, pose: "walk" }, ["footsteps", "creek", "quiet-talk"]),
+    zone("creek", "Creek and footbridge", "A creek about twelve metres wide across the trail, crossed on a long timber footbridge.", false, { x: -1.7, z: -82, yaw: Math.PI }, [
+      at("creek", "Creek", { x: 9, y: 0.1, z: -69 }, { x: 9, z: -62.2 }, ["creek", "leaves"]),
+      at("footbridge", "Footbridge", { x: -2, y: 0.8, z: -69 }, { x: -2.2, z: -69.6, pose: "walk" }, ["footsteps", "creek", "quiet-talk"]),
       at("mossy-boulder", "Boulder", { x: -12, y: 1.6, z: -54 }, { x: -10.6, z: -53 }, ["woodpecker", "birdsong", "wind"]),
     ]),
     zone("forest-edge", "Edge of the forest", "The trees thin out and the ground turns to sand and grass.", false, { x: 1, z: -38, yaw: Math.PI }, [
