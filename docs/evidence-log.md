@@ -683,3 +683,31 @@ build on a fresh scratch database it passed 17/17, twice.
 **Checks:** `pnpm check` 39/39; `e2e/leave-a-sound.mjs` 17/17 (seven
 sounds in the palette). Not run: the other two e2e scripts; listening to
 the loop's seam in the place.
+
+## 28. The kiosk sells fish and chips (2026-11-06)
+
+**Prompt (Wen, translated, with a screenshot of the plain kiosk):** this
+should be a fish and chip shop; design it.
+
+**Done:** `fishAndChips()` in `client/seaside.ts`, drawn from shapes and
+canvas textures like the café (no new assets): a navy "FISH & CHIPS" sign
+with two fish on the roof; a "Today's catch" menu in Australian dollars on
+the back wall, replacing the dark panel; a steel fryer bench with two
+wells of oil and baskets, wrapping paper and a roll; on the counter a
+warmer of battered fish and chips under a glowing lamp, vinegar, salt,
+tomato sauce, lemon wedges, three cones of chips and two wrapped parcels;
+a chalkboard out front (solid, so you walk around it). Two regulars: one
+frying behind the counter, one waiting at it. The place's descriptions
+now say "fish and chip kiosk".
+
+**Failure and correction:** the first screenshots showed the chalkboard's
+words stretched (a wide canvas on a tall board) and the fryer baskets, in
+wireframe, reading as two black outlines. The board helper now takes a
+width, and the baskets are solid steel.
+
+**Checks:** typecheck; `pnpm check` 39/39; on a fresh build and scratch
+database, `e2e/world-two-browsers.mjs` 9/9, `meet-and-talk.mjs` 16/16,
+`leave-a-sound.mjs` 17/17, each twice. Looked at four screenshots (front,
+close at the counter, from the side, from the sand), with no page
+errors; the viewpoints were set in a throwaway copy of the build, then
+rebuilt. Not checked: a phone, and how it reads to people walking past.

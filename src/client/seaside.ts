@@ -1,7 +1,7 @@
 // From the forest to the sea: one imagined place you walk through. You start
 // on a trail in a pine forest, cross a creek on a footbridge, come out of the
-// trees onto a boardwalk with the café, a kiosk and beach huts along it, and
-// go down onto the sand, to the water and out along the pier.
+// trees onto a boardwalk with the café, a fish and chip kiosk and beach huts
+// along it, and go down onto the sand, to the water and out along the pier.
 //
 // Metres: x east, y up, z south (the sea is south). The trail runs from
 // z -130 to the boardwalk at z -4; the waterline is at z 31.
@@ -247,6 +247,185 @@ function stripes(a: string, bColour: string, n: number): THREE.CanvasTexture {
   );
 }
 
+// The kiosk sells fish and chips: a sign on its roof, a menu over the
+// fryers at the back, a warmer of battered fish, and vinegar, salt, sauce
+// and lemon on the counter, and a board out front.
+const NAVY = "#1d3557";
+const CREAM = "#f6efe0";
+
+function drawFish(g: CanvasRenderingContext2D, x: number, y: number, dir: number, colour: string): void {
+  g.save();
+  g.translate(x, y);
+  g.scale(dir, 1);
+  g.fillStyle = colour;
+  g.beginPath();
+  g.ellipse(0, 0, 24, 13, 0, 0, Math.PI * 2);
+  g.fill();
+  g.beginPath();
+  g.moveTo(-18, 0);
+  g.lineTo(-36, -13);
+  g.lineTo(-36, 13);
+  g.closePath();
+  g.fill();
+  g.fillStyle = NAVY;
+  g.beginPath();
+  g.arc(12, -3, 3, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+}
+
+// a navy board with a cream edge, drawn at 1.5x so small print stays legible
+const board = (w: number, h: number, draw: (g: CanvasRenderingContext2D) => void): THREE.CanvasTexture =>
+  canvasTexture(
+    w * 1.5,
+    h * 1.5,
+    (g) => {
+      g.scale(1.5, 1.5);
+      g.fillStyle = NAVY;
+      g.fillRect(0, 0, w, h);
+      g.strokeStyle = CREAM;
+      g.lineWidth = 4;
+      g.strokeRect(6, 6, w - 12, h - 12);
+      g.fillStyle = CREAM;
+      draw(g);
+    },
+    [1, 1],
+  );
+
+function fishAndChips(b: Builder, K: Rect, wood: THREE.Material, darkWood: THREE.Material): void {
+  const steel = std(0xb9bec4, { metalness: 0.7, roughness: 0.35 });
+  const batter = std(0xd99a3a, { roughness: 0.6 });
+  const chip = std(0xeec463, { roughness: 0.7 });
+  const paper = std(0xf4f1ea);
+  const front = K.z1;
+  const mid = (K.x0 + K.x1) / 2;
+  const top = 1.06; // the counter's top
+  const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number): THREE.Mesh => {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x, y, z);
+    m.castShadow = m.receiveShadow = true;
+    b.root.add(m);
+    return m;
+  };
+
+  // the sign on the roof, facing the boardwalk
+  const sign = board(512, 96, (g) => {
+    g.font = "bold 46px Georgia, serif";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.fillText("FISH & CHIPS", 256, 50);
+    drawFish(g, 50, 48, 1, "#f2c14e");
+    drawFish(g, 462, 48, -1, "#f2c14e");
+  });
+  b.box(wood, mid - 2.62, mid + 2.62, 3.3, 4.3, front - 0.32, front - 0.2);
+  add(new THREE.PlaneGeometry(5.12, 0.96), std(0xffffff, { map: sign }), mid, 3.8, front - 0.19);
+
+  // the menu on the back wall, over the fryers
+  const menu = board(512, 128, (g) => {
+    g.font = "bold 20px Georgia, serif";
+    g.textAlign = "center";
+    g.fillText("TODAY'S CATCH", 256, 32);
+    g.font = "15px sans-serif";
+    const rows: [string, string][][] = [
+      [["Fish & chips", "16.50"], ["Flathead & chips", "18.00"], ["Grilled barramundi", "19.00"], ["Calamari rings", "9.00"]],
+      [["Chips, small", "6.00"], ["Chips, large", "9.00"], ["Potato scallop", "2.50"], ["Dim sim", "2.50"]],
+    ];
+    rows.forEach((col, c) =>
+      col.forEach(([item, price], i) => {
+        g.textAlign = "left";
+        g.fillText(item, 28 + c * 244, 58 + i * 18);
+        g.textAlign = "right";
+        g.fillText(price, 238 + c * 244, 58 + i * 18);
+      }),
+    );
+  });
+  add(new THREE.PlaneGeometry(4.4, 1.1), std(0xffffff, { map: menu, roughness: 0.9 }), mid, 1.85, K.z0 + 0.17);
+
+  // fryers along the back: steel, two wells of oil, a basket over each
+  const back = K.z0 + 0.15;
+  b.box(steel, K.x0 + 0.2, K.x1 - 0.2, 0, 0.92, back, back + 0.65);
+  const oil = std(0x6b4a1c, { roughness: 0.15, metalness: 0.2 });
+  const basket = std(0xd4d8dc, { metalness: 0.5, roughness: 0.5 });
+  for (const x of [K.x0 + 0.5, K.x0 + 1.7]) {
+    b.box(oil, x, x + 1.0, 0.92, 0.93, back + 0.1, back + 0.55, { shadow: false });
+    b.box(basket, x + 0.2, x + 0.8, 0.93, 1.08, back + 0.15, back + 0.5);
+    b.box(darkWood, x + 0.47, x + 0.53, 1.04, 1.07, back + 0.5, back + 0.75);
+  }
+  // paper to wrap them in, on the bench beside
+  b.box(paper, K.x1 - 1.6, K.x1 - 1.0, 0.92, 1.0, back + 0.15, back + 0.5);
+  const roll = add(new THREE.CylinderGeometry(0.08, 0.08, 0.6, 14), paper, K.x1 - 0.55, 1.0, back + 0.35);
+  roll.rotation.z = Math.PI / 2;
+
+  // a warmer on the counter: steel base and lid, glass, battered fish and
+  // chips under a glowing lamp
+  const wz0 = front - 0.28;
+  const wz1 = front + 0.18;
+  const wx0 = K.x1 - 2.4;
+  const wx1 = K.x1 - 0.4;
+  b.box(steel, wx0, wx1, top, top + 0.06, wz0, wz1);
+  b.box(steel, wx0, wx1, top + 0.42, top + 0.46, wz0, wz1);
+  b.box(std(0xffb35c, { emissive: 0xff9a3c, emissiveIntensity: 0.9 }), wx0 + 0.1, wx1 - 0.1, top + 0.4, top + 0.42, wz0 + 0.05, wz1 - 0.05, { shadow: false });
+  b.box(std(0xdfeff5, { transparent: true, opacity: 0.22, roughness: 0.05, flatShading: false }), wx0, wx1, top + 0.06, top + 0.42, wz0, wz1, { shadow: false });
+  for (let i = 0; i < 4; i++) {
+    const piece = add(new THREE.SphereGeometry(1, 12, 8), batter, wx0 + 0.3 + i * 0.3, top + 0.11, (wz0 + wz1) / 2 + (i % 2 ? 0.05 : -0.05));
+    piece.scale.set(0.13, 0.045, 0.06);
+    piece.rotation.y = (i % 2 ? 0.3 : -0.25);
+  }
+  for (let i = 0; i < 14; i++) {
+    const c = b.box(chip, 0, 0.012, 0, 0.012, 0, 0.09, { shadow: false });
+    c.position.set(wx1 - 0.55 + (i % 5) * 0.06, top + 0.08 + Math.floor(i / 5) * 0.012, (wz0 + wz1) / 2 + ((i * 37) % 7) * 0.02 - 0.06);
+    c.rotation.y = ((i * 53) % 11) * 0.28;
+  }
+
+  // vinegar, salt, tomato sauce and lemon at the left of the counter
+  const cz = front - 0.02;
+  add(new THREE.CylinderGeometry(0.035, 0.04, 0.22, 12), std(0x3b2412, { roughness: 0.2 }), K.x0 + 0.6, top + 0.11, cz);
+  add(new THREE.CylinderGeometry(0.03, 0.035, 0.12, 12), std(0xf3f3f3, { roughness: 0.2 }), K.x0 + 0.75, top + 0.06, cz);
+  add(new THREE.CylinderGeometry(0.032, 0.032, 0.03, 12), steel, K.x0 + 0.75, top + 0.135, cz);
+  add(new THREE.CylinderGeometry(0.04, 0.04, 0.18, 12), std(0xc0281e, { roughness: 0.35 }), K.x0 + 0.9, top + 0.09, cz);
+  add(new THREE.ConeGeometry(0.015, 0.05, 8), paper, K.x0 + 0.9, top + 0.2, cz);
+  add(new THREE.CylinderGeometry(0.11, 0.08, 0.05, 16), paper, K.x0 + 1.2, top + 0.025, cz);
+  const lemon = std(0xf5d33b, { roughness: 0.6 });
+  for (let i = 0; i < 4; i++) {
+    const w = add(new THREE.SphereGeometry(1, 8, 6), lemon, K.x0 + 1.15 + (i % 2) * 0.08, top + 0.06, cz - 0.03 + Math.floor(i / 2) * 0.06);
+    w.scale.set(0.04, 0.025, 0.025);
+  }
+
+  // cones of chips ready to hand over, and two wrapped parcels
+  for (let i = 0; i < 3; i++) {
+    const x = K.x0 + 1.6 + i * 0.18;
+    const cone = add(new THREE.ConeGeometry(0.06, 0.2, 12), paper, x, top + 0.1, cz);
+    cone.rotation.x = Math.PI;
+    for (let j = 0; j < 5; j++) {
+      const c = b.box(chip, 0, 0.012, 0, 0.09, 0, 0.012, { shadow: false });
+      c.position.set(x + (j - 2) * 0.012, top + 0.22, cz + ((j * 3) % 5 - 2) * 0.01);
+      c.rotation.z = (j - 2) * 0.15;
+    }
+  }
+  b.box(paper, K.x0 + 2.3, K.x0 + 2.62, top, top + 0.08, cz - 0.12, cz + 0.1);
+  b.box(paper, K.x0 + 2.33, K.x0 + 2.6, top + 0.08, top + 0.15, cz - 0.1, cz + 0.08);
+
+  // a chalkboard out front, leaning both ways
+  const ax = K.x0 - 0.9;
+  const az = front + 0.9;
+  const sandwich = board(208, 320, (g) => {
+    g.textAlign = "center";
+    g.font = "bold 40px Georgia, serif";
+    g.fillText("FISH", 104, 66);
+    g.fillText("&", 104, 110);
+    g.fillText("CHIPS", 104, 154);
+    drawFish(g, 110, 200, 1, "#f2c14e");
+    g.font = "20px sans-serif";
+    g.fillText("Hot chips", 104, 256);
+    g.fillText("from 6.00", 104, 282);
+  });
+  for (const side of [1, -1]) {
+    const panel = add(new THREE.PlaneGeometry(0.62, 0.95), std(0xffffff, { map: sandwich, side: THREE.DoubleSide }), ax, 0.47, az + side * 0.12);
+    panel.rotation.set(-side * 0.22, side === 1 ? 0 : Math.PI, 0);
+  }
+  b.solids.push({ x0: ax - 0.35, x1: ax + 0.35, z0: az - 0.25, z1: az + 0.25 });
+}
+
 function bench(b: Builder, wood: THREE.Material, metal: THREE.Material, x: number, z: number): void {
   b.box(wood, x - 0.9, x + 0.9, 0.42, 0.47, z - 0.22, z + 0.22);
   b.box(wood, x - 0.9, x + 0.9, 0.55, 0.85, z + 0.18, z + 0.24);
@@ -343,7 +522,7 @@ function build(): Built {
   const metal = std(0x2a2c2f, { metalness: 0.5, roughness: 0.45 });
   const mud = std(0x3a3226);
   const lampHead = std(0x222222, { emissive: 0xffcf8a, emissiveIntensity: 0 });
-  // windows of the huts and kiosk, lit at dusk
+  // windows of the huts, lit at dusk
   const windows = std(0x2a3038, { emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.3 });
 
   // ---- the forest ----
@@ -522,15 +701,15 @@ function build(): Built {
   signBoard.position.set(CAFE_AT.x + 7, 4.55, CAFE_AT.z + 10.17);
   b.root.add(signBoard);
 
-  // the kiosk: white boards, a serving window, a red and white awning
-  const K = { x0: 4.5, x1: 11, z0: -10, z1: -4.4 };
+  // the fish and chip kiosk: white boards, a serving window, a red and
+  // white awning
+  const K = KIOSK;
   b.box(kioskWood, K.x0, K.x1, 0, 1.0, K.z1 - 0.15, K.z1, { solid: true, occludes: true });
   b.box(kioskWood, K.x0, K.x1, 2.4, 3.1, K.z1 - 0.15, K.z1, { occludes: true });
   b.box(kioskWood, K.x0, K.x0 + 0.15, 0, 3.1, K.z0, K.z1, { occludes: true });
   b.box(kioskWood, K.x1 - 0.15, K.x1, 0, 3.1, K.z0, K.z1, { occludes: true });
   b.box(kioskWood, K.x0, K.x1, 0, 3.1, K.z0, K.z0 + 0.15, { occludes: true });
   b.box(wood, K.x0, K.x1, 1.0, 1.06, K.z1 - 0.3, K.z1 + 0.25);
-  b.box(windows, K.x0 + 0.2, K.x1 - 0.2, 1.06, 2.4, K.z0 + 0.4, K.z0 + 0.45, { shadow: false });
   b.box(darkWood, K.x0 - 0.2, K.x1 + 0.2, 3.1, 3.3, K.z0 - 0.2, K.z1 + 0.2, { occludes: true });
   const kioskAwning = new THREE.Mesh(new THREE.PlaneGeometry(K.x1 - K.x0 + 0.4, 1.4), std(0xffffff, { map: stripes("#f4efe6", "#c4423a", 5), side: THREE.DoubleSide }));
   kioskAwning.position.set((K.x0 + K.x1) / 2, 2.85, K.z1 + 0.6);
@@ -538,6 +717,7 @@ function build(): Built {
   kioskAwning.castShadow = true;
   b.root.add(kioskAwning);
   b.solids.push({ x0: K.x0, x1: K.x1, z0: K.z0, z1: K.z1 });
+  fishAndChips(b, K, wood, darkWood);
 
   // five beach huts in painted boards, each its own colour
   const hutColours = [0x6fa9d6, 0xf2d06b, 0x8fd1b4, 0xf0a3a8, 0xf4f1ea];
@@ -754,6 +934,13 @@ const CAFE_PEOPLE: Record<string, [number, number, Pose][]> = {
     [4.5, 8.4, "talk"],
   ],
 };
+// the fish and chip kiosk on the boardwalk
+const KIOSK = { x0: 4.5, x1: 11, z0: -10, z1: -4.4 };
+// someone frying behind its counter, and someone waiting at it
+const CHIPPY: Regular[] = [
+  { x: KIOSK.x0 + 2.4, z: KIOSK.z1 - 1.1, pose: "stand" },
+  { x: KIOSK.x1 - 1.6, z: KIOSK.z1 + 0.8, pose: "back" },
+];
 // a bench just west of the café's door, between two lamps
 const BUSKER_BENCH = -20.5;
 // in the middle of the seat: sitting, the hips are at the seat's height
@@ -768,7 +955,7 @@ export const seasideKit: PlaceKit = {
   isInside: inCafe,
   zoneAt,
   regulars: {
-    weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER],
+    weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER, ...CHIPPY],
   },
   passerPaths: [
     [

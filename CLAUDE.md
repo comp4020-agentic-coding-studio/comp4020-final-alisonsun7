@@ -17,7 +17,7 @@ checks, never draft them.
 
 Sound of a City. One imagined place you walk through in first person, From
 the Forest to the Sea: a forest trail, a creek and footbridge, a boardwalk
-with a café, kiosk and beach huts, the beach and a pier. Built from CC0 assets, with drawn cat and dog figures for
+with a café, fish and chip kiosk and beach huts, the beach and a pier. Built from CC0 assets, with drawn cat and dog figures for
 the people in it, who see each other and can talk when they meet, and
 leave sounds where they stand for everyone to hear (ADR 011).
 
