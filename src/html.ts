@@ -223,7 +223,7 @@ ${modeNav}
       <h3>Others' sounds</h3>
       <ul class="sound-list" id="theirs">${listed}</ul>
     </section>
-    <label class="ambience"><input type="checkbox" id="ambience" disabled /> Background ${mode.ambience === "room" ? "room tone" : mode.ambience}</label>
+    <label class="ambience"><input type="checkbox" id="ambience" disabled /> Background ${scene.living ? "sounds" : mode.ambience === "room" ? "room tone" : mode.ambience}</label>
   </aside>
 </main>
 <section class="tray${user ? "" : " tray-join"}" id="tray" aria-label="Add a sound">

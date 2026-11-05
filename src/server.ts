@@ -219,7 +219,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
-  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})(\/ops|\/events)?$/);
+  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})(\/ops|\/events|\/move|\/say)?$/);
   if (method === "GET" && sessionApi && !sessionApi[2]) {
     const snap = sessions.sessionSnapshot(sessionApi[1], user);
     return snap ? json(res, 200, snap) : json(res, 404, { error: "no such session" });
@@ -236,6 +236,16 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     const result = sessions.applyOp(user, sessionApi[1], await readJson(req));
     const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "save_failed" ? 500 : result.code === "slow_down" ? 429 : 409;
     return json(res, result.ok ? 200 : result.code === "bad_request" ? 400 : status, result);
+  }
+
+  // Where a person stands, and something they say to whoever is near (ADR
+  // 007). Who it is comes from the cookie, as for every change.
+  if (method === "POST" && (sessionApi?.[2] === "/move" || sessionApi?.[2] === "/say")) {
+    if (!user) return json(res, 401, { ok: false, code: "no_session" });
+    const body = await readJson(req);
+    const result = sessionApi[2] === "/move" ? sessions.move(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
+    const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
+    return json(res, status, result);
   }
 
   // Only when the app is started for the spec: makes the next memory write

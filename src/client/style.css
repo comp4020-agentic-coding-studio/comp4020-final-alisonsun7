@@ -2100,3 +2100,112 @@ h3 {
 .roo-back[hidden] {
   display: none;
 }
+
+/* other people: a name over their head, and what they said above it */
+.other-name,
+.said-bubble {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.other-name {
+  z-index: 3;
+  font: 600 11px var(--font);
+  color: #fff;
+  background: rgba(15, 13, 10, 0.62);
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.other-name[hidden],
+.said-bubble[hidden] {
+  display: none;
+}
+
+.said-bubble {
+  z-index: 6;
+  max-width: min(240px, 60vw);
+  background: #fffaf0;
+  color: #2a241c;
+  font-size: 13px;
+  line-height: 1.35;
+  padding: 7px 11px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  overflow-wrap: anywhere;
+}
+
+.said-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  margin-left: -7px;
+  border: 7px solid transparent;
+  border-bottom: 0;
+  border-top-color: #fffaf0;
+}
+
+/* the talk box, when someone is close enough to talk to */
+.chat-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 46px;
+  transform: translateX(-50%);
+  z-index: 8;
+  width: min(440px, calc(100% - 32px));
+  background: rgba(15, 13, 10, 0.78);
+  backdrop-filter: blur(6px);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.chat-bar[hidden] {
+  display: none;
+}
+
+.chat-to {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.chat-row {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-row input {
+  flex: 1;
+  min-width: 0;
+  font: 400 14px var(--font);
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+}
+
+.chat-row input:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+
+.chat-row .btn {
+  padding: 7px 16px;
+}
+
+.chat-mine {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #fffaf0;
+}
+
+.chat-mine[hidden] {
+  display: none;
+}

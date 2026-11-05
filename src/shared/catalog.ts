@@ -152,6 +152,11 @@ export interface Scene {
   about?: string;
   // the background indoors, when it isn't plain room tone
   indoorAmbience?: Mode["ambience"];
+  // A living place (ADR 007): one shared world for every time of day, whose
+  // sounds stay until someone removes them. No 3-minute memories; anyone may
+  // change a sound's volume (only its owner may remove it); a spot holds
+  // SPOT_MAX sounds; a person's newest sound replaces their oldest.
+  living?: boolean;
 }
 
 export const FIGURE_SCALE = 1.13;
@@ -429,7 +434,8 @@ const SEASIDE: Scene = {
   summary: "Start on a trail through a pine forest, cross the creek, and come out by the sea: a boardwalk with a café, a kiosk and beach huts, the sand, and a pier.",
   evidence: "photo",
   view: "world",
-  maxSounds: 32,
+  living: true,
+  maxSounds: 72,
   about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes.",
   indoorAmbience: "cafe",
   modes: [
@@ -667,6 +673,20 @@ export const SESSION_MS = 180_000;
 export const MAX_SOUNDS = 12;
 export const PER_PERSON = 4;
 
+// In a living place, the most sounds one spot holds.
+export const SPOT_MAX = 3;
+
+export function isLiving(sceneId: string): boolean {
+  return findScene(sceneId)?.living === true;
+}
+
+// A living place is one world whatever the time of day: every mode shares
+// the first mode's session. Other places keep a session per mode.
+export function placeMode(sceneId: string, mode: string): string {
+  const scene = findScene(sceneId);
+  return scene?.living ? scene.modes[0].id : mode;
+}
+
 export function maxSoundsIn(sceneId: string): number {
   return findScene(sceneId)?.maxSounds ?? MAX_SOUNDS;
 }
@@ -727,7 +747,7 @@ export function panFor(x: number): number {
 // One live place is a scene in one mode: Chifley at dusk and Chifley in the
 // morning are different rooms with different people and sounds.
 export function roomKey(sceneId: string, mode: string): string {
-  return `${sceneId}:${mode}`;
+  return `${sceneId}:${placeMode(sceneId, mode)}`;
 }
 
 export function figureHeight(shot: Shot, floorY: number): number {

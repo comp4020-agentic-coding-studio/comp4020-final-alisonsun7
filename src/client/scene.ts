@@ -3,11 +3,12 @@
 // a change that wasn't saved.
 import { CATEGORIES, SOUNDS, checkPlace, findScene, findShot, soundsIn, type Scene, type SoundId } from "../shared/catalog.js";
 import { REJECT_MESSAGES, type Committed, type Person, type Placement, type ServerMessage, type Snapshot } from "../shared/protocol.js";
+
 import { applyCommitted, formatClock, remainingMs, type LiveState } from "../shared/state.js";
 import { AudioEngine } from "./audio.js";
 import { newOperationId, sendOp, type OpBody } from "./ops.js";
 import { drawShot, drawWeather, pulse } from "./stage.js";
-import { WorldView } from "./world.js";
+import { WorldView, type Other } from "./world.js";
 
 interface Boot {
   sceneId: string;
@@ -53,9 +54,84 @@ const world =
           history.replaceState(null, "", `/scene/${scene.id}?mode=${mode.id}&shot=${zone}`);
           render();
         },
-        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside, l.ambience),
+        onListen: (l) => {
+          audio.listen(l.x, l.y, l.z, l.yaw, l.inside, l.ambience);
+          reportPosition(l.x, l.z, l.yaw);
+        },
+        onNear: (person) => showChat(person),
       })
     : null;
+
+// ---- where you are, and talking to whoever is near (ADR 007) ----------
+
+const living = scene.living === true;
+let lastSent = { at: 0, x: NaN, z: NaN, yaw: NaN };
+
+// Five times a second at most, and only when you've moved or turned.
+function reportPosition(x: number, z: number, yaw: number): void {
+  if (!living || !boot.joined || !connected) return;
+  const now = performance.now();
+  if (now - lastSent.at < 200) return;
+  if (Math.hypot(x - lastSent.x, z - lastSent.z) < 0.05 && Math.abs(yaw - lastSent.yaw) < 0.05 && now - lastSent.at < 5000) return;
+  lastSent = { at: now, x, z, yaw };
+  void fetch(`/api/sessions/${live.snapshot.sessionId}/move`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, yaw: Math.round(yaw * 100) / 100 }),
+  }).catch(() => undefined);
+}
+
+// The talk box: shown when someone is close enough to talk to, and kept
+// while you're typing in it.
+const chat = document.createElement("form");
+chat.className = "chat-bar";
+chat.hidden = true;
+chat.innerHTML = `<label class="chat-to" for="chat-input"></label><div class="chat-row"><input id="chat-input" maxlength="120" autocomplete="off" /><button type="submit" class="btn primary">Say</button></div><p class="chat-mine" hidden></p>`;
+const chatInput = chat.querySelector<HTMLInputElement>("input")!;
+const chatTo = chat.querySelector<HTMLLabelElement>(".chat-to")!;
+const chatMine = chat.querySelector<HTMLParagraphElement>(".chat-mine")!;
+let nearPerson: Person | null = null;
+let mineTimer: ReturnType<typeof setTimeout> | undefined;
+if (living && boot.joined) stage.append(chat);
+
+function showChat(person: Person | null): void {
+  nearPerson = person;
+  if (person) chatTo.textContent = `${person.name} is here. Say something:`;
+  chatInput.placeholder = person ? `Say something to ${person.name}…` : "";
+  // don't snatch the box away from someone mid-sentence
+  chat.hidden = !person && document.activeElement !== chatInput && chatInput.value === "";
+}
+
+chatInput.addEventListener("blur", () => showChat(nearPerson));
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    chatInput.blur();
+    world?.focusCanvas();
+  }
+});
+
+chat.onsubmit = async (e) => {
+  e.preventDefault();
+  const text = chatInput.value.trim();
+  if (!text) return;
+  const res = await fetch(`/api/sessions/${live.snapshot.sessionId}/say`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text }),
+  }).catch(() => null);
+  const result = res ? ((await res.json()) as { ok: boolean; code?: string; heard?: number }) : null;
+  if (!result?.ok) {
+    say(result?.code === "slow_down" ? "A little slower: wait a moment before saying more." : "That wasn't sent. Try again in a moment.");
+    return;
+  }
+  chatInput.value = "";
+  // your own words, under the box, until you say something else or 5 s pass
+  chatMine.textContent = `You: ${text}`;
+  chatMine.hidden = false;
+  clearTimeout(mineTimer);
+  mineTimer = setTimeout(() => (chatMine.hidden = true), 5000);
+  if (result.heard === 0) say("Nobody was close enough to hear that.");
+};
 
 // ---- server messages ----------------------------------------------------
 
@@ -91,6 +167,10 @@ function onCommitted(ev: Committed): void {
     const who = live.snapshot.online.find((x) => x.id === ev.by)?.name ?? before.placements.find((x) => x.ownerId === ev.by)?.ownerName ?? "Someone";
     if (p.kind === "sound.add") say(`${p.placement.ownerName} added ${SOUNDS[p.placement.soundId].label.toLowerCase()} at ${anchorLabel(p.placement)}.`);
     if (p.kind === "sound.remove") say(`${who} removed a sound.`);
+    if (p.kind === "sound.update" && p.patch.gain !== undefined) {
+      const was = before.placements.find((x) => x.id === p.patch.placementId);
+      if (was && was.gain !== p.patch.gain) say(`${who} turned ${was.ownerId === me()?.id ? "your" : `${was.ownerName}'s`} ${SOUNDS[was.soundId].label.toLowerCase()} ${p.patch.gain > was.gain ? "up" : "down"}.`);
+    }
     if (p.kind === "session.start") say(`${who} started a 3-minute memory.`);
   }
   if (p.kind === "session.saved") say("A place, made alive together.", `/memory/${p.memoryId}`);
@@ -120,7 +200,11 @@ function connect(): void {
     const msg = JSON.parse(e.data as string) as ServerMessage;
     if (msg.type === "snapshot") onSnapshot(msg);
     else if (msg.type === "committed") onCommitted(msg);
-    else if (msg.type === "presence" && msg.sessionId === live.snapshot.sessionId) {
+    else if (msg.type === "moves" && msg.sessionId === live.snapshot.sessionId) {
+      world?.setOthers(msg.people.filter((p) => p.id !== me()?.id) as Other[]);
+    } else if (msg.type === "said" && msg.sessionId === live.snapshot.sessionId) {
+      if (msg.by !== me()?.id) world?.showSaid(msg.by, msg.text);
+    } else if (msg.type === "presence" && msg.sessionId === live.snapshot.sessionId) {
       live = { ...live, snapshot: { ...live.snapshot, online: msg.online } };
       renderPeople();
     }
@@ -271,14 +355,15 @@ function soundRow(p: Placement, mine: boolean): HTMLLIElement {
   where.textContent = mine ? anchorLabel(p) : `${p.ownerName} · ${anchorLabel(p)}`;
   li.append(name, where);
 
-  if (mine) {
+  // In a living place anyone can turn any sound up or down, for everyone.
+  if (mine || (living && boot.joined)) {
     const vol = document.createElement("input");
     vol.type = "range";
     vol.min = "0";
     vol.max = "100";
     vol.step = "5";
     vol.value = String(Math.round((volumeWaiting.get(p.id) ?? p.gain) * 100));
-    vol.setAttribute("aria-label", `Volume of your ${SOUNDS[p.soundId].label.toLowerCase()}`);
+    vol.setAttribute("aria-label", mine ? `Volume of your ${SOUNDS[p.soundId].label.toLowerCase()}` : `Volume of ${p.ownerName}'s ${SOUNDS[p.soundId].label.toLowerCase()}, for everyone`);
     vol.dataset.focusKey = `vol:${p.id}`;
     vol.onchange = () => void setVolume(p.id, Number(vol.value) / 100);
     const remove = document.createElement("button");
@@ -290,7 +375,8 @@ function soundRow(p: Placement, mine: boolean): HTMLLIElement {
     remove.onclick = async () => {
       if (await send({ type: "sound.remove", placementId: p.id, baseRevision: p.revision }, "Removing…")) say("Sound removed.");
     };
-    li.append(vol, remove);
+    li.append(vol);
+    if (mine) li.append(remove);
   } else {
     const vol = document.createElement("span");
     vol.className = "vol";
@@ -321,6 +407,17 @@ function renderSession(): void {
   const box = $("session");
   const s = live.snapshot;
   box.textContent = "";
+  if (living) {
+    // nothing to record: the place itself keeps what people leave
+    const h = document.createElement("h2");
+    h.textContent = "A place that keeps its sounds";
+    const p = document.createElement("p");
+    p.className = "fine";
+    const n = s.placements.length;
+    p.textContent = `${n === 0 ? "It's quiet so far." : `${n} ${n === 1 ? "sound" : "sounds"} left here by ${new Set(s.placements.map((x) => x.ownerName)).size} ${new Set(s.placements.map((x) => x.ownerName)).size === 1 ? "person" : "people"}.`} Every sound stays, for everyone, at every time of day, until the person who added it takes it away. Anyone can turn a sound up or down.`;
+    box.append(h, p);
+    return;
+  }
   const h = document.createElement("h2");
   const p = document.createElement("p");
   p.className = "fine";

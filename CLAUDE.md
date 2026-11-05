@@ -4,8 +4,8 @@
 
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) defines the product. `docs/decisions/003-live-places-and-memories.md`,
-`004-walkable-drawn-world.md`, `005-imagined-places-from-cc0-assets.md` and
-`006-forest-to-sea.md` record where this build follows it and where it
+`004-walkable-drawn-world.md`, `005-imagined-places-from-cc0-assets.md`,
+`006-forest-to-sea.md` and `007-living-place-presence-and-talk.md` record where this build follows it and where it
 departs (005 drops the ANU theme). Read both before
 changing behaviour. Explain progress to Wen in Chinese; the UI, code, commits
 and repo docs are English. README.md, PROCESS.md, reflections and the research
@@ -48,7 +48,17 @@ unlisted, but their pages and memories still work.
   writes `public/scenes/`. The originals are gitignored and must never be
   committed: this repo is public. Never use web or social-media images in
   the app; facts from them go in the About page as text with a link.
-- **One live session per place** (scene + mode). Sounds can be placed before
+- **The standard (Wen):** suits people playing together; keeps what they do,
+  so tomorrow shows today's changes; what others change, you see.
+- **A living place keeps its sounds (ADR 007).** The seaside has one session
+  for every time of day, never sealed, no 3-minute memories. A spot holds 3
+  sounds, a person 4 (the fifth replaces their oldest). Anyone may change a
+  sound's volume, for everyone; only its owner moves or removes it.
+- **People see each other and talk when they meet (ADR 007).** Positions and
+  words live in memory only; words go only to people within 12 m, appear
+  over the speaker for 5 s or until replaced, and are never stored or
+  logged (the log has who spoke and how many characters).
+- **(Retired scenes) one live session per place** (scene + mode). Sounds can be placed before
   the clock starts; "Start a 3-minute memory" starts the server clock; at
   3:00, or when the starter saves early, it's sealed into a memory and the
   place opens a new, empty session.
@@ -60,7 +70,7 @@ unlisted, but their pages and memories still work.
   (re)connect, then `committed` events. A client that sees a sequence gap
   refetches the snapshot; it never guesses. Ops carry a client
   `operationId`, deduplicated by `UNIQUE(session_id, operation_id)`.
-- **People change only their own sounds.** Owner checks and `baseRevision`
+- **People change only their own sounds** (except volume in a living place). Owner checks and `baseRevision`
   stale checks are on the server. Identity comes from the HttpOnly
   `soac_session` cookie (DB stores its SHA-256 hash), never the body.
 - **Never claim a save that didn't happen.** A failed seal shows "failed",
@@ -103,7 +113,9 @@ without Wen's go-ahead.
 - `node e2e/look.mjs <dir>` saves screenshots for a person to look at;
   `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   does every mode and those zones of a walkable place.
-- `node e2e/world-two-browsers.mjs` drives the seaside in two Chrome sessions.
+- `node e2e/world-two-browsers.mjs` drives the seaside in two Chrome sessions;
+  `node e2e/meet-and-talk.mjs` checks seeing each other, talking, kept
+  sounds and shared volume. Both remove the sounds they add.
   The world e2e scripts use the GPU (`--use-angle=metal`): in software
   rendering the café runs at well under 1 fps.
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

@@ -7,6 +7,9 @@
 // the starter saves early) the session is sealed into a memory and the place
 // opens a new, empty session.
 //
+// A living place (ADR 007) never seals: one session per scene for every
+// mode, kept for good, with no clock.
+//
 // Every accepted change is one transaction that bumps the session's revision
 // and writes a session_events row with that number as server_seq, so the
 // event order is the order the server applied writes, with no gaps.
@@ -15,7 +18,10 @@ import { randomBytes } from "node:crypto";
 import { db, inTransaction, nowIso } from "./db.js";
 import { log } from "./log.js";
 import {
+  isLiving,
   maxSoundsIn,
+  placeMode,
+  SPOT_MAX,
   PER_PERSON,
   SESSION_MS,
   SOUNDS,
@@ -85,7 +91,8 @@ function getSession(id: string): SessionRow | undefined {
 }
 
 // The place's open session, created empty if there isn't one.
-export function openSession(sceneId: string, mode: string): SessionRow {
+export function openSession(sceneId: string, givenMode: string): SessionRow {
+  const mode = placeMode(sceneId, givenMode);
   const found = db
     .prepare(`SELECT * FROM sessions WHERE scene_id = ? AND mode = ? AND status IN ${OPEN} ORDER BY created_at DESC LIMIT 1`)
     .get(sceneId, mode) as SessionRow | undefined;
@@ -245,9 +252,110 @@ export function unsubscribe(res: ServerResponse, sceneId: string, mode: string, 
   room.delete(res);
   if (room.size === 0) rooms.delete(key);
   if (user && ![...room.values()].some((u) => u?.id === user.id)) {
+    if (standing.get(key)?.delete(user.id)) moved.add(key);
     log("person_left", { user: user.id, nickname: user.nickname, scene: sceneId, mode });
     sendPresence(sceneId, mode);
   }
+}
+
+// ---- where people stand, and what they say (ADR 007) --------------------
+//
+// Kept in memory only: positions are sent to everyone in the place five
+// times a second; something said goes only to people within earshot, and
+// is never stored or logged (the log has who spoke and how long it was).
+
+interface Standing {
+  person: Person;
+  x: number;
+  z: number;
+  yaw: number;
+  at: number;
+}
+
+const standing = new Map<string, Map<string, Standing>>(); // room → user id → where
+const moved = new Set<string>();
+const EARSHOT = 12;
+const SAY_MAX = 120;
+
+function streamsOf(key: string, userId: string): ServerResponse[] {
+  return [...(rooms.get(key) ?? new Map<ServerResponse, User | null>())].filter(([, u]) => u?.id === userId).map(([res]) => res);
+}
+
+function sendMoves(key: string): void {
+  const room = rooms.get(key);
+  const here = standing.get(key);
+  if (!room || !here) return;
+  const [sceneId, mode] = key.split(":");
+  const session = openSession(sceneId, mode);
+  const msg = frame({ type: "moves", sessionId: session.id, people: [...here.values()].map((s) => ({ ...s.person, x: s.x, z: s.z, yaw: s.yaw })) });
+  for (const res of room.keys()) res.write(msg);
+}
+
+// Five times a second, send whoever moved; forget anyone silent for 20 s.
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, here] of standing) {
+    for (const [userId, s] of here)
+      if (now - s.at > 20_000) {
+        here.delete(userId);
+        moved.add(key);
+      }
+  }
+  for (const key of moved) sendMoves(key);
+  moved.clear();
+}, 200).unref();
+
+const finite = (v: unknown, limit: number): v is number => typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= limit;
+const moveTimes = new Map<string, number>();
+
+export function move(user: User, sessionId: string, raw: unknown): { ok: boolean; code?: string } {
+  const session = getSession(sessionId);
+  if (!session || !isLiving(session.scene_id)) return { ok: false, code: "no_session" };
+  const o = (raw ?? {}) as Record<string, unknown>;
+  if (!finite(o.x, 2000) || !finite(o.z, 2000) || !finite(o.yaw, 1000)) return { ok: false, code: "bad_request" };
+  // at most ten a second; more are dropped, not refused
+  const now = Date.now();
+  if (now - (moveTimes.get(user.id) ?? 0) < 90) return { ok: true };
+  moveTimes.set(user.id, now);
+  const key = roomKey(session.scene_id, session.mode);
+  const here = standing.get(key) ?? new Map<string, Standing>();
+  standing.set(key, here);
+  here.set(user.id, { person: ensureParticipant(session, user), x: o.x, z: o.z, yaw: o.yaw, at: now });
+  moved.add(key);
+  return { ok: true };
+}
+
+const sayTimes = new Map<string, number[]>();
+
+// Words are trimmed, control characters dropped, and cut at SAY_MAX.
+export function cleanWords(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  // eslint-disable-next-line no-control-regex
+  const text = raw.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, SAY_MAX);
+  return text.length > 0 ? text : null;
+}
+
+export function say(user: User, sessionId: string, raw: unknown): { ok: boolean; code?: string; heard?: number } {
+  const session = getSession(sessionId);
+  if (!session || !isLiving(session.scene_id)) return { ok: false, code: "no_session" };
+  const text = cleanWords((raw as Record<string, unknown> | null)?.text);
+  if (!text) return { ok: false, code: "bad_request" };
+  const key = roomKey(session.scene_id, session.mode);
+  const here = standing.get(key);
+  const me = here?.get(user.id);
+  if (!me) return { ok: false, code: "not_here" };
+  // only words actually said count towards the limit
+  const now = Date.now();
+  const times = (sayTimes.get(user.id) ?? []).filter((t) => now - t < 10_000);
+  if (times.length >= 8 || (times.length > 0 && now - times[times.length - 1] < 600)) return { ok: false, code: "slow_down" };
+  times.push(now);
+  sayTimes.set(user.id, times);
+  // only people within earshot (and the speaker's own pages) hear it
+  const listeners = [...(here?.entries() ?? [])].filter(([, s]) => Math.hypot(s.x - me.x, s.z - me.z) <= EARSHOT).map(([id]) => id);
+  const msg = frame({ type: "said", sessionId: session.id, by: me.person.id, name: me.person.name, text });
+  for (const id of listeners) for (const res of streamsOf(key, id)) res.write(msg);
+  log("said", { user: user.id, nickname: user.nickname, session: session.id, chars: text.length, heard: listeners.length - 1 });
+  return { ok: true, heard: listeners.length - 1 };
 }
 
 export function placeSummary(sceneId: string, mode: string): { online: number; sounds: number; status: SessionStatus } {
@@ -383,6 +491,13 @@ function describe(p: CommittedPayload): Record<string, unknown> {
   }
 }
 
+// Thrown inside a transaction to undo what it already wrote and refuse.
+class Rejected extends Error {
+  constructor(readonly code: RejectCode) {
+    super(code);
+  }
+}
+
 const editable = (s: SessionRow): boolean => s.status === "idle" || s.status === "active";
 
 function run(session: SessionRow, me: Person, op: Op): OpResult {
@@ -392,10 +507,24 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       const place = checkPlace(session.scene_id, op.shotId, op.anchorId, op.soundId);
       if (!place.ok) return reject(place.code);
       if (!isGain(op.gain)) return reject("bad_gain");
-      return inTransaction(() => {
-        const live = livePlacements(session.id);
-        if (live.length >= maxSoundsIn(session.scene_id)) return reject("place_full");
-        if (live.filter((p) => p.ownerId === me.id).length >= PER_PERSON) return reject("your_limit");
+      const living = isLiving(session.scene_id);
+      try {
+        return inTransaction(() => {
+        let live = livePlacements(session.id);
+        const here = live.filter((p) => p.shotId === op.shotId && p.anchorId === op.anchorId);
+        if (living && here.length >= SPOT_MAX) return reject("spot_full");
+        const committed: Committed[] = [];
+        const mine = live.filter((p) => p.ownerId === me.id);
+        if (mine.length >= PER_PERSON) {
+          if (!living) return reject("your_limit");
+          // In a living place your newest sound replaces your oldest, so you
+          // can always add one.
+          const oldest = mine[0];
+          db.prepare("UPDATE placements SET is_deleted = 1, revision = revision + 1, updated_at = ? WHERE id = ?").run(nowIso(), oldest.id);
+          committed.push(commit(session.id, me.id, `${op.operationId}-r`, { kind: "sound.remove", placementId: oldest.id }));
+          live = live.filter((p) => p.id !== oldest.id);
+        }
+        if (live.length >= maxSoundsIn(session.scene_id)) throw new Rejected("place_full");
         const index = live.filter((p) => p.shotId === op.shotId && p.anchorId === op.anchorId).length;
         const spot = spotFor(place.anchor, index);
         const id = newId("plc");
@@ -406,8 +535,13 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
         ).run(id, session.id, me.id, op.soundId, op.shotId, op.anchorId, spot.x, spot.y, round2(op.gain), spot.pan, at, at);
         const placement = getPlacement(session.id, id)!;
         const { deleted: _d, ...clean } = placement;
-        return { ok: true, duplicate: false, committed: [commit(session.id, me.id, op.operationId, { kind: "sound.add", placement: clean })] };
-      });
+        committed.push(commit(session.id, me.id, op.operationId, { kind: "sound.add", placement: clean }));
+        return { ok: true, duplicate: false, committed } as OpResult;
+        });
+      } catch (err) {
+        if (err instanceof Rejected) return reject(err.code);
+        throw err;
+      }
     }
 
     case "sound.update":
@@ -416,7 +550,10 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       const found = getPlacement(session.id, op.placementId);
       if (!found || found.deleted) return reject("no_placement");
       const { deleted: _d, ...current } = found;
-      if (current.ownerId !== me.id) return reject("not_owner");
+      // In a living place anyone may turn a sound up or down; only the person
+      // who added it may move or remove it.
+      const volumeOnly = op.type === "sound.update" && op.shotId === undefined && op.anchorId === undefined;
+      if (current.ownerId !== me.id && !(volumeOnly && isLiving(session.scene_id))) return reject("not_owner");
       if (current.revision !== op.baseRevision) return reject("stale", current);
 
       if (op.type === "sound.remove") {
@@ -457,6 +594,7 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
     }
 
     case "session.start": {
+      if (isLiving(session.scene_id)) return reject("no_memories");
       if (session.status === "active") return reject("already_started");
       if (session.status !== "idle") return reject("sealed");
       const committed = inTransaction(() => {
@@ -474,6 +612,7 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
     }
 
     case "session.finish": {
+      if (isLiving(session.scene_id)) return reject("no_memories");
       // Finishing is idempotent: a session that's saved, or being saved, is
       // already finished.
       if (session.status === "saved" || session.status === "ending") return { ok: true, duplicate: true, committed: [] };

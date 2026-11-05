@@ -119,5 +119,10 @@ if (rooCame) {
   check(Math.abs(bx + 1) < 3 && bz < -110, `"Take me back to the trail" puts Bo back on it (${bx}, ${bz})`);
 }
 
+// The seaside keeps its sounds (ADR 007): take Ada's away again, so runs
+// don't fill the espresso cart.
+await a.locator("#mine .sound-row .remove").first().click().catch(() => undefined);
+await a.waitForTimeout(400);
+
 check(errors.length === 0, `no page errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
 await browser.close();

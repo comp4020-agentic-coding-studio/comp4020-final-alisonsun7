@@ -8,7 +8,7 @@
 // reader, and clicked, exactly like the photo version's anchors.
 import * as THREE from "three";
 import { SOUNDS, type Anchor, type Pose, type Scene, type SoundId } from "../shared/catalog.js";
-import type { Placement } from "../shared/protocol.js";
+import type { Person, Placement } from "../shared/protocol.js";
 import { figureSvg, kangarooSvg, passerSvg } from "./figures.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
@@ -43,7 +43,31 @@ interface Options {
   startZone: string;
   onZone?: (zoneId: string) => void;
   onListen?: (l: Listener) => void;
+  // the nearest other person within talking distance, or null, when it changes
+  onNear?: (person: Person | null) => void;
 }
+
+// Someone else in the place, as the server last placed them.
+export interface Other extends Person {
+  x: number;
+  z: number;
+  yaw: number;
+}
+
+interface OtherView {
+  person: Person;
+  sprite: THREE.Sprite;
+  pose: "walk" | "stand";
+  at: THREE.Vector3;
+  goal: THREE.Vector3;
+  label: HTMLDivElement;
+  bubble: HTMLDivElement;
+  bubbleTimer?: ReturnType<typeof setTimeout>;
+}
+
+// Close enough to talk, and how long words stay over someone's head.
+const TALK = 3.5;
+const SAID_MS = 5000;
 
 interface Spot {
   shotId: string;
@@ -161,6 +185,8 @@ export class WorldView {
     back: { x: number; z: number; yaw: number } | null;
   } | null = null;
   private strayFor = 0;
+  private others = new Map<string, OtherView>();
+  private near: string | null = null;
   // zone changes are only reported once the page has its view
   private ready = false;
 
@@ -652,20 +678,32 @@ export class WorldView {
     this.stuck = 0;
   }
 
+  // You can't walk through someone else: you bump into them.
+  private free(x: number, z: number): boolean {
+    if (!canStand(this.built, x, z)) return false;
+    for (const o of this.others.values()) {
+      const now = Math.hypot(this.x - o.at.x, this.z - o.at.z);
+      const next = Math.hypot(x - o.at.x, z - o.at.z);
+      // moving away from someone you're already touching is always allowed
+      if (next < 0.65 && next < now) return false;
+    }
+    return true;
+  }
+
   private tryMove(dx: number, dz: number): boolean {
     const nx = this.x + dx;
     const nz = this.z + dz;
-    if (canStand(this.built, nx, nz)) {
+    if (this.free(nx, nz)) {
       this.x = nx;
       this.z = nz;
       return true;
     }
     // slide along walls
-    if (canStand(this.built, nx, this.z)) {
+    if (this.free(nx, this.z)) {
       this.x = nx;
       return true;
     }
-    if (canStand(this.built, this.x, nz)) {
+    if (this.free(this.x, nz)) {
       this.z = nz;
       return true;
     }
@@ -758,6 +796,7 @@ export class WorldView {
       }
     }
     if (!reduced()) this.movePassers(dt);
+    this.moveOthers(dt);
     if (this.rain && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
       const a = pos.array as Float32Array;
@@ -785,6 +824,102 @@ export class WorldView {
       inside: this.kit.isInside(this.x, this.z),
       ambience: this.kit.ambienceAt?.(this.x, this.z, this.mode),
     });
+  }
+
+  // ---- other people --------------------------------------------------------
+
+  // Everyone else in the place, as the server says they stand.
+  setOthers(people: Other[]): void {
+    const seen = new Set<string>();
+    for (const p of people) {
+      seen.add(p.id);
+      let o = this.others.get(p.id);
+      if (!o) {
+        const sprite = figureSprite(`${p.avatar}:stand:${p.id}`, figureSvg(p.avatar, "stand", p.id), false, this.light.figureTint);
+        sprite.position.set(p.x, 0, p.z);
+        this.built.root.add(sprite);
+        const label = document.createElement("div");
+        label.className = "other-name";
+        label.textContent = p.name;
+        const bubble = document.createElement("div");
+        bubble.className = "said-bubble";
+        bubble.hidden = true;
+        this.overlay.append(label, bubble);
+        o = { person: p, sprite, pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble };
+        this.others.set(p.id, o);
+      }
+      o.goal.set(p.x, 0, p.z);
+    }
+    for (const [id, o] of this.others) {
+      if (seen.has(id)) continue;
+      this.built.root.remove(o.sprite);
+      o.label.remove();
+      o.bubble.remove();
+      clearTimeout(o.bubbleTimer);
+      this.others.delete(id);
+    }
+  }
+
+  // Words over someone's head, until they say something else or 5 s pass.
+  showSaid(personId: string, text: string): void {
+    const o = this.others.get(personId);
+    if (!o) return;
+    o.bubble.textContent = text;
+    o.bubble.hidden = false;
+    clearTimeout(o.bubbleTimer);
+    o.bubbleTimer = setTimeout(() => (o.bubble.hidden = true), SAID_MS);
+  }
+
+  private moveOthers(dt: number): void {
+    const w = this.host.clientWidth;
+    const h = this.host.clientHeight;
+    const v = new THREE.Vector3();
+    let nearest: OtherView | null = null;
+    let nearestD = TALK;
+    for (const o of this.others.values()) {
+      const before = o.at.clone();
+      // ease towards where the server last put them
+      o.at.lerp(o.goal, Math.min(1, dt * 8));
+      const speed = before.distanceTo(o.at) / Math.max(dt, 1e-3);
+      const pose = speed > 0.4 ? "walk" : "stand";
+      if (pose !== o.pose) {
+        o.pose = pose;
+        const mat = o.sprite.material as THREE.SpriteMaterial;
+        mat.map = svgTexture(`${o.person.avatar}:${pose}:${o.person.id}`, figureSvg(o.person.avatar, pose, o.person.id));
+        mat.needsUpdate = true;
+      }
+      if (pose === "walk") {
+        const s0 = before.clone().project(this.camera).x;
+        const s1 = o.at.clone().project(this.camera).x;
+        const map = (o.sprite.material as THREE.SpriteMaterial).map!;
+        if (Math.abs(s1 - s0) > 1e-4) {
+          map.repeat.x = s1 < s0 ? -1 : 1;
+          map.offset.x = s1 < s0 ? 1 : 0;
+        }
+      }
+      o.sprite.position.copy(o.at);
+      const d = Math.hypot(o.at.x - this.x, o.at.z - this.z);
+      if (d < nearestD) {
+        nearestD = d;
+        nearest = o;
+      }
+      // name and words over their head
+      v.copy(o.at).setY(1.95).project(this.camera);
+      const visible = v.z < 1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1 && d < 40;
+      const x = ((v.x + 1) / 2) * w;
+      const y = ((1 - v.y) / 2) * h;
+      o.label.hidden = !visible;
+      if (visible) o.label.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
+      if (!o.bubble.hidden || o.bubble.dataset.shown === "1") {
+        o.bubble.style.visibility = visible ? "visible" : "hidden";
+        if (visible) o.bubble.style.transform = `translate(${x}px, ${y - 22}px) translate(-50%, -100%)`;
+      }
+    }
+    const id = nearest?.person.id ?? null;
+    if (id !== this.near) {
+      this.near = id;
+      this.opts.onNear?.(nearest?.person ?? null);
+    }
   }
 
   // ---- the kangaroo ------------------------------------------------------

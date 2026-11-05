@@ -97,7 +97,25 @@ export interface Presence {
   online: Person[];
 }
 
-export type ServerMessage = Snapshot | Committed | Presence;
+// Where everyone who has joined is standing, a few times a second. Never
+// stored.
+export interface Moves {
+  type: "moves";
+  sessionId: string;
+  people: (Person & { x: number; z: number; yaw: number })[];
+}
+
+// Something someone said, sent only to people standing near them. Never
+// stored.
+export interface Said {
+  type: "said";
+  sessionId: string;
+  by: string; // participant id
+  name: string;
+  text: string;
+}
+
+export type ServerMessage = Snapshot | Committed | Presence | Moves | Said;
 
 export type Op =
   | { operationId: string; type: "sound.add"; soundId: string; shotId: string; anchorId: string; gain: number }
@@ -123,7 +141,9 @@ export type RejectCode =
   | "not_starter"
   | "slow_down"
   | "no_session"
-  | "save_failed";
+  | "save_failed"
+  | "spot_full"
+  | "no_memories";
 
 export type OpResult =
   | { ok: true; duplicate: boolean; committed: Committed[] }
@@ -180,4 +200,6 @@ export const REJECT_MESSAGES: Record<RejectCode, string> = {
   slow_down: "That's a lot of changes at once. Try again in a moment.",
   no_session: "That session doesn't exist.",
   save_failed: "The memory couldn't be saved. Nothing was lost; try again.",
+  spot_full: "This spot already has as many sounds as it can hold. Try another one nearby.",
+  no_memories: "This place keeps its sounds as they are: there's nothing to record.",
 };

@@ -350,3 +350,34 @@ what's cut to the creek's width. No amount given: took 6 m (creek 6.4 m to
 12.4 m, trail to the bank about 61 m to 55 m), said so, easy to change
 (`CREEK_HALF` in `client/seaside.ts`). `pnpm check` 87/87; the UI test's
 crossing check (banks now z -75.2 and -62.8) passes, -82 to -58.
+
+## 14. A living place: kept sounds, people, talk (2026-11-05, ADR 007)
+
+**Prompts (Wen, Chinese, summarised):** asked how to design labelled sound
+spots with volume. Then stated the standard: playable together, keeps its
+data so the next day shows the day before, and others' changes are visible.
+Then: show where other people are; when two people meet, each can type, and
+the words show until new words replace them or for 5 s; drop the 3-minute
+recording.
+
+**What the review found against the standard:** the recording sealed and
+emptied the place; each time of day was its own room; others weren't in
+the world. All three changed (ADR 007).
+
+**Corrections:**
+
+- **A refused message counted towards the talk rate limit**, so speaking
+  right after "you're not anywhere yet" was refused as too fast. Found by
+  the spec; the limit now counts only words actually sent.
+- **A persistent world fills up under repeated tests.** The spec and both
+  seaside UI scripts now remove what they add; the UI script ran four
+  times in a row, 9/9 each.
+- **"Background forest" on the beach:** the label named the mode's
+  background; a living place now says "Background sounds".
+
+**Results:** `pnpm check` 93/93 (twice in a row on one database);
+`node e2e/meet-and-talk.mjs` 11/11; `node e2e/world-two-browsers.mjs` 9/9;
+`node e2e/two-browsers.mjs` 29/29 (retired photo scenes unchanged).
+
+**Not run:** Docker build, deploy, a real phone, two people on different
+networks.
