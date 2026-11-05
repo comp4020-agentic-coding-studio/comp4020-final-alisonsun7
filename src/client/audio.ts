@@ -5,6 +5,10 @@
 // full volume don't clip. Voices are scheduled a little ahead on the audio
 // clock and stopped by disconnecting their gain node, so nothing leaks when a
 // sound is removed or the page is hidden.
+//
+// In the walkable world a sound also has a position: it's heard through a
+// PannerNode from where it is, relative to where you stand and face, and
+// muffled when a wall is between you (one of you is indoors, the other not).
 import { SOUNDS, type SoundId } from "../shared/catalog.js";
 import { VOICES, playAmbience, type Ambience } from "./synth.js";
 
@@ -15,12 +19,15 @@ interface Source {
   // how far "away" the sound is: placements in another view of the same
   // place are heard through the wall, quieter and duller
   away: boolean;
+  // in the world: where it is (metres) and whether that's indoors
+  pos?: [number, number, number];
+  inside?: boolean;
 }
 
 interface Live {
   src: Source;
   node: GainNode;
-  panner: StereoPannerNode;
+  panner: StereoPannerNode | PannerNode;
   muffle: BiquadFilterNode;
   next: number;
   onPlay?: () => void;
@@ -37,8 +44,41 @@ export class AudioEngine {
   private ambienceNext = 0;
   private ambienceOn = true;
   private wanted = new Map<string, Source & { onPlay?: () => void }>();
+  private listenerInside: boolean | null = null;
+  private outdoorAmbience: Ambience;
 
-  constructor(private ambience: Ambience) {}
+  constructor(private ambience: Ambience) {
+    this.outdoorAmbience = ambience;
+  }
+
+  // Where you are in the world, each frame. Indoors the background is the
+  // room's; sounds on the other side of the glass are muffled.
+  listen(x: number, y: number, z: number, yaw: number, inside: boolean): void {
+    if (inside !== this.listenerInside) {
+      this.listenerInside = inside;
+      this.ambience = inside ? "room" : this.outdoorAmbience;
+      if (this.ctx) for (const live of this.voices.values()) this.shape(live);
+    }
+    const ctx = this.ctx;
+    if (!ctx || ctx.state !== "running") return;
+    const l = ctx.listener;
+    const fx = -Math.sin(yaw);
+    const fz = -Math.cos(yaw);
+    if (l.positionX) {
+      l.positionX.value = x;
+      l.positionY.value = y;
+      l.positionZ.value = z;
+      l.forwardX.value = fx;
+      l.forwardY.value = 0;
+      l.forwardZ.value = fz;
+      l.upX.value = 0;
+      l.upY.value = 1;
+      l.upZ.value = 0;
+    } else {
+      l.setPosition(x, y, z);
+      l.setOrientation(fx, 0, fz, 0, 1, 0);
+    }
+  }
 
   get enabled(): boolean {
     return this.ctx !== null && this.ctx.state === "running";
@@ -103,7 +143,14 @@ export class AudioEngine {
   private add(id: string, src: Source & { onPlay?: () => void }): void {
     const ctx = this.ctx!;
     const node = ctx.createGain();
-    const panner = ctx.createStereoPanner();
+    const panner = src.pos ? ctx.createPanner() : ctx.createStereoPanner();
+    if (panner instanceof PannerNode) {
+      panner.panningModel = "HRTF";
+      panner.distanceModel = "inverse";
+      panner.refDistance = 2.5;
+      panner.rolloffFactor = 1.3;
+      panner.maxDistance = 80;
+    }
     const muffle = ctx.createBiquadFilter();
     muffle.type = "lowpass";
     node.connect(muffle).connect(panner).connect(this.master!);
@@ -115,10 +162,22 @@ export class AudioEngine {
 
   private shape(live: Live): void {
     const ctx = this.ctx!;
-    const level = live.src.gain * (live.src.away ? 0.25 : 1);
+    const p = live.panner;
+    // in the world, "away" means through a wall
+    const away = live.src.pos && this.listenerInside !== null ? (live.src.inside ?? false) !== this.listenerInside : live.src.away;
+    const level = live.src.gain * (away ? (live.src.pos ? 0.45 : 0.25) : 1);
     live.node.gain.setTargetAtTime(level, ctx.currentTime, 0.08);
-    live.panner.pan.setTargetAtTime(live.src.away ? live.src.pan * 0.4 : live.src.pan, ctx.currentTime, 0.08);
-    live.muffle.frequency.setTargetAtTime(live.src.away ? 900 : 18000, ctx.currentTime, 0.1);
+    if (p instanceof PannerNode && live.src.pos) {
+      const [x, y, z] = live.src.pos;
+      if (p.positionX) {
+        p.positionX.value = x;
+        p.positionY.value = y;
+        p.positionZ.value = z;
+      } else p.setPosition(x, y, z);
+    } else if (p instanceof StereoPannerNode) {
+      p.pan.setTargetAtTime(away ? live.src.pan * 0.4 : live.src.pan, ctx.currentTime, 0.08);
+    }
+    live.muffle.frequency.setTargetAtTime(away ? 900 : 18000, ctx.currentTime, 0.1);
   }
 
   private drop(id: string): void {

@@ -4,30 +4,35 @@
 
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) defines the product. `docs/decisions/003-live-places-and-memories.md`
-records where this build follows it and where it departs. Read both before
+and `004-walkable-drawn-world.md` record where this build follows it and
+where it departs. Read both before
 changing behaviour. Explain progress to Wen in Chinese; the UI, code, commits
 and repo docs are English. README.md, PROCESS.md, reflections and the research
 note are Wen's to write: offer outlines and checks, never draft them.
 
 ## What it is
 
-Sound of a City — ANU Edition. Real places on campus, shown as Wen's own
-photos with drawn cat and dog figures standing in them. People add everyday
+Sound of a City — ANU Edition. One walkable, drawn place on campus (the
+Chifley bridge into Marie Reay's ground floor), seen in first person, with
+drawn cat and dog figures in it. People add everyday
 sounds at fixed spots in a scene; everyone in the same place hears them. A
 3-minute memory, timed by the server, is saved with everyone's names, can be
 replayed, and appears in a public archive.
 
-Places: Marie Reay ground floor (six photo views, everyday), the Chifley
-bridge (one photo, three modes), and LAB ANU (a labelled placeholder until Wen
-supplies photos).
+The world (`campus`, three.js, three modes) is the only place listed. The
+older photo scenes (Marie Reay, Chifley bridge, LAB placeholder) are
+`retired`: unlisted, but their pages and memories still work.
 
 ## Product invariants
 
-- **Scenes are evidence, not invention.** Every shot is one of Wen's photos;
-  every anchor's x/y was read off that photo. Moving between shots only
-  changes which photo is shown: never imply a floor plan, distance, or a room
-  the photos don't show. A mode that isn't a real photo of that time of day
-  says so on the page (`Mode.note`). A placeholder says so on the stage.
+- **Drawn from Wen's photos, not surveyed (ADR 004).** The world's layout
+  follows Wen's sketch; what's in it follows the photos. Keep what Wen
+  stated (the door on your right facing the library; the tea point faces the
+  bins; sink left of the microwaves). Don't add rooms or things no photo or
+  sketch shows; draw unknowns closed (the hall). The page always says sizes
+  and distances are estimates, and shows the real photo of each zone. In the
+  retired photo scenes, anchors were read off the photo and a graded mode
+  says so (`Mode.note`).
 - **Published images are processed derivatives only.** `scripts/build-scenes.mjs`
   blurs every person (and screens showing people), strips metadata, and
   writes `public/scenes/`. The originals are gitignored and must never be
@@ -52,7 +57,8 @@ supplies photos).
   keeps every sound, and can be retried. Offline, the page says changes
   aren't being saved and sends nothing.
 - **Sound starts only after "Enable sound".** All sounds are synthesised in
-  the browser (no samples, no recordings). Hidden tabs suspend audio.
+  the browser (no samples, no recordings). Hidden tabs suspend audio. In the
+  world, each sound is positioned at its spot and heard from the camera.
 - **Persistence.** `/data/sound-of-a-city.db` on the Fly volume. The old
   SoundGarden `garden.db` is left alone. Never delete or reseed on start;
   `recover()` resumes or seals clocks that were running.
@@ -61,10 +67,13 @@ supplies photos).
 
 ## Engineering constraints
 
-Plain `node:http`, `node:sqlite`, SSE, TypeScript compiled with `tsc`; one
-runtime dependency (`marked`, for `/readme/`). Validate every op on the
-server (ids, enums, anchors via `checkPlace`, gain 0..1, limits 12 per place
-and 4 per person, 40 ops per 10 s). Escape nicknames in HTML and in embedded
+Plain `node:http`, `node:sqlite`, SSE, TypeScript compiled with `tsc`; two
+runtime dependencies: `marked` (for `/readme/`) and `three` (the world,
+served from `node_modules` at `/vendor/three.module.min.js` via an import
+map). Validate every op on the
+server (ids, enums, anchors via `checkPlace`, gain 0..1, limits per place
+from `maxSoundsIn` (12, or 24 in the world) and 4 per person, 40 ops per
+10 s). Escape nicknames in HTML and in embedded
 JSON; set them with `textContent` in the client.
 
 Every file the browser loads must be in `STATIC` in `src/server.ts`;
@@ -80,7 +89,9 @@ without Wen's go-ahead.
   `spec/lifecycle.test.ts` builds and starts its own copy (3-second clock,
   temp DB, test hooks) for sealing, failed saves and restarts.
 - `pnpm build && pnpm e2e` drives two Chrome sessions through the UI.
-- `node e2e/look.mjs <dir>` saves screenshots for a person to look at.
+- `node e2e/look.mjs <dir>` saves screenshots for a person to look at;
+  `node e2e/look-world.mjs <dir>` does every mode and zone of the world.
+- `node e2e/world-two-browsers.mjs` drives the world in two Chrome sessions.
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get
   green. A new check should be seen to fail without its fix.
 

@@ -79,6 +79,11 @@ export interface Anchor {
   // above the floor
   stand: { x: number; y: number; depth?: number; pose?: Pose };
   sounds: SoundId[];
+  // In the walkable world only: where the spot is, in metres (x east, y up,
+  // z south), and where a figure making its sound stands. x/y above are then
+  // the spot's place on the map, so stored placements still fit 0..1.
+  at?: { x: number; y: number; z: number };
+  foot?: { x: number; z: number; y?: number; facing?: number };
 }
 
 export interface ShotLink {
@@ -103,6 +108,11 @@ export interface Shot {
   horizon: number;
   anchors: Anchor[];
   links: ShotLink[];
+  // In the walkable world, a shot is a zone you can walk to: where "Go to"
+  // puts you, which way you face (radians, 0 = north), and whether it's
+  // indoors (sound through the walls is muffled).
+  spawn?: { x: number; z: number; yaw: number };
+  inside?: boolean;
 }
 
 export interface Mode {
@@ -121,13 +131,162 @@ export interface Scene {
   evidence: "photo" | "placeholder";
   modes: Mode[];
   shots: Shot[];
+  // "photo": shots are Wen's photos. "world": one drawn, walkable place
+  // (ADR 004); its shots are zones and its anchors have positions in metres.
+  view?: "photo" | "world";
+  // how many sounds the place holds at once (default MAX_SOUNDS)
+  maxSounds?: number;
+  // old photo scenes stay so their memories still replay, but aren't listed
+  retired?: boolean;
 }
 
 export const FIGURE_SCALE = 1.13;
 
+// ---- The walkable world (ADR 004) -----------------------------------------
+//
+// One drawn place you walk through: the Chifley bridge, Marie Reay's door,
+// and its ground floor. The layout follows Wen's sketch of the floor (door
+// bottom left, corridor up the left side, two tables, three lifts facing the
+// tables, bins at the end of the lift wall, the tea point facing the bins,
+// the stair top right, a hall) and the bridge photo (Marie Reay's door on
+// your right as you face the library). Sizes are estimates, not a survey,
+// and the page says so.
+
+// The map's extent in metres, so a spot's map position fits 0..1.
+export const WORLD_BOUNDS = { minX: -26, maxX: 38, minZ: -2, maxZ: 44 };
+
+function spot(
+  id: string,
+  label: string,
+  at: { x: number; y: number; z: number },
+  foot: { x: number; z: number; y?: number; facing?: number; pose?: Pose },
+  sounds: SoundId[],
+): Anchor {
+  const b = WORLD_BOUNDS;
+  const fx = (v: number): number => Math.round(((v - b.minX) / (b.maxX - b.minX)) * 1000) / 1000;
+  const fz = (v: number): number => Math.round(((v - b.minZ) / (b.maxZ - b.minZ)) * 1000) / 1000;
+  return {
+    id,
+    label,
+    x: fx(at.x),
+    y: fz(at.z),
+    stand: { x: fx(foot.x), y: fz(foot.z), pose: foot.pose },
+    sounds,
+    at,
+    foot: { x: foot.x, z: foot.z, y: foot.y, facing: foot.facing },
+  };
+}
+
+const WORLD: Scene = {
+  id: "campus",
+  title: "Chifley Bridge & Marie Reay",
+  kind: "outdoor",
+  summary: "Walk from the Chifley bridge through Marie Reay's door: lifts, an orange stair, tiered seats and a tea point.",
+  evidence: "photo",
+  view: "world",
+  maxSounds: 24,
+  modes: [
+    { id: "morning", label: "Early Morning", note: "", ambience: "birds" },
+    { id: "weekday", label: "Busy Weekday", note: "", ambience: "crowd" },
+    { id: "rainy-dusk", label: "Rainy Dusk", note: "", ambience: "rain" },
+  ],
+  shots: [
+    {
+      id: "bridge",
+      title: "Chifley bridge",
+      image: null,
+      thumb: "/scenes/chifley-bridge-thumb.webp",
+      aspect: 4 / 3,
+      evidence: "Drawn from IMG_8114: the bridge, its railings and lamp post, the library doors ahead, Marie Reay's door on the right",
+      horizon: 0.5,
+      inside: false,
+      spawn: { x: 9, z: 37, yaw: Math.PI / 2 - 0.12 },
+      anchors: [
+        spot("library-doors", "Library doors", { x: -21.4, y: 1.4, z: 34 }, { x: -19.6, z: 34.6 }, ["door-slide", "footsteps", "quiet-talk"]),
+        spot("bridge-deck", "Bridge", { x: -12, y: 1.1, z: 34 }, { x: -12, z: 33.2, pose: "walk" }, ["footsteps", "bicycle", "puddle-steps", "quiet-talk"]),
+        spot("paving", "Paving", { x: 2, y: 0.7, z: 38 }, { x: 2.6, z: 38.8 }, ["footsteps", "bicycle", "puddle-steps", "rain"]),
+        spot("lamp-post", "Lamp post", { x: -1, y: 2.6, z: 31.6 }, { x: -0.2, z: 32.6 }, ["wind", "birdsong", "rain"]),
+        spot("marie-door", "Marie Reay door", { x: 4.5, y: 1.6, z: 30.7 }, { x: 6, z: 31.6 }, ["door-slide", "footsteps"]),
+      ],
+      links: [],
+    },
+    {
+      id: "entry",
+      title: "Entrance corridor",
+      image: null,
+      thumb: "/scenes/marie-entry-thumb.webp",
+      aspect: 4 / 3,
+      evidence: "Drawn from IMG_8098: the striped mat inside the door, glass on the left, timber on the right, tables beyond",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 4.5, z: 28.6, yaw: 0 },
+      anchors: [
+        spot("doormat", "Entrance mat", { x: 4.5, y: 0.5, z: 27.4 }, { x: 5.4, z: 26.6 }, ["footsteps", "door-slide"]),
+        spot("corridor", "Corridor", { x: 2.4, y: 1.2, z: 23.6 }, { x: 3, z: 23, pose: "walk" }, ["footsteps", "quiet-talk"]),
+      ],
+      links: [],
+    },
+    {
+      id: "lobby",
+      title: "Lifts and tables",
+      image: null,
+      thumb: "/scenes/marie-lift-wall-thumb.webp",
+      aspect: 4 / 3,
+      evidence: "Drawn from IMG_8100 and IMG_8113: three lifts in a timber wall, the high tables and stools, the recycling bins",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 5, z: 19.5, yaw: -0.75 },
+      anchors: [
+        spot("high-table", "High table", { x: 5.8, y: 1.25, z: 10 }, { x: 5.8, z: 11.1, facing: 0 }, ["typing", "page-turn", "cup-down", "quiet-talk"]),
+        spot("long-table", "Long table", { x: 5.8, y: 1.25, z: 14.2 }, { x: 5.2, z: 15.3, facing: 0 }, ["typing", "page-turn", "cup-down", "quiet-talk"]),
+        spot("lifts", "Lifts", { x: 14.3, y: 1.6, z: 10.5 }, { x: 12.9, z: 10.6, facing: -Math.PI / 2 }, ["lift-ding", "footsteps", "quiet-talk"]),
+        spot("bins", "Recycling bins", { x: 14.4, y: 1.0, z: 16.8 }, { x: 13.2, z: 17.4, pose: "lean" }, ["bin-drop", "footsteps"]),
+        spot("lobby-floor", "Lobby floor", { x: 10.5, y: 0.4, z: 18.6 }, { x: 10.8, z: 19.2, pose: "walk" }, ["footsteps", "quiet-talk"]),
+        spot("hall-doors", "Hall doors", { x: 23.6, y: 1.5, z: 17.2 }, { x: 22.4, z: 17.6 }, ["door-slide", "footsteps", "quiet-talk"]),
+      ],
+      links: [],
+    },
+    {
+      id: "tea-point",
+      title: "Tea point",
+      image: null,
+      thumb: "/scenes/marie-tea-point-thumb.webp",
+      aspect: 4 / 3,
+      evidence: "Drawn from IMG_8101: the dark cabinet with four microwaves, the sink and tap to their left. Wen: it faces the bins.",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 15.6, z: 17.4, yaw: Math.PI },
+      anchors: [
+        spot("microwaves", "Microwaves", { x: 13.6, y: 1.5, z: 21.3 }, { x: 13.6, z: 20.3, facing: Math.PI, pose: "back" }, ["microwave-hum", "microwave-beep"]),
+        spot("sink", "Sink", { x: 17.1, y: 1.05, z: 21.3 }, { x: 17.1, z: 20.3, facing: Math.PI, pose: "back" }, ["running-water"]),
+      ],
+      links: [],
+    },
+    {
+      id: "stairs",
+      title: "Orange stair and tiered seats",
+      image: null,
+      thumb: "/scenes/marie-stairs-thumb.webp",
+      aspect: 4 / 3,
+      evidence: "Drawn from IMG_8104 and IMG_8106: the orange stair with timber handrails, the tiered seats with green and yellow cushions beside it",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 25.5, z: 14.6, yaw: 0.05 },
+      anchors: [
+        spot("orange-stair", "Orange stair", { x: 23.5, y: 1.0, z: 10.4 }, { x: 23.2, z: 11.2, pose: "walk" }, ["footsteps", "quiet-talk"]),
+        spot("tiered-seats", "Tiered seats", { x: 29.5, y: 1.4, z: 7.6 }, { x: 29.5, z: 7.7, y: 0.9, pose: "sit" }, ["quiet-talk", "typing", "page-turn"]),
+        spot("seat-foot", "Under the seats", { x: 31.5, y: 0.6, z: 11.2 }, { x: 31.5, z: 11.8 }, ["footsteps", "quiet-talk"]),
+      ],
+      links: [],
+    },
+  ],
+};
+
 export const SCENES: Scene[] = [
+  WORLD,
   {
     id: "marie-reay-ground",
+    retired: true,
     title: "Marie Reay — Ground Floor",
     kind: "indoor",
     summary: "Three lifts in a timber wall, an orange stair, tiered seats and a tea point.",
@@ -240,6 +399,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: "chifley-path",
+    retired: true,
     title: "Chifley Bridge",
     kind: "outdoor",
     summary: "The bridge from Kambri to the J.B. Chifley Library doors.",
@@ -271,6 +431,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: "lab-cafe",
+    retired: true,
     title: "LAB ANU",
     kind: "indoor",
     summary: "The café in Kambri's Di Riddell Student Centre. Reference photos pending.",
@@ -301,6 +462,10 @@ export const SESSION_MS = 180_000;
 // into noise; one person at most PER_PERSON of them.
 export const MAX_SOUNDS = 12;
 export const PER_PERSON = 4;
+
+export function maxSoundsIn(sceneId: string): number {
+  return findScene(sceneId)?.maxSounds ?? MAX_SOUNDS;
+}
 
 export function findScene(id: string): Scene | undefined {
   return SCENES.find((s) => s.id === id);
@@ -342,8 +507,10 @@ export function soundsIn(scene: Scene): SoundId[] {
 // The nth sound at one anchor sits a little beside the others, so several
 // people's sounds at the lifts don't hide each other.
 export function spotFor(anchor: Anchor, index: number): { x: number; y: number; pan: number } {
-  const dx = [0, 0.045, -0.045, 0.09, -0.09, 0.02][index % 6];
-  const dy = Math.floor(index / 6) * 0.035;
+  // on the world map a fraction is ~64 m, so spread much less
+  const k = anchor.at ? 0.2 : 1;
+  const dx = [0, 0.045, -0.045, 0.09, -0.09, 0.02][index % 6] * k;
+  const dy = Math.floor(index / 6) * 0.035 * k;
   const x = Math.min(0.98, Math.max(0.02, anchor.x + dx));
   const y = Math.min(0.98, Math.max(0.02, anchor.y + dy));
   return { x, y, pan: panFor(x) };

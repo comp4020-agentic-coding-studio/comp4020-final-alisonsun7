@@ -15,7 +15,7 @@ import { randomBytes } from "node:crypto";
 import { db, inTransaction, nowIso } from "./db.js";
 import { log } from "./log.js";
 import {
-  MAX_SOUNDS,
+  maxSoundsIn,
   PER_PERSON,
   SESSION_MS,
   SOUNDS,
@@ -394,7 +394,7 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       if (!isGain(op.gain)) return reject("bad_gain");
       return inTransaction(() => {
         const live = livePlacements(session.id);
-        if (live.length >= MAX_SOUNDS) return reject("place_full");
+        if (live.length >= maxSoundsIn(session.scene_id)) return reject("place_full");
         if (live.filter((p) => p.ownerId === me.id).length >= PER_PERSON) return reject("your_limit");
         const index = live.filter((p) => p.shotId === op.shotId && p.anchorId === op.anchorId).length;
         const spot = spotFor(place.anchor, index);

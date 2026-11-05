@@ -7,6 +7,7 @@ import { applyCommitted, formatClock, remainingMs, type LiveState } from "../sha
 import { AudioEngine } from "./audio.js";
 import { newOperationId, sendOp, type OpBody } from "./ops.js";
 import { drawShot, drawWeather, pulse } from "./stage.js";
+import { WorldView } from "./world.js";
 
 interface Boot {
   sceneId: string;
@@ -39,6 +40,21 @@ const pending = new Set<string>();
 
 const audio = new AudioEngine(mode.ambience);
 const me = (): Person | null => live.snapshot.you;
+
+// The walkable world (ADR 004) instead of a photo: the zone you're standing
+// in plays the part of the shot you're looking at.
+const world =
+  scene.view === "world"
+    ? new WorldView(stage, scene, mode.id, {
+        startZone: shotId,
+        onZone: (zone) => {
+          shotId = zone;
+          history.replaceState(null, "", `/scene/${scene.id}?mode=${mode.id}&shot=${zone}`);
+          render();
+        },
+        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside),
+      })
+    : null;
 
 // ---- server messages ----------------------------------------------------
 
@@ -165,15 +181,19 @@ async function setVolume(placementId: string, gain: number): Promise<void> {
   volumeWaiting.delete(placementId);
 }
 
-async function place(anchorId: string): Promise<void> {
-  if (!choosing) return;
-  const check = checkPlace(scene.id, shotId, anchorId, choosing);
+async function place(anchorId: string, inShot = shotId): Promise<void> {
+  if (!choosing) {
+    say("Choose a sound below first, then a spot for it.");
+    document.querySelector<HTMLElement>(".chip")?.focus();
+    return;
+  }
+  const check = checkPlace(scene.id, inShot, anchorId, choosing);
   if (!check.ok) {
     say(REJECT_MESSAGES[check.code]);
     return;
   }
   const soundId = choosing;
-  const ok = await send({ type: "sound.add", soundId, shotId, anchorId, gain: 0.7 }, "Saving your sound…");
+  const ok = await send({ type: "sound.add", soundId, shotId: inShot, anchorId, gain: 0.7 }, "Saving your sound…");
   if (ok) {
     choosing = null;
     say(`Sound saved. Everyone here can hear it.${audio.enabled ? "" : " Enable sound to hear it too."}`);
@@ -382,6 +402,15 @@ function renderTray(): void {
   const available = soundsIn(scene);
   const shot = findShot(scene, shotId)!;
   const hereOk = new Set(shot.anchors.flatMap((a) => a.sounds));
+  // in the world, say which part of it a sound belongs in
+  const whereElse = (id: SoundId): string =>
+    world
+      ? `at ${scene.shots
+          .filter((s) => s.anchors.some((a) => a.sounds.includes(id)))
+          .map((s) => s.title.toLowerCase())
+          .slice(0, 2)
+          .join(" or ")}`
+      : "in another view";
   const usedCats = CATEGORIES.filter((c) => available.some((id) => SOUNDS[id].category === c));
   if (!usedCats.includes(category)) category = usedCats[0];
 
@@ -422,14 +451,15 @@ function renderTray(): void {
     b.setAttribute("aria-pressed", String(choosing === id));
     b.innerHTML = `<span class="chip-name"></span><span class="chip-where"></span>`;
     b.querySelector(".chip-name")!.textContent = SOUNDS[id].label;
-    b.querySelector(".chip-where")!.textContent = hereOk.has(id) ? "" : "in another view";
+    b.querySelector(".chip-where")!.textContent = hereOk.has(id) ? "" : whereElse(id);
     b.onclick = () => {
       choosing = choosing === id ? null : id;
       selected = null;
       render();
       if (choosing) {
-        const first = stage.querySelector<HTMLButtonElement>(".anchor.accepts");
-        say(first ? "Choose a place for this sound." : "That sound belongs in another part of this scene. Try another view below.");
+        const first = stage.querySelector<HTMLButtonElement>(".anchor.accepts:not([hidden])");
+        if (world) say(first ? "Click a glowing spot to put it there." : `Walk to a glowing spot ${whereElse(choosing)}, or use Go to.`);
+        else say(first ? "Choose a place for this sound." : "That sound belongs in another part of this scene. Try another view below.");
         first?.focus();
       }
     };
@@ -446,8 +476,13 @@ function renderHint(): void {
 }
 
 function syncAudio(): void {
-  const sources = new Map<string, { soundId: SoundId; gain: number; pan: number; away: boolean; onPlay?: () => void }>();
+  const sources = new Map<string, { soundId: SoundId; gain: number; pan: number; away: boolean; pos?: [number, number, number]; inside?: boolean; onPlay?: () => void }>();
   for (const p of live.snapshot.placements) {
+    const at = world?.where(p);
+    if (world && at) {
+      sources.set(p.id, { soundId: p.soundId, gain: p.gain, pan: p.pan, away: false, pos: at.pos, inside: at.inside, onPlay: () => world.pulse(p.id) });
+      continue;
+    }
     const away = p.shotId !== shotId;
     sources.set(p.id, { soundId: p.soundId, gain: p.gain, pan: p.pan, away, onPlay: away ? undefined : () => pulse(stage, p.id) });
   }
@@ -474,7 +509,20 @@ function render(): void {
 
 function draw(): void {
   const shot = findShot(scene, shotId)!;
-  drawShot(stage, scene, shot, live.snapshot.placements, {
+  if (world) {
+    world.draw(live.snapshot.placements, {
+      interactive: boot.joined,
+      mineId: me()?.id ?? null,
+      choosing,
+      selected,
+      onAnchor: (zone, id) => void place(id, zone),
+      onMarker: (id) => {
+        selected = selected === id ? null : id;
+        render();
+        document.querySelector<HTMLElement>(`.sound-row[data-placement="${id}"] .sound-name`)?.focus();
+      },
+    });
+  } else drawShot(stage, scene, shot, live.snapshot.placements, {
     interactive: boot.joined,
     mineId: me()?.id ?? null,
     choosing,
@@ -487,11 +535,18 @@ function draw(): void {
       document.querySelector<HTMLElement>(`.sound-row[data-placement="${id}"] .sound-name`)?.focus();
     },
   });
-  if (!stage.querySelector(".weather, .passers") || stage.dataset.mode !== mode.id) {
+  if (!world && (!stage.querySelector(".weather, .passers") || stage.dataset.mode !== mode.id)) {
     drawWeather(stage, mode.id, shot);
     stage.dataset.mode = mode.id;
   }
   $("evidence-text").textContent = shot.evidence;
+  const postcard = document.getElementById("postcard") as HTMLAnchorElement | null;
+  if (postcard && shot.thumb && postcard.dataset.shot !== shot.id) {
+    postcard.dataset.shot = shot.id;
+    postcard.href = shot.thumb.replace("-thumb", "");
+    postcard.querySelector("img")!.src = shot.thumb;
+    postcard.querySelector(".postcard-title")!.textContent = shot.title;
+  }
   for (const a of document.querySelectorAll<HTMLAnchorElement>("#shots a")) {
     if (a.dataset.shot === shotId) a.setAttribute("aria-current", "true");
     else a.removeAttribute("aria-current");
@@ -509,6 +564,10 @@ function draw(): void {
 
 function goShot(id: string): void {
   if (!findShot(scene, id)) return;
+  if (world) {
+    world.goTo(id);
+    return;
+  }
   shotId = id;
   history.replaceState(null, "", `/scene/${scene.id}?mode=${mode.id}&shot=${id}`);
   stage.querySelector(".weather")?.remove();

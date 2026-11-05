@@ -49,11 +49,15 @@ describe("what the pages load", () => {
   // has saved one, and its script must load all the same.
   async function crawl(): Promise<Map<string, Response>> {
     const seen = new Map<string, Response>();
+    // bare imports ("three") resolve through the page's import map, as in a
+    // browser; one the map doesn't name is left as is and fails to load
+    const imports: Record<string, string> = {};
     const templates = readFileSync("src/html.ts", "utf8");
     const queue: string[] = [...templates.matchAll(/(?:src|href)="(\/client\/[^"]+\.(?:js|css))"/g)].map((m) => m[1]);
     for (const path of PAGES) {
       const doc = new JSDOM(await (await get(path)).text()).window.document;
       for (const s of doc.querySelectorAll<HTMLScriptElement>("script[src]")) queue.push(s.getAttribute("src")!);
+      for (const m of doc.querySelectorAll<HTMLScriptElement>('script[type="importmap"]')) Object.assign(imports, JSON.parse(m.textContent ?? "{}").imports);
       for (const l of doc.querySelectorAll<HTMLLinkElement>("link[rel=stylesheet]")) {
         const href = l.getAttribute("href")!;
         if (href.startsWith("/")) queue.push(href);
@@ -67,7 +71,8 @@ describe("what the pages load", () => {
       if (!path.endsWith(".js") || res.status !== 200) continue;
       const source = await res.clone().text();
       for (const m of source.matchAll(/(?:^|\n)\s*(?:import|export)\s[^;]*?from\s+["']([^"']+)["']/g)) {
-        queue.push(new URL(m[1], new URL(path, "http://x")).pathname);
+        const bare = !/^[./]/.test(m[1]);
+        queue.push(bare && imports[m[1]] ? imports[m[1]] : new URL(m[1], new URL(path, "http://x")).pathname);
       }
     }
     return seen;
@@ -77,7 +82,9 @@ describe("what the pages load", () => {
     const loaded = await crawl();
     const paths = [...loaded.keys()];
     // the two page scripts and the modules beneath them
-    expect(paths).toEqual(expect.arrayContaining(["/client/scene.js", "/client/memory.js", "/client/audio.js", "/shared/catalog.js", "/client/style.css"]));
+    expect(paths).toEqual(
+      expect.arrayContaining(["/client/scene.js", "/client/memory.js", "/client/audio.js", "/client/world.js", "/vendor/three.module.min.js", "/shared/catalog.js", "/client/style.css"]),
+    );
     for (const [path, res] of loaded) {
       expect(res.status, `${path} didn't load`).toBe(200);
       expect(res.headers.get("content-type"), path).toMatch(path.endsWith(".css") ? /text\/css/ : /javascript/);

@@ -26,6 +26,7 @@ const page = (title: string, bodyClass: string, body: string): string => `<!doct
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" />
 <link rel="stylesheet" href="/client/style.css" />
+<script type="importmap">{"imports":{"three":"/vendor/three.module.min.js"}}</script>
 </head>
 <body class="${bodyClass}">
 ${body}
@@ -97,9 +98,7 @@ function placeLine(p: PlaceSummary | undefined): string {
 
 export function renderExplore(user: User | null, places: PlaceSummary[], error: string | null): string {
   const find = (sceneId: string, mode: string): PlaceSummary | undefined => places.find((p) => p.sceneId === sceneId && p.mode === mode);
-  const order = ["chifley-path", "lab-cafe", "marie-reay-ground"];
-  const cards = order
-    .map((id) => SCENES.find((s) => s.id === id)!)
+  const cards = SCENES.filter((s) => !s.retired)
     .map((scene) => {
       const thumb = scene.shots[0].thumb;
       const modes = scene.modes
@@ -117,7 +116,13 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
         <div class="place-body">
           <h2>${scene.title}</h2>
           <p>${scene.summary}</p>
-          ${scene.evidence === "placeholder" ? `<p class="badge">Placeholder: no photo of the real café yet</p>` : `<p class="badge real">From real photos</p>`}
+          ${
+            scene.evidence === "placeholder"
+              ? `<p class="badge">Placeholder: no photo of the real café yet</p>`
+              : scene.view === "world"
+                ? `<p class="badge real">Walkable · drawn from real photos</p>`
+                : `<p class="badge real">From real photos</p>`
+          }
           <ul class="modes">${modes}</ul>
         </div>
       </article>`;
@@ -155,6 +160,23 @@ const shotStrip = (scene: Scene, current: string): string =>
         )
         .join("")}</nav>`;
 
+// The walkable world's stage: a 3D view you move through, "Go to" buttons
+// for each part of it, and the real photo of where you are.
+function worldStage(scene: Scene, shot: Scene["shots"][number]): string {
+  return `<div class="stage-frame world-frame" id="stage-frame">
+      <div class="stage world-stage" id="stage">
+        ${shot.thumb ? `<a class="postcard" id="postcard" data-shot="${shot.id}" href="${shot.thumb.replace("-thumb", "")}" target="_blank" rel="noopener"><img src="${shot.thumb}" alt="" /><span class="postcard-kicker">Real photo</span><span class="postcard-title">${escapeHtml(shot.title)}</span></a>` : ""}
+        <p class="world-help" aria-hidden="true"><span class="keys">Drag to look · W A S D or arrows to walk · click the floor to walk there</span><span class="touch">Drag to look · stick to walk · tap the floor to walk there</span></p>
+      </div>
+    </div>
+    <p class="hint" id="hint" aria-live="polite"></p>
+    <nav class="goto" id="shots" aria-label="Go to"><span class="goto-label">Go to</span>${scene.shots
+      .map((s) => `<a href="?shot=${s.id}" data-shot="${s.id}"${s.id === shot.id ? ' aria-current="true"' : ""}>${escapeHtml(s.title)}<span class="count" data-count="${s.id}"></span></a>`)
+      .join("")}</nav>
+    <p class="evidence" id="evidence"><span class="label">Drawn from</span> <span id="evidence-text">${escapeHtml(shot.evidence)}</span></p>
+    <p class="mode-note">A drawn place, not a survey: the layout follows Wen's sketch and photos, and sizes and distances are estimates.</p>`;
+}
+
 export function renderScene(scene: Scene, mode: Mode, shotId: string, snap: Snapshot, user: User | null): string {
   const shot = scene.shots.find((s) => s.id === shotId)!;
   const modeNav =
@@ -170,7 +192,7 @@ export function renderScene(scene: Scene, mode: Mode, shotId: string, snap: Snap
 
   return page(
     `${scene.title} · ${mode.label} — Sound of a City`,
-    `scene-page scene-${scene.id} mode-${mode.id}`,
+    `scene-page scene-${scene.id} mode-${mode.id}${scene.view === "world" ? " is-world" : ""}`,
     `<header class="bar">
   <a class="back" href="/explore"><span aria-hidden="true">←</span> Places</a>
   <div class="where"><h1>${scene.title}</h1><span class="mode-name">${mode.label}</span></div>
@@ -180,7 +202,7 @@ export function renderScene(scene: Scene, mode: Mode, shotId: string, snap: Snap
 ${modeNav}
 <main class="scene-main">
   <section class="stage-area" aria-label="The place">
-    <div class="stage-frame" id="stage-frame">
+    ${scene.view === "world" ? worldStage(scene, shot) : `<div class="stage-frame" id="stage-frame">
       <div class="stage" id="stage" style="--aspect:${shot.aspect}">
         ${shot.image ? `<img class="photo" src="${shot.image}" alt="${escapeHtml(shot.evidence)}" />` : ""}
       </div>
@@ -189,7 +211,7 @@ ${modeNav}
     ${shotStrip(scene, shot.id)}
     <p class="evidence" id="evidence"><span class="label">Photo</span> <span id="evidence-text">${escapeHtml(shot.evidence)}</span></p>
     ${mode.note ? `<p class="mode-note">${escapeHtml(mode.note)}</p>` : ""}
-    ${scene.evidence === "placeholder" ? `<p class="placeholder-note">Visual placeholder. This is not LAB ANU's real interior: no licensed photo yet.</p>` : ""}
+    ${scene.evidence === "placeholder" ? `<p class="placeholder-note">Visual placeholder. This is not LAB ANU's real interior: no licensed photo yet.</p>` : ""}`}
     <p class="fine not-affiliated">${NOT_AFFILIATED} <a href="/about">Sources</a></p>
   </section>
   <aside class="panel" aria-label="Sounds here">
@@ -251,14 +273,18 @@ export function renderMemory(m: MemorySnapshot): string {
     · <span id="local-time" data-iso="${m.startedAt}"></span> · ${Math.round(m.durationMs / 1000)} seconds</p>
   <div class="memory-layout">
     <section class="stage-area" aria-label="Replay">
-      <div class="stage-frame"><div class="stage" id="stage"></div></div>
+      ${
+        scene?.view === "world"
+          ? `<div class="stage-frame world-frame"><div class="stage world-stage" id="stage"><p class="world-help" aria-hidden="true"><span class="keys">Walk through the memory: drag to look, W A S D or arrows to walk</span><span class="touch">Walk through the memory: drag to look, stick to walk</span></p></div></div>`
+          : `<div class="stage-frame"><div class="stage" id="stage"></div></div>`
+      }
       <div class="replay-bar">
         <button type="button" class="btn primary" id="play" disabled>Play the memory</button>
         <button type="button" class="btn ghost" id="final" disabled>Hear how it ended</button>
         <input type="range" id="scrub" min="0" max="${m.durationMs}" value="${m.durationMs}" step="100" aria-label="Position in the memory" disabled />
         <span class="clock" id="clock"></span>
       </div>
-      <nav class="shots" id="shots" aria-label="Views of this place"></nav>
+      <nav class="${scene?.view === "world" ? "goto" : "shots"}" id="shots" aria-label="${scene?.view === "world" ? "Go to" : "Views of this place"}"></nav>
       <p class="fine">${changes > 0 ? `Replay rebuilds the place from the ${changes} changes people made while it was recording, at the moments they made them.` : "Nobody changed anything while it was recording, so replay plays the sounds as they were."}</p>
     </section>
     <aside class="panel">

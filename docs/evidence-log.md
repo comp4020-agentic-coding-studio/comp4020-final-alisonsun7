@@ -202,3 +202,50 @@ in brackets); everything else is what the agent did and what happened.
   its test red.
 - **Not run:** Docker build (not installed), deploy (needs Wen's approval to
   merge into `main`), listening to the sounds, a screen reader, a real phone.
+
+## 9. The walkable world (2026-11-05, ADR 004)
+
+**Prompt (Wen, Chinese, summarised):** don't scatter the photos; make one big
+scene you enter in first person and walk through, not necessarily real
+photos. Early morning still looks like night (the photos were taken at
+night). First give the design. Wen then sent a sketch of the ground floor
+(`IMG_9883`, not committed) and agreed to drop "scenes are evidence", to add
+three.js, and to share one place per hour.
+
+**Grounding:** Wen's sketch for the layout; the six Marie Reay photos and the
+bridge photo for what's in it; the existing session and op contract (ADR 003)
+left as it was.
+
+**Corrections during the build:**
+
+- **Tea point mirrored.** First build put the sink right of the microwaves;
+  IMG_8101 has it on the left as you face it. Swapped, with the evidence text
+  saying so.
+- **Steel drawn black.** Metallic lift doors with no environment to reflect
+  rendered as black slabs; now a light grey with a little sheen.
+- **Dusk windows glowing white.** Window glow was too strong after tone
+  mapping; reduced.
+- **A crash on load.** Constructing the view reported a zone change before
+  the page had its view (`Cannot access 'world' before initialization`), and
+  the tea point's spawn lay in the lobby's zone. Zone changes are reported
+  only once the view is ready; the tea point zone now starts at z 15.5.
+- **Walking in slow motion on slow devices.** The e2e "W walks into the
+  lobby" check failed in headless Chrome at 14.5 fps: frame time was clamped
+  to 50 ms. Long frames are now split into short steps (so no wall is
+  skipped) and walking keeps real speed. The check passes with the fix.
+- **A wrong test route.** The first keyboard check walked back from the tea
+  point into the lift wall, which (correctly) blocks it; the route now walks
+  up the corridor.
+- **Sun direction tried and reverted.** An east sun (closer to early November
+  sunrise) left the paving in shadow anyway and lost the light raking through
+  the north glass, which is what reads as morning inside. Back to north-east;
+  the shade is lit a little more by the sky instead.
+
+**Results:** `pnpm check` 66/66 (adds `spec/world.test.ts`; `pages.test.ts`
+now follows bare imports through the import map, and failed on `three`
+before it did); `node e2e/two-browsers.mjs` 29/29 (photo scenes unchanged);
+`node e2e/world-two-browsers.mjs` 5/5 (marker on the other screen about
+300 ms after the click). Screenshots of every mode and zone looked at.
+
+**Not run:** Docker build, deploy, listening to the positioned sound, a real
+phone (only Playwright's phone emulation), a screen reader.

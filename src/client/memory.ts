@@ -6,6 +6,7 @@ import type { MemorySnapshot, Placement } from "../shared/protocol.js";
 import { formatClock, placementsAt } from "../shared/state.js";
 import { AudioEngine } from "./audio.js";
 import { drawShot, drawWeather, pulse } from "./stage.js";
+import { WorldView } from "./world.js";
 
 const memory = JSON.parse(document.getElementById("boot")!.textContent!) as MemorySnapshot;
 const scene = findScene(memory.sceneId)!;
@@ -26,6 +27,15 @@ for (const p of memory.placements) counts.set(p.shotId, (counts.get(p.shotId) ??
 let shotId = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? scene.shots[0].id;
 
 const audio = new AudioEngine(mode.ambience);
+// A memory of the walkable world is walked through, like the place was.
+const world =
+  scene.view === "world"
+    ? new WorldView(stage, scene, mode.id, {
+        startZone: shotId,
+        onZone: (z) => (shotId = z),
+        onListen: (l) => audio.listen(l.x, l.y, l.z, l.yaw, l.inside),
+      })
+    : null;
 let t = memory.durationMs;
 let playing = false;
 let startedAt = 0;
@@ -37,8 +47,9 @@ function current(): Placement[] {
 
 function draw(): void {
   const shot = findShot(scene, shotId)!;
-  drawShot(stage, scene, shot, current(), { interactive: false, mineId: null, choosing: null, selected: null, onLink: (to) => !to.includes("/") && go(to) });
-  if (stage.dataset.shot !== shotId) {
+  if (world) world.draw(current(), { interactive: false, mineId: null, choosing: null, selected: null });
+  else drawShot(stage, scene, shot, current(), { interactive: false, mineId: null, choosing: null, selected: null, onLink: (to) => !to.includes("/") && go(to) });
+  if (!world && stage.dataset.shot !== shotId) {
     drawWeather(stage, mode.id, shot);
     stage.dataset.shot = shotId;
   }
@@ -50,9 +61,9 @@ function draw(): void {
       const n = current().filter((p) => p.shotId === s.id).length;
       const a = document.createElement("a");
       a.href = "#";
-      a.className = "shot-thumb";
+      a.className = world ? "" : "shot-thumb";
       if (s.id === shotId) a.setAttribute("aria-current", "true");
-      a.innerHTML = s.thumb ? `<img src="${s.thumb}" alt="" />` : "";
+      a.innerHTML = s.thumb && !world ? `<img src="${s.thumb}" alt="" />` : "";
       const label = document.createElement("span");
       label.textContent = s.title;
       const count = document.createElement("span");
@@ -67,8 +78,16 @@ function draw(): void {
     }
   }
   if (audio.enabled) {
-    const sources = new Map<string, { soundId: Placement["soundId"]; gain: number; pan: number; away: boolean; onPlay?: () => void }>();
+    const sources = new Map<
+      string,
+      { soundId: Placement["soundId"]; gain: number; pan: number; away: boolean; pos?: [number, number, number]; inside?: boolean; onPlay?: () => void }
+    >();
     for (const p of current()) {
+      const at = world?.where(p);
+      if (world && at) {
+        sources.set(p.id, { soundId: p.soundId, gain: p.gain, pan: p.pan, away: false, pos: at.pos, inside: at.inside, onPlay: () => world.pulse(p.id) });
+        continue;
+      }
       const away = p.shotId !== shotId;
       sources.set(p.id, { soundId: p.soundId, gain: p.gain, pan: p.pan, away, onPlay: away ? undefined : () => pulse(stage, p.id) });
     }
@@ -77,6 +96,10 @@ function draw(): void {
 }
 
 function go(id: string): void {
+  if (world) {
+    world.goTo(id);
+    return;
+  }
   shotId = id;
   draw();
 }

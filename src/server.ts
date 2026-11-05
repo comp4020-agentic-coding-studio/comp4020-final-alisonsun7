@@ -12,7 +12,7 @@ import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users
 // rendering nothing (it happened once with NoteGrid), which is why
 // spec/pages.test.ts fetches each one.
 const js = (path: string): { file: URL; type: string } => ({ file: new URL(`.${path}`, import.meta.url), type: "text/javascript" });
-export const STATIC: Record<string, { file: URL; type: string }> = {
+export const STATIC: Record<string, { file: URL; type: string; cache?: string }> = {
   "/client/scene.js": js("/client/scene.js"),
   "/client/memory.js": js("/client/memory.js"),
   "/client/audio.js": js("/client/audio.js"),
@@ -20,6 +20,12 @@ export const STATIC: Record<string, { file: URL; type: string }> = {
   "/client/figures.js": js("/client/figures.js"),
   "/client/stage.js": js("/client/stage.js"),
   "/client/ops.js": js("/client/ops.js"),
+  "/client/world.js": js("/client/world.js"),
+  "/client/world-build.js": js("/client/world-build.js"),
+  "/client/sky.js": js("/client/sky.js"),
+  // three.js, the one library the browser loads (ADR 004), straight from the
+  // installed package; pages map the bare "three" import to it
+  "/vendor/three.module.min.js": { file: new URL("../node_modules/three/build/three.module.min.js", import.meta.url), type: "text/javascript", cache: "public, max-age=604800" },
   "/shared/catalog.js": js("/shared/catalog.js"),
   "/shared/protocol.js": js("/shared/protocol.js"),
   "/shared/state.js": js("/shared/state.js"),
@@ -76,7 +82,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
   const asset = STATIC[pathname];
   if (method === "GET" && asset) {
-    res.writeHead(200, { "content-type": `${asset.type}; charset=utf-8`, "cache-control": "no-cache" });
+    res.writeHead(200, { "content-type": `${asset.type}; charset=utf-8`, "cache-control": asset.cache ?? "no-cache" });
     res.end(await readFile(asset.file));
     return;
   }
