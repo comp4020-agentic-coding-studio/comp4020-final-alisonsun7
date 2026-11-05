@@ -9,6 +9,8 @@ export interface Regular {
   x: number;
   z: number;
   pose: Pose;
+  // a pose they turn to now and then, like a barista to the machine
+  alt?: Pose;
 }
 
 export interface PlaceKit {

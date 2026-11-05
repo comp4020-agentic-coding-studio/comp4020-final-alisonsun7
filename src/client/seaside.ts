@@ -910,8 +910,9 @@ function zoneAt(x: number, z: number): string {
 // The café's regulars, in the room's own metres: a barista behind the
 // counter, a queue, people at the tables and the window bar, two chatting by
 // the door, and the guitarist outside on the bench by the door.
-const CAFE_PEOPLE: Record<string, [number, number, Pose][]> = {
-  barista: [[8.2, 1.5, "stand"]],
+// A fourth entry is a pose they turn to now and then.
+const CAFE_PEOPLE: Record<string, [number, number, Pose, Pose?][]> = {
+  barista: [[8.2, 1.5, "stand", "back"]],
   queue: [
     [6.6, 3.7, "back"],
     [7.5, 4.5, "back"],
@@ -936,9 +937,10 @@ const CAFE_PEOPLE: Record<string, [number, number, Pose][]> = {
 };
 // the fish and chip kiosk on the boardwalk
 const KIOSK = { x0: 4.5, x1: 11, z0: -10, z1: -4.4 };
-// someone frying behind its counter, and someone waiting at it
+// someone behind its counter, turning now and then to the fryers, and
+// someone waiting at it
 const CHIPPY: Regular[] = [
-  { x: KIOSK.x0 + 2.4, z: KIOSK.z1 - 1.1, pose: "stand" },
+  { x: KIOSK.x0 + 2.4, z: KIOSK.z1 - 1.1, pose: "stand", alt: "back" },
   { x: KIOSK.x1 - 1.6, z: KIOSK.z1 + 0.8, pose: "back" },
 ];
 // a bench just west of the café's door, between two lamps
@@ -947,7 +949,7 @@ const BUSKER_BENCH = -20.5;
 const BUSKER: Regular = { x: BUSKER_BENCH, z: 1.86, pose: "guitar" };
 
 const regularsOf = (...groups: [string, number[]][]): Regular[] =>
-  groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose]) => ({ x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose })));
+  groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose, alt]) => ({ x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose, alt })));
 
 export const seasideKit: PlaceKit = {
   build,

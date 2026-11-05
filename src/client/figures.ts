@@ -5,7 +5,9 @@
 //
 // Every figure belongs to one placed sound and does what that sound is.
 // How a figure stands.
-export type Pose = "stand" | "walk" | "talk" | "sit" | "back" | "umbrella" | "lean" | "guitar" | "strum";
+// "walk" is the side view; "walk-front" and "walk-back" walk towards and
+// away from the viewer.
+export type Pose = "stand" | "walk" | "walk-front" | "walk-back" | "talk" | "sit" | "back" | "umbrella" | "lean" | "guitar" | "strum";
 import type { Avatar } from "../shared/protocol.js";
 
 // Muted colours that sit in a photo rather than on top of it.
@@ -61,10 +63,26 @@ function head(avatar: Avatar, l: Look, back: boolean): string {
 
 const SHADOW = `<ellipse class="shadow" cx="30" cy="197" rx="15" ry="2.6" fill="#000" opacity=".28"/>`;
 
+// How far the body sinks below standing height when the thighs are turned
+// by `deg`: the hip is 90 units above the sole, so a straight leg at an
+// angle leaves the foot off the ground unless the body comes down.
+const sink = (deg: number): number => 90 * (1 - Math.cos((deg * Math.PI) / 180));
+const STRIDE = 20; // degrees each thigh swings either side of straight down
+
 // Front or back view, standing. `arms` changes for talking, leaning and
-// holding an umbrella.
-function standing(avatar: Avatar, l: Look, pose: Pose): string {
-  const back = pose === "back";
+// holding an umbrella. With `phase` (0 to 1, a step of each leg) the figure
+// walks towards or away from the viewer: the leg swinging through lifts,
+// the arms swing against the legs, and the weight shifts and dips.
+function standing(avatar: Avatar, l: Look, pose: Pose, phase?: number): string {
+  const back = pose === "back" || pose === "walk-back";
+  const q = phase === undefined ? null : phase * Math.PI * 2;
+  const lift = (a: number): number => 9 * Math.max(0, Math.cos(a));
+  const legL = q === null ? "" : ` transform="translate(0 ${-lift(q).toFixed(2)})"`;
+  const legR = q === null ? "" : ` transform="translate(0 ${-lift(q + Math.PI).toFixed(2)})"`;
+  // seen from in front, a forward hand drops a little, a back one rises
+  const armL = q === null ? "" : ` transform="translate(0 ${(-3 * Math.sin(q)).toFixed(2)})"`;
+  const armR = q === null ? "" : ` transform="translate(0 ${(3 * Math.sin(q)).toFixed(2)})"`;
+  const body = q === null ? "" : ` transform="translate(${(1.2 * Math.sin(q)).toFixed(2)} ${sink(STRIDE * Math.abs(Math.sin(q))).toFixed(2)})"`;
   const talk = pose === "talk";
   const umbrella = pose === "umbrella";
   const lean = pose === "lean";
@@ -85,21 +103,35 @@ function standing(avatar: Avatar, l: Look, pose: Pose): string {
   const brolly = umbrella
     ? `<g class="umbrella"><path d="M44 78 L44 6" stroke="#222" stroke-width="1.4"/><path d="M6 14 C14 -6 74 -6 82 14 C76 10 70 10 64 14 C58 10 50 10 44 14 C38 10 30 10 24 14 C18 10 12 10 6 14 Z" fill="#26313d"/></g>`
     : "";
-  return `<g class="body${lean ? " leaning" : ""}">
+  return `<g class="body${lean ? " leaning" : ""}"${body}>
     ${tail}
     <rect x="25.5" y="35" width="9" height="9" fill="${l.fur}"/>
-    <g class="leg leg-l"><path d="M18.5 104 L29.2 104 L28.6 186 L20 186 Z" fill="${l.bottom}"/><path d="M18.6 186 L29 186 L29.4 194 L16.4 194 C16.4 190 17 187.5 18.6 186 Z" fill="#1f1f22"/></g>
-    <g class="leg leg-r"><path d="M30.8 104 L41.5 104 L40 186 L31.4 186 Z" fill="${l.bottom}"/><path d="M31 186 L41.4 186 C43 187.5 43.6 190 43.6 194 L30.6 194 Z" fill="#1f1f22"/></g>
+    <g class="leg leg-l"${legL}><path d="M18.5 104 L29.2 104 L28.6 186 L20 186 Z" fill="${l.bottom}"/><path d="M18.6 186 L29 186 L29.4 194 L16.4 194 C16.4 190 17 187.5 18.6 186 Z" fill="#1f1f22"/></g>
+    <g class="leg leg-r"${legR}><path d="M30.8 104 L41.5 104 L40 186 L31.4 186 Z" fill="${l.bottom}"/><path d="M31 186 L41.4 186 C43 187.5 43.6 190 43.6 194 L30.6 194 Z" fill="#1f1f22"/></g>
     <path d="M17 44 C22 40 38 40 43 44 L45 70 L43 110 L17 110 L15 70 Z" fill="${l.top}"/>
     ${back ? `<path d="M22 44 C26 49 34 49 38 44" stroke="#000" stroke-opacity=".18" fill="none"/>` : `<path d="M26 42 L30 52 L34 42" stroke="#000" stroke-opacity=".22" fill="none"/>`}
-    ${leftArm}${rightArm}
+    <g${armL}>${leftArm}</g><g${armR}>${rightArm}</g>
     ${head(avatar, l, back)}
     ${brolly}
   </g>`;
 }
 
-// Side view, for walking: legs and arms swing (CSS), and the walker paces.
-function walking(avatar: Avatar, l: Look): string {
+// Side view, for walking, at a point in the stride (`phase`, 0 to 1: a step
+// of each leg). Each thigh turns at the hip and the shin at the knee, which
+// bends as the leg swings through and straightens to land; the arms swing
+// against the legs; the body dips so the standing foot stays on the ground.
+// The world swaps these frames as the walker covers ground.
+function walking(avatar: Avatar, l: Look, phase: number): string {
+  const q = phase * Math.PI * 2;
+  const leg = (a: number, fill: string, shoe: string, cls: string): string => {
+    // forward (to the right) is anticlockwise in SVG
+    const thigh = -STRIDE * Math.sin(a);
+    const knee = 30 * Math.max(0, Math.cos(a)) ** 1.5;
+    return `<g class="leg ${cls}" transform="rotate(${thigh.toFixed(2)} 30 104)"><path d="M25 104 L35 104 L34.4 146 L25.8 146 Z" fill="${fill}"/>
+      <g transform="rotate(${knee.toFixed(2)} 30 145)"><path d="M25.8 144 L34.2 144 L33 186 L25.4 186 Z" fill="${fill}"/><path d="M24.6 186 L33.6 186 L40 194 L24.6 194 Z" fill="${shoe}"/></g></g>`;
+  };
+  const arm = (a: number, fill: string, cls: string, hand: string): string =>
+    `<g class="arm ${cls}" transform="rotate(${(16 * Math.sin(a)).toFixed(2)} 31 47)"><path d="M28 46 L35 46 L34 104 L28 104 Z" fill="${fill}"/>${hand}</g>`;
   const ear =
     avatar === "cat"
       ? `<path d="M26 13 L29 1.5 L33 12 Z" fill="${l.fur}"/>`
@@ -108,14 +140,14 @@ function walking(avatar: Avatar, l: Look): string {
     avatar === "cat"
       ? `<path d="M22 104 C10 110 8 128 14 140" stroke="${l.fur}" stroke-width="3" fill="none" stroke-linecap="round"/>`
       : `<path d="M22 104 C16 106 14 112 15 118" stroke="${l.fur}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
-  return `<g class="body">
+  return `<g class="body" transform="translate(0 ${sink(STRIDE * Math.abs(Math.sin(q))).toFixed(2)})">
     ${tail}
-    <g class="leg leg-back"><path d="M25 104 L35 104 L33 186 L25 186 Z" fill="${shade(l.bottom, -0.15)}"/><path d="M24 186 L34 186 L40 194 L24 194 Z" fill="#1a1a1c"/></g>
-    <g class="arm arm-back"><path d="M28 46 L35 46 L33 104 L27 104 Z" fill="${shade(l.top, -0.18)}"/></g>
-    <g class="leg leg-front"><path d="M24 104 L35 104 L33 186 L25 186 Z" fill="${l.bottom}"/><path d="M24 186 L34 186 L41 194 L24 194 Z" fill="#1f1f22"/></g>
+    ${leg(q + Math.PI, shade(l.bottom, -0.15), "#1a1a1c", "leg-back")}
+    ${arm(q + Math.PI, shade(l.top, -0.18), "arm-back", "")}
+    ${leg(q, l.bottom, "#1f1f22", "leg-front")}
     <path d="M21 44 C25 40 37 40 39 44 L40 72 L38 110 L22 110 L20 72 Z" fill="${l.top}"/>
     <rect x="27" y="35" width="8" height="9" fill="${l.fur}"/>
-    <g class="arm arm-front"><path d="M28 46 L35 46 L34 104 L28 104 Z" fill="${l.top}"/><circle cx="31" cy="106" r="3.2" fill="${l.fur}"/></g>
+    ${arm(q, l.top, "arm-front", `<circle cx="31" cy="106" r="3.2" fill="${l.fur}"/>`)}
     <g class="head"><ellipse cx="31" cy="24" rx="9" ry="12" fill="${l.fur}"/>${ear}
       <ellipse cx="${avatar === "dog" ? 41 : 39.5}" cy="29" rx="${avatar === "dog" ? 6 : 4.5}" ry="${avatar === "dog" ? 4.6 : 3.6}" fill="${l.muzzle}"/>
       <circle cx="${avatar === "dog" ? 46.4 : 43.6}" cy="27.5" r="1.3" fill="#2a2524"/>
@@ -155,30 +187,31 @@ function guitarist(avatar: Avatar, l: Look, down: boolean): string {
     <path d="M44 66 C49 78 46 ${down ? 108 : 96} 40 ${down ? 114 : 102} L36 ${down ? 111 : 99} C41 ${down ? 102 : 92} 41 82 40 70 Z" fill="${l.top}"/>${hand}`;
 }
 
-export function figureSvg(avatar: Avatar, pose: Pose, seed: string): string {
+// `phase` (0 to 1) is how far through a stride a walking pose is drawn.
+export function figureSvg(avatar: Avatar, pose: Pose, seed: string, phase = 0): string {
   const l = lookFor(seed);
   const inner =
     pose === "walk"
-      ? walking(avatar, l)
-      : pose === "sit"
+      ? walking(avatar, l, phase)
+      : pose === "walk-front" || pose === "walk-back"
+        ? standing(avatar, l, pose, phase)
+        : pose === "sit"
         ? sitting(avatar, l)
         : pose === "guitar" || pose === "strum"
           ? guitarist(avatar, l, pose === "strum")
           : standing(avatar, l, pose);
-  // the umbrella reaches outside the body's box, so that pose is wider
-  const box = pose === "umbrella" ? "0 -6 88 206" : "0 0 60 200";
+  // the umbrella reaches outside the body's box, and so does a stride
+  const box = pose === "umbrella" ? "0 -6 88 206" : pose === "walk" ? "-10 0 80 200" : "0 0 60 200";
   return `<svg viewBox="${box}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${SHADOW}${inner}</svg>`;
 }
 
 export function figureAspect(pose: Pose): number {
-  return pose === "umbrella" ? 88 / 206 : 60 / 200;
+  return pose === "umbrella" ? 88 / 206 : pose === "walk" ? 80 / 200 : 60 / 200;
 }
 
 // Faint passers-by for an outdoor mode's crowd. They make no sound and
 // aren't anyone's: they only show how busy the hour is.
-export function passerSvg(seed: string, umbrella: boolean): string {
-  return figureSvg(hash(seed) % 2 ? "cat" : "dog", umbrella ? "umbrella" : "walk", seed);
-}
+export const passerAvatar = (seed: string): Avatar => (hash(seed) % 2 ? "cat" : "dog");
 
 // The kangaroo who comes to find you when you wander off the trail. Side
 // view, facing right, drawn like the other figures: flat shapes, no outline.

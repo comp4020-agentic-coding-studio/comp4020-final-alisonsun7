@@ -4,8 +4,8 @@
 // played by client/soundscape.ts, through the few things this lends it.
 import * as THREE from "three";
 import type { Scene } from "../shared/catalog.js";
-import type { Person } from "../shared/protocol.js";
-import { figureSvg, kangarooSvg, passerSvg } from "./figures.js";
+import type { Avatar, Person } from "../shared/protocol.js";
+import { figureAspect, figureSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import type { PlaceKit } from "./places.js";
@@ -40,6 +40,7 @@ export interface Other extends Person {
 interface OtherView {
   person: Person;
   sprite: THREE.Sprite;
+  gait: Gait;
   pose: "walk" | "stand";
   at: THREE.Vector3;
   goal: THREE.Vector3;
@@ -57,8 +58,38 @@ interface Passer {
   path: THREE.Vector3[];
   t: number;
   speed: number;
-  flipped: boolean;
+  // null for someone under an umbrella, who keeps one drawing
+  gait: Gait | null;
+  // seconds left standing at the end of the path before turning back
+  wait: number;
 }
+
+// Someone who stays put, and what they do there: breathe, and now and then
+// change pose (a guitarist's hand, a barista turning to the machine).
+interface RegularView {
+  sprite: THREE.Sprite;
+  height: number;
+  // their usual pose's texture and the one they change to, if any
+  keys: [string, string] | null;
+  // seconds for one round, the share of it spent in the second pose, and
+  // where in the round they start
+  period: number;
+  share: number;
+  offset: number;
+}
+
+// A walking figure: how far through a stride it is, and which drawing,
+// seen from here. The drawings are frames of a stride, swapped as the walker
+// covers ground, so the feet keep pace with the ground and don't slide.
+interface Gait {
+  avatar: Avatar;
+  seed: string;
+  phase: number;
+  facing: Facing;
+  left: boolean;
+}
+type Facing = "walk" | "walk-front" | "walk-back";
+const FRAMES = 8;
 
 const EYE = 1.62;
 const WALK = 3.2;
@@ -77,11 +108,45 @@ function svgTexture(key: string, svg: string, width = 180, height = 600): THREE.
   const img = new Image();
   const tex = new THREE.Texture(img);
   tex.colorSpace = THREE.SRGBColorSpace;
+  tex.userData.aspect = width / height;
   img.onload = () => (tex.needsUpdate = true);
   img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sized)}`;
   textureCache.set(key, tex);
   return tex;
 }
+
+// A texture is ready to show once its drawing has loaded; until then a
+// sprite keeps what it had, rather than flashing empty.
+function ready(t: THREE.Texture): boolean {
+  const img = t.image as HTMLImageElement | undefined;
+  return !!img && img.complete && img.naturalWidth > 0;
+}
+
+// A stride's side view is drawn wider than standing, so the sprite takes
+// each drawing's own width.
+function show(sprite: THREE.Sprite, tex: THREE.Texture): void {
+  const mat = sprite.material as THREE.SpriteMaterial;
+  if (mat.map === tex || !ready(tex)) return;
+  mat.map = tex;
+  mat.needsUpdate = true;
+  sprite.scale.x = sprite.scale.y * tex.userData.aspect;
+}
+
+function strideTexture(g: Gait, facing: Facing, frame: number): THREE.Texture {
+  return svgTexture(`${g.seed}:${facing}:${frame}`, figureSvg(g.avatar, facing, g.seed, frame / FRAMES), 600 * figureAspect(facing));
+}
+
+// All of one view's frames at once, so they've loaded by the time they're
+// needed.
+function loadStride(g: Gait, facing: Facing): void {
+  for (let f = 0; f < FRAMES; f++) strideTexture(g, facing, f);
+}
+
+const newGait = (avatar: Avatar, seed: string): Gait => {
+  const g: Gait = { avatar, seed, phase: Math.random(), facing: "walk", left: false };
+  loadStride(g, "walk");
+  return g;
+};
 
 // figureSvg's viewBox is 60 × 200 (umbrella: 88 × 206); sprites are 1.75 m
 function figureSprite(key: string, svg: string, umbrella: boolean, tint: number): THREE.Sprite {
@@ -115,7 +180,7 @@ export class WorldView {
   private hemi = new THREE.HemisphereLight();
   private overlay: HTMLDivElement;
   private passers: Passer[] = [];
-  private regulars: { sprite: THREE.Sprite; keys: [string, string] | null }[] = [];
+  private regulars: RegularView[] = [];
   private rain: THREE.LineSegments | null = null;
   private raycaster = new THREE.Raycaster();
   private light: Light;
@@ -381,13 +446,14 @@ export class WorldView {
       const path = paths[i % paths.length];
       // people indoors have put their umbrellas away
       const umbrella = this.mode === "rainy-dusk" && !this.kit.isInside(path[0].x, path[0].z);
-      const sprite = figureSprite(`passer-${this.mode}-${i}`, passerSvg(`passer-${this.mode}-${i}`, umbrella), umbrella, this.light.figureTint);
-      const mat = sprite.material as THREE.SpriteMaterial;
-      mat.map = mat.map!.clone();
-      mat.map.needsUpdate = true;
-      mat.opacity = 0.92;
+      const seed = `passer-${this.mode}-${i}`;
+      const avatar = passerAvatar(seed);
+      const sprite = figureSprite(`${seed}:${umbrella ? "umbrella" : "stand"}`, figureSvg(avatar, umbrella ? "umbrella" : "stand", seed), umbrella, this.light.figureTint);
+      (sprite.material as THREE.SpriteMaterial).opacity = 0.92;
       this.built.root.add(sprite);
-      this.passers.push({ sprite, path, t: (i * 0.37) % 1, speed: (this.mode === "weekday" ? 1.3 : 0.9) + (i % 3) * 0.15, flipped: false });
+      // each at their own pace, a little either side of 1.35 m/s
+      const speed = (this.mode === "weekday" ? 1.2 : 0.9) + (i % 3) * 0.12 + Math.random() * 0.1;
+      this.passers.push({ sprite, path, t: (i * 0.37) % 1, speed, gait: umbrella ? null : newGait(avatar, seed), wait: 0 });
     }
   }
 
@@ -404,24 +470,58 @@ export class WorldView {
       if (r.pose === "sit" || r.pose === "guitar") sprite.scale.multiplyScalar(0.8);
       sprite.position.set(r.x, 0, r.z);
       this.built.root.add(sprite);
-      // a guitarist's hand goes up and down
-      const strums = r.pose === "guitar";
-      if (strums) svgTexture(`${seed}:strum`, figureSvg(avatar, "strum", seed));
-      this.regulars.push({ sprite, keys: strums ? [`${seed}:guitar`, `${seed}:strum`] : null });
+      // a guitarist's hand goes up and down; talkers gesture and rest; some
+      // turn now and then to what they're doing
+      const second: Pose | undefined = r.pose === "guitar" ? "strum" : r.pose === "talk" ? "stand" : r.alt;
+      if (second) svgTexture(`${seed}:${second}`, figureSvg(avatar, second, seed));
+      const [period, share] = r.pose === "guitar" ? [0.52, 0.5] : r.pose === "talk" ? [2 + (i % 3) * 0.5, 0.45] : [7 + (i % 4) * 1.5, 0.35];
+      this.regulars.push({ sprite, height: sprite.scale.y, keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
     }
   }
 
-  private strum(now: number): void {
-    const down = Math.floor(now / 260) % 2 === 1;
-    for (const r of this.regulars) {
+  private idle(now: number): void {
+    const t = now / 1000;
+    for (const [i, r] of this.regulars.entries()) {
+      // a breath every three or four seconds
+      r.sprite.scale.y = r.height * (1 + 0.007 * Math.sin(t * (1.6 + (i % 3) * 0.2) + i * 1.3));
       if (!r.keys) continue;
-      const mat = r.sprite.material as THREE.SpriteMaterial;
-      const want = textureCache.get(r.keys[down ? 1 : 0])!;
-      if (mat.map !== want) {
-        mat.map = want;
-        mat.needsUpdate = true;
-      }
+      const second = (t / r.period + r.offset) % 1 > 1 - r.share;
+      show(r.sprite, textureCache.get(r.keys[second ? 1 : 0])!);
     }
+  }
+
+  // A walker moved from `from` to `to` in `dt` seconds: on through the
+  // stride by the ground covered, and the drawing for the way they're going
+  // as seen from here (side on, coming towards you, or going away).
+  private stride(sprite: THREE.Sprite, g: Gait, from: THREE.Vector3, to: THREE.Vector3, dt: number): void {
+    const dx = to.x - from.x;
+    const dz = to.z - from.z;
+    const moved = Math.hypot(dx, dz);
+    if (moved < 1e-5) return;
+    // a stride (a step of each leg) lengthens as people go faster
+    const speed = moved / Math.max(dt, 1e-3);
+    g.phase = (g.phase + moved / (1.2 + 0.25 * Math.min(speed, 6))) % 1;
+    const ex = this.x - to.x;
+    const ez = this.z - to.z;
+    const towards = (dx * ex + dz * ez) / (moved * Math.max(Math.hypot(ex, ez), 1e-3));
+    // a little stickiness, so someone walking at an angle doesn't flicker
+    // between views
+    const keep = g.facing === "walk" ? 0.75 : 0.6;
+    const facing: Facing = towards > keep ? "walk-front" : towards < -keep ? "walk-back" : g.facing !== "walk" && Math.abs(towards) > 0.6 ? g.facing : "walk";
+    if (facing !== "walk" && !textureCache.has(`${g.seed}:${facing}:0`)) loadStride(g, facing);
+    const tex = strideTexture(g, facing, Math.floor(g.phase * FRAMES) % FRAMES);
+    if (!ready(tex)) return;
+    g.facing = facing;
+    if (facing === "walk") {
+      // the side view faces right: mirror it when they go left on screen
+      const s0 = from.clone().project(this.camera).x;
+      const s1 = to.clone().project(this.camera).x;
+      if (Math.abs(s1 - s0) > 1e-5) g.left = s1 < s0;
+    }
+    const flip = facing === "walk" && g.left;
+    tex.repeat.x = flip ? -1 : 1;
+    tex.offset.x = flip ? 1 : 0;
+    show(sprite, tex);
   }
 
   private buildRain(): void {
@@ -673,7 +773,7 @@ export class WorldView {
 
     if (!reduced()) {
       this.movePassers(dt);
-      this.strum(now);
+      this.idle(now);
     }
     this.moveOthers(dt);
     if (this.rain && !reduced()) {
@@ -724,7 +824,7 @@ export class WorldView {
         bubble.className = "said-bubble";
         bubble.hidden = true;
         this.overlay.append(label, bubble);
-        o = { person: p, sprite, pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble };
+        o = { person: p, sprite, gait: newGait(p.avatar, p.id), pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble };
         this.others.set(p.id, o);
       }
       o.goal.set(p.x, 0, p.z);
@@ -760,22 +860,9 @@ export class WorldView {
       // ease towards where the server last put them
       o.at.lerp(o.goal, Math.min(1, dt * 8));
       const speed = before.distanceTo(o.at) / Math.max(dt, 1e-3);
-      const pose = speed > 0.4 ? "walk" : "stand";
-      if (pose !== o.pose) {
-        o.pose = pose;
-        const mat = o.sprite.material as THREE.SpriteMaterial;
-        mat.map = svgTexture(`${o.person.avatar}:${pose}:${o.person.id}`, figureSvg(o.person.avatar, pose, o.person.id));
-        mat.needsUpdate = true;
-      }
-      if (pose === "walk") {
-        const s0 = before.clone().project(this.camera).x;
-        const s1 = o.at.clone().project(this.camera).x;
-        const map = (o.sprite.material as THREE.SpriteMaterial).map!;
-        if (Math.abs(s1 - s0) > 1e-4) {
-          map.repeat.x = s1 < s0 ? -1 : 1;
-          map.offset.x = s1 < s0 ? 1 : 0;
-        }
-      }
+      o.pose = speed > 0.4 ? "walk" : "stand";
+      if (o.pose === "walk" && !reduced()) this.stride(o.sprite, o.gait, before, o.at, dt);
+      else show(o.sprite, svgTexture(`${o.person.avatar}:stand:${o.person.id}`, figureSvg(o.person.avatar, "stand", o.person.id)));
       o.sprite.position.copy(o.at);
       const d = Math.hypot(o.at.x - this.x, o.at.z - this.z);
       if (d < nearestD) {
@@ -1047,8 +1134,19 @@ export class WorldView {
       const segs = p.path.length - 1;
       let total = 0;
       for (let i = 0; i < segs; i++) total += p.path[i].distanceTo(p.path[i + 1]);
+      // standing a moment at either end before turning back
+      if (p.wait > 0) {
+        p.wait -= dt;
+        if (p.gait) show(p.sprite, svgTexture(`${p.gait.seed}:stand`, figureSvg(p.gait.avatar, "stand", p.gait.seed)));
+        continue;
+      }
       // back and forth along the path
+      const was = p.t;
       p.t = (p.t + (p.speed * dt) / total) % 2;
+      if ((was < 1 && p.t >= 1) || p.t < was) {
+        p.t = was < 1 ? 1 : 0;
+        p.wait = 1.5 + Math.random() * 2.5;
+      }
       const u = p.t < 1 ? p.t : 2 - p.t;
       let d = u * total;
       let i = 0;
@@ -1058,16 +1156,7 @@ export class WorldView {
       v.copy(a).lerp(b, Math.min(1, d / a.distanceTo(b)));
       const prev = p.sprite.position.clone();
       p.sprite.position.copy(v);
-      // the walking figure faces right: flip it when it's going left on screen
-      const s0 = prev.project(this.camera).x;
-      const s1 = v.clone().project(this.camera).x;
-      const left = s1 < s0;
-      if (Math.abs(s1 - s0) > 1e-5 && left !== p.flipped) {
-        p.flipped = left;
-        const map = (p.sprite.material as THREE.SpriteMaterial).map!;
-        map.repeat.x = left ? -1 : 1;
-        map.offset.x = left ? 1 : 0;
-      }
+      if (p.gait) this.stride(p.sprite, p.gait, prev, v, dt);
     }
   }
 }

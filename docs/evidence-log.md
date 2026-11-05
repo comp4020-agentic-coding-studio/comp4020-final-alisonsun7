@@ -711,3 +711,40 @@ database, `e2e/world-two-browsers.mjs` 9/9, `meet-and-talk.mjs` 16/16,
 close at the counter, from the side, from the sand), with no page
 errors; the viewpoints were set in a throwaway copy of the build, then
 rebuilt. Not checked: a phone, and how it reads to people walking past.
+
+## 29. People walk instead of sliding (2026-11-06)
+
+**Prompt (Wen, translated):** all the NPCs slide when they walk; make them
+more real.
+
+**Cause:** the walking figure was one side-view drawing whose legs were
+meant to swing by CSS, but as a sprite texture CSS never runs, so a still
+picture slid along the path, always side on.
+
+**Done:** `figures.ts` draws a stride in eight frames: each thigh turns at
+the hip and each shin at the knee (bending as the leg swings through), the
+arms swing against the legs, and the body dips so the standing foot stays
+on the ground; the side view is drawn wider (80 × 200) so a long step isn't
+cut off. Walking towards or away from you has its own frames: the leg
+swinging through lifts, the arms swing, the weight shifts. `world.ts`
+picks the frame by ground covered (a stride lengthens with speed), so the
+feet keep pace with the ground, and the view by direction from where you
+look (with some stickiness so it doesn't flicker); a frame is shown only
+once its drawing has loaded. Passers-by stand 1.5 to 4 s at each end of
+their path before turning back, each at their own pace. Everyone who stays
+put breathes; talkers gesture and rest; the barista and the fish and chip
+cook turn now and then to their work (`Regular.alt`). Other people in the
+place use the same stride. Reduced motion still stills the passers-by and
+regulars.
+
+**Failure and correction:** the first side frames bent the knee 42°, so
+the swinging shin kicked out almost flat, and the stride ran off the
+60-wide drawing. The knee now bends at most 30° and the drawing is wider.
+
+**Checks:** typecheck; `pnpm check` 39/39; on a fresh build and scratch
+database, `e2e/world-two-browsers.mjs` 9/9, `meet-and-talk.mjs` 16/16,
+`leave-a-sound.mjs` 17/17. Looked at every frame drawn flat (side, front
+and back, cat and dog) and at 40 screenshots 120 ms apart from the sand
+facing the boardwalk: a passer-by's legs change between frames, facing
+the way they go. Not checked: a phone, and memory with many people
+walking (each walker loads up to 24 frames).
