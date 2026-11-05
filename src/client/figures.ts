@@ -5,7 +5,7 @@
 //
 // Every figure belongs to one placed sound and does what that sound is.
 // How a figure stands.
-export type Pose = "stand" | "walk" | "talk" | "sit" | "back" | "umbrella" | "lean";
+export type Pose = "stand" | "walk" | "talk" | "sit" | "back" | "umbrella" | "lean" | "guitar" | "strum";
 import type { Avatar } from "../shared/protocol.js";
 
 // Muted colours that sit in a photo rather than on top of it.
@@ -137,9 +137,34 @@ function sitting(avatar: Avatar, l: Look): string {
   </g>`;
 }
 
+// Sitting with a guitar across the lap, the strumming hand up ("guitar") or
+// down ("strum"): two drawings the world swaps between.
+function guitarist(avatar: Avatar, l: Look, down: boolean): string {
+  const wood = "#b5763c";
+  const dark = "#5a3518";
+  const hand = down ? `<circle cx="37" cy="${117}" r="3.4" fill="${l.fur}"/>` : `<circle cx="38" cy="${104}" r="3.4" fill="${l.fur}"/>`;
+  return `${sitting(avatar, l).replace(/<g class="arm arm-r">.*?<\/g>/, "")}
+    <g class="guitar">
+      <path d="M27 104 L4 80 L7 77 L30 101 Z" fill="${dark}"/>
+      <rect x="1" y="73" width="7" height="6" rx="1.5" transform="rotate(-45 4.5 76)" fill="${dark}"/>
+      <ellipse cx="30" cy="103" rx="8" ry="7" fill="${wood}"/>
+      <ellipse cx="37" cy="112" rx="11" ry="9.5" fill="${wood}"/>
+      <circle cx="33" cy="107" r="3" fill="${dark}"/>
+    </g>
+    <path d="M16 66 C10 74 8 82 9 86 L13 86 C13 80 16 74 20 70 Z" fill="${l.top}"/><circle cx="10" cy="84" r="3.2" fill="${l.fur}"/>
+    <path d="M44 66 C49 78 46 ${down ? 108 : 96} 40 ${down ? 114 : 102} L36 ${down ? 111 : 99} C41 ${down ? 102 : 92} 41 82 40 70 Z" fill="${l.top}"/>${hand}`;
+}
+
 export function figureSvg(avatar: Avatar, pose: Pose, seed: string): string {
   const l = lookFor(seed);
-  const inner = pose === "walk" ? walking(avatar, l) : pose === "sit" ? sitting(avatar, l) : standing(avatar, l, pose);
+  const inner =
+    pose === "walk"
+      ? walking(avatar, l)
+      : pose === "sit"
+        ? sitting(avatar, l)
+        : pose === "guitar" || pose === "strum"
+          ? guitarist(avatar, l, pose === "strum")
+          : standing(avatar, l, pose);
   // the umbrella reaches outside the body's box, so that pose is wider
   const box = pose === "umbrella" ? "0 -6 88 206" : "0 0 60 200";
   return `<svg viewBox="${box}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${SHADOW}${inner}</svg>`;

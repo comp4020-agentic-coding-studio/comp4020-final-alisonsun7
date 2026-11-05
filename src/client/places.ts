@@ -2,7 +2,14 @@
 // to tell which zone you're in and whether you're indoors, where passers-by
 // walk, where rain falls, and (optionally) a photographed sky per mode.
 import type { Light } from "./sky.js";
+import type { Pose } from "./figures.js";
 import type { Built } from "./world-build.js";
+
+export interface Regular {
+  x: number;
+  z: number;
+  pose: Pose;
+}
 
 export interface PlaceKit {
   // walls, floors and anything drawn from shapes: ready at once
@@ -13,6 +20,9 @@ export interface PlaceKit {
   isInside(x: number, z: number): boolean;
   // each a walk there and back, in metres on the floor
   passerPaths: [number, number][][];
+  // people who stay put (sitting, queuing, chatting), per mode; like
+  // passers-by they have no names and make no sound
+  regulars?: Partial<Record<string, Regular[]>>;
   // a random point that rain falls on (nowhere with a roof)
   rainAt(random: () => number): [number, number];
   // what the sun's shadows are centred on, and (per mode) where the sun is

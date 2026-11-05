@@ -543,3 +543,25 @@ again with them back. `pnpm e2e` 40/40 across the three scripts, on a
 fresh database, including `leave-a-sound` (16 checks; Bo sees Ada's sound
 within 1.5 s, his page plays it). Screenshots in `docs/screenshots/11-*`.
 Not run: listening by ear, a real phone, a screen reader, Docker.
+
+## 22. A busier café, and a guitarist by its door (2026-11-05)
+
+**Prompt (Wen, translated, while trying the place):** more people in the
+café, livelier; on the bench at the café's door, someone playing guitar.
+
+**Done:** a place can now have regulars, people who stay put, per time of
+day (`PlaceKit.regulars`). The café has a barista, a queue, people at the
+tables and the window bar, two chatting by the door: 14 on a sunny day, 10
+at rainy dusk, 4 early. A new bench by the café's door with a guitarist,
+whose strumming hand goes up and down (two drawings swapped; he keeps
+still with reduced motion). Like passers-by they have no names, so they can't be
+taken for real people, and they make no sound: the guitar sound is still
+one people leave themselves.
+
+**Corrections:** seated figures were as tall as standing ones, so they
+looked like people standing by the chairs; sitting is now drawn at 0.8 of
+the height. The guitarist, put at the seat's front edge, looked from the
+side like someone standing at the bench's end; he's now in the middle of
+the seat. Both seen in screenshots (`docs/screenshots/12-*`).
+
+**Results:** `pnpm check` 41/41, `pnpm e2e` 40/40.

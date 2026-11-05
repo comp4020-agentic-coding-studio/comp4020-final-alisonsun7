@@ -12,7 +12,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { buildCafeRoom, furnishCafe, surface } from "./cafe.js";
-import type { PlaceKit } from "./places.js";
+import type { Pose } from "./figures.js";
+import type { PlaceKit, Regular } from "./places.js";
 import { Builder, canvasTexture, std, type Built, type Rect } from "./world-build.js";
 
 // where the café's room sits (its own x 0..14, z 0..10, glass front at z 10)
@@ -355,7 +356,8 @@ function build(): Built {
       lamps.push(l);
     }
   }
-  for (const x of [-6.5, 13, 36]) bench(b, wood, metal, x, 1.9);
+  // the one by the café's door is where the guitarist sits
+  for (const x of [BUSKER_BENCH, -6.5, 13, 36]) bench(b, wood, metal, x, 1.9);
 
   // ---- buildings along the boardwalk ----
 
@@ -599,11 +601,52 @@ function zoneAt(x: number, z: number): string {
   return "beach";
 }
 
+// The café's regulars, in the room's own metres: a barista behind the
+// counter, a queue, people at the tables and the window bar, two chatting by
+// the door. Busiest on a sunny day, a few early, sheltering from the rain at
+// dusk.
+const CAFE_PEOPLE: Record<string, [number, number, Pose][]> = {
+  barista: [[8.2, 1.5, "stand"]],
+  queue: [
+    [6.6, 3.7, "back"],
+    [7.5, 4.5, "back"],
+  ],
+  tables: [
+    [2.2, 4.85, "sit"],
+    [2.2, 6.35, "sit"],
+    [4.6, 7.35, "sit"],
+    [9.4, 5.85, "sit"],
+    [9.4, 7.35, "sit"],
+    [11.8, 4.85, "sit"],
+  ],
+  bar: [
+    [2.2, 8.7, "lean"],
+    [10.5, 8.7, "lean"],
+    [11.8, 8.7, "back"],
+  ],
+  door: [
+    [5.2, 8.1, "talk"],
+    [4.5, 8.4, "talk"],
+  ],
+};
+// a bench just west of the café's door, between two lamps
+const BUSKER_BENCH = -20.5;
+// in the middle of the seat: sitting, the hips are at the seat's height
+const BUSKER: Regular = { x: BUSKER_BENCH, z: 1.86, pose: "guitar" };
+
+const regularsOf = (...groups: [string, number[]][]): Regular[] =>
+  groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose]) => ({ x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose })));
+
 export const seasideKit: PlaceKit = {
   build,
   furnish,
   isInside: inCafe,
   zoneAt,
+  regulars: {
+    weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER],
+    "rainy-dusk": [...regularsOf(["barista", [0]], ["queue", [0]], ["tables", [0, 1, 3, 4, 5]], ["bar", [0, 2]], ["door", [0, 1]]), BUSKER],
+    morning: [...regularsOf(["barista", [0]], ["queue", [0]], ["tables", [3]], ["bar", [1]]), BUSKER],
+  },
   passerPaths: [
     [
       [0.5, -130],

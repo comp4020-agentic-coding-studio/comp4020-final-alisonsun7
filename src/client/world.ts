@@ -115,6 +115,7 @@ export class WorldView {
   private hemi = new THREE.HemisphereLight();
   private overlay: HTMLDivElement;
   private passers: Passer[] = [];
+  private regulars: { sprite: THREE.Sprite; keys: [string, string] | null }[] = [];
   private rain: THREE.LineSegments | null = null;
   private raycaster = new THREE.Raycaster();
   private light: Light;
@@ -229,6 +230,7 @@ export class WorldView {
     this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
 
     this.buildPassers();
+    this.buildRegulars();
     if (mode === "rainy-dusk") this.buildRain();
 
     this.zone = opts.startZone;
@@ -367,7 +369,7 @@ export class WorldView {
     b.paving.metalness = l.wet ? 0.18 : 0;
     b.paving.color.setHex(l.wet ? 0x8f8d90 : 0xffffff);
     this.renderer.toneMappingExposure = l.exposure;
-    for (const p of this.passers) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
+    for (const p of [...this.passers, ...this.regulars]) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
   }
 
 
@@ -386,6 +388,39 @@ export class WorldView {
       mat.opacity = 0.92;
       this.built.root.add(sprite);
       this.passers.push({ sprite, path, t: (i * 0.37) % 1, speed: (this.mode === "weekday" ? 1.3 : 0.9) + (i % 3) * 0.15, flipped: false });
+    }
+  }
+
+  // People who stay put: the café's regulars, the guitarist on the bench.
+  // Like passers-by they have no names, so they can't be taken for someone
+  // who's really here.
+  private buildRegulars(): void {
+    for (const [i, r] of (this.kit.regulars?.[this.mode] ?? []).entries()) {
+      const seed = `regular-${i}`;
+      const avatar = i % 3 === 1 ? "dog" : "cat";
+      const sprite = figureSprite(`${seed}:${r.pose}`, figureSvg(avatar, r.pose, seed), false, this.light.figureTint);
+      (sprite.material as THREE.SpriteMaterial).opacity = 0.92;
+      // sitting, a head is lower: about 1.3 m rather than 1.6
+      if (r.pose === "sit" || r.pose === "guitar") sprite.scale.multiplyScalar(0.8);
+      sprite.position.set(r.x, 0, r.z);
+      this.built.root.add(sprite);
+      // a guitarist's hand goes up and down
+      const strums = r.pose === "guitar";
+      if (strums) svgTexture(`${seed}:strum`, figureSvg(avatar, "strum", seed));
+      this.regulars.push({ sprite, keys: strums ? [`${seed}:guitar`, `${seed}:strum`] : null });
+    }
+  }
+
+  private strum(now: number): void {
+    const down = Math.floor(now / 260) % 2 === 1;
+    for (const r of this.regulars) {
+      if (!r.keys) continue;
+      const mat = r.sprite.material as THREE.SpriteMaterial;
+      const want = textureCache.get(r.keys[down ? 1 : 0])!;
+      if (mat.map !== want) {
+        mat.map = want;
+        mat.needsUpdate = true;
+      }
     }
   }
 
@@ -636,7 +671,10 @@ export class WorldView {
     this.camera.rotation.set(this.pitch, this.yaw, 0);
     this.sky.position.copy(this.camera.position);
 
-    if (!reduced()) this.movePassers(dt);
+    if (!reduced()) {
+      this.movePassers(dt);
+      this.strum(now);
+    }
     this.moveOthers(dt);
     if (this.rain && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
