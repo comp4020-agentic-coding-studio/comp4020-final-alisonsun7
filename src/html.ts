@@ -26,7 +26,7 @@ const page = (title: string, bodyClass: string, body: string): string => `<!doct
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" />
 <link rel="stylesheet" href="/client/style.css" />
-<script type="importmap">{"imports":{"three":"/vendor/three.module.min.js"}}</script>
+<script type="importmap">{"imports":{"three":"/vendor/three.module.min.js","three/addons/":"/vendor/addons/"}}</script>
 </head>
 <body class="${bodyClass}">
 ${body}
@@ -120,7 +120,7 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
             scene.evidence === "placeholder"
               ? `<p class="badge">Placeholder: no photo of the real café yet</p>`
               : scene.view === "world"
-                ? `<p class="badge real">Walkable · drawn from real photos</p>`
+                ? `<p class="badge real">Walkable · ${scene.id === "campus" ? "drawn from real photos" : "free CC0 models"}</p>`
                 : `<p class="badge real">From real photos</p>`
           }
           <ul class="modes">${modes}</ul>
@@ -173,8 +173,8 @@ function worldStage(scene: Scene, shot: Scene["shots"][number]): string {
     <nav class="goto" id="shots" aria-label="Go to"><span class="goto-label">Go to</span>${scene.shots
       .map((s) => `<a href="?shot=${s.id}" data-shot="${s.id}"${s.id === shot.id ? ' aria-current="true"' : ""}>${escapeHtml(s.title)}<span class="count" data-count="${s.id}"></span></a>`)
       .join("")}</nav>
-    <p class="evidence" id="evidence"><span class="label">Drawn from</span> <span id="evidence-text">${escapeHtml(shot.evidence)}</span></p>
-    <p class="mode-note">A drawn place, not a survey: the layout follows Wen's sketch and photos, and sizes and distances are estimates.</p>`;
+    <p class="evidence" id="evidence"><span class="label">${shot.thumb ? "Drawn from" : "Here"}</span> <span id="evidence-text">${escapeHtml(shot.evidence)}</span></p>
+    ${scene.about ? `<p class="mode-note">${escapeHtml(scene.about)}</p>` : ""}`;
 }
 
 export function renderScene(scene: Scene, mode: Mode, shotId: string, snap: Snapshot, user: User | null): string {

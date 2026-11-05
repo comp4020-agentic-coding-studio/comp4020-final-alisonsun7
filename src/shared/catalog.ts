@@ -138,6 +138,10 @@ export interface Scene {
   maxSounds?: number;
   // old photo scenes stay so their memories still replay, but aren't listed
   retired?: boolean;
+  // what the place is, honestly, shown under it
+  about?: string;
+  // the background indoors, when it isn't plain room tone
+  indoorAmbience?: Mode["ambience"];
 }
 
 export const FIGURE_SCALE = 1.13;
@@ -179,6 +183,8 @@ function spot(
 
 const WORLD: Scene = {
   id: "campus",
+  retired: true,
+  about: "A drawn place, not a survey: the layout follows Wen's sketch and photos, and sizes and distances are estimates.",
   title: "Chifley Bridge & Marie Reay",
   kind: "outdoor",
   summary: "Walk from the Chifley bridge through Marie Reay's door: lifts, an orange stair, tiered seats and a tea point.",
@@ -282,7 +288,99 @@ const WORLD: Scene = {
   ],
 };
 
+// ---- The corner café (ADR 005) -------------------------------------------
+//
+// An imagined café, not a real one: built from CC0 models, surfaces and
+// skies (Poly Haven), arranged in client/cafe.ts. Metres: the room is
+// x 0..14, z 0..10, its glass front on the street at z = 10.
+const CAFE: Scene = {
+  id: "cafe",
+  title: "The Corner Café",
+  kind: "indoor",
+  summary: "A small café on a street corner: an espresso cart, a counter, round tables and a bar along the window.",
+  evidence: "photo",
+  view: "world",
+  maxSounds: 24,
+  about: "An imagined café, not a real place. Furniture, food, plants, surfaces and skies are free CC0 models from Poly Haven.",
+  indoorAmbience: "cafe",
+  modes: [
+    { id: "morning", label: "Early Morning", note: "", ambience: "birds" },
+    { id: "weekday", label: "Busy Lunch", note: "", ambience: "crowd" },
+    { id: "rainy-dusk", label: "Rainy Evening", note: "", ambience: "rain" },
+  ],
+  shots: [
+    {
+      id: "street",
+      title: "The street",
+      image: null,
+      thumb: null,
+      aspect: 4 / 3,
+      evidence: "The footpath outside the café's glass front, a street lamp, the road and the buildings opposite.",
+      horizon: 0.5,
+      inside: false,
+      spawn: { x: 9.6, z: 12.6, yaw: 0.25 },
+      anchors: [
+        spot("footpath", "Footpath", { x: 12, y: 0.6, z: 12 }, { x: 12.6, z: 12.4, pose: "walk" }, ["footsteps", "bicycle", "puddle-steps", "quiet-talk"]),
+        spot("street-lamp", "Street lamp", { x: 3, y: 2.6, z: 13.6 }, { x: 3.6, z: 12.9 }, ["wind", "birdsong", "rain"]),
+        spot("cafe-door", "Café door", { x: 7, y: 1.7, z: 10.2 }, { x: 8.2, z: 10.9 }, ["door-slide", "footsteps", "rain"]),
+      ],
+      links: [],
+    },
+    {
+      id: "counter",
+      title: "The counter",
+      image: null,
+      thumb: null,
+      aspect: 4 / 3,
+      evidence: "The espresso cart, the counter with pastries and the till, steel shelves on the brick wall behind.",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 8.2, z: 4.6, yaw: 0.45 },
+      anchors: [
+        spot("espresso-cart", "Espresso cart", { x: 2.2, y: 1.4, z: 1.6 }, { x: 3.2, z: 2.2, facing: Math.PI / 2, pose: "back" }, ["espresso", "grinder"]),
+        spot("pastries", "Pastries", { x: 7, y: 1.25, z: 2.6 }, { x: 7, z: 3.6 }, ["cups", "chatter", "cup-down"]),
+        spot("till", "Till", { x: 10.6, y: 1.35, z: 2.6 }, { x: 10.4, z: 3.6 }, ["cups", "chatter"]),
+      ],
+      links: [],
+    },
+    {
+      id: "tables",
+      title: "Tables",
+      image: null,
+      thumb: null,
+      aspect: 4 / 3,
+      evidence: "Four round tables with wooden chairs under hanging lamps.",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 7, z: 7.8, yaw: 0.6 },
+      anchors: [
+        spot("corner-table", "Corner table", { x: 2.2, y: 1.0, z: 5.6 }, { x: 2.2, z: 6.35, y: 0.47, pose: "sit" }, ["chatter", "typing", "page-turn", "cup-down", "quiet-talk"]),
+        spot("middle-table", "Middle table", { x: 4.6, y: 1.0, z: 6.6 }, { x: 4.6, z: 7.35, y: 0.47, pose: "sit" }, ["chatter", "typing", "page-turn", "cup-down", "quiet-talk"]),
+        spot("far-table", "Far table", { x: 11.8, y: 1.0, z: 5.6 }, { x: 11.8, z: 6.35, y: 0.47, pose: "sit" }, ["chatter", "typing", "page-turn", "cup-down", "quiet-talk"]),
+      ],
+      links: [],
+    },
+    {
+      id: "window",
+      title: "Window bar",
+      image: null,
+      thumb: null,
+      aspect: 4 / 3,
+      evidence: "A long bar along the shop window, with stools, looking out at the street.",
+      horizon: 0.5,
+      inside: true,
+      spawn: { x: 7, z: 8.6, yaw: Math.PI },
+      anchors: [
+        spot("window-west", "Window bar", { x: 2.8, y: 1.3, z: 9.6 }, { x: 2.8, z: 8.95, y: 0.75, pose: "sit" }, ["typing", "page-turn", "quiet-talk", "rain"]),
+        spot("window-east", "Window seat", { x: 11.2, y: 1.3, z: 9.6 }, { x: 11.2, z: 8.95, y: 0.75, pose: "sit" }, ["rain", "chatter", "cup-down"]),
+      ],
+      links: [],
+    },
+  ],
+};
+
 export const SCENES: Scene[] = [
+  CAFE,
   WORLD,
   {
     id: "marie-reay-ground",

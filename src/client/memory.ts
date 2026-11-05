@@ -27,6 +27,7 @@ for (const p of memory.placements) counts.set(p.shotId, (counts.get(p.shotId) ??
 let shotId = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? scene.shots[0].id;
 
 const audio = new AudioEngine(mode.ambience);
+audio.indoorAmbience = scene.indoorAmbience ?? "room";
 // A memory of the walkable world is walked through, like the place was.
 const world =
   scene.view === "world"

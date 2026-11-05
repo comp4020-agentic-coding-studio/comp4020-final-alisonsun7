@@ -5,6 +5,7 @@
 // timber wall with three steel lifts, the orange stair, the cushioned tiers,
 // the dark cabinet of microwaves. Sizes are estimates, not a survey.
 import * as THREE from "three";
+import type { PlaceKit } from "./places.js";
 
 export interface Rect {
   x0: number;
@@ -40,7 +41,7 @@ export function isInside(x: number, z: number): boolean {
 
 // ---- textures, drawn on canvases ---------------------------------------
 
-function canvasTexture(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, repeat: [number, number]): THREE.CanvasTexture {
+export function canvasTexture(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, repeat: [number, number]): THREE.CanvasTexture {
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
@@ -148,7 +149,7 @@ function grating(): THREE.CanvasTexture {
 
 type Mat = THREE.Material;
 
-class Builder {
+export class Builder {
   root = new THREE.Group();
   occluders: THREE.Object3D[] = [];
   floors: THREE.Object3D[] = [];
@@ -186,7 +187,7 @@ class Builder {
   }
 }
 
-const std = (color: number, more: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial =>
+export const std = (color: number, more: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial =>
   new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, flatShading: true, ...more });
 
 export function buildWorld(): Built {
@@ -473,3 +474,29 @@ export function canStand(built: Pick<Built, "walkable" | "solids">, x: number, z
   if (!built.walkable.some((w) => x >= w.x0 && x <= w.x1 && z >= w.z0 && z <= w.z1)) return false;
   return !built.solids.some((s) => x > s.x0 - r && x < s.x1 + r && z > s.z0 - r && z < s.z1 + r);
 }
+
+// The campus (retired with ADR 005, kept so its memories still replay).
+export const campusKit: PlaceKit = {
+  build: buildWorld,
+  isInside,
+  zoneAt(x, z) {
+    if (!isInside(x, z)) return "bridge";
+    if (x < 9 && z > 21.5) return "entry";
+    if (z > 15.5 && x > 10.5 && x < 20.5) return "tea-point";
+    if (x >= 20.5) return "stairs";
+    return "lobby";
+  },
+  passerPaths: [
+    [[10, 35], [-1, 34.6], [-20.6, 34]],
+    [[-20.6, 33.2], [-2, 33.4], [4.5, 31.4], [4.5, 27], [4, 22], [9, 18.5], [20, 13], [23.5, 11.4]],
+    [[4.6, 29], [3.5, 21], [10.5, 12.2], [13.2, 9]],
+    [[12, 39], [-1.5, 35.4], [-20.6, 35.4]],
+    [[30, 12.4], [19, 12], [11, 17.8], [5, 23], [4.5, 29]],
+  ],
+  // only where there's no roof: the paving, the bridge, the library front
+  rainAt(r) {
+    const x = -30 + r() * 44;
+    return [x, x < 0 ? -2 + r() * 48 : 30.4 + r() * 16];
+  },
+  sunTarget: [6, 0, 20],
+};

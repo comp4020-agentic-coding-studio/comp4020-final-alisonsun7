@@ -11,7 +11,12 @@ import { SOUNDS, type Anchor, type Pose, type Scene, type SoundId } from "../sha
 import type { Placement } from "../shared/protocol.js";
 import { figureSvg, passerSvg } from "./figures.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
-import { buildWorld, canStand, isInside, type Built } from "./world-build.js";
+import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import { cafeKit } from "./cafe.js";
+import type { PlaceKit } from "./places.js";
+import { campusKit, canStand, type Built } from "./world-build.js";
+
+const KITS: Record<string, PlaceKit> = { campus: campusKit, cafe: cafeKit };
 
 export interface WorldDrawOptions {
   interactive: boolean;
@@ -64,13 +69,6 @@ const WALK = 3.2;
 const RUN = 5.6;
 const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function zoneAt(x: number, z: number): string {
-  if (!isInside(x, z)) return "bridge";
-  if (x < 9 && z > 21.5) return "entry";
-  if (z > 15.5 && x > 10.5 && x < 20.5) return "tea-point";
-  if (x >= 20.5) return "stairs";
-  return "lobby";
-}
 
 // The SVG figures as sprite textures, drawn once per look.
 const textureCache = new Map<string, THREE.Texture>();
@@ -113,6 +111,7 @@ export class WorldView {
   private scene3 = new THREE.Scene();
   private camera: THREE.PerspectiveCamera;
   private built: Built;
+  private kit: PlaceKit;
   private sky: THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>;
   private sun = new THREE.DirectionalLight();
   private hemi = new THREE.HemisphereLight();
@@ -141,6 +140,11 @@ export class WorldView {
   private drawOpts: WorldDrawOptions = { interactive: false, mineId: null, choosing: null, selected: null };
   private placements: Placement[] = [];
   private sunrise: { from: number; ms: number } | null = null;
+  // with a photographed sky lighting the models, the drawn fill light is less
+  private hemiScale = 1;
+  // frames counted to decide whether this device needs a lighter picture
+  private perf = { frames: 0, since: 0, lowered: 0 };
+  private bornAt = performance.now();
   // zone changes are only reported once the page has its view
   private ready = false;
 
@@ -173,7 +177,8 @@ export class WorldView {
     this.camera = new THREE.PerspectiveCamera(68, 1, 0.08, 600);
     this.camera.rotation.order = "YXZ";
 
-    this.built = buildWorld();
+    this.kit = KITS[scene.id] ?? campusKit;
+    this.built = this.kit.build();
     this.scene3.add(this.built.root);
 
     this.sky = new THREE.Mesh(
@@ -208,11 +213,13 @@ export class WorldView {
     sc.far = 220;
     this.sun.shadow.bias = -0.0004;
     this.sun.shadow.normalBias = 0.03;
-    this.sun.target.position.set(6, 0, 20);
+    this.sun.target.position.set(...this.kit.sunTarget);
     this.scene3.add(this.sun, this.sun.target, this.hemi);
     this.scene3.fog = new THREE.Fog(0xffffff, 20, 120);
 
-    this.light = lightFor(mode);
+    const base = lightFor(mode);
+    const sunDir = this.kit.sunDirs?.[mode];
+    this.light = sunDir ? { ...base, sunDir } : base;
     if (mode === "morning" && !reduced()) this.sunrise = { from: performance.now(), ms: 3800 };
     this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
 
@@ -223,6 +230,8 @@ export class WorldView {
     this.zone = opts.startZone;
     this.placeAt(opts.startZone);
     this.bindControls();
+    void this.loadSky();
+    void this.furnish();
 
     new ResizeObserver(() => this.resize()).observe(host);
     this.resize();
@@ -286,6 +295,45 @@ export class WorldView {
     this.renderer.domElement.focus();
   }
 
+  // ---- loading -----------------------------------------------------------
+
+  // A photographed sky: the background, and the light the models reflect.
+  private async loadSky(): Promise<void> {
+    const sky = this.kit.skies?.[this.mode];
+    if (!sky) return;
+    try {
+      const tex = await new RGBELoader().loadAsync(sky.url);
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      this.scene3.background = tex;
+      this.scene3.backgroundIntensity = sky.intensity;
+      this.scene3.environment = tex;
+      this.scene3.environmentIntensity = sky.intensity * 0.8;
+      this.sky.visible = false;
+      this.hemiScale = 0.45;
+      this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
+    } catch {
+      // the drawn sky stays
+    }
+  }
+
+  private async furnish(): Promise<void> {
+    if (!this.kit.furnish) return;
+    const label = document.createElement("p");
+    label.className = "world-loading";
+    label.setAttribute("role", "status");
+    label.textContent = "Setting out the furniture…";
+    this.host.append(label);
+    try {
+      await this.kit.furnish(this.built, (f) => (label.textContent = `Setting out the furniture… ${Math.round(f * 100)}%`));
+      label.remove();
+      // figures were placed before the furniture's solids existed
+      this.layoutOverlay(true);
+    } catch {
+      label.textContent = "Some furniture didn't load. Everything else still works.";
+      setTimeout(() => label.remove(), 6000);
+    }
+  }
+
   // ---- light -------------------------------------------------------------
 
   private applyLight(l: Light): void {
@@ -304,7 +352,7 @@ export class WorldView {
     this.sun.castShadow = l.shadows;
     this.hemi.color.setHex(l.hemiSky);
     this.hemi.groundColor.setHex(l.hemiGround);
-    this.hemi.intensity = l.hemiIntensity;
+    this.hemi.intensity = l.hemiIntensity * this.hemiScale;
     const fog = this.scene3.fog as THREE.Fog;
     fog.color.setHex(l.fog);
     fog.near = l.fogNear;
@@ -441,17 +489,11 @@ export class WorldView {
   // Passers-by who make no sound: they only show how busy the hour is.
   private buildPassers(): void {
     const count = this.mode === "weekday" ? 9 : this.mode === "morning" ? 2 : this.mode === "rainy-dusk" ? 3 : 0;
-    const v = (x: number, z: number): THREE.Vector3 => new THREE.Vector3(x, 0, z);
-    const paths = [
-      [v(10, 35), v(-1, 34.6), v(-20.6, 34)],
-      [v(-20.6, 33.2), v(-2, 33.4), v(4.5, 31.4), v(4.5, 27), v(4, 22), v(9, 18.5), v(20, 13), v(23.5, 11.4)],
-      [v(4.6, 29), v(3.5, 21), v(10.5, 12.2), v(13.2, 9)],
-      [v(12, 39), v(-1.5, 35.4), v(-20.6, 35.4)],
-      [v(30, 12.4), v(19, 12), v(11, 17.8), v(5, 23), v(4.5, 29)],
-    ];
+    const paths = this.kit.passerPaths.map((p) => p.map(([x, z]) => new THREE.Vector3(x, 0, z)));
     for (let i = 0; i < count; i++) {
       const path = paths[i % paths.length];
-      const umbrella = this.mode === "rainy-dusk" && i % paths.length !== 2 && i % paths.length !== 4;
+      // people indoors have put their umbrellas away
+      const umbrella = this.mode === "rainy-dusk" && !this.kit.isInside(path[0].x, path[0].z);
       const sprite = figureSprite(`passer-${this.mode}-${i}`, passerSvg(`passer-${this.mode}-${i}`, umbrella), umbrella, this.light.figureTint);
       const mat = sprite.material as THREE.SpriteMaterial;
       mat.map = mat.map!.clone();
@@ -466,9 +508,7 @@ export class WorldView {
     const n = reduced() ? 600 : 2400;
     const pos = new Float32Array(n * 6);
     for (let i = 0; i < n; i++) {
-      // only where there's no roof: the paving, the bridge, the library front
-      const x = -30 + Math.random() * 44;
-      const z = x < 0 ? -2 + Math.random() * 48 : 30.4 + Math.random() * 16;
+      const [x, z] = this.kit.rainAt(Math.random);
       const y = Math.random() * 14 - 2;
       pos.set([x, y, z, x - 0.03, y + 0.45, z], i * 6);
     }
@@ -489,7 +529,7 @@ export class WorldView {
     this.yaw = s.yaw;
     this.pitch = -0.04;
     this.target = null;
-    this.setZone(zoneAt(this.x, this.z));
+    this.setZone(this.kit.zoneAt(this.x, this.z));
   }
 
   private setZone(z: string): void {
@@ -654,7 +694,7 @@ export class WorldView {
       moving = this.tryMove(dx, dz);
     }
     if (moving && !reduced()) this.bob += dt * 9;
-    this.setZone(zoneAt(this.x, this.z));
+    this.setZone(this.kit.zoneAt(this.x, this.z));
   }
 
   // ---- each frame --------------------------------------------------------
@@ -683,6 +723,7 @@ export class WorldView {
       if (t >= 1) this.sunrise = null;
     }
 
+    this.adaptQuality(now);
     const steps = Math.ceil(dt / 0.04);
     for (let i = 0; i < steps; i++) this.move(dt / steps);
     const bobY = Math.sin(this.bob) * 0.035;
@@ -713,7 +754,38 @@ export class WorldView {
 
     this.renderer.render(this.scene3, this.camera);
     this.layoutOverlay(now - this.occlusionAt > 160);
-    this.opts.onListen?.({ x: this.x, y: EYE, z: this.z, yaw: this.yaw, inside: isInside(this.x, this.z) });
+    this.opts.onListen?.({ x: this.x, y: EYE, z: this.z, yaw: this.yaw, inside: this.kit.isInside(this.x, this.z) });
+  }
+
+  // A slow device gets a lighter picture rather than a slideshow: if frames
+  // run under 24 a second, first drop to one pixel per CSS pixel, then turn
+  // off shadows and draw at half resolution. Never raised again, so it can't
+  // flicker between the two.
+  private adaptQuality(now: number): void {
+    const p = this.perf;
+    if (p.lowered >= 2) return;
+    // the first seconds are loading (sky, models), not the device's pace
+    if (now - this.bornAt < 4000) return;
+    if (!p.since) p.since = now;
+    p.frames++;
+    const elapsed = now - p.since;
+    if (elapsed < 2000) return;
+    const fps = (p.frames * 1000) / elapsed;
+    p.frames = 0;
+    p.since = now;
+    if (fps >= 24) {
+      p.lowered = 2;
+      return;
+    }
+    p.lowered++;
+    if (p.lowered === 1) this.renderer.setPixelRatio(1);
+    else {
+      this.renderer.setPixelRatio(0.5);
+      this.renderer.shadowMap.enabled = false;
+      this.light = { ...this.light, shadows: false };
+      this.sun.castShadow = false;
+    }
+    this.resize();
   }
 
   private movePassers(dt: number): void {

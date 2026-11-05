@@ -2035,3 +2035,18 @@ h3 {
     font-size: 11px;
   }
 }
+
+.world-loading {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  z-index: 6;
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink);
+  background: rgba(15, 13, 10, 0.7);
+  padding: 5px 14px;
+  border-radius: 999px;
+  pointer-events: none;
+}

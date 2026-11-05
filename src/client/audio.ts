@@ -45,6 +45,8 @@ export class AudioEngine {
   private ambienceOn = true;
   private wanted = new Map<string, Source & { onPlay?: () => void }>();
   private listenerInside: boolean | null = null;
+  // what indoors sounds like when there's nothing placed: room tone, or a café
+  indoorAmbience: Ambience = "room";
   private outdoorAmbience: Ambience;
 
   constructor(private ambience: Ambience) {
@@ -56,7 +58,7 @@ export class AudioEngine {
   listen(x: number, y: number, z: number, yaw: number, inside: boolean): void {
     if (inside !== this.listenerInside) {
       this.listenerInside = inside;
-      this.ambience = inside ? "room" : this.outdoorAmbience;
+      this.ambience = inside ? this.indoorAmbience : this.outdoorAmbience;
       if (this.ctx) for (const live of this.voices.values()) this.shape(live);
     }
     const ctx = this.ctx;

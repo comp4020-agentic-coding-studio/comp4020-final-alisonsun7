@@ -3,29 +3,37 @@
 # Sound of a City agent rules
 
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
-`START_HERE.md`) defines the product. `docs/decisions/003-live-places-and-memories.md`
-and `004-walkable-drawn-world.md` record where this build follows it and
-where it departs. Read both before
+`START_HERE.md`) defines the product. `docs/decisions/003-live-places-and-memories.md`,
+`004-walkable-drawn-world.md` and `005-imagined-places-from-cc0-assets.md`
+record where this build follows it and where it departs (005 drops the ANU
+theme). Read both before
 changing behaviour. Explain progress to Wen in Chinese; the UI, code, commits
 and repo docs are English. README.md, PROCESS.md, reflections and the research
 note are Wen's to write: offer outlines and checks, never draft them.
 
 ## What it is
 
-Sound of a City — ANU Edition. One walkable, drawn place on campus (the
-Chifley bridge into Marie Reay's ground floor), seen in first person, with
-drawn cat and dog figures in it. People add everyday
+Sound of a City. Imagined places you walk through in first person (first:
+The Corner Café), built from CC0 models, with drawn cat and dog figures in
+them. People add everyday
 sounds at fixed spots in a scene; everyone in the same place hears them. A
 3-minute memory, timed by the server, is saved with everyone's names, can be
 replayed, and appears in a public archive.
 
-The world (`campus`, three.js, three modes) is the only place listed. The
-older photo scenes (Marie Reay, Chifley bridge, LAB placeholder) are
-`retired`: unlisted, but their pages and memories still work.
+Walkable places (`view: "world"`, three.js, three modes each) are the only
+ones listed; each has a `PlaceKit` (`client/places.ts`; the café in
+`client/cafe.ts`). The ANU campus and the older photo scenes are `retired`:
+unlisted, but their pages and memories still work.
 
 ## Product invariants
 
-- **Drawn from Wen's photos, not surveyed (ADR 004).** The world's layout
+- **Imagined places say so (ADR 005).** Every listed place has `about` text
+  on its page saying it isn't a real place and where its pieces come from.
+- **Only CC0 assets, all recorded.** Models, surfaces and skies come from
+  Poly Haven via `scripts/fetch-assets.mjs` (MD5-checked) and each is in
+  `public/assets-manifest.json`. Never add an asset that isn't CC0 or whose
+  site refuses scripted downloads; never get around such a refusal.
+- **(Retired campus) drawn from Wen's photos, not surveyed (ADR 004).** The world's layout
   follows Wen's sketch; what's in it follows the photos. Keep what Wen
   stated (the door on your right facing the library; the tea point faces the
   bins; sink left of the microwaves). Don't add rooms or things no photo or
@@ -68,9 +76,10 @@ older photo scenes (Marie Reay, Chifley bridge, LAB placeholder) are
 ## Engineering constraints
 
 Plain `node:http`, `node:sqlite`, SSE, TypeScript compiled with `tsc`; two
-runtime dependencies: `marked` (for `/readme/`) and `three` (the world,
-served from `node_modules` at `/vendor/three.module.min.js` via an import
-map). Validate every op on the
+runtime dependencies: `marked` (for `/readme/`) and `three` (served from
+`node_modules` at `/vendor/three.module.min.js`, loaders at
+`/vendor/addons/`, both via the import map). Assets are served only from
+`public/assets/{models,textures,skies}` by pattern. Validate every op on the
 server (ids, enums, anchors via `checkPlace`, gain 0..1, limits per place
 from `maxSoundsIn` (12, or 24 in the world) and 4 per person, 40 ops per
 10 s). Escape nicknames in HTML and in embedded
@@ -90,8 +99,11 @@ without Wen's go-ahead.
   temp DB, test hooks) for sealing, failed saves and restarts.
 - `pnpm build && pnpm e2e` drives two Chrome sessions through the UI.
 - `node e2e/look.mjs <dir>` saves screenshots for a person to look at;
-  `node e2e/look-world.mjs <dir>` does every mode and zone of the world.
-- `node e2e/world-two-browsers.mjs` drives the world in two Chrome sessions.
+  `SCENE=cafe SHOTS=street,counter,tables,window node e2e/look-world.mjs <dir>`
+  does every mode and zone of a walkable place.
+- `node e2e/world-two-browsers.mjs` drives the café in two Chrome sessions.
+  The world e2e scripts use the GPU (`--use-angle=metal`): in software
+  rendering the café runs at well under 1 fps.
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get
   green. A new check should be seen to fail without its fix.
 

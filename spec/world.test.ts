@@ -1,13 +1,16 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, inject, it } from "vitest";
 import { PER_PERSON, SCENES, WORLD_BOUNDS, maxSoundsIn } from "../src/shared/catalog.ts";
 import type { Snapshot } from "../src/shared/protocol.ts";
+import { cafeKit } from "../src/client/cafe.ts";
+import { campusKit } from "../src/client/world-build.ts";
 import { Stream, join, opId, sendOp } from "./helpers.ts";
 
-// The walkable world (ADR 004): one drawn place whose spots have positions
-// in metres. The server checks its spots exactly as it checks a photo's
-// anchors, and the place holds more sounds than one photo did.
+// The walkable places (ADR 004, 005): built in 3D, spots with positions in
+// metres. The server checks their spots exactly as it checks a photo's
+// anchors, and a place holds more sounds than one photo did.
 const baseUrl = inject("baseUrl");
-const world = SCENES.find((s) => s.view === "world")!;
+const world = SCENES.find((s) => s.id === "cafe")!;
 
 async function snapshot(mode: string): Promise<Snapshot> {
   const stream = await Stream.open(baseUrl, world.id, mode, null);
@@ -17,9 +20,9 @@ async function snapshot(mode: string): Promise<Snapshot> {
 }
 
 describe("the walkable world", () => {
-  it("is the only place listed, and the photo scenes are kept for old memories", async () => {
+  it("only walkable places are listed, and retired scenes are kept for old memories", async () => {
     expect(world).toBeDefined();
-    expect(SCENES.filter((s) => !s.retired).map((s) => s.id)).toEqual([world.id]);
+    expect(SCENES.filter((s) => !s.retired).every((s) => s.view === "world")).toBe(true);
     const html = await (await fetch(new URL("/explore", baseUrl))).text();
     expect(html).toContain(`/scene/${world.id}?mode=`);
     for (const old of SCENES.filter((s) => s.retired)) {
@@ -41,11 +44,37 @@ describe("the walkable world", () => {
     }
   });
 
-  it("says on the page that it's drawn, not surveyed, and shows the real photo", async () => {
-    const html = await (await fetch(new URL(`/scene/${world.id}?mode=morning`, baseUrl))).text();
-    expect(html).toMatch(/not a survey/);
-    expect(html).toContain('id="postcard"');
-    expect(html).toContain('"three":"/vendor/three.module.min.js"');
+  it("Go to puts you inside the part of the place it names", () => {
+    const kits = { cafe: cafeKit, campus: campusKit } as const;
+    for (const scene of SCENES.filter((s) => s.view === "world")) {
+      const kit = kits[scene.id as keyof typeof kits];
+      for (const shot of scene.shots) expect(kit.zoneAt(shot.spawn!.x, shot.spawn!.z), `${scene.id}/${shot.id}`).toBe(shot.id);
+    }
+  });
+
+  it("every walkable place says on the page what it is", async () => {
+    for (const scene of SCENES.filter((s) => s.view === "world")) {
+      expect(scene.about, scene.id).toBeTruthy();
+      const html = await (await fetch(new URL(`/scene/${scene.id}?mode=morning`, baseUrl))).text();
+      expect(html).toContain(scene.about!.slice(0, 30));
+      expect(html).toContain('"three":"/vendor/three.module.min.js"');
+    }
+    // the campus, drawn from Wen's photos, still shows them
+    expect(await (await fetch(new URL("/scene/campus?mode=morning", baseUrl))).text()).toContain('id="postcard"');
+  });
+
+  it("serves the place's models, surfaces and skies, and nothing outside their folders", async () => {
+    const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8")) as { assets: { id: string; files?: string[]; rights: string }[] };
+    const cc0 = manifest.assets.filter((a) => a.id.startsWith("polyhaven-"));
+    expect(cc0.length).toBeGreaterThan(10);
+    for (const a of cc0) {
+      expect(a.rights).toMatch(/CC0/);
+      const res = await fetch(new URL(a.files![0].replace(/^public/, ""), baseUrl));
+      expect(res.status, a.files![0]).toBe(200);
+    }
+    for (const bad of ["/assets/models/../../package.json", "/assets/models/%2e%2e/%2e%2e/package.json", "/assets/db/x.gltf", "/vendor/addons/../../../package.json"]) {
+      expect((await fetch(new URL(bad, baseUrl))).status, bad).toBe(404);
+    }
   });
 
   it("accepts a sound at a world spot, refuses one that belongs elsewhere, and holds more than 12", async () => {
@@ -64,9 +93,9 @@ describe("the walkable world", () => {
     const ok = await sendOp(baseUrl, await join(baseUrl, "Walker"), sessionId, {
       operationId: opId(),
       type: "sound.add",
-      soundId: "microwave-hum",
-      shotId: "tea-point",
-      anchorId: "microwaves",
+      soundId: "espresso",
+      shotId: "counter",
+      anchorId: "espresso-cart",
       gain: 0.6,
     });
     expect(ok.result.ok, JSON.stringify(ok.result)).toBe(true);
@@ -74,9 +103,9 @@ describe("the walkable world", () => {
     const wrong = await sendOp(baseUrl, await join(baseUrl, "Lost"), sessionId, {
       operationId: opId(),
       type: "sound.add",
-      soundId: "microwave-hum",
-      shotId: "bridge",
-      anchorId: "paving",
+      soundId: "espresso",
+      shotId: "street",
+      anchorId: "footpath",
       gain: 0.6,
     });
     expect(wrong.result.ok).toBe(false);
@@ -89,7 +118,7 @@ describe("the walkable world", () => {
     while (placed < 14) {
       const who = await join(baseUrl, `Filler ${n++}`);
       for (let i = 0; i < PER_PERSON && placed < 14; i++) {
-        const r = await sendOp(baseUrl, who, sessionId, { operationId: opId(), type: "sound.add", soundId: "footsteps", shotId: "lobby", anchorId: "lobby-floor", gain: 0.5 });
+        const r = await sendOp(baseUrl, who, sessionId, { operationId: opId(), type: "sound.add", soundId: "footsteps", shotId: "street", anchorId: "footpath", gain: 0.5 });
         expect(r.result.ok, JSON.stringify(r.result)).toBe(true);
         placed++;
       }

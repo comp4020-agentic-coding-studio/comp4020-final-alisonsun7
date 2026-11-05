@@ -23,6 +23,8 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/world.js": js("/client/world.js"),
   "/client/world-build.js": js("/client/world-build.js"),
   "/client/sky.js": js("/client/sky.js"),
+  "/client/cafe.js": js("/client/cafe.js"),
+  "/client/places.js": js("/client/places.js"),
   // three.js, the one library the browser loads (ADR 004), straight from the
   // installed package; pages map the bare "three" import to it
   "/vendor/three.module.min.js": { file: new URL("../node_modules/three/build/three.module.min.js", import.meta.url), type: "text/javascript", cache: "public, max-age=604800" },
@@ -37,6 +39,20 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
 // request can't reach anything else on disk.
 const PUBLIC_DIR = new URL("../public/", import.meta.url);
 const SCENE_FILE = /^\/scenes\/([a-z0-9-]+\.webp)$/;
+
+// three.js add-ons (loaders), and the CC0 models, surfaces and skies the
+// places are built from (scripts/fetch-assets.mjs). Names are checked against
+// a pattern with no "..", so a request can't leave these folders.
+const ADDON_FILE = /^\/vendor\/addons\/((?:[A-Za-z0-9_]+\/)*[A-Za-z0-9_]+\.js)$/;
+const ADDONS_DIR = new URL("../node_modules/three/examples/jsm/", import.meta.url);
+const ASSET_FILE = /^\/assets\/((?:models|textures|skies)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+\.(gltf|bin|jpg|png|hdr))$/;
+const ASSET_TYPES: Record<string, string> = {
+  gltf: "model/gltf+json",
+  bin: "application/octet-stream",
+  jpg: "image/jpeg",
+  png: "image/png",
+  hdr: "image/vnd.radiance",
+};
 
 const MAX_BODY = 4096;
 
@@ -84,6 +100,30 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (method === "GET" && asset) {
     res.writeHead(200, { "content-type": `${asset.type}; charset=utf-8`, "cache-control": asset.cache ?? "no-cache" });
     res.end(await readFile(asset.file));
+    return;
+  }
+
+  const addon = method === "GET" && pathname.match(ADDON_FILE);
+  if (addon) {
+    try {
+      const body = await readFile(new URL(addon[1], ADDONS_DIR));
+      res.writeHead(200, { "content-type": "text/javascript; charset=utf-8", "cache-control": "public, max-age=604800" });
+      res.end(body);
+    } catch {
+      send(res, 404, "not found");
+    }
+    return;
+  }
+
+  const assetFile = method === "GET" && pathname.match(ASSET_FILE);
+  if (assetFile && !assetFile[1].includes("..")) {
+    try {
+      const body = await readFile(new URL(`assets/${assetFile[1]}`, PUBLIC_DIR));
+      res.writeHead(200, { "content-type": ASSET_TYPES[assetFile[2]], "cache-control": "public, max-age=604800" });
+      res.end(body);
+    } catch {
+      send(res, 404, "not found");
+    }
     return;
   }
 

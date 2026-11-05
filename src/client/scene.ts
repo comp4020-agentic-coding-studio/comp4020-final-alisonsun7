@@ -39,6 +39,7 @@ let category = CATEGORIES[0];
 const pending = new Set<string>();
 
 const audio = new AudioEngine(mode.ambience);
+audio.indoorAmbience = scene.indoorAmbience ?? "room";
 const me = (): Person | null => live.snapshot.you;
 
 // The walkable world (ADR 004) instead of a photo: the zone you're standing

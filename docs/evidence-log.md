@@ -249,3 +249,45 @@ before it did); `node e2e/two-browsers.mjs` 29/29 (photo scenes unchanged);
 
 **Not run:** Docker build, deploy, listening to the positioned sound, a real
 phone (only Playwright's phone emulation), a screen reader.
+
+## 10. Imagined places from CC0 assets (2026-11-05, ADR 005)
+
+**Prompt (Wen, Chinese, summarised):** the ANU scenes still aren't good; find
+ready-made scenes online, like a forest or a café. Offered three directions
+(replace ANU, rebuild ANU with assets, or both); Wen chose to replace ANU
+with generic places.
+
+**Grounding:** web search for CC0/CC-BY scene sources (Kenney, Quaternius,
+Poly Haven, BinBun, Sketchfab); Poly Haven's public API for what exists and
+how big it is.
+
+**What happened:**
+
+- **Kenney refused scripted downloads (403).** A retry with a browser
+  user-agent was blocked by the permission system as bot-check
+  circumvention, correctly. Nothing more was tried there.
+- **Poly Haven trees were unusable:** 20 MB to 958 MB each at the lowest
+  texture size. The forest waits for a lighter CC0 pack that Wen downloads
+  by hand. The café's props are 1 MB to 6 MB each.
+- **Models in different units:** the shelves measured 21 units tall, the
+  chair 2.3. Every model is now scaled on load to a stated height.
+- **Ceiling showed brick:** the roof box sat at exactly ceiling height and
+  z-fought the ceiling. Roof moved up, in plain dark.
+- **Each window across the street held a 4 × 4 grid of windows:** a grid
+  texture on every pane. Now lit and dark panes.
+- **Go to put you in the wrong zone** for three café spots (counter, tables,
+  window). A new check failed for them first, then passed when the spawns
+  moved. The counter spawn was also too close (pastries filled the screen),
+  then turned so the espresso cart is in view (the UI test couldn't see its
+  spot).
+- **Software rendering at 0.3 fps.** The two-browser test timed out waiting
+  for the second page. Measured 120 fps with the GPU, so the e2e scripts now
+  use it; and the view now lowers its own quality when a device is slow
+  (3.3 fps in software rendering after it does).
+
+**Results:** `pnpm check` 75/75; `node e2e/world-two-browsers.mjs` 5/5 on
+the café (marker on the other screen about 30 ms after the click).
+Screenshots of every mode and zone looked at.
+
+**Not run:** Docker build, deploy, a real phone, listening to the sound.
+README.md still describes the ANU edition (Wen's to rewrite).

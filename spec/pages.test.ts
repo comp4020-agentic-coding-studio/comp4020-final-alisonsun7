@@ -72,7 +72,12 @@ describe("what the pages load", () => {
       const source = await res.clone().text();
       for (const m of source.matchAll(/(?:^|\n)\s*(?:import|export)\s[^;]*?from\s+["']([^"']+)["']/g)) {
         const bare = !/^[./]/.test(m[1]);
-        queue.push(bare && imports[m[1]] ? imports[m[1]] : new URL(m[1], new URL(path, "http://x")).pathname);
+        // an exact key, or the longest "prefix/" key, as import maps resolve
+        const prefix = Object.keys(imports)
+          .filter((k) => k.endsWith("/") && m[1].startsWith(k))
+          .sort((x, y) => y.length - x.length)[0];
+        const mapped = imports[m[1]] ?? (prefix ? imports[prefix] + m[1].slice(prefix.length) : undefined);
+        queue.push(bare && mapped ? mapped : new URL(m[1], new URL(path, "http://x")).pathname);
       }
     }
     return seen;
@@ -83,7 +88,7 @@ describe("what the pages load", () => {
     const paths = [...loaded.keys()];
     // the two page scripts and the modules beneath them
     expect(paths).toEqual(
-      expect.arrayContaining(["/client/scene.js", "/client/memory.js", "/client/audio.js", "/client/world.js", "/vendor/three.module.min.js", "/shared/catalog.js", "/client/style.css"]),
+      expect.arrayContaining(["/client/scene.js", "/client/memory.js", "/client/audio.js", "/client/world.js", "/client/cafe.js", "/vendor/three.module.min.js", "/vendor/addons/loaders/GLTFLoader.js", "/shared/catalog.js", "/client/style.css"]),
     );
     for (const [path, res] of loaded) {
       expect(res.status, `${path} didn't load`).toBe(200);
