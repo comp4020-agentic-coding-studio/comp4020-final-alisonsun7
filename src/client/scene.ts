@@ -5,6 +5,7 @@ import type { Person, PlacedSound, ServerMessage, Snapshot, SoundRemoved } from 
 import { FAMILIES, SOUNDS, findSound } from "../shared/sounds.js";
 import { figureSvg } from "./figures.js";
 import { Soundscape } from "./soundscape.js";
+import { Guide } from "./guide.js";
 import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
 
@@ -36,6 +37,7 @@ const world = new WorldView(stage, scene, mode.id, {
     zoneId = zone;
     history.replaceState(null, "", `/scene/${scene.id}?mode=${mode.id}&zone=${zone}`);
     renderZone();
+    guide.arrived(zone);
   },
   onListen: (l) => {
     reportPosition(l.x, l.z, l.yaw);
@@ -43,10 +45,16 @@ const world = new WorldView(stage, scene, mode.id, {
     here = { x: l.x, z: l.z };
   },
   onNear: (person) => showChat(person),
-  onRoom: (room) => enteredRoom(room),
+  onRoom: (room) => {
+    enteredRoom(room);
+    guide.entered(room);
+  },
   onWait: (room) => say(`Someone is in ${room.name}. Please wait: the light by the door turns green when it's free.`),
 });
 let here = { x: 0, z: 0 };
+
+// cards for someone new: a short tour, then what each part of the place offers
+const guide = new Guide(stage, zoneId, { joined: () => boot.joined, goTo: (zone) => world.goTo(zone), refocus: () => world.focusCanvas() });
 
 const soundscape = new Soundscape(world, stage, {
   canChange: () => boot.joined,
@@ -485,6 +493,7 @@ const done = (): void => {
   world.focusCanvas();
   // arriving already inside a toilet or shower asks, as walking in would
   enteredRoom(room);
+  guide.begin();
 };
 form.onsubmit = async (e) => {
   e.preventDefault();

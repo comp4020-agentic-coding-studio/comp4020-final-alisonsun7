@@ -973,3 +973,24 @@ they carry it at the chest and the legs keep their stride.
 flat; 24 screenshots 300 ms apart of a wide throw being fetched (with the
 miss forced, in a throwaway build), and 10 of the cook going to the
 fryers and back (with the wait shortened).
+
+## 39. A guide for someone new (2026-11-06)
+
+**Prompt (Wen, translated):** help people coming in for the first time get
+to know the site: a few pop-ups in different places that guide them to use
+the features and go into the different parts of the place.
+
+**Done:** `client/guide.ts`. After the arrival card, a five-step tour, each
+step outlining the control it's about: walking and looking, Go to, Leave a
+sound (only once joined), the sound switch, meeting people. Skippable.
+Then, the first time someone reaches each part of the place, a card at the
+top of the view says what's there and what to try, with a button to the
+next part (forest, creek, boardwalk, café, beach, pier and back to the
+forest), and one for the souvenir shop. Cards don't block walking. What's
+been seen is kept in this browser's localStorage, in a try/catch. The
+boardwalk's description no longer says "beach huts".
+
+**Checks:** spec and e2e against a fresh server (the guide's cards don't
+get in their way); a new visitor in Chrome: the tour's five steps, each
+outlining its control, then the boardwalk's card, whose button walks to
+the café, where the café's card shows; after a reload, no tour.
