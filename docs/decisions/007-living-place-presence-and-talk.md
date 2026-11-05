@@ -71,6 +71,26 @@ say something else or for 5 seconds. You see your own words under the box.
 Nothing said is stored. The log records that someone spoke, how many
 characters, and how many people heard, never the words.
 
+### 6. Spots you can see, and a card for each (same day, after Wen tried it)
+
+Wen saw labels only where sounds already were, heard nothing, and couldn't
+tell how to add a sound where they wanted one. Three causes: sound was off
+until a small "Enable sound" button; quiet spots showed a bare dot; adding
+meant choosing in the tray first, then the spot.
+
+- **Arriving asks about sound once:** "Enter with sound" or "Enter
+  quietly". Sound still never starts by itself; this is the click it needs.
+- **Every spot nearby has a label** saying how many sounds it has ("Water's
+  edge · quiet", "Creek · 2 sounds").
+- **Clicking a label (or a sound's ring) opens that spot's card:** what's
+  playing there, each with a volume slider for everyone (Remove on your
+  own), then the sounds that can go there, each with Listen (a preview only
+  you hear, which doesn't turn the place's sound on) and "+ Add here". It
+  says when the spot is full and how many of your four you've added. The
+  tray stays, for browsing every sound and seeing where it can go.
+- **Sound carries further:** positioned sounds now fall off more gently
+  (reference distance 4 m, roll-off 0.9).
+
 ## Consequences
 
 - Opening the seaside tomorrow shows today's sounds, at any time of day.
@@ -93,4 +113,7 @@ characters, and how many people heard, never the words.
   other with names; close together both get a talk box; words appear over
   the speaker's head, are replaced by the next, and are gone after 5 s; the
   other gets a slider for your sound; a reload keeps it; nobody is offered
-  a recording.
+  a recording; entering with sound turns it on; every spot is labelled; a
+  label opens its card; Listen and "+ Add here" add the sound, which then
+  plays; the other's label count changes; their slider on the card changes
+  your card; Remove on the card takes it away.

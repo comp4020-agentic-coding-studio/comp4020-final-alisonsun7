@@ -1,7 +1,7 @@
 // The live place. Shows the server's state and nothing else: a sound appears
 // as placed only when the server has committed it, so the page never claims
 // a change that wasn't saved.
-import { CATEGORIES, SOUNDS, checkPlace, findScene, findShot, soundsIn, type Scene, type SoundId } from "../shared/catalog.js";
+import { CATEGORIES, PER_PERSON, SOUNDS, SPOT_MAX, checkPlace, findScene, findShot, soundsIn, type Scene, type SoundId } from "../shared/catalog.js";
 import { REJECT_MESSAGES, type Committed, type Person, type Placement, type ServerMessage, type Snapshot } from "../shared/protocol.js";
 
 import { applyCommitted, formatClock, remainingMs, type LiveState } from "../shared/state.js";
@@ -272,18 +272,175 @@ async function place(anchorId: string, inShot = shotId): Promise<void> {
     document.querySelector<HTMLElement>(".chip")?.focus();
     return;
   }
-  const check = checkPlace(scene.id, inShot, anchorId, choosing);
-  if (!check.ok) {
-    say(REJECT_MESSAGES[check.code]);
-    return;
-  }
   const soundId = choosing;
-  const ok = await send({ type: "sound.add", soundId, shotId: inShot, anchorId, gain: 0.7 }, "Saving your sound…");
-  if (ok) {
+  if (await addSound(soundId, inShot, anchorId)) {
     choosing = null;
-    say(`Sound saved. Everyone here can hear it.${audio.enabled ? "" : " Enable sound to hear it too."}`);
     render();
   }
+}
+
+async function addSound(soundId: SoundId, inShot: string, anchorId: string): Promise<boolean> {
+  const check = checkPlace(scene.id, inShot, anchorId, soundId);
+  if (!check.ok) {
+    say(REJECT_MESSAGES[check.code]);
+    return false;
+  }
+  const ok = await send({ type: "sound.add", soundId, shotId: inShot, anchorId, gain: 0.7 }, "Saving your sound…");
+  if (ok) say(`${SOUNDS[soundId].label} added. Everyone here can hear it.${audio.enabled ? "" : " Turn sound on to hear it too."}`);
+  return ok;
+}
+
+// ---- a spot's card: what's playing there, and what you can add ---------
+
+let openSpot: { shot: string; anchor: string } | null = null;
+let cardSignature = "";
+const card = document.createElement("section");
+card.className = "spot-card";
+card.hidden = true;
+card.setAttribute("role", "dialog");
+if (world) stage.append(card);
+
+function openCard(inShot: string, anchorId: string): void {
+  openSpot = { shot: inShot, anchor: anchorId };
+  choosing = null;
+  render();
+  card.querySelector<HTMLElement>("[data-focus-key]")?.focus();
+}
+
+function closeCard(): void {
+  openSpot = null;
+  render();
+  world?.focusCanvas();
+}
+
+function button(text: string, key: string, onClick: () => void, cls = ""): HTMLButtonElement {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = text;
+  b.dataset.focusKey = key;
+  if (cls) b.className = cls;
+  b.onclick = onClick;
+  return b;
+}
+
+function renderCard(): void {
+  if (!world) return;
+  const found = openSpot && findShot(scene, openSpot.shot);
+  const anchor = found && found.anchors.find((a) => a.id === openSpot!.anchor);
+  if (!found || !anchor) {
+    card.hidden = true;
+    cardSignature = "";
+    return;
+  }
+  const here = live.snapshot.placements.filter((p) => p.shotId === found.id && p.anchorId === anchor.id);
+  const mineCount = live.snapshot.placements.filter((p) => p.ownerId === me()?.id).length;
+  // rebuild only when something on the card changed, so a slider isn't
+  // replaced under your finger
+  const signature = JSON.stringify([found.id, anchor.id, here.map((p) => [p.id, p.gain, p.revision]), boot.joined, audio.enabled, mineCount]);
+  card.hidden = false;
+  if (signature === cardSignature) return;
+  cardSignature = signature;
+  card.setAttribute("aria-label", `Sounds at ${anchor.label}`);
+  card.textContent = "";
+
+  const head = document.createElement("header");
+  const h = document.createElement("h3");
+  h.textContent = anchor.label;
+  const where = document.createElement("span");
+  where.className = "card-where";
+  where.textContent = found.title;
+  head.append(h, where, button("Close", "card-close", closeCard, "card-close"));
+  card.append(head);
+
+  if (!audio.enabled) {
+    const off = document.createElement("p");
+    off.className = "card-sound-off";
+    off.append("Sound is off. ", button("Turn sound on", "card-sound", () => void turnSoundOn(), "link-btn"));
+    card.append(off);
+  }
+
+  const h4a = document.createElement("h4");
+  h4a.textContent = "Playing here";
+  const playing = document.createElement("ul");
+  playing.className = "card-list";
+  if (here.length === 0) playing.innerHTML = `<li class="empty">Nothing yet: this spot is quiet.</li>`;
+  for (const p of here) {
+    const li = document.createElement("li");
+    const mine = p.ownerId === me()?.id;
+    const name = document.createElement("span");
+    name.className = "card-sound";
+    name.textContent = SOUNDS[p.soundId].label;
+    const by = document.createElement("span");
+    by.className = "card-by";
+    by.textContent = mine ? "yours" : `by ${p.ownerName}`;
+    li.append(name, by);
+    if (boot.joined && (mine || living)) {
+      const vol = document.createElement("input");
+      vol.type = "range";
+      vol.min = "0";
+      vol.max = "100";
+      vol.step = "5";
+      vol.value = String(Math.round((volumeWaiting.get(p.id) ?? p.gain) * 100));
+      vol.dataset.focusKey = `card-vol:${p.id}`;
+      vol.setAttribute("aria-label", `Volume of ${mine ? "your" : `${p.ownerName}'s`} ${SOUNDS[p.soundId].label.toLowerCase()}, for everyone`);
+      vol.onchange = () => void setVolume(p.id, Number(vol.value) / 100);
+      li.append(vol);
+    } else {
+      const v = document.createElement("span");
+      v.className = "vol";
+      v.textContent = `${Math.round(p.gain * 100)}%`;
+      li.append(v);
+    }
+    if (mine) li.append(button("Remove", `card-remove:${p.id}`, () => void send({ type: "sound.remove", placementId: p.id, baseRevision: p.revision }, "Removing…").then((ok) => ok && say("Sound removed.")), "remove"));
+    playing.append(li);
+  }
+  card.append(h4a, playing);
+
+  const h4b = document.createElement("h4");
+  h4b.textContent = "Add a sound here";
+  const options = document.createElement("ul");
+  options.className = "card-list";
+  const full = living && here.length >= SPOT_MAX;
+  for (const id of anchor.sounds) {
+    const li = document.createElement("li");
+    const name = document.createElement("span");
+    name.className = "card-sound";
+    name.textContent = SOUNDS[id].label;
+    const listen = button("▶ Listen", `card-listen:${id}`, () => void audio.preview(id).then((ok) => ok || say("This browser wouldn't play sound.")), "link-btn");
+    listen.setAttribute("aria-label", `Listen to ${SOUNDS[id].label.toLowerCase()} (only you hear this)`);
+    li.append(name, listen);
+    if (boot.joined) {
+      const add = button("+ Add here", `card-add:${id}`, () => void addSound(id, found.id, anchor.id), "btn primary small");
+      add.disabled = full;
+      li.append(add);
+    }
+    options.append(li);
+  }
+  card.append(h4b, options);
+
+  const foot = document.createElement("p");
+  foot.className = "card-foot";
+  if (!boot.joined) {
+    foot.append("Choose a name to add sounds: ");
+    const a = document.createElement("a");
+    a.href = "#tray";
+    a.textContent = "join below";
+    foot.append(a);
+  } else if (full) foot.textContent = `This spot has ${SPOT_MAX} sounds, as many as it holds. Try one nearby.`;
+  else foot.textContent = `You've added ${mineCount} of ${PER_PERSON}.${living && mineCount >= PER_PERSON ? " Adding another replaces your oldest." : ""}`;
+  card.append(foot);
+}
+
+async function turnSoundOn(): Promise<boolean> {
+  const ok = await audio.enable();
+  if (ok) {
+    toggle.textContent = "Mute";
+    toggle.setAttribute("aria-pressed", "true");
+    syncAudio();
+  } else say("This browser wouldn't start audio. Everything else still works.");
+  renderHint();
+  render();
+  return ok;
 }
 
 // ---- rendering ----------------------------------------------------------
@@ -585,6 +742,8 @@ function syncAudio(): void {
     sources.set(p.id, { soundId: p.soundId, gain: p.gain, pan: p.pan, away, onPlay: away ? undefined : () => pulse(stage, p.id) });
   }
   audio.sync(sources);
+  // for the end-to-end checks: how many of the place's sounds are playing
+  stage.dataset.playing = String(audio.playing);
 }
 
 // Rebuilding the lists and tray replaces their controls; put focus back on
@@ -613,13 +772,15 @@ function draw(): void {
       mineId: me()?.id ?? null,
       choosing,
       selected,
-      onAnchor: (zone, id) => void place(id, zone),
+      openSpot: openSpot ? `${openSpot.shot}/${openSpot.anchor}` : null,
+      // with a sound chosen in the tray, a spot takes it; otherwise it opens
+      onAnchor: (zone, id) => (choosing ? void place(id, zone) : openCard(zone, id)),
       onMarker: (id) => {
-        selected = selected === id ? null : id;
-        render();
-        document.querySelector<HTMLElement>(`.sound-row[data-placement="${id}"] .sound-name`)?.focus();
+        const p = live.snapshot.placements.find((x) => x.id === id);
+        if (p) openCard(p.shotId, p.anchorId);
       },
     });
+    renderCard();
   } else drawShot(stage, scene, shot, live.snapshot.placements, {
     interactive: boot.joined,
     mineId: me()?.id ?? null,
@@ -700,13 +861,28 @@ toggle.onclick = async () => {
     await audio.disable();
     toggle.textContent = "Enable sound";
     toggle.setAttribute("aria-pressed", "false");
-  } else if (await audio.enable()) {
-    toggle.textContent = "Mute";
-    toggle.setAttribute("aria-pressed", "true");
-    syncAudio();
-  } else say("This browser wouldn't start audio. Everything else still works.");
-  renderHint();
+    renderHint();
+    render();
+  } else await turnSoundOn();
 };
+
+// Arriving in a walkable place: one clear choice about sound (browsers need
+// a click before anything plays, and sound never starts by itself).
+if (world) {
+  const enter = document.createElement("div");
+  enter.className = "enter-card";
+  enter.innerHTML = `<div class="enter-box"><h2></h2><p>Walk with W A S D or the arrow keys, and drag to look around. Every label is a place for a sound: click one to hear what's there and add your own.</p><div class="enter-actions"><button type="button" class="btn primary" data-sound="on">Enter with sound</button><button type="button" class="btn ghost" data-sound="off">Enter quietly</button></div></div>`;
+  enter.querySelector("h2")!.textContent = scene.title;
+  stage.append(enter);
+  const go = async (withSound: boolean): Promise<void> => {
+    enter.remove();
+    if (withSound) await turnSoundOn();
+    world.focusCanvas();
+  };
+  enter.querySelector<HTMLButtonElement>('[data-sound="on"]')!.onclick = () => void go(true);
+  enter.querySelector<HTMLButtonElement>('[data-sound="off"]')!.onclick = () => void go(false);
+  enter.querySelector<HTMLButtonElement>('[data-sound="on"]')!.focus();
+}
 
 const ambience = $<HTMLInputElement>("ambience");
 ambience.disabled = false;
@@ -724,6 +900,10 @@ if (trayToggle) {
 }
 
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && openSpot) {
+    closeCard();
+    return;
+  }
   if (e.key === "Escape" && choosing) {
     choosing = null;
     render();

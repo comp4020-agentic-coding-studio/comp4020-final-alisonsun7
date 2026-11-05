@@ -83,12 +83,42 @@ export class AudioEngine {
     }
   }
 
+  // Sound is on only when the person turned it on; a preview alone doesn't
+  // count, so it never starts the place playing.
+  private on = false;
+
   get enabled(): boolean {
-    return this.ctx !== null && this.ctx.state === "running";
+    return this.on && this.ctx !== null && this.ctx.state === "running";
+  }
+
+  // How many of the place's sounds are playing now.
+  get playing(): number {
+    return this.enabled ? this.voices.size : 0;
+  }
+
+  // One occurrence of a sound, for this person only, to hear before adding
+  // it. Must be called from a click or keypress.
+  async preview(soundId: SoundId): Promise<boolean> {
+    if (!(await this.ready())) return false;
+    const ctx = this.ctx!;
+    const g = ctx.createGain();
+    g.gain.value = 0.8;
+    g.connect(this.master!);
+    VOICES[soundId](ctx, g, ctx.currentTime + 0.05);
+    setTimeout(() => g.disconnect(), 12000);
+    return true;
   }
 
   // Must be called from a click or keypress.
   async enable(): Promise<boolean> {
+    if (!(await this.ready())) return false;
+    this.on = true;
+    this.start();
+    return this.enabled;
+  }
+
+  // The audio context, made and running (from a click or keypress).
+  private async ready(): Promise<boolean> {
     try {
       if (!this.ctx) {
         const ctx = new AudioContext();
@@ -109,14 +139,14 @@ export class AudioEngine {
         this.ambienceBus = bus;
       }
       await this.ctx.resume();
-      this.start();
-      return this.enabled;
+      return this.ctx.state === "running";
     } catch {
       return false;
     }
   }
 
   async disable(): Promise<void> {
+    this.on = false;
     this.stop();
     for (const id of [...this.voices.keys()]) this.drop(id);
     await this.ctx?.suspend();
@@ -150,8 +180,9 @@ export class AudioEngine {
     if (panner instanceof PannerNode) {
       panner.panningModel = "HRTF";
       panner.distanceModel = "inverse";
-      panner.refDistance = 2.5;
-      panner.rolloffFactor = 1.3;
+      // heard clearly within a few metres, and still faintly across the beach
+      panner.refDistance = 4;
+      panner.rolloffFactor = 0.9;
       panner.maxDistance = 80;
     }
     const muffle = ctx.createBiquadFilter();
@@ -231,7 +262,7 @@ export class AudioEngine {
     if (hidden) {
       this.stop();
       await this.ctx.suspend();
-    } else if (this.voicesWanted()) {
+    } else if (this.on && this.voicesWanted()) {
       await this.ctx.resume();
       const now = this.ctx.currentTime;
       for (const live of this.voices.values()) live.next = Math.max(live.next, now + 0.1);

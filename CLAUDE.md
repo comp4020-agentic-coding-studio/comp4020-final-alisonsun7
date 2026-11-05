@@ -76,7 +76,9 @@ unlisted, but their pages and memories still work.
 - **Never claim a save that didn't happen.** A failed seal shows "failed",
   keeps every sound, and can be retried. Offline, the page says changes
   aren't being saved and sends nothing.
-- **Sound starts only after "Enable sound".** All sounds are synthesised in
+- **Sound starts only after "Enable sound"** (or "Enter with sound" on
+  arriving; a card's Listen preview plays one sound to you alone and never
+  turns the place on). All sounds are synthesised in
   the browser (no samples, no recordings). Hidden tabs suspend audio. In the
   world, each sound is positioned at its spot and heard from the camera.
 - **Persistence.** `/data/sound-of-a-city.db` on the Fly volume. The old

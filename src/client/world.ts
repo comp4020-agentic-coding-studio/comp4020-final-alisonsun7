@@ -27,6 +27,8 @@ export interface WorldDrawOptions {
   selected: string | null;
   onAnchor?: (shotId: string, anchorId: string) => void;
   onMarker?: (placementId: string) => void;
+  // the spot whose card is open ("shot/anchor"), drawn as chosen
+  openSpot?: string | null;
 }
 
 export interface Listener {
@@ -291,10 +293,19 @@ export class WorldView {
     this.syncMarkers();
     for (const s of this.spots) {
       const accepts = opts.choosing !== null && s.anchor.sounds.includes(opts.choosing);
+      const key = `${s.shotId}/${s.anchor.id}`;
+      // every spot says what it is and how many sounds it has
+      const n = placements.filter((p) => p.shotId === s.shotId && p.anchorId === s.anchor.id).length;
+      const label = `${s.anchor.label} · ${n === 0 ? "quiet" : `${n} ${n === 1 ? "sound" : "sounds"}`}`;
+      s.el.querySelector(".spot-label")!.textContent = label;
+      s.el.classList.toggle("has-sounds", n > 0);
+      s.el.classList.toggle("open", opts.openSpot === key);
       s.el.classList.toggle("accepts", accepts);
       s.el.classList.toggle("dim", opts.choosing !== null && !accepts);
-      s.el.disabled = !opts.interactive;
-      s.el.setAttribute("aria-label", accepts ? `Put ${SOUNDS[opts.choosing!].label.toLowerCase()} at ${s.anchor.label.toLowerCase()}` : s.anchor.label);
+      s.el.setAttribute(
+        "aria-label",
+        accepts ? `Put ${SOUNDS[opts.choosing!].label.toLowerCase()} at ${s.anchor.label.toLowerCase()}` : `${label}. Open to hear, add or change sounds here.`,
+      );
     }
     this.layoutOverlay(true);
   }

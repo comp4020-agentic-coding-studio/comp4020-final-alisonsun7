@@ -381,3 +381,19 @@ the world. All three changed (ADR 007).
 
 **Not run:** Docker build, deploy, a real phone, two people on different
 networks.
+
+## 15. Spot labels and cards; hearing anything (2026-11-05)
+
+**Prompt (Wen):** build the spot labels and the click-to-adjust card; "I
+only see labels where there are sounds, I don't actually hear anything, and
+after clicking a label I don't know how to add a sound where I want it."
+
+**Causes found:** sound was off until a small top-right button; quiet spots
+had no label; adding needed the tray first. Fixed as in ADR 007 §6.
+
+**Checked:** `e2e/meet-and-talk.mjs` 19/19, including that the audio engine
+is actually playing the added sound (`data-playing`), not only that the UI
+shows it. `pnpm check` 93/93; `world-two-browsers` 9/9 (it now dismisses
+the arrival card); `two-browsers` 29/29.
+
+**Not run:** listening by ear (headless Chrome plays to no device).

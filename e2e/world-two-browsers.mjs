@@ -39,6 +39,8 @@ await a.goto(`${base}/scene/seaside?mode=weekday&shot=boardwalk`);
 await b.goto(`${base}/scene/seaside?mode=weekday&shot=tables`);
 await a.waitForSelector("canvas.world-canvas");
 await b.waitForSelector("canvas.world-canvas");
+// arriving: choose to enter quietly
+for (const p of [a, b]) await p.click('.enter-card [data-sound="off"]');
 
 // Go to the counter, choose the espresso machine, click the glowing spot.
 await a.click('#shots a[data-shot="counter"]');

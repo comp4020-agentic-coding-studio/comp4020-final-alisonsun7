@@ -39,6 +39,10 @@ await a.goto(`${base}/scene/seaside?mode=morning&shot=beach`);
 await b.goto(`${base}/scene/seaside?mode=rainy-dusk&shot=beach`);
 await a.waitForSelector("canvas.world-canvas");
 await b.waitForSelector("canvas.world-canvas");
+// Ada enters with sound, Bo quietly
+await a.click('.enter-card [data-sound="on"]');
+await b.click('.enter-card [data-sound="off"]');
+check((await a.locator("#sound-toggle").getAttribute("aria-pressed")) === "true", "entering with sound turns sound on");
 await a.waitForTimeout(1500);
 
 // Bo walks a few steps ahead of Ada, towards the sea
@@ -77,24 +81,48 @@ check((await bubble.textContent().catch(() => "")) === "Want a coffee?", "his ne
 await a.waitForTimeout(5300);
 check(await bubble.count() === 0, "and are gone after 5 s");
 
-// Ada adds a sound; Bo can turn it up; it's still there after Bo reloads
+// Ada clicks the label at the water's edge: its card says what can go
+// there; she listens, then adds waves, and hears them playing
 await a.locator("#chat-input").blur();
-await a.click('.cat:has-text("Nature")');
-await a.click('.chip:has-text("Waves")');
-const spot = a.locator('.world-spot.accepts:not([hidden])[data-anchor="beach/shoreline"]');
-await spot.waitFor({ timeout: 3000 }).catch(() => undefined);
-await spot.click().catch(() => undefined);
-const row = b.locator("#theirs .sound-row", { hasText: "Waves" }).first();
-await row.waitFor({ timeout: 3000 }).catch(() => undefined);
-check(await row.locator("input[type=range]").count() === 1, "Bo gets a volume slider for Ada's sound");
+const shore = a.locator('.world-spot[data-anchor="beach/shoreline"]:not([hidden])');
+await shore.waitFor({ timeout: 4000 }).catch(() => undefined);
+check(((await shore.textContent().catch(() => "")) ?? "").includes("Water's edge · quiet"), "every spot has a label, quiet ones too");
+await shore.click().catch(() => undefined);
+const card = a.locator(".spot-card:not([hidden])");
+await card.waitFor({ timeout: 3000 }).catch(() => undefined);
+check((await card.locator("h3").textContent().catch(() => "")) === "Water's edge", "clicking a label opens that spot's card");
+check((await card.locator(".card-list li", { hasText: "Waves" }).count()) === 1, "the card lists the sounds that can go there");
+await card.locator('[data-focus-key="card-listen:waves"]').click();
+await card.locator('[data-focus-key="card-add:waves"]').click();
+await a.waitForTimeout(600);
+check((await card.locator(".card-list li", { hasText: "yours" }).count()) === 1, "+ Add here puts it there, shown as yours");
+if (out) await a.screenshot({ path: `${out}/card-ada.jpg`, type: "jpeg", quality: 75 });
+check(Number(await a.locator("#stage").getAttribute("data-playing")) >= 1, `and Ada hears it playing (${await a.locator("#stage").getAttribute("data-playing")} playing)`);
+
+// Bo sees the label change, opens the same card and turns Ada's waves up
+const boShore = b.locator('.world-spot[data-anchor="beach/shoreline"]');
+await b.waitForTimeout(500);
+check(((await boShore.textContent()) ?? "").includes("1 sound"), "Bo's label for the spot now says 1 sound");
+await b.locator('#shots a[data-shot="beach"]').click();
+await b.waitForTimeout(600);
+await boShore.click().catch(() => undefined);
+const boCard = b.locator(".spot-card:not([hidden])");
+await boCard.waitFor({ timeout: 3000 }).catch(() => undefined);
+const slider = boCard.locator('input[type="range"]').first();
+await slider.fill("100").catch(() => undefined);
+await slider.dispatchEvent("change").catch(() => undefined);
+await a.waitForTimeout(800);
+check((await card.locator('input[type="range"]').first().inputValue().catch(() => "")) === "100", "Bo turns Ada's waves up from the card, and Ada's card shows it");
+
 await b.reload();
 await b.waitForSelector("canvas.world-canvas");
 check(await b.locator("#theirs .sound-row", { hasText: "Waves" }).count() >= 1, "after a reload Ada's sound is still there");
 check(await b.getByText("Start a 3-minute memory").count() === 0 && await a.getByText("Start a 3-minute memory").count() === 0, "nobody is offered a 3-minute recording");
 
 // tidy: Ada takes her sound away again
-const mine = a.locator("#mine .sound-row", { hasText: "Waves" }).first();
-await mine.locator(".remove").click().catch(() => undefined);
+await card.locator(".remove").first().click().catch(() => undefined);
+await a.waitForTimeout(400);
+check((await card.locator(".card-list li.empty").count()) === 1, "Remove on the card takes it away");
 
 check(errors.length === 0, `no page errors${errors.length ? `: ${errors.join(" | ")}` : ""}`);
 await browser.close();

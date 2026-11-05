@@ -2209,3 +2209,209 @@ h3 {
 .chat-mine[hidden] {
   display: none;
 }
+
+/* every spot's label is always there (nearby ones), saying how many sounds */
+.world-spot .spot-label {
+  opacity: calc(0.35 + 0.65 * var(--near, 1));
+  font-size: calc(11px + 2px * var(--near, 1));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.world-spot.has-sounds .spot-label {
+  border-color: rgba(217, 162, 91, 0.75);
+}
+
+.world-spot.has-sounds .spot-dot {
+  border-color: var(--amber);
+  background: rgba(217, 162, 91, 0.45);
+}
+
+.world-spot:hover .spot-label,
+.world-spot:focus-visible .spot-label,
+.world-spot.open .spot-label {
+  opacity: 1;
+  background: rgba(40, 33, 24, 0.95);
+  border-color: var(--amber);
+}
+
+.world-spot.open .spot-dot {
+  box-shadow: 0 0 0 6px rgba(217, 162, 91, 0.35);
+}
+
+/* the rings above a spot pulse with its sounds; the spot's label names them */
+.world-marker .marker-label {
+  display: none;
+}
+
+.world-marker:hover .marker-label,
+.world-marker:focus-visible .marker-label {
+  display: block;
+}
+
+/* a spot's card */
+.spot-card {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 9;
+  width: min(330px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  background: rgba(24, 21, 17, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.spot-card[hidden] {
+  display: none;
+}
+
+.spot-card header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.spot-card h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.card-where {
+  font-size: 12px;
+  color: var(--ink-faint);
+  flex: 1;
+}
+
+.card-close {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font: 500 12px var(--font);
+  cursor: pointer;
+}
+
+.spot-card h4 {
+  margin: 12px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-list li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  background: var(--bg-3);
+  border-radius: 10px;
+  padding: 7px 10px;
+}
+
+.card-list li.empty {
+  background: none;
+  color: var(--ink-faint);
+  font-size: 13px;
+  padding: 2px 0;
+}
+
+.card-sound {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.card-by {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.card-list input[type="range"] {
+  flex-basis: 100%;
+  accent-color: var(--amber);
+}
+
+.card-sound-off {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: rgba(217, 162, 91, 0.12);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.card-foot {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.btn.small {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+/* arriving: one choice about sound */
+.enter-card {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: rgba(12, 10, 8, 0.55);
+  backdrop-filter: blur(3px);
+  padding: 16px;
+}
+
+.enter-box {
+  max-width: 420px;
+  background: rgba(24, 21, 17, 0.96);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 22px;
+  text-align: center;
+}
+
+.enter-box h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.enter-box p {
+  margin: 0 0 16px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.enter-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 520px) {
+  .spot-card {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: 8px;
+    width: auto;
+    max-height: 60%;
+  }
+}
