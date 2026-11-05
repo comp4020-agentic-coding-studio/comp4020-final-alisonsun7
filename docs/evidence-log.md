@@ -994,3 +994,38 @@ boardwalk's description no longer says "beach huts".
 get in their way); a new visitor in Chrome: the tour's five steps, each
 outlining its control, then the boardwalk's card, whose button walks to
 the café, where the café's card shows; after a reload, no tour.
+
+## 40. A creek and a sea more like real ones (2026-11-06)
+
+**Prompt (Wen, translated):** the creek and the sea still aren't natural
+enough; look at real seas and creeks and redesign them, but keep the sea's
+colour, which Wen likes.
+
+**Done:** the creek was a straight, flat, 124 m canal between two brown
+boards. Now (`buildCreek`, `creekBed`): its course wanders either side of
+the old line and its width changes; the ground slopes down from the forest
+floor to the water's edge and on to a bed 0.75 m down, darker and siltier
+towards and under the water; the water is clear at the edges, where the
+bed shows, and deeper and darker in the middle (per-vertex colour and
+alpha), a forest stream's olive green that reflects the sky, its ripples
+running downstream. Boulders sit in and beside it, pebbles along the
+water's edge, grass up the banks (`creekStones`). The collision band and
+footbridge are unchanged.
+
+The sea keeps its colours. Its swell is four waves from different
+directions rather than two; its ripples are a new normal map of 24 waves
+of random direction and size (tiling), sampled where the water is at two
+sizes and angles, each drifting its own way, and softening with distance.
+The old map, three sines repeated 240 times, showed as rows of dots and
+then, sampled at world scale, as a lattice. A swash now runs up the sand
+behind the foam and slides back: a thin clear sheet with a wavy edge.
+
+**Failures and corrections:** the first ripple change did nothing:
+`onBeforeCompile` sees `#include <normal_fragment_maps>`, not the line I
+replaced; it now replaces the include. The first creek was a bright,
+pool-like teal; now olive. The first world-scale ripples made a diamond
+lattice at mid distance; hence the irregular map and the distance fade.
+
+**Checks:** spec and e2e against a fresh server; screenshots of the creek
+from the edge of the forest and the bridge, the sea from the sand and the
+pier, before and after each change, and of the swash in and out.

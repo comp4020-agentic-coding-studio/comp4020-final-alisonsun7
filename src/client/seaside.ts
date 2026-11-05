@@ -37,6 +37,23 @@ const CREEK_HALF = 6.2;
 const CREEK_Z = -62.8 - CREEK_HALF;
 const BRIDGE = { x0: -3.7, x1: -0.3 };
 
+// The creek's course within its band: its middle wanders either side of
+// CREEK_Z and its width changes, as a stream's does.
+const CREEK_LEVEL = -0.28; // the water's surface
+const creekMid = (x: number): number => CREEK_Z + 1.5 * Math.sin(x * 0.075 + 0.6) + 0.7 * Math.sin(x * 0.19 + 2.1);
+const creekHalfAt = (x: number): number => 2.8 + 0.7 * Math.sin(x * 0.11 + 1.3) + 0.3 * Math.sin(x * 0.29);
+// How far across the stream (x, z) is: 0 in the middle, 1 at the water's
+// edge, more up the bank.
+const acrossCreek = (x: number, z: number): number => Math.abs(z - creekMid(x)) / creekHalfAt(x);
+// The ground across the band: a bed 0.75 m down in the middle, rising to the
+// water's edge and up the bank to the forest floor, which it meets at the
+// band's edges.
+function creekBed(x: number, z: number): number {
+  const d = acrossCreek(x, z);
+  const y = d < 1 ? -0.75 + 0.47 * d * d : CREEK_LEVEL * (1 - THREE.MathUtils.smoothstep(d, 1, 1.7));
+  return y * THREE.MathUtils.smoothstep(CREEK_HALF - Math.abs(z - CREEK_Z), 0, 0.8);
+}
+
 // The trail, as points it bends through.
 const TRAIL: [number, number][] = [
   [0, -133],
@@ -530,56 +547,98 @@ let doors: Door[] = [];
 let doorTime = 0;
 let foamMaterial: THREE.MeshStandardMaterial | null = null;
 let shoreFoam: THREE.Mesh | null = null;
+let swash: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial> | null = null;
 const breakers: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>[] = [];
 const rippleMaps: THREE.Texture[] = [];
 
-// Water: a standard material (so it reflects the sky) with gentle waves
-// added in the vertex shader.
-function water(colour: number, amp: number, scale: number, roughness: number, reflect = 0.45, ocean = false): THREE.MeshStandardMaterial {
+// Water: a standard material (so it reflects the sky) with waves added in
+// the vertex shader: four swells from different directions, so no single
+// line of them repeats. Its small ripples are one normal texture sampled
+// twice where the water is, at two sizes and angles, each drifting its own
+// way (`flow`, metres a second), so they never show as a tiled pattern and a
+// creek's run downstream.
+function water(colour: number, amp: number, scale: number, roughness: number, reflect = 0.45, ocean = false, flow: [number, number] = [0.02, 0.013], rippleSize = 3): THREE.MeshStandardMaterial {
   // a bright sky would otherwise turn the water white at a low angle
   const mat = new THREE.MeshStandardMaterial({ color: colour, roughness, metalness: 0, envMapIntensity: reflect });
   seaTime ??= { value: 0 };
-  // Small ripples catch the sky between broad geometric swells.
-  const ripple = canvasTexture(128, 128, (g) => {
-    const pixels = g.createImageData(128, 128);
-    for (let y = 0; y < 128; y++) for (let x = 0; x < 128; x++) {
-      const u = x / 128 * Math.PI * 2, v = y / 128 * Math.PI * 2;
-      const i = (y * 128 + x) * 4;
-      pixels.data[i] = 128 + 24 * Math.cos(u * 3 + v * 2 + Math.sin(v * 3)) + 15 * Math.sin(u * 7 - v * 4);
-      pixels.data[i + 1] = 128 + 23 * Math.sin(v * 4 + u * 2 + Math.cos(u * 5));
-      pixels.data[i + 2] = 245;
-      pixels.data[i + 3] = 255;
-    }
+  // Small ripples catch the sky between the swells: a normal map from
+  // twenty-four waves of random direction and size (whole numbers of them
+  // across the tile, so it tiles), irregular enough not to show a pattern.
+  const ripple = canvasTexture(256, 256, (g) => {
+    const r = mulberry(17);
+    const waves = Array.from({ length: 24 }, () => {
+      const kx = Math.round((r() - 0.5) * 22);
+      const ky = Math.round((r() - 0.5) * 22) || 1;
+      return { kx, ky, phase: r() * Math.PI * 2, a: 1 / Math.hypot(kx, ky) };
+    });
+    const pixels = g.createImageData(256, 256);
+    for (let y = 0; y < 256; y++)
+      for (let x = 0; x < 256; x++) {
+        let dx = 0;
+        let dy = 0;
+        for (const w of waves) {
+          const c = Math.cos(((w.kx * x + w.ky * y) / 256) * Math.PI * 2 + w.phase) * w.a;
+          dx += c * w.kx;
+          dy += c * w.ky;
+        }
+        const i = (y * 256 + x) * 4;
+        pixels.data[i] = 128 - dx * 9;
+        pixels.data[i + 1] = 128 - dy * 9;
+        pixels.data[i + 2] = 240;
+        pixels.data[i + 3] = 255;
+      }
     g.putImageData(pixels, 0, 0);
   }, ocean ? [240, 120] : [32, 4]);
   ripple.colorSpace = THREE.NoColorSpace;
   mat.normalMap = ripple;
   rippleMaps.push(ripple);
   mat.normalScale.set(0.32, 0.32);
-  mat.customProgramCacheKey = () => `coastal-water-${scale}-${amp}-${ocean}`;
+  mat.customProgramCacheKey = () => `coastal-water-${scale}-${amp}-${ocean}-${flow}-${rippleSize}`;
+  const k = (n: number): string => (n * scale).toFixed(3);
+  const f = (n: number): string => n.toFixed(4);
+  // the swells: [direction x, direction z, wavenumber, speed, share]
+  const swells: [number, number, number, number, number][] = [
+    [0.2, 0.98, 0.18, 0.9, 0.5],
+    [-0.42, 0.91, 0.31, 1.3, 0.28],
+    [0.71, 0.71, 0.53, 1.7, 0.14],
+    [-0.9, 0.44, 0.9, 2.3, 0.08],
+  ];
+  const height = swells.map(([dx, dz, n, sp, a]) => `${f(a)} * sin(dot(p, vec2(${f(dx)}, ${f(dz)})) * ${k(n)} + uTime * ${f(sp)})`).join(" + ");
+  const slopeX = swells.map(([dx, dz, n, sp, a]) => `${f(a * dx * n * scale)} * cos(dot(p, vec2(${f(dx)}, ${f(dz)})) * ${k(n)} + uTime * ${f(sp)})`).join(" + ");
+  const slopeZ = swells.map(([dx, dz, n, sp, a]) => `${f(a * dz * n * scale)} * cos(dot(p, vec2(${f(dx)}, ${f(dz)})) * ${k(n)} + uTime * ${f(sp)})`).join(" + ");
+  const swellFns = `float swellH(vec2 p) { return ${height}; }
+vec2 swellD(vec2 p) { return vec2(${slopeX}, ${slopeZ}); }`;
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = seaTime!;
     shader.vertexShader = shader.vertexShader
-      .replace("#include <common>", "#include <common>\nuniform float uTime;\nvarying vec3 vWaterWorld;")
+      .replace("#include <common>", `#include <common>\nuniform float uTime;\nvarying vec3 vWaterWorld;\n${swellFns}`)
       .replace(
         "#include <begin_vertex>",
         `vec3 transformed = vec3(position);
          vec4 wp = modelMatrix * vec4(position, 1.0);
-         float w1 = sin(wp.x * ${(0.18 * scale).toFixed(3)} + uTime * 0.9);
-         float w2 = sin(wp.z * ${(0.27 * scale).toFixed(3)} + uTime * 1.3 + wp.x * 0.05);
          float shore = ${ocean ? `smoothstep(${WATERLINE.toFixed(1)}, ${(WATERLINE + 12).toFixed(1)}, wp.z)` : "1.0"};
-         transformed.z += (w1 * 0.6 + w2 * 0.4) * ${amp.toFixed(3)} * shore;
+         transformed.z += swellH(wp.xz) * ${f(amp * 1.3)} * shore;
          vWaterWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;`,
       )
       .replace(
         "#include <beginnormal_vertex>",
         `vec4 wpn = modelMatrix * vec4(position, 1.0);
-         float dx = cos(wpn.x * ${(0.18 * scale).toFixed(3)} + uTime * 0.9) * ${(0.18 * scale * 0.6 * amp).toFixed(4)};
-         float dz = cos(wpn.z * ${(0.27 * scale).toFixed(3)} + uTime * 1.3 + wpn.x * 0.05) * ${(0.27 * scale * 0.4 * amp).toFixed(4)};
-         vec3 objectNormal = normalize(vec3(-dx, dz, 1.0));`,
+         float shoreN = ${ocean ? `smoothstep(${WATERLINE.toFixed(1)}, ${(WATERLINE + 12).toFixed(1)}, wpn.z)` : "1.0"};
+         vec2 slope = swellD(wpn.xz) * ${f(amp * 1.3)} * shoreN;
+         vec3 objectNormal = normalize(vec3(-slope.x, slope.y, 1.0));`,
       );
     shader.fragmentShader = shader.fragmentShader
       .replace("#include <common>", "#include <common>\nuniform float uTime;\nvarying vec3 vWaterWorld;")
+      .replace(
+        "#include <normal_fragment_maps>",
+        `vec2 wuv = vWaterWorld.xz;
+         vec3 nA = texture2D( normalMap, wuv / ${f(rippleSize)} - uTime * vec2(${f(flow[0] / rippleSize)}, ${f(flow[1] / rippleSize)}) ).xyz * 2.0 - 1.0;
+         vec3 nB = texture2D( normalMap, mat2(0.8, -0.6, 0.6, 0.8) * wuv / ${f(rippleSize * 2.7)} - uTime * vec2(${f((flow[0] * 0.6) / (rippleSize * 2.7))}, ${f((flow[1] * 1.3 + 0.004) / (rippleSize * 2.7))}) ).xyz * 2.0 - 1.0;
+         vec3 mapN = normalize(vec3(nA.xy + nB.xy, nA.z * nB.z));
+         // far off, the ripples blur into a smoother sheen, as they do
+         mapN.xy *= normalScale * mix(1.0, 0.3, smoothstep(25.0, 220.0, distance(vWaterWorld, cameraPosition)));
+         normal = normalize( tbn * mapN );`,
+      )
       .replace("#include <color_fragment>", `#include <color_fragment>
         float rippleLight = sin(vWaterWorld.x * 1.3 + vWaterWorld.z * 2.1 + uTime * 0.7)
           * sin(vWaterWorld.x * 0.8 - vWaterWorld.z * 1.5 - uTime * 0.5);
@@ -590,6 +649,94 @@ function water(colour: number, amp: number, scale: number, roughness: number, re
         diffuseColor.rgb += (1.0 - depth) * pow(max(0.0, rippleLight), 8.0) * 0.065;` : "diffuseColor.rgb *= 1.0 + rippleLight * 0.09;"}`);
   };
   return mat;
+}
+
+// ---- the creek ---------------------------------------------------------------
+
+// The ground of the creek's band, shaped by creekBed and darkened towards
+// the water where it's wet; then the water over it: clear at the edges,
+// where the bed shows, deeper and darker in the middle, its ripples running
+// downstream (west). Stones and grass along it come with the furniture.
+function buildCreek(b: Builder, forestFloor: THREE.MeshStandardMaterial): void {
+  const x0 = -62;
+  const x1 = 62;
+  const z0 = CREEK_Z - CREEK_HALF;
+  const z1 = CREEK_Z + CREEK_HALF;
+  const cols = 248;
+  const rows = 52;
+  const ground = new THREE.PlaneGeometry(x1 - x0, z1 - z0, cols, rows);
+  ground.rotateX(-Math.PI / 2);
+  ground.translate((x0 + x1) / 2, 0, (z0 + z1) / 2);
+  const pos = ground.getAttribute("position");
+  const uv = ground.getAttribute("uv");
+  const colour = new Float32Array(pos.count * 3);
+  const c = new THREE.Color();
+  const wetMud = new THREE.Color(0x5a4c3c);
+  const bedSilt = new THREE.Color(0x8a7a5c);
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i);
+    const z = pos.getZ(i);
+    pos.setY(i, creekBed(x, z));
+    // the same texture scale as the forest floor (3.1 m a tile)
+    uv.setXY(i, (x - x0) / 124, -z / 124);
+    const d = acrossCreek(x, z);
+    if (d < 1) c.copy(bedSilt).lerp(wetMud, d);
+    else c.copy(wetMud).lerp(new THREE.Color(0xffffff), THREE.MathUtils.smoothstep(d, 1, 1.6));
+    c.toArray(colour, i * 3);
+  }
+  ground.setAttribute("color", new THREE.BufferAttribute(colour, 3));
+  ground.computeVertexNormals();
+  const bankMat = forestFloor.clone();
+  bankMat.vertexColors = true;
+  const banks = new THREE.Mesh(ground, bankMat);
+  banks.receiveShadow = true;
+  b.root.add(banks);
+
+  // the water, coloured and see-through by depth
+  const sheet = new THREE.PlaneGeometry(x1 - x0, z1 - z0, cols / 2, rows);
+  // (left upright: water() waves it in its own z, and the mesh lays it flat)
+  const wpos = sheet.getAttribute("position");
+  const rgba = new Float32Array(wpos.count * 4);
+  for (let i = 0; i < wpos.count; i++) {
+    const x = wpos.getX(i) + (x0 + x1) / 2;
+    const z = -wpos.getY(i) + (z0 + z1) / 2;
+    const depth = THREE.MathUtils.clamp((CREEK_LEVEL - creekBed(x, z)) / 0.47, 0, 1);
+    c.setRGB(0.5 + 0.35 * (1 - depth), 0.6 + 0.3 * (1 - depth), 0.55 + 0.3 * (1 - depth));
+    rgba.set([c.r, c.g, c.b, 0.38 + 0.55 * depth], i * 4);
+  }
+  sheet.setAttribute("color", new THREE.BufferAttribute(rgba, 4));
+  // a forest stream's olive green, reflecting the sky between the trees
+  const creekWater = water(0x3f5a45, 0.012, 3, 0.12, 0.7, false, [-0.45, 0.02], 1.1);
+  creekWater.vertexColors = true;
+  creekWater.transparent = true;
+  creekWater.depthWrite = false;
+  const stream = new THREE.Mesh(sheet, creekWater);
+  stream.rotation.x = -Math.PI / 2;
+  stream.position.set((x0 + x1) / 2, CREEK_LEVEL, (z0 + z1) / 2);
+  b.root.add(stream);
+}
+
+// Stones and grass along the creek, placed with the furniture: boulders in
+// and beside the stream, pebbles along the water's edge, grass up the banks.
+function creekStones(): Scatter[] {
+  const r = mulberry(41);
+  const atCreek = (n: number, from: number, to: number, size: [number, number], sink = 0): Scatter["at"] => {
+    const out: Scatter["at"] = [];
+    while (out.length < n) {
+      const x = -58 + r() * 116;
+      if (x > BRIDGE.x0 - 1.5 && x < BRIDGE.x1 + 1.5) continue;
+      const side = r() > 0.5 ? 1 : -1;
+      const z = creekMid(x) + side * creekHalfAt(x) * (from + r() * (to - from));
+      if (Math.abs(z - CREEK_Z) > CREEK_HALF - 0.3) continue;
+      out.push({ x, z, y: creekBed(x, z) - sink, turn: r() * Math.PI * 2, size: size[0] + r() * (size[1] - size[0]) });
+    }
+    return out;
+  };
+  return [
+    { id: "boulder_01", height: 0.7, at: atCreek(22, 0, 1.1, [0.5, 1.3], 0.15) },
+    { id: "rock_07", height: 0.18, at: atCreek(110, 0.8, 1.3, [0.6, 1.8]) },
+    { id: "grass_medium_02", height: 0.5, sway: 0.25, at: atCreek(140, 1.2, 1.9, [0.7, 1.4]) },
+  ];
 }
 
 // ---- building it -----------------------------------------------------------
@@ -611,7 +758,6 @@ function build(): Built {
   const wood = std(0x7a5a3e, { roughness: 0.7 });
   const darkWood = std(0x4a3526, { roughness: 0.7 });
   const metal = std(0x2a2c2f, { metalness: 0.5, roughness: 0.45 });
-  const mud = std(0x3a3226);
   const lampHead = std(0x222222, { emissive: 0xffcf8a, emissiveIntensity: 0 });
   // windows of the huts, lit at dusk
   const windows = std(0x2a3038, { emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.3 });
@@ -652,15 +798,9 @@ function build(): Built {
   buildTrees(b, trees, bark);
   edgeGrass(b);
 
-  // the creek, below the forest floor, with a footbridge where the trail
-  // crosses it
-  b.floor(mud, -62, 62, CREEK_Z - CREEK_HALF, CREEK_Z + CREEK_HALF, -0.6);
-  const creekWater = water(0x356b60, 0.035, 3, 0.26, 0.4);
-  const creek = new THREE.Mesh(new THREE.PlaneGeometry(124, CREEK_HALF * 2, 120, 6), creekWater);
-  creek.rotation.x = -Math.PI / 2;
-  creek.position.set(0, -0.32, CREEK_Z);
-  b.root.add(creek);
-  for (const z of [CREEK_Z - CREEK_HALF, CREEK_Z + CREEK_HALF]) b.box(std(0x4a3e30), -62, 62, -0.6, 0.0, z - 0.05, z + 0.05, { shadow: false });
+  // the creek: banks sloping down from the forest floor to a stream that
+  // winds and widens, with a footbridge where the trail crosses it
+  buildCreek(b, forestFloor);
   const wet = CREEK_HALF + 0.1;
   b.solids.push({ x0: -62, x1: BRIDGE.x0, z0: CREEK_Z - wet, z1: CREEK_Z + wet }, { x0: BRIDGE.x1, x1: 62, z0: CREEK_Z - wet, z1: CREEK_Z + wet });
   // the footbridge reaches a little past each bank
@@ -725,6 +865,31 @@ function build(): Built {
   foam.position.set(0, 0.02, WATERLINE + 0.6);
   b.root.add(foam);
   shoreFoam = foam;
+  // the swash: a thin, clear sheet of sea that runs up the sand behind the
+  // foam and slides back, its landward edge fading out in a wavy line
+  const swashAlpha = canvasTexture(
+    256,
+    64,
+    (g) => {
+      for (let x = 0; x < 256; x++) {
+        const edge = 18 + Math.sin((x / 256) * Math.PI * 6) * 6 + Math.sin((x / 256) * Math.PI * 22) * 2;
+        const grad = g.createLinearGradient(0, edge, 0, 64);
+        grad.addColorStop(0, "#000");
+        grad.addColorStop(0.35, "#888");
+        grad.addColorStop(1, "#fff");
+        g.fillStyle = "#000";
+        g.fillRect(x, 0, 1, edge);
+        g.fillStyle = grad;
+        g.fillRect(x, edge, 1, 64 - edge);
+      }
+    },
+    [8, 1],
+  );
+  swash = new THREE.Mesh(foamGeometry.clone(), std(0x8fe0d8, { alphaMap: swashAlpha, transparent: true, opacity: 0.5, depthWrite: false, roughness: 0.08, flatShading: false }));
+  swash.rotation.x = -Math.PI / 2;
+  swash.scale.y = 1.3;
+  swash.position.set(0, 0.012, WATERLINE);
+  b.root.add(swash);
   // Staggered, broken whitewater fronts approach the sand, then dissolve.
   // Sharing the texture and geometry adds only three small draw calls.
   for (let i = 0; i < 3; i++) {
@@ -895,6 +1060,7 @@ function scatterPoints(seed: number, n: number, pick: (r: () => number) => [numb
 const inForest = (x: number, z: number): boolean => distanceToTrail(x, z) > 2.2 && Math.abs(z - CREEK_Z) > CREEK_HALF + 0.8;
 
 const SCATTER: Scatter[] = [
+  ...creekStones(),
   { id: "fern_02", height: 0.5, sway: 0.2, at: scatterPoints(21, 260, (r) => [-46 + r() * 92, -134 + r() * 112], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
   { id: "grass_medium_02", height: 0.45, sway: 0.25, at: scatterPoints(22, 220, (r) => [-48 + r() * 96, -44 + r() * 40], [0.8, 1.8]).filter((p) => distanceToTrail(p.x, p.z) > 1.6 && !inCafe(p.x, p.z) && (p.z < -14 || p.x < -30)) },
   { id: "shrub_02", height: 1.2, sway: 0.04, at: scatterPoints(23, 40, (r) => [-46 + r() * 92, -133 + r() * 111], [0.6, 1.2]).filter((p) => distanceToTrail(p.x, p.z) > 3.5 && Math.abs(p.z - CREEK_Z) > CREEK_HALF + 1.4), solid: 0.6 },
@@ -1140,6 +1306,10 @@ export const seasideKit: PlaceKit = {
       // the wash running up the sand and back
       const s = Math.sin(t * 0.7);
       if (shoreFoam) shoreFoam.position.z = WATERLINE - 0.4 + s * 0.65;
+      if (swash) {
+        swash.position.z = WATERLINE + 0.45 + s * 0.65;
+        swash.material.opacity = 0.3 + 0.3 * (0.5 + 0.5 * s);
+      }
       foamMaterial.map.offset.set(t * 0.01, 0);
       foamMaterial.opacity = 0.45 + 0.35 * (0.5 + 0.5 * s);
     }
