@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Two people and the sounds they leave (ADR 011), through the UI: Ada
-// leaves a sound where she stands; Bo, at another time of day, sees its
+// leaves a sound where she stands; Bo sees its
 // light and is told, and his page plays it; a reload keeps it; Bo, beside
 // it, removes it and Ada sees it go. The sound switch stops what plays.
 //
@@ -38,8 +38,8 @@ const marks = (page) => page.evaluate(() => Number(document.getElementById("stag
 const voices = (page) => page.evaluate(() => Number(document.getElementById("stage").dataset.voices ?? 0));
 const toastHas = (page, text) => until(page, (t) => document.getElementById("toast").textContent.includes(t), text);
 
-const a = await person("Ada", "cat", "morning");
-const b = await person("Bo", "dog", "rainy-dusk");
+const a = await person("Ada", "cat", "weekday");
+const b = await person("Bo", "dog", "weekday");
 await a.waitForTimeout(1200);
 check((await a.getAttribute("#sound-switch", "aria-pressed")) === "true", "entering turns sound on");
 
@@ -59,7 +59,7 @@ await a.click('#sound-palette [data-sound="cafe-chatter"]');
 check(await toastHas(a, "You left Café chatter here"), "Ada is told she left it");
 check(await a.locator("#sound-palette").isHidden(), "and the palette closes");
 
-check(await until(b, (n) => Number(document.getElementById("stage").dataset.marks ?? 0) === n + 1, before, 1500), "Bo, at dusk, gets its light within a second and a half");
+check(await until(b, (n) => Number(document.getElementById("stage").dataset.marks ?? 0) === n + 1, before, 1500), "Bo gets its light within a second and a half");
 check(await toastHas(b, "Ada left Café chatter at Boardwalk"), "Bo is told who left what, and where");
 check(await until(b, () => Number(document.getElementById("stage").dataset.voices ?? 0) >= 1, undefined, 6000), "Bo's page plays it");
 const label = b.locator(".sound-label:not([hidden])", { hasText: "left by Ada" });

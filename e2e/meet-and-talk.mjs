@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Two people in the seaside (ADR 007), through the UI: each sees the other
-// standing in the world with their name, at different times of day; when
+// standing in the world with their name; when
 // they're close the talk box opens; what one says appears over their head
 // for the other, is replaced by what they say next, and is gone after 5 s.
 // A newcomer is asked for a name and a cat or a dog, and joins in place.
@@ -36,8 +36,9 @@ async function person(name, avatar) {
 
 const a = await person("Ada", "cat");
 const b = await person("Bo", "dog");
-// different times of day: still one world
-await a.goto(`${base}/scene/seaside?mode=morning&zone=beach`);
+// Bo comes by an old link to a retired time of day (ADR 012): still the
+// same place, with Ada in it
+await a.goto(`${base}/scene/seaside?mode=weekday&zone=beach`);
 await b.goto(`${base}/scene/seaside?mode=rainy-dusk&zone=beach`);
 await a.waitForSelector("canvas.world-canvas");
 await b.waitForSelector("canvas.world-canvas");

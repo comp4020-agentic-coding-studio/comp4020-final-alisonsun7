@@ -6,7 +6,8 @@ The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) was the starting point. The decisions in `docs/decisions/`
 record where the build went from there: 004 to 007 the walkable place, the
 CC0 assets, the forest and sea, seeing each other and talk; 010 took the old
-sound out; 011 is Wen's new sound design (003, 008 and 009 are history).
+sound out; 011 is Wen's new sound design; 012 keeps only the sunny day
+(003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -20,7 +21,7 @@ with a café, kiosk and beach huts, the beach and a pier. Built from CC0 assets,
 the people in it, who see each other and can talk when they meet, and
 leave sounds where they stand for everyone to hear (ADR 011).
 
-The place (`seaside`, three.js, three times of day) is the only one. Its
+The place (`seaside`, three.js, Sunny Day only: ADR 012) is the only one. Its
 `PlaceKit` is in `client/seaside.ts` (the café's room in `client/cafe.ts`);
 the toolkit in `client/world-build.ts`; the view in `client/world.ts`; the
 sounds people leave in `client/soundscape.ts`, with the sounds on offer and
@@ -47,8 +48,9 @@ their rules in `shared/sounds.ts`.
 - **Published images are processed derivatives only.** `public/scenes/`
   (Wen's photos, blurred, no metadata) is unused now but stays. The
   originals are gitignored and must never be committed: this repo is public.
-- **One place at every time of day (ADR 007).** Every mode shares one room
-  (`placeMode`), so everyone sees everyone.
+- **One place, one room (ADR 007, 012).** Only Sunny Day; the room keeps
+  its database name `morning` (`Scene.room`), so never change it. Retired
+  modes redirect to the sunny day.
 - **People see each other and talk when they meet (ADR 007).** Positions and
   words live in memory only; words go only to people within 12 m, appear
   over the speaker for 5 s or until replaced, and are never stored or
@@ -90,7 +92,7 @@ without Wen's go-ahead.
   in two Chrome sessions on the GPU (`--use-angle=metal`): in software
   rendering the place runs at well under 1 fps.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
-  saves screenshots of every time of day and those zones.
+  saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get
   green. A new check should be seen to fail without its fix.
 

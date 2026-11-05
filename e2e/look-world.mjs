@@ -12,10 +12,10 @@ const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 } })
 const page = await ctx.newPage();
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-for (const mode of ["morning", "weekday", "rainy-dusk"]) {
+for (const mode of (process.env.MODES ?? "weekday").split(",")) {
   for (const shot of (process.env.SHOTS ?? "bridge,lobby,tea-point,stairs").split(",")) {
     await page.goto(`${base}/scene/${process.env.SCENE ?? "campus"}?mode=${mode}&shot=${shot}`);
-    await page.waitForTimeout(mode === "morning" ? 4800 : 1500);
+    await page.waitForTimeout(1500);
     await page.screenshot({ path: `${out}/${mode}-${shot}.jpg`, type: "jpeg", quality: 70 });
   }
 }

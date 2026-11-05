@@ -603,8 +603,7 @@ function zoneAt(x: number, z: number): string {
 
 // The café's regulars, in the room's own metres: a barista behind the
 // counter, a queue, people at the tables and the window bar, two chatting by
-// the door. Busiest on a sunny day, a few early, sheltering from the rain at
-// dusk.
+// the door, and the guitarist outside on the bench by the door.
 const CAFE_PEOPLE: Record<string, [number, number, Pose][]> = {
   barista: [[8.2, 1.5, "stand"]],
   queue: [
@@ -644,8 +643,6 @@ export const seasideKit: PlaceKit = {
   zoneAt,
   regulars: {
     weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER],
-    "rainy-dusk": [...regularsOf(["barista", [0]], ["queue", [0]], ["tables", [0, 1, 3, 4, 5]], ["bar", [0, 2]], ["door", [0, 1]]), BUSKER],
-    morning: [...regularsOf(["barista", [0]], ["queue", [0]], ["tables", [3]], ["bar", [1]]), BUSKER],
   },
   passerPaths: [
     [
@@ -693,20 +690,11 @@ export const seasideKit: PlaceKit = {
   },
   rainCount: 7000,
   sunTarget: [0, 0, -10],
-  // a low morning sun from the east, a little north, across the trail and
-  // along the shore
-  sunDirs: { morning: [0.82, 0.22, -0.3], weekday: [0.3, 0.85, 0.35] },
+  // a high sun, a little south of east
+  sunDirs: { weekday: [0.3, 0.85, 0.35] },
   // mist that still lets you see the sea and the end of the pier
-  light: {
-    morning: { fogNear: 45, fogFar: 420 },
-    weekday: { fogNear: 90, fogFar: 700 },
-    "rainy-dusk": { fogNear: 14, fogFar: 170 },
-  },
-  skies: {
-    morning: { url: "/assets/skies/qwantani_dawn_puresky.hdr", intensity: 1 },
-    weekday: { url: "/assets/skies/qwantani_noon_puresky.hdr", intensity: 1 },
-    "rainy-dusk": { url: "/assets/skies/kloppenheim_01_puresky.hdr", intensity: 0.3 },
-  },
+  light: { weekday: { fogNear: 90, fogFar: 700 } },
+  skies: { weekday: { url: "/assets/skies/qwantani_noon_puresky.hdr", intensity: 1 } },
   offTrail(x, z) {
     if (z > -18) return null;
     const n = nearestOnTrail(x, z);

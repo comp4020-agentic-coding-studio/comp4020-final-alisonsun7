@@ -26,6 +26,11 @@ export interface Scene {
   // what the place is, honestly, shown under it
   about: string;
   modes: Mode[];
+  // times of day the place had once: old links to them open the first mode
+  retiredModes: string[];
+  // The mode the place's one room was first made under (ADR 007), kept as its
+  // name in the database so the room keeps its people and their sounds.
+  room: string;
   zones: Zone[];
 }
 
@@ -42,11 +47,11 @@ const SEASIDE: Scene = {
   title: "From the Forest to the Sea",
   summary: "Start on a trail through a pine forest, cross the creek, and come out by the sea: a boardwalk with a café, a kiosk and beach huts, the sand, and a pier.",
   about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes. The sounds are CC0 or public-domain recordings from Wikimedia Commons.",
-  modes: [
-    { id: "morning", label: "Early Morning" },
-    { id: "weekday", label: "Sunny Day" },
-    { id: "rainy-dusk", label: "Rainy Dusk" },
-  ],
+  // Only the sunny day since ADR 012; early morning and rainy dusk were
+  // retired.
+  modes: [{ id: "weekday", label: "Sunny Day" }],
+  retiredModes: ["morning", "rainy-dusk"],
+  room: "morning",
   zones: [
     zone("forest", "Forest trail", "Where the trail starts, among tall pines, ferns and fallen needles.", false, { x: 0, z: -130, yaw: Math.PI }),
     zone("creek", "Creek and footbridge", "A creek about twelve metres wide across the trail, crossed on a long timber footbridge.", false, { x: -1.7, z: -82, yaw: Math.PI }),
@@ -70,14 +75,20 @@ export function findMode(scene: Scene, mode: string): Mode | undefined {
   return scene.modes.find((m) => m.id === mode);
 }
 
+// A mode, or the first if it names one that was retired (ADR 012), so an
+// old link or an old open page still finds the place.
+export function liveMode(scene: Scene, mode: string): Mode | undefined {
+  return findMode(scene, mode) ?? (scene.retiredModes.includes(mode) ? scene.modes[0] : undefined);
+}
+
 export function findZone(scene: Scene, zoneId: string): Zone | undefined {
   return scene.zones.find((z) => z.id === zoneId);
 }
 
-// A place is one world whatever the time of day: every mode shares the first
-// mode's room (ADR 007).
+// A place is one world whatever the time of day: every mode shares one room
+// (ADR 007), still named for the mode it was first made under.
 export function placeMode(sceneId: string, mode: string): string {
-  return findScene(sceneId)?.modes[0].id ?? mode;
+  return findScene(sceneId)?.room ?? mode;
 }
 
 // Everyone in one place, at any time of day, is in one room.

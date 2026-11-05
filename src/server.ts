@@ -3,7 +3,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme, renderScene } from "./html.js";
 import { log } from "./log.js";
 import * as sessions from "./sessions.js";
-import { SCENES, findMode, findScene, findZone } from "./shared/catalog.js";
+import { SCENES, findMode, findScene, findZone, liveMode } from "./shared/catalog.js";
 import { AVATARS, type Avatar } from "./shared/protocol.js";
 import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users.js";
 
@@ -132,11 +132,19 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   const scenePage = method === "GET" && pathname.match(/^\/scene\/([a-z-]+)$/);
   if (scenePage) {
     const scene = findScene(scenePage[1]);
-    const mode = scene && findMode(scene, url.searchParams.get("mode") ?? scene.modes[0].id);
+    const asked = url.searchParams.get("mode") ?? scene?.modes[0].id ?? "";
+    const mode = scene && findMode(scene, asked);
+    // a time of day that was retired (ADR 012): the same place, as it is now
+    if (scene && !mode && scene.retiredModes.includes(asked)) {
+      url.searchParams.set("mode", scene.modes[0].id);
+      res.writeHead(301, { location: `${pathname}?${url.searchParams}` });
+      res.end();
+      return;
+    }
     if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
     // ?zone= (or the older ?shot=) picks where you arrive
-    const asked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";
-    const zone = findZone(scene, asked) ?? scene.zones[0];
+    const zoneAsked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";
+    const zone = findZone(scene, zoneAsked) ?? scene.zones[0];
     const snap = sessions.snapshotFor(sessions.openSession(scene.id, mode.id), user);
     return html(res, renderScene(scene, mode, zone.id, snap, user));
   }
@@ -182,7 +190,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   // joined are counted as here.
   if (method === "GET" && pathname === "/api/stream") {
     const scene = findScene(url.searchParams.get("scene") ?? "");
-    const mode = scene && findMode(scene, url.searchParams.get("mode") ?? "");
+    const mode = scene && liveMode(scene, url.searchParams.get("mode") ?? "");
     if (!scene || !mode) return json(res, 404, { error: "no such place" });
     res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache", connection: "keep-alive" });
     res.write("retry: 1500\n\n");

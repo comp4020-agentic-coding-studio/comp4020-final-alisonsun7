@@ -24,7 +24,7 @@ describe("the walkable world", () => {
     expect(SCENES.map((s) => s.id)).toEqual(["seaside"]);
     const explore = await (await fetch(new URL("/explore", baseUrl))).text();
     expect(explore).toContain(`/scene/${world.id}?mode=`);
-    const html = await (await fetch(new URL(`/scene/${world.id}?mode=morning`, baseUrl))).text();
+    const html = await (await fetch(new URL(`/scene/${world.id}?mode=weekday`, baseUrl))).text();
     expect(html).toContain(world.about.slice(0, 30));
     expect(html).toContain('"three":"/vendor/three.module.min.js"');
   });
@@ -35,7 +35,7 @@ describe("the walkable world", () => {
 
   it("opens at the zone asked for (?zone=, or the older ?shot=)", async () => {
     for (const q of ["zone=pier", "shot=pier"]) {
-      const html = await (await fetch(new URL(`/scene/${world.id}?mode=morning&${q}`, baseUrl))).text();
+      const html = await (await fetch(new URL(`/scene/${world.id}?mode=weekday&${q}`, baseUrl))).text();
       expect(html, q).toContain('"zoneId":"pier"');
     }
   });
@@ -141,19 +141,19 @@ describe("sounds people leave (ADR 011)", () => {
   it("leaves a sound where you stand, shows it to everyone at once, keeps it, and lets someone beside it remove it", async () => {
     const ari = await join(baseUrl, "Ari");
     const ben = await join(baseUrl, "Ben");
-    const watcher = await Stream.open(baseUrl, world.id, "rainy-dusk", null);
+    const watcher = await Stream.open(baseUrl, world.id, "weekday", null);
     await clearAround(ari, 905, 905);
     await stand(ari, 905, 905);
     const sentAt = performance.now();
     const left = await leave(ari, "guitar");
     expect(left).toMatchObject({ status: 201, ok: true, sound: { soundId: "guitar", x: 905, z: 905, by: "Ari" } });
     const id = left.sound!.id;
-    // someone watching at another time of day sees it within a second
+    // someone watching sees it within a second
     const seen = await watcher.next((m) => m.type === "sound-left" && m.sound.id === id, 1000);
     expect(seen.type === "sound-left" && seen.sound).toMatchObject({ soundId: "guitar", by: "Ari", x: 905, z: 905 });
     expect(watcher.messages.find((m) => m.msg.type === "sound-left" && m.msg.sound.id === id)!.at - sentAt).toBeLessThan(1000);
     // and it is there for whoever comes next
-    expect((await snapshot("morning")).sounds.some((s) => s.id === id)).toBe(true);
+    expect((await snapshot("weekday")).sounds.some((s) => s.id === id)).toBe(true);
 
     // Ben, 10 m away, can't remove it; beside it, he can, once
     await stand(ben, 915, 905);
@@ -163,7 +163,7 @@ describe("sounds people leave (ADR 011)", () => {
     const gone = await watcher.next((m) => m.type === "sound-removed" && m.id === id, 1000);
     expect(gone.type === "sound-removed" && gone.by).toBe("Ben");
     expect(await remove(ben, id)).toMatchObject({ status: 409, code: "gone" });
-    expect((await snapshot("morning")).sounds.some((s) => s.id === id)).toBe(false);
+    expect((await snapshot("weekday")).sounds.some((s) => s.id === id)).toBe(false);
     watcher.close();
   });
 
@@ -203,8 +203,16 @@ describe("people in the place (ADR 007)", () => {
     expect(blank.headers.get("set-cookie")).toBeNull();
   });
 
-  it("is one room at every time of day", async () => {
-    expect((await snapshot("rainy-dusk")).sessionId).toBe((await snapshot("morning")).sessionId);
+  it("is only the sunny day; old links and old pages for the retired times of day find the same room (ADR 012)", async () => {
+    expect(world.modes.map((m) => m.id)).toEqual(["weekday"]);
+    const html = await (await fetch(new URL(`/scene/${world.id}?mode=weekday`, baseUrl))).text();
+    expect(html).not.toContain("mode-switch");
+    for (const old of world.retiredModes) {
+      const res = await fetch(new URL(`/scene/${world.id}?mode=${old}&zone=pier`, baseUrl), { redirect: "manual" });
+      expect(res.status, old).toBe(301);
+      expect(res.headers.get("location")).toBe(`/scene/${world.id}?mode=weekday&zone=pier`);
+      expect((await snapshot(old)).sessionId, old).toBe((await snapshot("weekday")).sessionId);
+    }
   });
 
   it("tells everyone where people stand, and says words only to people within earshot", async () => {

@@ -565,3 +565,21 @@ side like someone standing at the bench's end; he's now in the middle of
 the seat. Both seen in screenshots (`docs/screenshots/12-*`).
 
 **Results:** `pnpm check` 41/41, `pnpm e2e` 40/40.
+
+## 23. Only the sunny day (2026-11-05, ADR 012)
+
+**Prompt (Wen, translated):** keep only the Sunny Day mode.
+
+**Done:** the place has one mode, `weekday`. The shared room was made under
+`morning`, which is its name in `sessions`, with the sounds Wen had left
+hanging off it; making Sunny Day the first mode would have opened a new,
+empty room. So `Scene.room` keeps the name `morning`; retired modes'
+pages answer 301 to `mode=weekday` (keeping the zone), and the stream takes
+a retired mode as the sunny day so an old open page reconnects. The mode
+switch isn't shown with one mode. The retired modes' sun, mist, skies and
+regulars went from `seasideKit`.
+
+**Results:** `pnpm check` 39/39 (two fewer: the page checks ran once per
+mode); `pnpm e2e` 40/40, with Bo now arriving by an old rainy-dusk link.
+On Wen's local app after a restart, the old link redirects and the three
+sounds Wen left (trickle, evening forest, guitar) are still there.

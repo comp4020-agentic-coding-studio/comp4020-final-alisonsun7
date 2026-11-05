@@ -120,7 +120,7 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
     `${nav}
 <main class="explore-main">
   <h1>Choose a place</h1>
-  <p class="lede">Walk in, look around, and meet whoever else is there. Every time of day is the same place, with the same people.</p>
+  <p class="lede">Walk in, look around, meet whoever else is there, and leave a sound for everyone to hear.</p>
   ${
     user
       ? `<form method="post" action="/leave" class="you-are">${avatarMark(user.avatar)} You're <strong>${escapeHtml(user.nickname)}</strong>. <button class="link-btn" type="submit">Change</button></form>`
@@ -136,7 +136,8 @@ ${footer}`,
 // each part of it.
 export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snapshot, user: User | null): string {
   const zone = findZone(scene, zoneId) ?? scene.zones[0];
-  const modeNav = `<nav class="mode-switch" aria-label="Time of day">${scene.modes
+  // with one time of day there's nothing to switch between
+  const modeNav = scene.modes.length < 2 ? "" : `<nav class="mode-switch" aria-label="Time of day">${scene.modes
     .map((m) => `<a href="/scene/${scene.id}?mode=${m.id}"${m.id === mode.id ? ' aria-current="page"' : ""}>${m.label}</a>`)
     .join("")}</nav>`;
   return page(
@@ -185,8 +186,8 @@ export function renderAbout(): string {
   <ol>
     <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
     <li>Walk with W A S D or the arrow keys, drag to look, or use <em>Go to</em>. Wander far off the forest trail and a kangaroo comes to point you back.</li>
-    <li>Everyone in the place sees everyone else, at every time of day. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
-    <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone, at every time of day, until someone standing beside it removes it. Anyone can leave or remove any sound, and everyone is told who did.</li>
+    <li>Everyone in the place sees everyone else. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
+    <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone until someone standing beside it removes it. Anyone can leave or remove any sound, and everyone is told who did.</li>
   </ol>
 
   <h2>Where the place comes from</h2>
