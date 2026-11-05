@@ -807,3 +807,35 @@ of this commit (which includes those changes) the spec passes 39/39.
 `meet-and-talk.mjs` 16/16, `leave-a-sound.mjs` 17/17 against fresh
 servers. Looked at the five huts from the boardwalk, from the shop's step,
 and inside four of them.
+
+## 32. Five children with a beach ball (2026-11-06)
+
+**Prompt (Wen, translated):** five children playing with a beach ball on
+the beach; find sounds of the ball being passed and of children playing.
+
+**Done:** `kidSvg` in `figures.ts`: the same cats and dogs with a child's
+bigger head for their height (scaled 1.5 about the neck), bright tops,
+shorts and bare legs, 1.15 m tall; an `arms-up` pose, and for children the
+raised hands reach above the bigger head. `PlaceKit.ballGame` places five
+of them on the sand between the boardwalk and the lifeguard tower; the
+world throws a beach ball (the shop's striped texture) from one to any
+other on an arc that rises more for a longer throw, spinning; the catcher
+reaches up before it lands and hops on the catch, holds it half a second
+to a second and a half, and throws again. Its shadow on the sand shrinks
+and fades with height. Reduced motion leaves the ball held.
+
+**Sounds (offered, not added: Wen chooses by ear):** Commons has children
+playing ("209901 foongaz city-playground-boxhagenerplatz-berlin.wav" CC0;
+"Indoor swimming pool children.ogg" public domain; "Douzen kids on
+playground" is the `children` Wen already turned down). It has no
+recording of a ball being thrown, caught or bounced: searches for ball,
+bounce, kick, catch, volleyball and beach ball found only spoken words and
+music. Previews are in the scratchpad for Wen.
+
+**Failure and correction:** at first the raised hands, drawn for an adult
+head, stayed below the child's bigger head, and the held ball covered the
+face.
+
+**Checks:** spec 39/39 and e2e 9/9, 16/16, 17/17 against a fresh server;
+the children drawn flat, standing and arms up; six screenshots 250 ms apart
+from the boardwalk with the ball in flight and held.

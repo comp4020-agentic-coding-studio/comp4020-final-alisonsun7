@@ -952,6 +952,15 @@ export const seasideKit: PlaceKit = {
   regulars: {
     weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER, ...CHIPPY],
   },
+  // five children with a beach ball on the sand, between the boardwalk and
+  // the lifeguard tower
+  ballGame: [
+    [4, 11],
+    [7.4, 12.8],
+    [6.8, 16.6],
+    [2.6, 17.2],
+    [0.8, 13.6],
+  ],
   passerPaths: [
     [
       [0.5, -130],

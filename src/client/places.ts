@@ -25,6 +25,8 @@ export interface PlaceKit {
   // people who stay put (sitting, queuing, chatting), per mode; like
   // passers-by they have no names and make no sound
   regulars?: Partial<Record<string, Regular[]>>;
+  // where children stand passing a beach ball between them, if anywhere
+  ballGame?: [number, number][];
   // a random point that rain falls on (nowhere with a roof)
   rainAt(random: () => number): [number, number];
   // what the sun's shadows are centred on, and (per mode) where the sun is

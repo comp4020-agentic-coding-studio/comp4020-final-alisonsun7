@@ -5,7 +5,8 @@
 import * as THREE from "three";
 import type { Scene } from "../shared/catalog.js";
 import type { Avatar, Person } from "../shared/protocol.js";
-import { figureAspect, figureSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
+import { figureAspect, figureSvg, KID_ASPECT, kidSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
+import { beachBallTexture } from "./huts.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import type { PlaceKit } from "./places.js";
@@ -90,6 +91,21 @@ interface Gait {
 }
 type Facing = "walk" | "walk-front" | "walk-back";
 const FRAMES = 8;
+
+// Children passing a beach ball: who has it, who it's going to, and how far
+// through the throw it is (or how long it's been held).
+interface BallGame {
+  kids: { sprite: THREE.Sprite; keys: [string, string]; hop: number }[];
+  ball: THREE.Mesh;
+  shadow: THREE.Mesh;
+  from: number;
+  to: number;
+  // seconds into the flight, or (while held) seconds left before the throw
+  t: number;
+  flight: number;
+  held: boolean;
+}
+const KID_H = 1.15;
 
 const EYE = 1.62;
 const WALK = 3.2;
@@ -181,6 +197,7 @@ export class WorldView {
   private overlay: HTMLDivElement;
   private passers: Passer[] = [];
   private regulars: RegularView[] = [];
+  private game: BallGame | null = null;
   private rain: THREE.LineSegments | null = null;
   private raycaster = new THREE.Raycaster();
   private light: Light;
@@ -296,6 +313,7 @@ export class WorldView {
 
     this.buildPassers();
     this.buildRegulars();
+    this.buildGame();
     if (mode === "rainy-dusk") this.buildRain();
 
     this.zone = opts.startZone;
@@ -434,7 +452,7 @@ export class WorldView {
     b.paving.metalness = l.wet ? 0.18 : 0;
     b.paving.color.setHex(l.wet ? 0x8f8d90 : 0xffffff);
     this.renderer.toneMappingExposure = l.exposure;
-    for (const p of [...this.passers, ...this.regulars]) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
+    for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? [])]) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
   }
 
 
@@ -477,6 +495,89 @@ export class WorldView {
       const [period, share] = r.pose === "guitar" ? [0.52, 0.5] : r.pose === "talk" ? [2 + (i % 3) * 0.5, 0.45] : [7 + (i % 4) * 1.5, 0.35];
       this.regulars.push({ sprite, height: sprite.scale.y, keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
     }
+  }
+
+  // Children on the sand throwing a beach ball between them.
+  private buildGame(): void {
+    const at = this.kit.ballGame;
+    if (!at?.length) return;
+    const kids = at.map(([x, z], i) => {
+      const seed = `kid-${i}`;
+      const avatar = i % 2 ? "dog" : "cat";
+      const keys: [string, string] = [`${seed}:stand`, `${seed}:arms-up`];
+      const tex = svgTexture(keys[0], kidSvg(avatar, "stand", seed), 180, 648);
+      svgTexture(keys[1], kidSvg(avatar, "arms-up", seed), 180, 648);
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: this.light.figureTint, transparent: true, alphaTest: 0.05, opacity: 0.95 }));
+      sprite.center.set(0.5, 0.03);
+      sprite.scale.set(KID_H * KID_ASPECT, KID_H, 1);
+      sprite.position.set(x, 0, z);
+      this.built.root.add(sprite);
+      return { sprite, keys, hop: 0 };
+    });
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 14), new THREE.MeshStandardMaterial({ map: beachBallTexture(), roughness: 0.45 }));
+    ball.castShadow = true;
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.2, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25, depthWrite: false }));
+    shadow.rotation.x = -Math.PI / 2;
+    this.built.root.add(ball, shadow);
+    this.game = { kids, ball, shadow, from: 0, to: 1, t: 0.8, flight: 1, held: true };
+    this.playBall(0);
+  }
+
+  // The ball's place: in the holder's raised hands, or on its arc to the
+  // catcher, turning as it goes. Whoever is about to catch it reaches up and
+  // hops; the thrower's arms come down once it's away.
+  private playBall(dt: number): void {
+    const g = this.game;
+    if (!g) return;
+    const hands = (i: number): THREE.Vector3 => {
+      const p = g.kids[i].sprite.position;
+      // over their head, a little towards you so it's in front of the
+      // hands rather than behind them
+      const toEye = new THREE.Vector3(this.x - p.x, 0, this.z - p.z).normalize().multiplyScalar(0.05);
+      return new THREE.Vector3(p.x + toEye.x, p.y + KID_H + 0.14, p.z + toEye.z);
+    };
+    let up = new Set<number>();
+    if (g.held) {
+      g.t -= dt;
+      g.ball.position.copy(hands(g.from));
+      up = new Set([g.from]);
+      if (g.t <= 0) {
+        // throw to anyone else
+        g.to = (g.from + 1 + Math.floor(Math.random() * (g.kids.length - 1))) % g.kids.length;
+        const d = g.kids[g.from].sprite.position.distanceTo(g.kids[g.to].sprite.position);
+        g.flight = 0.7 + d * 0.12;
+        g.t = 0;
+        g.held = false;
+      }
+    } else {
+      g.t += dt;
+      const u = Math.min(1, g.t / g.flight);
+      const a = hands(g.from);
+      const b = hands(g.to);
+      const peak = 1.2 + a.distanceTo(b) * 0.15;
+      g.ball.position.lerpVectors(a, b, u);
+      g.ball.position.y += 4 * peak * u * (1 - u);
+      g.ball.rotation.x += dt * 7;
+      g.ball.rotation.z += dt * 3;
+      if (u < 0.2) up.add(g.from);
+      if (u > 0.55) up.add(g.to);
+      if (u >= 1) {
+        g.from = g.to;
+        g.held = true;
+        g.t = 0.5 + Math.random() * 1.2;
+        g.kids[g.from].hop = 0.35;
+      }
+    }
+    g.shadow.position.set(g.ball.position.x, 0.02, g.ball.position.z);
+    const lift = Math.max(0, g.ball.position.y - 0.17);
+    g.shadow.scale.setScalar(1 / (1 + lift * 0.25));
+    (g.shadow.material as THREE.MeshBasicMaterial).opacity = 0.28 / (1 + lift * 0.5);
+    g.kids.forEach((k, i) => {
+      show(k.sprite, textureCache.get(k.keys[up.has(i) ? 1 : 0])!);
+      // a little jump on the catch
+      k.hop = Math.max(0, k.hop - dt);
+      k.sprite.position.y = Math.sin((k.hop / 0.35) * Math.PI) * 0.12;
+    });
   }
 
   private idle(now: number): void {
@@ -774,6 +875,7 @@ export class WorldView {
     if (!reduced()) {
       this.movePassers(dt);
       this.idle(now);
+      this.playBall(dt);
     }
     this.moveOthers(dt);
     if (this.rain && !reduced()) {

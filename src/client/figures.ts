@@ -7,7 +7,7 @@
 // How a figure stands.
 // "walk" is the side view; "walk-front" and "walk-back" walk towards and
 // away from the viewer.
-export type Pose = "stand" | "walk" | "walk-front" | "walk-back" | "talk" | "sit" | "back" | "umbrella" | "lean" | "guitar" | "strum";
+export type Pose = "stand" | "walk" | "walk-front" | "walk-back" | "talk" | "sit" | "back" | "umbrella" | "lean" | "guitar" | "strum" | "arms-up";
 import type { Avatar } from "../shared/protocol.js";
 
 // Muted colours that sit in a photo rather than on top of it.
@@ -86,18 +86,23 @@ function standing(avatar: Avatar, l: Look, pose: Pose, phase?: number): string {
   const talk = pose === "talk";
   const umbrella = pose === "umbrella";
   const lean = pose === "lean";
+  const up = pose === "arms-up";
   const tail =
     back && avatar === "cat"
       ? `<path d="M34 104 C46 112 48 132 40 146" stroke="${l.fur}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`
       : back
         ? `<path d="M33 104 C40 108 42 114 41 120" stroke="${l.fur}" stroke-width="4" fill="none" stroke-linecap="round"/>`
         : "";
-  const rightArm = talk
+  const rightArm = up
+    ? `<g class="arm arm-r"><path d="M40 50 C44 38 47 22 47 10 L51 10 C52 24 49 40 44 50 Z" fill="${l.top}"/><circle cx="49" cy="8" r="3.3" fill="${l.fur}"/></g>`
+    : talk
     ? `<g class="arm arm-r gesture"><path d="M44 46 C50 60 51 74 49 84 L45 84 C45 74 43 62 40 50 Z" fill="${l.top}"/><path d="M49 84 C52 80 55 74 55 70 L51 68 C50 73 48 78 45 82 Z" fill="${l.top}"/><circle cx="54" cy="68" r="3.2" fill="${l.fur}"/></g>`
     : umbrella
       ? `<g class="arm arm-r"><path d="M44 46 C50 58 50 68 46 78 L42 76 C44 68 43 58 40 50 Z" fill="${l.top}"/><circle cx="44" cy="78" r="3.2" fill="${l.fur}"/></g>`
       : `<g class="arm arm-r"><path d="M44 46 C49 62 50 86 48 106 L43 106 C43 88 42 64 40 50 Z" fill="${l.top}"/><circle cx="45.5" cy="108" r="3.3" fill="${l.fur}"/></g>`;
-  const leftArm = lean
+  const leftArm = up
+    ? `<g class="arm arm-l"><path d="M20 50 C16 38 13 22 13 10 L9 10 C8 24 11 40 16 50 Z" fill="${l.top}"/><circle cx="11" cy="8" r="3.3" fill="${l.fur}"/></g>`
+    : lean
     ? `<g class="arm arm-l"><path d="M16 46 C10 60 8 78 6 96 L11 97 C13 80 16 64 20 50 Z" fill="${l.top}"/><circle cx="8.5" cy="99" r="3.3" fill="${l.fur}"/></g>`
     : `<g class="arm arm-l"><path d="M16 46 C11 62 10 86 12 106 L17 106 C17 88 18 64 20 50 Z" fill="${l.top}"/><circle cx="14.5" cy="108" r="3.3" fill="${l.fur}"/></g>`;
   const brolly = umbrella
@@ -207,6 +212,29 @@ export function figureSvg(avatar: Avatar, pose: Pose, seed: string, phase = 0): 
 
 export function figureAspect(pose: Pose): number {
   return pose === "umbrella" ? 88 / 206 : pose === "walk" ? 80 / 200 : 60 / 200;
+}
+
+// Children playing on the beach: the same figures with a child's bigger
+// head for their height, bright tops, and shorts with bare legs below. The
+// head reaches above the adult box, so the viewBox is 60 × 216.
+const KID_COLOURS = ["#e63946", "#f4a261", "#2a9d8f", "#457be0", "#f2c14e", "#9b5de5"];
+export const KID_ASPECT = 60 / 216;
+
+export function kidSvg(avatar: Avatar, pose: Pose, seed: string): string {
+  const h = hash(seed);
+  const l = { ...lookFor(seed), top: KID_COLOURS[h % KID_COLOURS.length], bottom: KID_COLOURS[(h >>> 3) % KID_COLOURS.length] };
+  const bare = `<path d="M19 140 L28.9 140 L28.6 186 L20 186 Z" fill="${l.fur}"/><path d="M31 140 L41 140 L40 186 L31.4 186 Z" fill="${l.fur}"/>`;
+  let inner = standing(avatar, l, pose)
+    .replace('<g class="head">', '<g class="head" transform="translate(30 40) scale(1.5) translate(-30 -40)">')
+    .replace('<path d="M17 44', `${bare}<path d="M17 44`);
+  // with the bigger head, raised hands reach above it
+  if (pose === "arms-up")
+    inner = inner
+      .replace("C44 38 47 22 47 10 L51 10 C52 24", "C44 32 46 6 46 -10 L50 -10 C52 8")
+      .replace('cx="49" cy="8"', 'cx="48" cy="-12"')
+      .replace("C16 38 13 22 13 10 L9 10 C8 24", "C16 32 14 6 14 -10 L10 -10 C8 8")
+      .replace('cx="11" cy="8"', 'cx="12" cy="-12"');
+  return `<svg viewBox="0 -16 60 216" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">${SHADOW}${inner}</svg>`;
 }
 
 // Faint passers-by for an outdoor mode's crowd. They make no sound and
