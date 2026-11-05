@@ -218,9 +218,9 @@ ${modeNav}
     <section class="session" id="session" aria-live="polite"></section>
     <section class="now-playing">
       <h2>Now playing</h2>
-      <h3>Your sounds</h3>
+      <h3>${scene.living ? "Chosen by you" : "Your sounds"}</h3>
       <ul class="sound-list" id="mine"></ul>
-      <h3>Others' sounds</h3>
+      <h3>${scene.living ? "Chosen by others" : "Others' sounds"}</h3>
       <ul class="sound-list" id="theirs">${listed}</ul>
     </section>
     <label class="ambience"><input type="checkbox" id="ambience" disabled /> Background ${scene.living ? "sounds" : mode.ambience === "room" ? "room tone" : mode.ambience}</label>

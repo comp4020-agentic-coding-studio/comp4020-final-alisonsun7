@@ -21,7 +21,6 @@ import {
   isLiving,
   maxSoundsIn,
   placeMode,
-  SPOT_MAX,
   PER_PERSON,
   SESSION_MS,
   SOUNDS,
@@ -82,6 +81,7 @@ interface PlacementRow {
   pan: number;
   revision: number;
   created_at: string;
+  adjusted_by: string | null;
 }
 
 const OPEN = "('idle','active','ending','failed')";
@@ -141,11 +141,12 @@ function toPlacement(r: PlacementRow): Placement {
     pan: r.pan,
     revision: r.revision,
     createdAt: r.created_at,
+    ...(r.adjusted_by ? { adjustedBy: r.adjusted_by } : {}),
   };
 }
 
 const PLACEMENT_SELECT = `SELECT p.id, p.owner_id, pa.display_name, pa.avatar_id, p.sound_id, p.shot_id, p.anchor_id,
-  p.x, p.y, p.gain, p.pan, p.revision, p.created_at
+  p.x, p.y, p.gain, p.pan, p.revision, p.created_at, p.adjusted_by
   FROM placements p JOIN participants pa ON pa.id = p.owner_id`;
 
 function livePlacements(sessionId: string): Placement[] {
@@ -511,19 +512,17 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       try {
         return inTransaction(() => {
         let live = livePlacements(session.id);
-        const here = live.filter((p) => p.shotId === op.shotId && p.anchorId === op.anchorId);
-        if (living && here.length >= SPOT_MAX) return reject("spot_full");
         const committed: Committed[] = [];
-        const mine = live.filter((p) => p.ownerId === me.id);
-        if (mine.length >= PER_PERSON) {
-          if (!living) return reject("your_limit");
-          // In a living place your newest sound replaces your oldest, so you
-          // can always add one.
-          const oldest = mine[0];
-          db.prepare("UPDATE placements SET is_deleted = 1, revision = revision + 1, updated_at = ? WHERE id = ?").run(nowIso(), oldest.id);
-          committed.push(commit(session.id, me.id, `${op.operationId}-r`, { kind: "sound.remove", placementId: oldest.id }));
-          live = live.filter((p) => p.id !== oldest.id);
-        }
+        if (living) {
+          // A living place's spot plays one sound: choosing another switches
+          // it, whoever chose the one before (ADR 008).
+          for (const old of live.filter((p) => p.shotId === op.shotId && p.anchorId === op.anchorId)) {
+            if (old.soundId === op.soundId) throw new Rejected("already_here");
+            db.prepare("UPDATE placements SET is_deleted = 1, revision = revision + 1, updated_at = ? WHERE id = ?").run(nowIso(), old.id);
+            committed.push(commit(session.id, me.id, `${op.operationId}-r${committed.length}`, { kind: "sound.remove", placementId: old.id }));
+            live = live.filter((p) => p.id !== old.id);
+          }
+        } else if (live.filter((p) => p.ownerId === me.id).length >= PER_PERSON) return reject("your_limit");
         if (live.length >= maxSoundsIn(session.scene_id)) throw new Rejected("place_full");
         const index = live.filter((p) => p.shotId === op.shotId && p.anchorId === op.anchorId).length;
         const spot = spotFor(place.anchor, index);
@@ -550,10 +549,11 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       const found = getPlacement(session.id, op.placementId);
       if (!found || found.deleted) return reject("no_placement");
       const { deleted: _d, ...current } = found;
-      // In a living place anyone may turn a sound up or down; only the person
-      // who added it may move or remove it.
-      const volumeOnly = op.type === "sound.update" && op.shotId === undefined && op.anchorId === undefined;
-      if (current.ownerId !== me.id && !(volumeOnly && isLiving(session.scene_id))) return reject("not_owner");
+      // In a living place anyone may turn a sound up, down or off; only the
+      // person who chose it may move it.
+      const living = isLiving(session.scene_id);
+      const moving = op.type === "sound.update" && (op.shotId !== undefined || op.anchorId !== undefined);
+      if (current.ownerId !== me.id && !(living && !moving)) return reject("not_owner");
       if (current.revision !== op.baseRevision) return reject("stale", current);
 
       if (op.type === "sound.remove") {
@@ -567,6 +567,7 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       if (op.gain !== undefined) {
         if (!isGain(op.gain)) return reject("bad_gain");
         patch.gain = round2(op.gain);
+        if (living) patch.adjustedBy = me.name;
       }
       if (op.shotId !== undefined && op.anchorId !== undefined) {
         const place = checkPlace(session.scene_id, op.shotId, op.anchorId, current.soundId);
@@ -577,7 +578,7 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
       }
       return inTransaction(() => {
         db.prepare(
-          `UPDATE placements SET gain = ?, shot_id = ?, anchor_id = ?, x = ?, y = ?, pan = ?, revision = ?, updated_at = ? WHERE id = ?`,
+          `UPDATE placements SET gain = ?, shot_id = ?, anchor_id = ?, x = ?, y = ?, pan = ?, revision = ?, updated_at = ?, adjusted_by = COALESCE(?, adjusted_by) WHERE id = ?`,
         ).run(
           patch.gain ?? current.gain,
           patch.shotId ?? current.shotId,
@@ -587,6 +588,7 @@ function run(session: SessionRow, me: Person, op: Op): OpResult {
           patch.pan ?? current.pan,
           patch.revision,
           nowIso(),
+          patch.adjustedBy ?? null,
           current.id,
         );
         return { ok: true, duplicate: false, committed: [commit(session.id, me.id, op.operationId, { kind: "sound.update", patch })] };

@@ -111,6 +111,11 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS memories_public ON memories (visibility, saved_at);
 `);
 
+// Added for living places (ADR 008): who last turned a sound up or down.
+// Older databases get the column on start; nothing else changes.
+const placementColumns = (db.prepare("PRAGMA table_info(placements)").all() as { name: string }[]).map((c) => c.name);
+if (!placementColumns.includes("adjusted_by")) db.exec("ALTER TABLE placements ADD COLUMN adjusted_by TEXT");
+
 // Reference rows the foreign keys point at. Upserted from the catalogue on
 // every start, never deleted, so old memories keep resolving.
 const upsertScene = db.prepare(

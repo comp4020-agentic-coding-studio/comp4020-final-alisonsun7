@@ -30,6 +30,8 @@ export interface Placement {
   pan: number;
   revision: number;
   createdAt: string;
+  // living places: who last turned it up or down (a name), if not its owner
+  adjustedBy?: string | null;
 }
 
 export interface Snapshot {
@@ -69,6 +71,7 @@ export interface PlacementPatch {
   x?: number;
   y?: number;
   pan?: number;
+  adjustedBy?: string;
 }
 
 export type CommittedPayload =
@@ -143,7 +146,8 @@ export type RejectCode =
   | "no_session"
   | "save_failed"
   | "spot_full"
-  | "no_memories";
+  | "no_memories"
+  | "already_here";
 
 export type OpResult =
   | { ok: true; duplicate: boolean; committed: Committed[] }
@@ -202,4 +206,5 @@ export const REJECT_MESSAGES: Record<RejectCode, string> = {
   save_failed: "The memory couldn't be saved. Nothing was lost; try again.",
   spot_full: "This spot already has as many sounds as it can hold. Try another one nearby.",
   no_memories: "This place keeps its sounds as they are: there's nothing to record.",
+  already_here: "That sound is already playing here.",
 };

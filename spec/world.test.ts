@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { afterAll, describe, expect, inject, it } from "vitest";
-import { PER_PERSON, SCENES, SEASIDE_BOUNDS, SPOT_MAX, maxSoundsIn } from "../src/shared/catalog.ts";
+import { PER_PERSON, SCENES, SEASIDE_BOUNDS, maxSoundsIn } from "../src/shared/catalog.ts";
 import type { Snapshot } from "../src/shared/protocol.ts";
 import { cafeKit } from "../src/client/cafe.ts";
 import { seasideKit } from "../src/client/seaside.ts";
@@ -91,19 +91,20 @@ describe("the walkable world", () => {
     expect(wrong.result.ok).toBe(false);
     if (!wrong.result.ok) expect(wrong.result.code).toBe("wrong_place");
 
-    // past the photo scenes' limit of 12, spread over spots with room
+    // past the photo scenes' limit of 12: one sound in each of 13 quiet places
     expect(maxSoundsIn(world.id)).toBeGreaterThan(12);
-    let n = 0;
-    while ((await snapshot("weekday")).placements.length < 13) {
-      const who = await join(baseUrl, `Filler ${n++}`);
-      for (let i = 0; i < PER_PERSON; i++) expect((await addFootsteps(who, sessionId)).result.ok).toBe(true);
-    }
+    const filler = await join(baseUrl, "Filler");
+    for (const shot of world.shots)
+      for (const a of shot.anchors) {
+        const now = await snapshot("weekday");
+        if (now.placements.length >= 13) break;
+        if (now.placements.some((p) => p.shotId === shot.id && p.anchorId === a.id)) continue;
+        expect((await addSound(filler, sessionId, a.sounds[0], shot.id, a.id)).result.ok).toBe(true);
+      }
     expect((await snapshot("weekday")).placements.length).toBeGreaterThan(12);
   });
 });
 
-// Every spot in the seaside that takes footsteps, to spread test sounds out.
-const FOOTSTEP_SPOTS = world.shots.flatMap((s) => s.anchors.filter((a) => a.sounds.includes("footsteps")).map((a) => [s.id, a.id] as const));
 const added: { who: Person; sessionId: string; id: string }[] = [];
 
 async function addSound(who: Person, sessionId: string, soundId: string, shotId: string, anchorId: string) {
@@ -112,12 +113,6 @@ async function addSound(who: Person, sessionId: string, soundId: string, shotId:
   return r;
 }
 
-async function addFootsteps(who: Person, sessionId: string) {
-  const counts = new Map<string, number>();
-  for (const p of (await snapshot("weekday")).placements) counts.set(`${p.shotId}/${p.anchorId}`, (counts.get(`${p.shotId}/${p.anchorId}`) ?? 0) + 1);
-  const free = FOOTSTEP_SPOTS.find(([s, a]) => (counts.get(`${s}/${a}`) ?? 0) < SPOT_MAX)!;
-  return addSound(who, sessionId, "footsteps", free[0], free[1]);
-}
 
 // The seaside keeps its sounds for good, so the spec takes away its own.
 afterAll(async () => {
@@ -144,9 +139,11 @@ describe("a living place (ADR 007)", () => {
     const morning = await snapshot("morning");
     const dusk = await snapshot("rainy-dusk");
     expect(dusk.sessionId).toBe(morning.sessionId);
-    const r = await addSound(await join(baseUrl, "Early"), morning.sessionId, "birdsong", "forest", "tall-pines");
+    const r = await addSound(await join(baseUrl, "Early"), morning.sessionId, "woodpecker", "forest", "tall-pines");
     expect(r.result.ok, JSON.stringify(r.result)).toBe(true);
-    const id = r.result.ok ? r.result.committed[0].payload.kind === "sound.add" && (r.result.committed[0].payload as { placement: { id: string } }).placement.id : "";
+    // (if the place had another sound, the first event switched it off)
+    const add = r.result.ok ? r.result.committed.find((c) => c.payload.kind === "sound.add") : undefined;
+    const id = add && add.payload.kind === "sound.add" ? add.payload.placement.id : "";
     expect((await snapshot("rainy-dusk")).placements.some((p) => p.id === id)).toBe(true);
   });
 
@@ -160,51 +157,57 @@ describe("a living place (ADR 007)", () => {
     }
   });
 
-  it("lets anyone turn a sound up or down, for everyone, but only its owner remove it", async () => {
+  it("lets anyone turn a place's sound up or down, for everyone, and says who did; and anyone turn it off", async () => {
     const snap = await snapshot("weekday");
     const owner = await join(baseUrl, "Owner");
     const other = await join(baseUrl, "Other");
     const listener = await Stream.open(baseUrl, world.id, "rainy-dusk", null);
     const r = await addSound(owner, snap.sessionId, "waves", "beach", "shoreline");
     expect(r.result.ok, JSON.stringify(r.result)).toBe(true);
-    if (!r.result.ok || r.result.committed[0].payload.kind !== "sound.add") return;
-    const placement = r.result.committed[0].payload.placement;
+    if (!r.result.ok) return;
+    const added = r.result.committed.find((c) => c.payload.kind === "sound.add")!.payload as { placement: { id: string; revision: number } };
+    const placement = added.placement;
     const louder = await sendOp(baseUrl, other, snap.sessionId, { operationId: opId(), type: "sound.update", placementId: placement.id, baseRevision: placement.revision, gain: 0.9 });
     expect(louder.result.ok, JSON.stringify(louder.result)).toBe(true);
-    // someone watching at another time of day sees it change
+    // someone watching at another time of day sees it change, and who did it
     const seen = await listener.next((m) => m.type === "committed" && m.payload.kind === "sound.update" && m.payload.patch.placementId === placement.id);
-    expect(seen.type === "committed" && seen.payload.kind === "sound.update" && seen.payload.patch.gain).toBe(0.9);
+    expect(seen.type === "committed" && seen.payload.kind === "sound.update" && seen.payload.patch).toMatchObject({ gain: 0.9, adjustedBy: "Other" });
+    expect((await snapshot("weekday")).placements.find((p) => p.id === placement.id)).toMatchObject({ gain: 0.9, adjustedBy: "Other" });
     listener.close();
-    const removed = await sendOp(baseUrl, other, snap.sessionId, { operationId: opId(), type: "sound.remove", placementId: placement.id, baseRevision: placement.revision + 1 });
-    expect(removed.result.ok).toBe(false);
-    if (!removed.result.ok) expect(removed.result.code).toBe("not_owner");
+    const off = await sendOp(baseUrl, other, snap.sessionId, { operationId: opId(), type: "sound.remove", placementId: placement.id, baseRevision: placement.revision + 1 });
+    expect(off.result.ok, JSON.stringify(off.result)).toBe(true);
+    expect((await snapshot("weekday")).placements.some((p) => p.id === placement.id)).toBe(false);
   });
 
-  it("holds at most three sounds at one spot", async () => {
+  it("plays one sound at a place: choosing another switches it, whoever chose the first; the same one is refused", async () => {
     const snap = await snapshot("weekday");
-    const here = snap.placements.filter((p) => p.shotId === "pier" && p.anchorId === "pier-end").length;
-    let last;
-    for (let i = here; i <= SPOT_MAX; i++) last = await addSound(await join(baseUrl, `Pier ${i}`), snap.sessionId, "seagulls", "pier", "pier-end");
-    expect(last!.result.ok).toBe(false);
-    if (!last!.result.ok) expect(last!.result.code).toBe("spot_full");
+    const ada = await join(baseUrl, "Ada");
+    const bo = await join(baseUrl, "Bo");
+    const first = await addSound(ada, snap.sessionId, "seagulls", "pier", "pier-end");
+    expect(first.result.ok, JSON.stringify(first.result)).toBe(true);
+    const again = await addSound(bo, snap.sessionId, "seagulls", "pier", "pier-end");
+    expect(again.result.ok).toBe(false);
+    if (!again.result.ok) expect(again.result.code).toBe("already_here");
+    const switched = await addSound(bo, snap.sessionId, "waves", "pier", "pier-end");
+    expect(switched.result.ok, JSON.stringify(switched.result)).toBe(true);
+    if (switched.result.ok) expect(switched.result.committed.map((c) => c.payload.kind)).toEqual(["sound.remove", "sound.add"]);
+    const there = (await snapshot("weekday")).placements.filter((p) => p.shotId === "pier" && p.anchorId === "pier-end");
+    expect(there.map((p) => [p.soundId, p.ownerName])).toEqual([["waves", "Bo"]]);
   });
 
-  it("replaces a person's oldest sound with their newest when they've placed four", async () => {
+  it("has no limit per person: one person can give five places their sound", async () => {
     const snap = await snapshot("weekday");
     const who = await join(baseUrl, "Busy");
-    const ids: string[] = [];
-    for (let i = 0; i < PER_PERSON; i++) {
-      const r = await addFootsteps(who, snap.sessionId);
-      expect(r.result.ok, JSON.stringify(r.result)).toBe(true);
-      if (r.result.ok && r.result.committed[0].payload.kind === "sound.add") ids.push(r.result.committed[0].payload.placement.id);
-    }
-    const fifth = await addFootsteps(who, snap.sessionId);
-    expect(fifth.result.ok, JSON.stringify(fifth.result)).toBe(true);
-    if (!fifth.result.ok) return;
-    expect(fifth.result.committed.map((c) => c.payload.kind)).toEqual(["sound.remove", "sound.add"]);
-    const now = (await snapshot("weekday")).placements;
-    expect(now.some((p) => p.id === ids[0])).toBe(false);
-    expect(now.filter((p) => ids.slice(1).includes(p.id)).length).toBe(PER_PERSON - 1);
+    let ok = 0;
+    for (const shot of world.shots)
+      for (const a of shot.anchors) {
+        if (ok >= PER_PERSON + 1) break;
+        if ((await snapshot("weekday")).placements.some((p) => p.shotId === shot.id && p.anchorId === a.id)) continue;
+        const r = await addSound(who, snap.sessionId, a.sounds[0], shot.id, a.id);
+        expect(r.result.ok, JSON.stringify(r.result)).toBe(true);
+        ok++;
+      }
+    expect((await snapshot("weekday")).placements.filter((p) => p.ownerName === "Busy").length).toBe(PER_PERSON + 1);
   });
 
   it("tells everyone where people stand, and says words only to people within earshot", async () => {

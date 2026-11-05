@@ -5,7 +5,8 @@
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) defines the product. `docs/decisions/003-live-places-and-memories.md`,
 `004-walkable-drawn-world.md`, `005-imagined-places-from-cc0-assets.md`,
-`006-forest-to-sea.md` and `007-living-place-presence-and-talk.md` record where this build follows it and where it
+`006-forest-to-sea.md`, `007-living-place-presence-and-talk.md` and
+`008-one-sound-per-place.md` record where this build follows it and where it
 departs (005 drops the ANU theme). Read both before
 changing behaviour. Explain progress to Wen in Chinese; the UI, code, commits
 and repo docs are English. README.md, PROCESS.md, reflections and the research
@@ -51,9 +52,12 @@ unlisted, but their pages and memories still work.
 - **The standard (Wen):** suits people playing together; keeps what they do,
   so tomorrow shows today's changes; what others change, you see.
 - **A living place keeps its sounds (ADR 007).** The seaside has one session
-  for every time of day, never sealed, no 3-minute memories. A spot holds 3
-  sounds, a person 4 (the fifth replaces their oldest). Anyone may change a
-  sound's volume, for everyone; only its owner moves or removes it.
+  for every time of day, never sealed, no 3-minute memories.
+- **Each place plays one sound, chosen by whoever is there (ADR 008).**
+  Choosing another switches it; anyone joined may choose, switch, set the
+  volume of, or turn off any place's sound; no per-person limit. Cats and
+  dogs in a living place are only people who are here. The place's card is
+  the one way to change a sound; the tray only shows where sounds can go.
 - **People see each other and talk when they meet (ADR 007).** Positions and
   words live in memory only; words go only to people within 12 m, appear
   over the speaker for 5 s or until replaced, and are never stored or

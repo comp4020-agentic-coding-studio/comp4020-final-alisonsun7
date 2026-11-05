@@ -426,3 +426,19 @@ view, using their own size; when moved, their tail is hidden.
 
 **Results:** `pnpm check` 94/94; `meet-and-talk` 26/26;
 `world-two-browsers` 11/11; `two-browsers` 29/29.
+
+## 17. One sound per place (2026-11-05, ADR 008)
+
+**Prompt (Wen):** the sound design has a lot of bugs; is it the idea? After
+an analysis (rules from the 3-minute composing design fighting a lasting,
+shared world), Wen agreed to "each place one sound, decided by everyone",
+and will report specific bugs one by one next.
+
+**Found while changing it:** a spec test chose birdsong at a place an
+earlier test had already given birdsong: refused as `already_here`, the new
+rule working; the test now picks another sound and finds the add among the
+switch's events. A UI check for "Ada's sound after a reload" was outdated
+once Bo switches the place first; it now checks the place's sound.
+
+**Results:** `pnpm check` 94/94 (twice); `meet-and-talk` 31/31 (three
+runs); `world-two-browsers` 12/12; `two-browsers` 29/29.

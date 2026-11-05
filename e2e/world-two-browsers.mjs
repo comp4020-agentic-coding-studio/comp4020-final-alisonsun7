@@ -50,8 +50,11 @@ await a.click('.cat:has-text("Places")');
 await a.click('.chip:has-text("Espresso machine")');
 const spot = a.locator('.world-spot.accepts:not([hidden])[data-anchor="counter/espresso-cart"]');
 await spot.waitFor({ timeout: 3000 });
-const before = Date.now();
+// in a living place the tray only shows where; the spot's card is where it's chosen
 await spot.click();
+check(await a.locator(".spot-card:not([hidden]) h3", { hasText: "Espresso cart" }).count() === 1, "a sound picked in the tray opens the card of a spot it can go");
+const before = Date.now();
+await a.click('.spot-card [data-focus-key="card-add:espresso"]');
 await b.locator(".world-marker").first().waitFor({ state: "attached", timeout: 3000 });
 check(true, `Bo's page has the marker ${Date.now() - before} ms after Ada's click`);
 check((await b.locator("#theirs .sound-row").count()) >= 1, "Bo lists Ada's sound under Others' sounds");

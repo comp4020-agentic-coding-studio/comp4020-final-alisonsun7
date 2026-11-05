@@ -166,8 +166,11 @@ function onCommitted(ev: Committed): void {
   const p = ev.payload;
   if (!mine) {
     const who = live.snapshot.online.find((x) => x.id === ev.by)?.name ?? before.placements.find((x) => x.ownerId === ev.by)?.ownerName ?? "Someone";
-    if (p.kind === "sound.add") say(`${p.placement.ownerName} added ${SOUNDS[p.placement.soundId].label.toLowerCase()} at ${anchorLabel(p.placement)}.`);
-    if (p.kind === "sound.remove") say(`${who} removed a sound.`);
+    if (p.kind === "sound.add") say(`${p.placement.ownerName} ${living ? "chose" : "added"} ${SOUNDS[p.placement.soundId].label.toLowerCase()} at ${anchorLabel(p.placement)}.`);
+    if (p.kind === "sound.remove") {
+      const gone = before.placements.find((x) => x.id === p.placementId);
+      say(living && gone ? `${who} turned off the ${SOUNDS[gone.soundId].label.toLowerCase()} at ${anchorLabel(gone)}.` : `${who} removed a sound.`);
+    }
     if (p.kind === "sound.update" && p.patch.gain !== undefined) {
       const was = before.placements.find((x) => x.id === p.patch.placementId);
       if (was && was.gain !== p.patch.gain) say(`${who} turned ${was.ownerId === me()?.id ? "your" : `${was.ownerName}'s`} ${SOUNDS[was.soundId].label.toLowerCase()} ${p.patch.gain > was.gain ? "up" : "down"}.`);
@@ -337,7 +340,7 @@ function renderCard(): void {
   const mineCount = live.snapshot.placements.filter((p) => p.ownerId === me()?.id).length;
   // rebuild only when something on the card changed, so a slider isn't
   // replaced under your finger
-  const signature = JSON.stringify([found.id, anchor.id, here.map((p) => [p.id, p.gain, p.revision]), boot.joined, audio.enabled, mineCount]);
+  const signature = JSON.stringify([found.id, anchor.id, here.map((p) => [p.id, p.gain, p.revision, p.adjustedBy]), boot.joined, audio.enabled, mineCount]);
   card.hidden = false;
   if (signature === cardSignature) return;
   cardSignature = signature;
@@ -360,11 +363,13 @@ function renderCard(): void {
     card.append(off);
   }
 
+  // What's playing here (in a living place, at most one sound), with its
+  // volume for everyone and a way to turn it off.
   const h4a = document.createElement("h4");
-  h4a.textContent = "Playing here";
+  h4a.textContent = living ? "Playing here now" : "Playing here";
   const playing = document.createElement("ul");
   playing.className = "card-list";
-  if (here.length === 0) playing.innerHTML = `<li class="empty">Nothing yet: this spot is quiet.</li>`;
+  if (here.length === 0) playing.innerHTML = `<li class="empty">Nothing: this place is quiet.</li>`;
   for (const p of here) {
     const li = document.createElement("li");
     const mine = p.ownerId === me()?.id;
@@ -373,7 +378,7 @@ function renderCard(): void {
     name.textContent = SOUNDS[p.soundId].label;
     const by = document.createElement("span");
     by.className = "card-by";
-    by.textContent = mine ? "yours" : `by ${p.ownerName}`;
+    by.textContent = `${living ? "chosen by" : "by"} ${mine ? "you" : p.ownerName}${p.adjustedBy && p.adjustedBy !== p.ownerName ? ` · volume set by ${p.adjustedBy === me()?.name ? "you" : p.adjustedBy}` : ""}`;
     li.append(name, by);
     if (boot.joined && (mine || living)) {
       const vol = document.createElement("input");
@@ -383,7 +388,7 @@ function renderCard(): void {
       vol.step = "5";
       vol.value = String(Math.round((volumeWaiting.get(p.id) ?? p.gain) * 100));
       vol.dataset.focusKey = `card-vol:${p.id}`;
-      vol.setAttribute("aria-label", `Volume of ${mine ? "your" : `${p.ownerName}'s`} ${SOUNDS[p.soundId].label.toLowerCase()}, for everyone`);
+      vol.setAttribute("aria-label", `Volume of the ${SOUNDS[p.soundId].label.toLowerCase()} here, for everyone`);
       vol.onchange = () => void setVolume(p.id, Number(vol.value) / 100);
       li.append(vol);
     } else {
@@ -392,16 +397,21 @@ function renderCard(): void {
       v.textContent = `${Math.round(p.gain * 100)}%`;
       li.append(v);
     }
-    if (mine) li.append(button("Remove", `card-remove:${p.id}`, () => void send({ type: "sound.remove", placementId: p.id, baseRevision: p.revision }, "Removing…").then((ok) => ok && say("Sound removed.")), "remove"));
+    if (boot.joined && (mine || living))
+      li.append(
+        button(living ? "Turn off" : "Remove", `card-remove:${p.id}`, () => void send({ type: "sound.remove", placementId: p.id, baseRevision: p.revision }, "Turning off…").then((ok) => ok && say(living ? `${anchor.label} is quiet again.` : "Sound removed.")), "remove"),
+      );
     playing.append(li);
   }
   card.append(h4a, playing);
 
+  // The sounds this place can have. In a living place choosing one plays it
+  // here, switching whatever was playing.
   const h4b = document.createElement("h4");
-  h4b.textContent = "Add a sound here";
+  h4b.textContent = living ? "Choose this place's sound" : "Add a sound here";
   const options = document.createElement("ul");
   options.className = "card-list";
-  const full = living && here.length >= SPOT_MAX;
+  const current = living ? here[0] : undefined;
   for (const id of anchor.sounds) {
     const li = document.createElement("li");
     const name = document.createElement("span");
@@ -411,8 +421,9 @@ function renderCard(): void {
     listen.setAttribute("aria-label", `Listen to ${SOUNDS[id].label.toLowerCase()} (only you hear this)`);
     li.append(name, listen);
     if (boot.joined) {
-      const add = button("+ Add here", `card-add:${id}`, () => void addSound(id, found.id, anchor.id), "btn primary small");
-      add.disabled = full;
+      const label = !living ? "+ Add here" : current?.soundId === id ? "Playing" : current ? "Switch to this" : "Play here";
+      const add = button(label, `card-add:${id}`, () => void addSound(id, found.id, anchor.id), "btn primary small");
+      add.disabled = current?.soundId === id;
       li.append(add);
     }
     options.append(li);
@@ -422,13 +433,13 @@ function renderCard(): void {
   const foot = document.createElement("p");
   foot.className = "card-foot";
   if (!boot.joined) {
-    foot.append("Choose a name to add sounds: ");
+    foot.append("Choose a name to change sounds: ");
     const a = document.createElement("a");
     a.href = "#tray";
     a.textContent = "join below";
     foot.append(a);
-  } else if (full) foot.textContent = `This spot has ${SPOT_MAX} sounds, as many as it holds. Try one nearby.`;
-  else foot.textContent = `You've added ${mineCount} of ${PER_PERSON}.${living && mineCount >= PER_PERSON ? " Adding another replaces your oldest." : ""}`;
+  } else if (living) foot.textContent = "Anyone here can choose, switch, turn up or down, or turn off this place's sound. It stays for everyone.";
+  else foot.textContent = `You've added ${mineCount} of ${PER_PERSON}.`;
   card.append(foot);
 }
 
@@ -534,7 +545,11 @@ function soundRow(p: Placement, mine: boolean): HTMLLIElement {
       if (await send({ type: "sound.remove", placementId: p.id, baseRevision: p.revision }, "Removing…")) say("Sound removed.");
     };
     li.append(vol);
-    if (mine) li.append(remove);
+    if (living) {
+      remove.textContent = "Turn off";
+      remove.setAttribute("aria-label", `Turn off the ${SOUNDS[p.soundId].label.toLowerCase()} at ${anchorLabel(p)}`);
+    }
+    if (mine || living) li.append(remove);
   } else {
     const vol = document.createElement("span");
     vol.className = "vol";
@@ -572,7 +587,8 @@ function renderSession(): void {
     const p = document.createElement("p");
     p.className = "fine";
     const n = s.placements.length;
-    p.textContent = `${n === 0 ? "It's quiet so far." : `${n} ${n === 1 ? "sound" : "sounds"} left here by ${new Set(s.placements.map((x) => x.ownerName)).size} ${new Set(s.placements.map((x) => x.ownerName)).size === 1 ? "person" : "people"}.`} Every sound stays, for everyone, at every time of day, until the person who added it takes it away. Anyone can turn a sound up or down.`;
+    const people = new Set(s.placements.map((x) => x.ownerName)).size;
+    p.textContent = `${n === 0 ? "It's quiet so far." : `${n} of its places ${n === 1 ? "has a sound" : "have sounds"}, chosen by ${people} ${people === 1 ? "person" : "people"}.`} Each place plays one sound. Click a label to choose it, switch it, turn it up or down, or off. It stays, for everyone, at every time of day.`;
     box.append(h, p);
     return;
   }
@@ -725,10 +741,15 @@ function renderTray(): void {
 
 function renderHint(): void {
   const s = live.snapshot;
-  if (choosing) hint.textContent = `Choose a place for ${SOUNDS[choosing].label.toLowerCase()}. Highlighted spots accept it. Esc to cancel.`;
-  else if (s.placements.length === 0) hint.textContent = "This place has its shape, but not yet its sound. Add the first everyday moment.";
-  else if (!audio.enabled) hint.textContent = "Tap to enable sound.";
-  else hint.textContent = "";
+  hint.textContent = "";
+  if (choosing)
+    hint.textContent = living
+      ? `${SOUNDS[choosing].label} can go at the highlighted labels: click one to open it. Esc to cancel.`
+      : `Choose a place for ${SOUNDS[choosing].label.toLowerCase()}. Highlighted spots accept it. Esc to cancel.`;
+  else if (!audio.enabled) {
+    // a real button, not words that look like one
+    hint.append("Sound is off. ", button("Turn sound on", "hint-sound", () => void turnSoundOn(), "link-btn"));
+  } else if (s.placements.length === 0) hint.textContent = "This place has its shape, but not yet its sound. Click a label to give it one.";
 }
 
 function syncAudio(): void {
@@ -775,7 +796,9 @@ function draw(): void {
       selected,
       openSpot: openSpot ? `${openSpot.shot}/${openSpot.anchor}` : null,
       // with a sound chosen in the tray, a spot takes it; otherwise it opens
-      onAnchor: (zone, id) => (choosing ? void place(id, zone) : openCard(zone, id)),
+      // with a sound picked in the tray: elsewhere it goes straight there; in a
+      // living place it opens the spot's card, the one way to change a sound
+      onAnchor: (zone, id) => (choosing && !living ? void place(id, zone) : openCard(zone, id)),
       onMarker: (id) => {
         const p = live.snapshot.placements.find((x) => x.id === id);
         if (p) openCard(p.shotId, p.anchorId);
@@ -955,6 +978,7 @@ function becomeJoined(): void {
     tray.innerHTML = `<div class="tray-head"><h2>Add a sound</h2><button type="button" class="link-btn" id="tray-toggle" aria-expanded="true">Hide</button></div>
   <div class="tray-body" id="tray-body"><div class="cats" id="cats" role="tablist" aria-label="Kinds of sound"></div><div class="chips" id="chips" role="tabpanel" aria-label="Sounds of this kind"></div></div>`;
     wireTrayToggle();
+    nameTray();
   }
   connect();
   render();
@@ -964,6 +988,14 @@ const ambience = $<HTMLInputElement>("ambience");
 ambience.disabled = false;
 ambience.checked = true;
 ambience.onchange = () => audio.setAmbience(ambience.checked);
+
+// In a living place the tray is a map of sounds: picking one shows where it
+// can go; the spot's card is where it's chosen.
+function nameTray(): void {
+  const h = document.querySelector("#tray .tray-head h2");
+  if (living && h && boot.joined) h.textContent = "Sound map: pick a sound to see where it can go";
+}
+nameTray();
 
 function wireTrayToggle(): void {
   const trayToggle = document.getElementById("tray-toggle");

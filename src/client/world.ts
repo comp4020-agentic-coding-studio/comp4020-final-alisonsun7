@@ -295,8 +295,10 @@ export class WorldView {
       const accepts = opts.choosing !== null && s.anchor.sounds.includes(opts.choosing);
       const key = `${s.shotId}/${s.anchor.id}`;
       // every spot says what it is and how many sounds it has
-      const n = placements.filter((p) => p.shotId === s.shotId && p.anchorId === s.anchor.id).length;
-      const label = `${s.anchor.label} · ${n === 0 ? "quiet" : `${n} ${n === 1 ? "sound" : "sounds"}`}`;
+      const playing = placements.filter((p) => p.shotId === s.shotId && p.anchorId === s.anchor.id);
+      const n = playing.length;
+      // a living place's spot plays one sound: name it
+      const label = `${s.anchor.label} · ${n === 0 ? "quiet" : n === 1 && this.scene.living ? SOUNDS[playing[0].soundId].label : `${n} ${n === 1 ? "sound" : "sounds"}`}`;
       s.el.querySelector(".spot-label")!.textContent = label;
       s.el.classList.toggle("has-sounds", n > 0);
       s.el.classList.toggle("open", opts.openSpot === key);
@@ -508,6 +510,13 @@ export class WorldView {
 
   private syncFigures(): void {
     const seen = new Set<string>();
+    // In a living place the cats and dogs are only the people who are here
+    // (ADR 008); a spot with a sound shows its glowing ring instead.
+    if (this.scene.living) {
+      for (const f of this.figures.values()) this.built.root.remove(f.sprite);
+      this.figures.clear();
+      return;
+    }
     for (const p of this.placements) {
       const spot = this.spotOf(p);
       const foot = spot?.anchor.foot;

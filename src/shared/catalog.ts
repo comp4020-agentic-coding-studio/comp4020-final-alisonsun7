@@ -152,10 +152,9 @@ export interface Scene {
   about?: string;
   // the background indoors, when it isn't plain room tone
   indoorAmbience?: Mode["ambience"];
-  // A living place (ADR 007): one shared world for every time of day, whose
-  // sounds stay until someone removes them. No 3-minute memories; anyone may
-  // change a sound's volume (only its owner may remove it); a spot holds
-  // SPOT_MAX sounds; a person's newest sound replaces their oldest.
+  // A living place (ADR 007, 008): one shared world for every time of day,
+  // whose sounds stay. No 3-minute memories. Each spot plays at most one
+  // sound, which anyone may choose, switch, turn up or down, or turn off.
   living?: boolean;
 }
 
@@ -435,7 +434,7 @@ const SEASIDE: Scene = {
   evidence: "photo",
   view: "world",
   living: true,
-  maxSounds: 72,
+  maxSounds: 24,
   about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes.",
   indoorAmbience: "cafe",
   modes: [
@@ -673,8 +672,8 @@ export const SESSION_MS = 180_000;
 export const MAX_SOUNDS = 12;
 export const PER_PERSON = 4;
 
-// In a living place, the most sounds one spot holds.
-export const SPOT_MAX = 3;
+// In a living place, the most sounds one spot holds (ADR 008: one).
+export const SPOT_MAX = 1;
 
 export function isLiving(sceneId: string): boolean {
   return findScene(sceneId)?.living === true;

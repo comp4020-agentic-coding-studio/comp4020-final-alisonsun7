@@ -34,6 +34,9 @@ interface Live {
 }
 
 const LOOKAHEAD = 0.6;
+// Positioned sounds further than this aren't played at all (they'd be
+// almost silent anyway): less to compute, and the near ones stay clear.
+const HEARING = 40;
 
 export class AudioEngine {
   private ctx: AudioContext | null = null;
@@ -45,6 +48,7 @@ export class AudioEngine {
   private ambienceOn = true;
   private wanted = new Map<string, Source & { onPlay?: () => void }>();
   private listenerInside: boolean | null = null;
+  private listenerAt: [number, number] | null = null;
   // what indoors sounds like when there's nothing placed: room tone, or a café
   indoorAmbience: Ambience = "room";
   private outdoorAmbience: Ambience;
@@ -60,8 +64,14 @@ export class AudioEngine {
       this.listenerInside = inside;
       if (this.ctx) for (const live of this.voices.values()) this.shape(live);
     }
-    // the place may say what its background is where you stand
-    this.ambience = ambience ?? (inside ? this.indoorAmbience : this.outdoorAmbience);
+    this.listenerAt = [x, z];
+    // the place may say what its background is where you stand; a change
+    // fades across rather than cutting
+    const kind = ambience ?? (inside ? this.indoorAmbience : this.outdoorAmbience);
+    if (kind !== this.ambience) {
+      this.ambience = kind;
+      this.crossfadeAmbience();
+    }
     const ctx = this.ctx;
     if (!ctx || ctx.state !== "running") return;
     const l = ctx.listener;
@@ -152,6 +162,23 @@ export class AudioEngine {
     await this.ctx?.suspend();
   }
 
+  // A new background bus fades in over the old one, which fades out and is
+  // let go, and the new background starts now rather than after the old
+  // one's current stretch.
+  private crossfadeAmbience(): void {
+    const ctx = this.ctx;
+    const old = this.ambienceBus;
+    if (!ctx || !old || !this.master) return;
+    const bus = ctx.createGain();
+    bus.gain.value = 0;
+    bus.connect(this.master);
+    bus.gain.setTargetAtTime(this.ambienceOn ? 0.8 : 0, ctx.currentTime, 0.5);
+    old.gain.setTargetAtTime(0, ctx.currentTime, 0.5);
+    setTimeout(() => old.disconnect(), 4000);
+    this.ambienceBus = bus;
+    this.ambienceNext = ctx.currentTime;
+  }
+
   setAmbience(on: boolean): void {
     this.ambienceOn = on;
     if (this.ambienceBus && this.ctx) this.ambienceBus.gain.setTargetAtTime(on ? 0.8 : 0, this.ctx.currentTime, 0.2);
@@ -227,7 +254,13 @@ export class AudioEngine {
     const ctx = this.ctx;
     if (!ctx || ctx.state !== "running") return;
     const horizon = ctx.currentTime + LOOKAHEAD;
+    const at = this.listenerAt;
     for (const live of this.voices.values()) {
+      const pos = live.src.pos;
+      if (pos && at && Math.hypot(pos[0] - at[0], pos[2] - at[1]) > HEARING) {
+        live.next = Math.max(live.next, horizon);
+        continue;
+      }
       while (live.next < horizon) {
         const at = live.next;
         live.next = at + Math.max(0.5, VOICES[live.src.soundId](ctx, live.node, at));
@@ -238,8 +271,8 @@ export class AudioEngine {
       }
     }
     if (this.ambienceNext < horizon) {
-      const at = Math.max(this.ambienceNext, ctx.currentTime);
-      this.ambienceNext = at + playAmbience(ctx, this.ambienceBus!, this.ambience, at);
+      const when = Math.max(this.ambienceNext, ctx.currentTime);
+      this.ambienceNext = when + playAmbience(ctx, this.ambienceBus!, this.ambience, when);
     }
   };
 
