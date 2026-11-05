@@ -153,3 +153,28 @@ export function figureAspect(pose: Pose): number {
 export function passerSvg(seed: string, umbrella: boolean): string {
   return figureSvg(hash(seed) % 2 ? "cat" : "dog", umbrella ? "umbrella" : "walk", seed);
 }
+
+// The kangaroo who comes to find you when you wander off the trail. Side
+// view, facing right, drawn like the other figures: flat shapes, no outline.
+// The viewBox is 120 × 150; the feet are at the bottom.
+export function kangarooSvg(): string {
+  const fur = "#a8754a";
+  const light = "#d8b48a";
+  const dark = "#6e4a2e";
+  return `<svg viewBox="0 0 120 150" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
+    <ellipse cx="58" cy="147" rx="34" ry="3" fill="#000" opacity=".25"/>
+    <path d="M40 112 C22 120 8 132 2 146 L10 147 C18 136 30 128 46 122 Z" fill="${dark}"/>
+    <path d="M44 70 C30 84 30 112 44 122 C56 130 72 126 76 112 C80 96 72 74 60 66 Z" fill="${fur}"/>
+    <path d="M62 84 C70 92 70 110 64 118 C60 110 58 96 62 84 Z" fill="${light}"/>
+    <path d="M48 112 C44 126 46 138 56 144 L88 146 C90 142 86 139 78 138 L62 136 C58 128 60 120 62 114 Z" fill="${dark}"/>
+    <path d="M58 64 C60 52 64 42 70 36 L78 42 C74 50 70 58 68 68 Z" fill="${fur}"/>
+    <path d="M66 82 C74 84 80 88 84 94 L81 97 C76 92 71 89 64 88 Z" fill="${dark}"/>
+    <ellipse cx="78" cy="32" rx="13" ry="9" fill="${fur}"/>
+    <path d="M86 30 C94 30 100 33 101 37 C97 39 91 38 86 37 Z" fill="${fur}"/>
+    <circle cx="100.5" cy="36.2" r="1.6" fill="#2a2524"/>
+    <circle cx="84" cy="29" r="1.5" fill="#1e1b1a"/>
+    <path d="M70 26 C66 14 66 6 70 2 C74 8 75 16 74 25 Z" fill="${fur}"/>
+    <path d="M70.5 22 C68.5 14 68.6 9 70.4 6 C72.2 10 72.6 15 72 21 Z" fill="${light}"/>
+    <path d="M76 25 C76 13 79 6 84 3 C85 10 83 18 80 26 Z" fill="${dark}"/>
+  </svg>`;
+}

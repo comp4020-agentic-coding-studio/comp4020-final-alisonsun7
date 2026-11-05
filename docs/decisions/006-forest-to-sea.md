@@ -62,6 +62,22 @@ the café inside it, rain everywhere outdoors at dusk.
   bigger than one shadow map.
 - `animate` each frame, for the water.
 
+### 7. Changes after walking it (Wen, the same day)
+
+- **The creek is twice as wide** (6.4 m bank to bank), the footbridge
+  longer and wider to match.
+- **The trail before the creek is four fifths as long** (about 64 m from
+  the start instead of 80): everything north of the creek moved towards it
+  in proportion, with the trail lined up to meet the bridge.
+- **A kangaroo comes when you wander off the trail.** In the forest, more
+  than 10 m from the trail for over a second, a kangaroo hops in from the
+  distance, stops a few metres away where a trunk doesn't hide it, and says
+  you've wandered off; its button takes you back to the nearest point of
+  the trail, facing along it. Back within 5 m, it says so and hops off.
+  It's an original drawing, like the cats and dogs. With reduced motion it
+  appears without hopping. A place opts in with `PlaceKit.offTrail` and
+  `onTrail`.
+
 ## Consequences
 
 - Assets are now about 88 MB in the repo; a first visit to this place
@@ -75,5 +91,6 @@ the café inside it, rain everywhere outdoors at dusk.
   (the seaside's nine included); spots inside the place's bounds; a spot is
   accepted, a wrong one refused, more than 12 sounds held.
 - `e2e/world-two-browsers.mjs`: the café counter, the other browser seeing
-  the sound, walking in the café, and W walking from the forest's edge out
-  onto the boardwalk.
+  the sound, walking in the café, W crossing the footbridge (z -76 to -60),
+  W walking from the forest's edge onto the boardwalk, and wandering off
+  the trail bringing the kangaroo, whose button puts you back on it.

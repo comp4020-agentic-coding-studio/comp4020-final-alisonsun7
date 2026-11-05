@@ -438,14 +438,14 @@ const SEASIDE: Scene = {
     { id: "rainy-dusk", label: "Rainy Dusk", note: "", ambience: "rain" },
   ],
   shots: [
-    zone("forest", "Forest trail", "Where the trail starts, among tall pines, ferns and fallen needles.", false, { x: 0, z: -146, yaw: Math.PI }, [
-      at("trail-start", "Trail", { x: 0.6, y: 0.5, z: -140 }, { x: 1.2, z: -139.4, pose: "walk" }, ["footsteps", "leaves", "quiet-talk"]),
-      at("tall-pines", "Tall pines", { x: -4.5, y: 3.4, z: -134 }, { x: -3.6, z: -133.4 }, ["birdsong", "wind", "leaves", "woodpecker"]),
-      at("clearing-log", "Log in the clearing", { x: -9, y: 0.9, z: -100.6 }, { x: -9, z: -100.1, y: 0.42, pose: "sit" }, ["quiet-talk", "birdsong", "leaves"]),
-      at("old-stump", "Old stump", { x: 6, y: 0.9, z: -90 }, { x: 5, z: -88.8 }, ["woodpecker", "leaves", "wind"]),
+    zone("forest", "Forest trail", "Where the trail starts, among tall pines, ferns and fallen needles.", false, { x: 0, z: -130, yaw: Math.PI }, [
+      at("trail-start", "Trail", { x: 0.4, y: 0.5, z: -125 }, { x: 1.0, z: -124.4, pose: "walk" }, ["footsteps", "leaves", "quiet-talk"]),
+      at("tall-pines", "Tall pines", { x: -4.8, y: 3.4, z: -120.4 }, { x: -3.9, z: -119.8 }, ["birdsong", "wind", "leaves", "woodpecker"]),
+      at("clearing-log", "Log in the clearing", { x: -9, y: 0.9, z: -93.7 }, { x: -9, z: -93.2, y: 0.42, pose: "sit" }, ["quiet-talk", "birdsong", "leaves"]),
+      at("old-stump", "Old stump", { x: 6, y: 0.9, z: -85.2 }, { x: 5, z: -84 }, ["woodpecker", "leaves", "wind"]),
     ]),
-    zone("creek", "Creek and footbridge", "A creek across the trail, crossed on a timber footbridge.", false, { x: -1.5, z: -76, yaw: Math.PI }, [
-      at("creek", "Creek", { x: 9, y: 0.1, z: -66 }, { x: 9, z: -63.8 }, ["creek", "leaves"]),
+    zone("creek", "Creek and footbridge", "A creek about six metres wide across the trail, crossed on a timber footbridge.", false, { x: -1.5, z: -76, yaw: Math.PI }, [
+      at("creek", "Creek", { x: 9, y: 0.1, z: -66 }, { x: 9, z: -62.2 }, ["creek", "leaves"]),
       at("footbridge", "Footbridge", { x: -2, y: 0.8, z: -66 }, { x: -2.2, z: -66.6, pose: "walk" }, ["footsteps", "creek", "quiet-talk"]),
       at("mossy-boulder", "Boulder", { x: -12, y: 1.6, z: -54 }, { x: -10.6, z: -53 }, ["woodpecker", "birdsong", "wind"]),
     ]),

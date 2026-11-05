@@ -32,4 +32,9 @@ export interface PlaceKit {
   ambienceAt?(x: number, z: number, mode: string): Ambience | undefined;
   // moving water and the like, every frame (seconds since the page opened)
   animate?(seconds: number): void;
+  // If you've wandered too far from where you're meant to walk, the nearest
+  // point back on it, and which way to face there; otherwise null.
+  offTrail?(x: number, z: number): { x: number; z: number; yaw: number } | null;
+  // close enough again for whoever came to find you to leave
+  onTrail?(x: number, z: number): boolean;
 }

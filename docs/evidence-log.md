@@ -320,3 +320,25 @@ including W walking from the forest's edge onto the boardwalk.
 Screenshots of every zone and mode looked at.
 
 **Not run:** Docker build, deploy, a real phone, listening to the new sounds.
+
+## 12. Wider creek, shorter trail, the kangaroo (2026-11-05)
+
+**Prompts (Wen):** make the creek twice as wide and the trail before it four
+fifths as long; then (mid-task) if a player wanders far off the trail in the
+forest, a kangaroo should appear from the distance, tell them they've gone
+too far, and ask them back to the trail.
+
+**Corrections:**
+
+- **The crossing check walked into a tree.** Holding W from the creek went
+  over the bridge (seen in screenshots) and then off the curving trail into
+  a trunk. The page now exposes your position (`data-at`), and the check
+  asserts z before and after the bridge.
+- **The kangaroo was hidden behind a trunk**, then landed out of view, then
+  looked tiny. Three causes: it landed straight ahead into a trunk (now it
+  looks across an arc for a clear, visible spot, else towards the trail);
+  the visibility test counted the trunk you're leaning on (now uses the
+  trunk's drawn width); and its drawing filled a third of a canvas shaped
+  for people (sprite canvases now take the drawing's proportions).
+
+**Results:** `pnpm check` 87/87; `node e2e/world-two-browsers.mjs` 9/9.

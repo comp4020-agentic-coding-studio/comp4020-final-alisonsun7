@@ -4,7 +4,7 @@
 // go down onto the sand, to the water and out along the pier.
 //
 // Metres: x east, y up, z south (the sea is south). The trail runs from
-// z -146 to the boardwalk at z -4; the waterline is at z 31.
+// z -130 to the boardwalk at z -4; the waterline is at z 31.
 //
 // Ground, sand, bark, planks and the props are CC0 from Poly Haven (see
 // public/assets-manifest.json). Trees are drawn from simple shapes: Poly
@@ -28,16 +28,19 @@ const WATERLINE = 31;
 const T_LIFE = { x: 17, z: 15 };
 const PIER = { x0: -34, x1: -31, z0: 1.5, z1: 72 };
 const CREEK_Z = -66;
-const BRIDGE = { x0: -3.4, x1: -0.6 };
+// half the creek's width: 6.4 m from bank to bank
+const CREEK_HALF = 3.2;
+const BRIDGE = { x0: -3.7, x1: -0.3 };
 
 // The trail, as points it bends through.
 const TRAIL: [number, number][] = [
-  [0, -150],
-  [-5, -132],
-  [-9, -114],
-  [-5, -98],
-  [4, -84],
-  [1, -72],
+  [0, -133],
+  [-5, -119],
+  [-9, -104],
+  [-5, -91.5],
+  [4, -80.5],
+  // lined up with the footbridge
+  [-1.6, -72],
   [-2, -66],
   [-3, -58],
   [3, -44],
@@ -47,6 +50,28 @@ const TRAIL: [number, number][] = [
 ];
 const trailCurve = new THREE.CatmullRomCurve3(TRAIL.map(([x, z]) => new THREE.Vector3(x, 0, z)));
 const trailPoints = trailCurve.getSpacedPoints(240);
+
+// The nearest point on the trail, and the way along it towards the sea.
+function nearestOnTrail(x: number, z: number): { x: number; z: number; yaw: number; d: number } {
+  let best = 0;
+  let bestD = Infinity;
+  trailPoints.forEach((p, i) => {
+    const d = (p.x - x) ** 2 + (p.z - z) ** 2;
+    if (d < bestD) {
+      bestD = d;
+      best = i;
+    }
+  });
+  const p = trailPoints[best];
+  const next = trailPoints[Math.min(best + 1, trailPoints.length - 1)];
+  const prev = trailPoints[Math.max(best - 1, 0)];
+  return { x: p.x, z: p.z, yaw: Math.atan2(-(next.x - prev.x), -(next.z - prev.z)), d: Math.sqrt(bestD) };
+}
+
+// In the forest, more than this far from the trail is wandering off it; back
+// within the smaller distance is back on it.
+const STRAY = 10;
+const RETURNED = 5;
 
 function distanceToTrail(x: number, z: number): number {
   let best = Infinity;
@@ -66,7 +91,7 @@ function mulberry(seed: number): () => number {
 
 // ---- the trees -----------------------------------------------------------
 
-const CLEARING = { x: -10, z: -100, r: 7 };
+const CLEARING = { x: -10, z: -93.2, r: 7 };
 
 interface Tree {
   x: number;
@@ -82,11 +107,11 @@ function plantTrees(): Tree[] {
   const trees: Tree[] = [];
   for (let i = 0; i < 6000 && trees.length < 520; i++) {
     const x = -58 + r() * 116;
-    const z = -158 + r() * 142;
+    const z = -142 + r() * 126;
     // fewer near the forest's edge
     if (z > -40 && r() < (z + 40) / 26) continue;
     if (distanceToTrail(x, z) < 3.4) continue;
-    if (Math.abs(z - CREEK_Z) < 3.2) continue;
+    if (Math.abs(z - CREEK_Z) < CREEK_HALF + 1.6) continue;
     if ((x - CLEARING.x) ** 2 + (z - CLEARING.z) ** 2 < CLEARING.r ** 2) continue;
     if (trees.some((t) => (t.x - x) ** 2 + (t.z - z) ** 2 < 6.5)) continue;
     trees.push({ x, z, h: 9 + r() * 8, turn: r() * Math.PI * 2 });
@@ -231,8 +256,8 @@ function build(): Built {
   const windows = std(0x2a3038, { emissive: 0xffd9a0, emissiveIntensity: 0, roughness: 0.3 });
 
   // ---- the forest ----
-  b.floor(forestFloor, -62, 62, -162, CREEK_Z - 1.6, 0);
-  b.floor(forestFloor, -62, 62, CREEK_Z + 1.6, -17, 0);
+  b.floor(forestFloor, -62, 62, -148, CREEK_Z - CREEK_HALF, 0);
+  b.floor(forestFloor, -62, 62, CREEK_Z + CREEK_HALF, -17, 0);
   // the trail, a ribbon of stony dirt following the curve
   {
     const pos: number[] = [];
@@ -266,19 +291,22 @@ function build(): Built {
 
   // the creek, below the forest floor, with a footbridge where the trail
   // crosses it
-  b.floor(mud, -62, 62, CREEK_Z - 1.6, CREEK_Z + 1.6, -0.6);
+  b.floor(mud, -62, 62, CREEK_Z - CREEK_HALF, CREEK_Z + CREEK_HALF, -0.6);
   const creekWater = water(0x24382f, 0.04, 3, 0.35);
-  const creek = new THREE.Mesh(new THREE.PlaneGeometry(124, 3.2, 120, 4), creekWater);
+  const creek = new THREE.Mesh(new THREE.PlaneGeometry(124, CREEK_HALF * 2, 120, 6), creekWater);
   creek.rotation.x = -Math.PI / 2;
   creek.position.set(0, -0.32, CREEK_Z);
   b.root.add(creek);
-  for (const z of [CREEK_Z - 1.6, CREEK_Z + 1.6]) b.box(std(0x4a3e30), -62, 62, -0.6, 0.0, z - 0.05, z + 0.05, { shadow: false });
-  b.solids.push({ x0: -62, x1: BRIDGE.x0, z0: CREEK_Z - 1.7, z1: CREEK_Z + 1.7 }, { x0: BRIDGE.x1, x1: 62, z0: CREEK_Z - 1.7, z1: CREEK_Z + 1.7 });
-  const bridge = b.box(wood, BRIDGE.x0, BRIDGE.x1, 0.0, 0.14, CREEK_Z - 2.3, CREEK_Z + 2.3);
+  for (const z of [CREEK_Z - CREEK_HALF, CREEK_Z + CREEK_HALF]) b.box(std(0x4a3e30), -62, 62, -0.6, 0.0, z - 0.05, z + 0.05, { shadow: false });
+  const wet = CREEK_HALF + 0.1;
+  b.solids.push({ x0: -62, x1: BRIDGE.x0, z0: CREEK_Z - wet, z1: CREEK_Z + wet }, { x0: BRIDGE.x1, x1: 62, z0: CREEK_Z - wet, z1: CREEK_Z + wet });
+  // the footbridge reaches a little past each bank
+  const span = CREEK_HALF + 0.8;
+  const bridge = b.box(wood, BRIDGE.x0, BRIDGE.x1, 0.0, 0.14, CREEK_Z - span, CREEK_Z + span);
   b.floors.push(bridge);
   for (const x of [BRIDGE.x0, BRIDGE.x1]) {
-    b.box(darkWood, x - 0.05, x + 0.05, 0.14, 0.95, CREEK_Z - 2.3, CREEK_Z + 2.3, { shadow: true });
-    for (const z of [CREEK_Z - 2.2, CREEK_Z, CREEK_Z + 2.2]) b.box(darkWood, x - 0.07, x + 0.07, -0.6, 0.95, z - 0.07, z + 0.07);
+    b.box(darkWood, x - 0.05, x + 0.05, 0.14, 0.95, CREEK_Z - span, CREEK_Z + span, { shadow: true });
+    for (const z of [CREEK_Z - span + 0.1, CREEK_Z - 1.6, CREEK_Z + 1.6, CREEK_Z + span - 0.1]) b.box(darkWood, x - 0.07, x + 0.07, -0.6, 0.95, z - 0.07, z + 0.07);
   }
 
   // ---- the shore ----
@@ -429,7 +457,7 @@ function build(): Built {
   b.box(darkWood, PIER.x1 - 0.1, PIER.x1, 0.95, 1.05, WATERLINE, PIER.z1);
 
   const walkable: Rect[] = [
-    { x0: -50, x1: 50, z0: -150, z1: -15 }, // the forest
+    { x0: -50, x1: 50, z0: -134, z1: -15 }, // the forest
     { x0: -50, x1: 50, z0: -16, z1: WATERLINE - 0.3 }, // boardwalk and sand
     { x0: PIER.x0 + 0.35, x1: PIER.x1 - 0.35, z0: PIER.z0, z1: PIER.z1 - 0.4 }, // the pier
     ...room.walkable.map(shift),
@@ -474,19 +502,19 @@ function scatterPoints(seed: number, n: number, pick: (r: () => number) => [numb
   return out;
 }
 
-const inForest = (x: number, z: number): boolean => distanceToTrail(x, z) > 2.2 && Math.abs(z - CREEK_Z) > 2.4;
+const inForest = (x: number, z: number): boolean => distanceToTrail(x, z) > 2.2 && Math.abs(z - CREEK_Z) > CREEK_HALF + 0.8;
 
 const SCATTER: Scatter[] = [
-  { id: "fern_02", height: 0.5, at: scatterPoints(21, 260, (r) => [-46 + r() * 92, -150 + r() * 128], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
+  { id: "fern_02", height: 0.5, at: scatterPoints(21, 260, (r) => [-46 + r() * 92, -134 + r() * 112], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
   { id: "grass_medium_02", height: 0.45, at: scatterPoints(22, 220, (r) => [-48 + r() * 96, -44 + r() * 40], [0.8, 1.8]).filter((p) => distanceToTrail(p.x, p.z) > 1.6 && !inCafe(p.x, p.z) && (p.z < -14 || p.x < -30)) },
-  { id: "shrub_02", height: 1.2, at: scatterPoints(23, 40, (r) => [-46 + r() * 92, -148 + r() * 126], [0.6, 1.2]).filter((p) => distanceToTrail(p.x, p.z) > 3.5 && Math.abs(p.z - CREEK_Z) > 3), solid: 0.6 },
-  { id: "rock_07", height: 0.2, at: scatterPoints(24, 60, (r) => [-46 + r() * 92, -150 + r() * 180], [0.8, 2.5]).filter((p) => distanceToTrail(p.x, p.z) > 1.8 && !inCafe(p.x, p.z) && (p.z < -16 || p.z > 4)) },
+  { id: "shrub_02", height: 1.2, at: scatterPoints(23, 40, (r) => [-46 + r() * 92, -133 + r() * 111], [0.6, 1.2]).filter((p) => distanceToTrail(p.x, p.z) > 3.5 && Math.abs(p.z - CREEK_Z) > CREEK_HALF + 1.4), solid: 0.6 },
+  { id: "rock_07", height: 0.2, at: scatterPoints(24, 60, (r) => [-46 + r() * 92, -134 + r() * 164], [0.8, 2.5]).filter((p) => distanceToTrail(p.x, p.z) > 1.8 && !inCafe(p.x, p.z) && (p.z < -16 || p.z > 4)) },
   {
     id: "boulder_01",
     height: 1.0,
     at: [
       { x: -12, z: -54, size: 1.4, turn: 1 },
-      { x: 8, z: -120, size: 1.1 },
+      { x: 8, z: -109, size: 1.1 },
       { x: 26, z: 27, size: 1.3, turn: 2 },
       { x: 30, z: 29, size: 0.8 },
       { x: -18, z: 26, size: 1.0, turn: 4 },
@@ -494,8 +522,8 @@ const SCATTER: Scatter[] = [
     ],
     solid: 0.8,
   },
-  { id: "dead_tree_trunk", height: 0.4, at: [{ x: -9, z: -100.6, turn: 0.3, size: 1.2 }], solid: 0 },
-  { id: "tree_stump_01", height: 0.55, at: [{ x: 6, z: -90 }, { x: -13, z: -97 }, { x: 9, z: -48, turn: 2 }], solid: 0.6 },
+  { id: "dead_tree_trunk", height: 0.4, at: [{ x: -9, z: -93.7, turn: 0.3, size: 1.2 }], solid: 0 },
+  { id: "tree_stump_01", height: 0.55, at: [{ x: 6, z: -85.2 }, { x: -13, z: -90.6 }, { x: 9, z: -48, turn: 2 }], solid: 0.6 },
   { id: "Lantern_01", height: 0.35, at: [{ x: CAFE_AT.x + 5.6, z: CAFE_AT.z + 10.4, y: 0.04 }, { x: CAFE_AT.x + 8.4, z: CAFE_AT.z + 10.4, y: 0.04 }, { x: -32.5, z: 71, y: 0.08 }] },
   { id: "wooden_crate_01", height: 0.4, at: [{ x: 11.6, z: -5.2, y: 0.04 }, { x: 11.7, z: -5.2, y: 0.44, turn: 0.3 }, { x: -33.2, z: 66, y: 0.08, turn: 1 }], solid: 0.45 },
   { id: "lifebuoy", height: 0.8, at: [{ x: PIER.x1 - 0.02, z: 44, y: 0.2, turn: Math.PI / 2 }, { x: T_LIFE.x + 1.15, z: T_LIFE.z - 0.3, y: 2.7, turn: Math.PI / 2 }] },
@@ -562,7 +590,7 @@ function zoneAt(x: number, z: number): string {
     const lz = cafeLocal(x, z)[1];
     return lz < 4.8 ? "counter" : lz > 8.2 ? "window" : "tables";
   }
-  if (z < -82) return "forest";
+  if (z < -79) return "forest";
   if (z < -40) return "creek";
   if (z < -16) return "forest-edge";
   if (x > PIER.x0 - 0.5 && x < PIER.x1 + 0.5 && z > 3) return "pier";
@@ -577,11 +605,12 @@ export const seasideKit: PlaceKit = {
   zoneAt,
   passerPaths: [
     [
-      [0.5, -146],
-      [-5, -130],
-      [-8.5, -114],
-      [-4.5, -98],
-      [3.5, -84],
+      [0.5, -130],
+      [-5, -117.5],
+      [-8.5, -104.4],
+      [-4.5, -91.6],
+      [3.5, -80.5],
+      [-1.6, -72],
       [-2, -66],
       [2.5, -44],
       [0.5, -20],
@@ -614,7 +643,7 @@ export const seasideKit: PlaceKit = {
   rainAt(r) {
     for (;;) {
       const x = -48 + r() * 96;
-      const z = -150 + r() * 186;
+      const z = -134 + r() * 170;
       if (!inCafe(x, z)) return [x, z];
     }
   },
@@ -638,6 +667,14 @@ export const seasideKit: PlaceKit = {
     if (inCafe(x, z)) return "cafe";
     if (mode === "rainy-dusk") return "rain";
     return z < -16 ? "forest" : "sea";
+  },
+  offTrail(x, z) {
+    if (z > -18) return null;
+    const n = nearestOnTrail(x, z);
+    return n.d > STRAY ? { x: n.x, z: n.z, yaw: n.yaw } : null;
+  },
+  onTrail(x, z) {
+    return z > -18 || nearestOnTrail(x, z).d < RETURNED;
   },
   animate(t) {
     if (seaTime) seaTime.value = t;

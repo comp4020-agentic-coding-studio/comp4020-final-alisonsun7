@@ -2050,3 +2050,53 @@ h3 {
   border-radius: 999px;
   pointer-events: none;
 }
+
+/* the kangaroo's speech bubble */
+.roo-bubble {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 7;
+  width: min(260px, 70vw);
+  background: #fffaf0;
+  color: #2a241c;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.roo-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  margin-left: -8px;
+  border: 8px solid transparent;
+  border-bottom: 0;
+  border-top-color: #fffaf0;
+}
+
+.roo-bubble[hidden] {
+  display: none;
+}
+
+.roo-text {
+  margin: 0 0 8px;
+}
+
+.roo-back {
+  font: 600 12px var(--font);
+  background: #2f5d4a;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.roo-back[hidden] {
+  display: none;
+}

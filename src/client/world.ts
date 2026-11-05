@@ -9,7 +9,7 @@
 import * as THREE from "three";
 import { SOUNDS, type Anchor, type Pose, type Scene, type SoundId } from "../shared/catalog.js";
 import type { Placement } from "../shared/protocol.js";
-import { figureSvg, passerSvg } from "./figures.js";
+import { figureSvg, kangarooSvg, passerSvg } from "./figures.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { cafeKit } from "./cafe.js";
@@ -76,10 +76,12 @@ const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").ma
 
 // The SVG figures as sprite textures, drawn once per look.
 const textureCache = new Map<string, THREE.Texture>();
-function svgTexture(key: string, svg: string): THREE.Texture {
+// The canvas must have the drawing's own proportions (people are 3:10), or
+// the drawing fills only part of it and the sprite looks too small.
+function svgTexture(key: string, svg: string, width = 180, height = 600): THREE.Texture {
   const cached = textureCache.get(key);
   if (cached) return cached;
-  const sized = svg.replace("<svg ", `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="600" `);
+  const sized = svg.replace("<svg ", `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" `);
   const img = new Image();
   const tex = new THREE.Texture(img);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -149,6 +151,16 @@ export class WorldView {
   // frames counted to decide whether this device needs a lighter picture
   private perf = { frames: 0, since: 0, lowered: 0 };
   private bornAt = performance.now();
+  // the kangaroo who comes when you wander off the trail
+  private roo: {
+    sprite: THREE.Sprite;
+    bubble: HTMLDivElement;
+    state: "away" | "coming" | "here" | "leaving";
+    path: THREE.Vector3[];
+    hop: number;
+    back: { x: number; z: number; yaw: number } | null;
+  } | null = null;
+  private strayFor = 0;
   // zone changes are only reported once the page has its view
   private ready = false;
 
@@ -731,6 +743,7 @@ export class WorldView {
     this.adaptQuality(now);
     const steps = Math.ceil(dt / 0.04);
     for (let i = 0; i < steps; i++) this.move(dt / steps);
+    this.watchTrail(dt);
     const bobY = Math.sin(this.bob) * 0.035;
     this.camera.position.set(this.x, EYE + bobY, this.z);
     this.kit.animate?.(now / 1000);
@@ -760,7 +773,10 @@ export class WorldView {
     }
 
     this.renderer.render(this.scene3, this.camera);
-    this.layoutOverlay(now - this.occlusionAt > 160);
+    const recheck = now - this.occlusionAt > 160;
+    this.layoutOverlay(recheck);
+    // where you are, for the end-to-end checks
+    if (recheck) this.host.dataset.at = `${this.x.toFixed(1)},${this.z.toFixed(1)}`;
     this.opts.onListen?.({
       x: this.x,
       y: EYE,
@@ -769,6 +785,186 @@ export class WorldView {
       inside: this.kit.isInside(this.x, this.z),
       ambience: this.kit.ambienceAt?.(this.x, this.z, this.mode),
     });
+  }
+
+  // ---- the kangaroo ------------------------------------------------------
+
+  // Wander more than a little way off the trail and a kangaroo hops in from
+  // the distance, stops in front of you, and tells you the way back (with a
+  // button that takes you there). Back near the trail, it hops off.
+  private watchTrail(dt: number): void {
+    const kit = this.kit;
+    if (!kit.offTrail) return;
+    const back = kit.offTrail(this.x, this.z);
+    this.strayFor = back ? this.strayFor + dt : 0;
+    const roo = this.roo;
+    if (back && this.strayFor > 1.2 && (!roo || roo.state === "away" || roo.state === "leaving")) this.summonRoo(back);
+    else if (back && roo && roo.state !== "away") {
+      roo.back = back;
+      // you walked on: it comes after you
+      const here = roo.path[roo.path.length - 1];
+      if (roo.state === "here" && Math.hypot(here.x - this.x, here.z - this.z) > 9) this.summonRoo(back, true);
+    } else if (!back && roo && (roo.state === "coming" || roo.state === "here") && kit.onTrail?.(this.x, this.z)) this.dismissRoo("That's the way! Enjoy the walk.");
+    if (this.roo && this.roo.state !== "away") this.hopRoo(dt);
+  }
+
+  private ensureRoo(): NonNullable<WorldView["roo"]> {
+    if (this.roo) return this.roo;
+    const mat = new THREE.SpriteMaterial({ map: svgTexture("kangaroo", kangarooSvg(), 240, 300), transparent: true, alphaTest: 0.05, color: this.light.figureTint });
+    const sprite = new THREE.Sprite(mat);
+    sprite.center.set(0.5, 0.02);
+    sprite.scale.set((1.8 * 120) / 150, 1.8, 1);
+    sprite.visible = false;
+    this.built.root.add(sprite);
+    const bubble = document.createElement("div");
+    bubble.className = "roo-bubble";
+    bubble.setAttribute("role", "status");
+    bubble.hidden = true;
+    bubble.innerHTML = `<p class="roo-text"></p><button type="button" class="roo-back">Take me back to the trail</button>`;
+    bubble.querySelector<HTMLButtonElement>(".roo-back")!.onclick = () => this.backToTrail();
+    this.overlay.append(bubble);
+    this.roo = { sprite, bubble, state: "away", path: [], hop: 0, back: null };
+    return this.roo;
+  }
+
+  private summonRoo(back: { x: number; z: number; yaw: number }, following = false): void {
+    const roo = this.ensureRoo();
+    const rx = Math.cos(this.yaw);
+    const rz = -Math.sin(this.yaw);
+    const to = this.clearSpotAhead(back);
+    const out = new THREE.Vector3(to.x - this.x, 0, to.z - this.z).normalize();
+    const from = following ? roo.sprite.position.clone() : new THREE.Vector3(to.x + out.x * 18 + rx * 5, 0, to.z + out.z * 18 + rz * 5);
+    roo.path = [from, to];
+    roo.hop = 0;
+    roo.back = back;
+    roo.state = reduced() ? "here" : "coming";
+    roo.sprite.position.copy(reduced() ? to : from);
+    roo.sprite.visible = true;
+    if (roo.state === "here") this.rooSays();
+    else roo.bubble.hidden = true;
+  }
+
+  // Somewhere a few metres away with room to stand and no trunk between it
+  // and you, so the kangaroo can be seen: ahead of you if possible (turning
+  // further and further to the sides), else the way back to the trail.
+  private clearSpotAhead(back: { x: number; z: number }): THREE.Vector3 {
+    const circles = this.built.circles ?? [];
+    // A trunk is drawn about 1.7 times as wide as it collides; you can stand
+    // against one (0.63 m from its middle), so a line that only grazes it
+    // where you stand still counts as seen.
+    const seen = (x: number, z: number): boolean =>
+      circles.every((c) => {
+        const dx = x - this.x;
+        const dz = z - this.z;
+        const t = Math.max(0, Math.min(1, ((c.x - this.x) * dx + (c.z - this.z) * dz) / (dx * dx + dz * dz)));
+        return Math.hypot(this.x + dx * t - c.x, this.z + dz * t - c.z) > c.r * 1.7;
+      });
+    const toTrail = Math.atan2(-(back.x - this.x), -(back.z - this.z));
+    const headings = [0, 0.4, -0.4, 0.8, -0.8, 1.3, -1.3].map((a) => this.yaw + a).concat([toTrail, toTrail + 0.4, toTrail - 0.4]);
+    for (const heading of headings)
+      for (const d of [3.5, 4.5, 6, 8]) {
+        const x = this.x - Math.sin(heading) * d;
+        const z = this.z - Math.cos(heading) * d;
+        if (canStand(this.built, x, z, 0.6) && seen(x, z)) return new THREE.Vector3(x, 0, z);
+      }
+    return new THREE.Vector3(this.x - Math.sin(toTrail) * 4.5, 0, this.z - Math.cos(toTrail) * 4.5);
+  }
+
+  private rooSays(): void {
+    const roo = this.roo!;
+    roo.bubble.querySelector(".roo-text")!.textContent = "G'day! You've wandered a long way off the trail. Head back to the path, or I can hop you over.";
+    roo.bubble.querySelector<HTMLButtonElement>(".roo-back")!.hidden = false;
+    roo.bubble.hidden = false;
+  }
+
+  private dismissRoo(words: string): void {
+    const roo = this.roo!;
+    roo.bubble.querySelector(".roo-text")!.textContent = words;
+    roo.bubble.querySelector<HTMLButtonElement>(".roo-back")!.hidden = true;
+    roo.bubble.hidden = false;
+    const at = roo.sprite.position.clone();
+    const away = new THREE.Vector3(at.x - this.x, 0, at.z - this.z).normalize().multiplyScalar(24).add(at);
+    roo.path = [at, away];
+    roo.hop = 0;
+    roo.state = reduced() ? "away" : "leaving";
+    if (roo.state === "away") roo.sprite.visible = false;
+    setTimeout(() => {
+      if (this.roo?.state !== "here" && this.roo?.state !== "coming") roo.bubble.hidden = true;
+    }, 2200);
+  }
+
+  private backToTrail(): void {
+    const back = this.roo?.back;
+    if (!back) return;
+    const go = (): void => {
+      this.x = back.x;
+      this.z = back.z;
+      this.yaw = back.yaw;
+      this.pitch = -0.04;
+      this.target = null;
+      this.strayFor = 0;
+      this.setZone(this.kit.zoneAt(this.x, this.z));
+      this.dismissRoo("There you go! Follow the trail.");
+    };
+    if (reduced()) return go();
+    this.host.classList.add("fading");
+    setTimeout(() => {
+      go();
+      this.host.classList.remove("fading");
+      this.focusCanvas();
+    }, 260);
+  }
+
+  // Hops of about 2.4 m, each a little arc, along its path.
+  private hopRoo(dt: number): void {
+    const roo = this.roo!;
+    const [from, to] = roo.path;
+    if (roo.state === "here") {
+      this.placeBubble();
+      return;
+    }
+    const length = from.distanceTo(to);
+    roo.hop += (dt * 2.4) / 0.42;
+    const done = Math.min(1, roo.hop / Math.max(0.01, length));
+    const p = from.clone().lerp(to, done);
+    const phase = (roo.hop / 2.4) % 1;
+    p.y = Math.sin(phase * Math.PI) * 0.75;
+    const before = roo.sprite.position.clone();
+    roo.sprite.position.copy(p);
+    // the drawing faces right: flip it when it moves left on screen
+    const s0 = before.project(this.camera).x;
+    const s1 = p.clone().project(this.camera).x;
+    const map = (roo.sprite.material as THREE.SpriteMaterial).map!;
+    if (Math.abs(s1 - s0) > 1e-4) {
+      const left = s1 < s0;
+      map.repeat.x = left ? -1 : 1;
+      map.offset.x = left ? 1 : 0;
+    }
+    if (done >= 1) {
+      roo.sprite.position.y = 0;
+      if (roo.state === "coming") {
+        roo.state = "here";
+        this.rooSays();
+      } else {
+        roo.state = "away";
+        roo.sprite.visible = false;
+      }
+    }
+    this.placeBubble();
+  }
+
+  private placeBubble(): void {
+    const roo = this.roo!;
+    if (roo.bubble.hidden) return;
+    const head = roo.sprite.position.clone().add(new THREE.Vector3(0, 1.95, 0));
+    const v = head.project(this.camera);
+    const onScreen = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05;
+    // off screen it sits at the top of the view, so it's never missed
+    const w = this.host.clientWidth;
+    const h = this.host.clientHeight;
+    const x = onScreen ? ((v.x + 1) / 2) * w : w / 2;
+    const y = onScreen ? ((1 - v.y) / 2) * h : 70;
+    roo.bubble.style.transform = `translate(${Math.max(140, Math.min(w - 140, x))}px, ${Math.max(70, y)}px) translate(-50%, -100%)`;
   }
 
   // Shadows are drawn for about 40 m around the sun's target; in a place
