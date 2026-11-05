@@ -38,8 +38,9 @@ export interface PlaceKit {
   skies?: Partial<Record<string, { url: string; intensity: number }>>;
   // how many raindrops (default 2400), for a place bigger than a street
   rainCount?: number;
-  // moving water and the like, every frame (seconds since the page opened)
-  animate?(seconds: number): void;
+  // moving water, doors and the like, every frame (seconds since the page
+  // opened, and where the people in the place are standing)
+  animate?(seconds: number, people: { x: number; z: number }[]): void;
   // If you've wandered too far from where you're meant to walk, the nearest
   // point back on it, and which way to face there; otherwise null.
   offTrail?(x: number, z: number): { x: number; z: number; yaw: number } | null;

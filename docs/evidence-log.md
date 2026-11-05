@@ -766,3 +766,44 @@ page now explains `bad_request` as the place not knowing that sound yet
 and asks for a reload. Wen needs to restart the local server.
 
 **Checks:** typecheck; the probe above, against the old and a fresh server.
+
+## 31. Toilets, showers and a souvenir shop you can walk into (2026-11-06)
+
+**Prompt (Wen, translated, with a screenshot of the five plain huts):** the
+first two huts are men's and women's toilets, the third and fourth men's
+and women's showers, the fifth a seaside souvenir shop; all five doors
+open; redesign their materials and style.
+
+**Done:** `client/huts.ts`. Each hut has painted weatherboards (canvas, its
+own colour: blue, coral, mint, lemon, white), white corner boards, door
+frame, skirting, fascia and bargeboards, a corrugated iron roof, gable
+ends, a timber step and a sign with a pictogram (MEN / WOMEN, Toilets /
+Showers; SEASIDE SOUVENIRS). Patterns keep their size on any box (UVs
+from position). The door turns on its hinge and swings inwards when
+anyone (you or someone else in the place) is within 2 m, and closes after
+(`PlaceKit.animate` now gets where people stand). Inside, tiled and lit by
+a ceiling panel: toilets with cubicles, doors ajar, toilets, urinals,
+basins and mirrors, a hand dryer; showers with stalls, risers, heads,
+curtains, drains, a slatted bench, towels on hooks and a mat; the shop with
+shelves of beach balls, buckets and spades, shells and snow globes, sun
+hats, T-shirts on the wall, a postcard stand, a counter with the CC0 till,
+a display window, someone minding it, and beach balls and buckets out
+front. Walls, partitions and fittings are solid; a hut counts as indoors,
+so a sound left in one is heard through its walls.
+
+**Failures and corrections:** the first screenshots 404ed on
+`/client/huts.js` (not in `STATIC`); the shop window was first cut by
+removing wall meshes, which left their collision and lining behind, so
+the front wall is now built round the window; ceilings were dark, mirrors
+reflected the sky, and T-shirts were plain squares.
+
+**Correction to earlier entries:** `pnpm check` runs against `APP_URL`,
+which defaults to :8080, the stale local server. So the "pnpm check
+39/39" in entries 27 to 29 tested that old server, not the new code. The
+e2e runs in those entries did use fresh servers. Against a fresh build
+of this commit (which includes those changes) the spec passes 39/39.
+
+**Checks:** typecheck; spec 39/39 and `e2e/world-two-browsers.mjs` 9/9,
+`meet-and-talk.mjs` 16/16, `leave-a-sound.mjs` 17/17 against fresh
+servers. Looked at the five huts from the boardwalk, from the shop's step,
+and inside four of them.

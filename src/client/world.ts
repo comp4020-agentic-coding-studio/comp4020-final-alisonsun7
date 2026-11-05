@@ -766,7 +766,7 @@ export class WorldView {
     this.watchTrail(dt);
     const bobY = Math.sin(this.bob) * 0.035;
     this.camera.position.set(this.x, EYE + bobY, this.z);
-    this.kit.animate?.(now / 1000);
+    this.kit.animate?.(now / 1000, [{ x: this.x, z: this.z }, ...[...this.others.values()].map((o) => ({ x: o.at.x, z: o.at.z }))]);
     this.followSun();
     this.camera.rotation.set(this.pitch, this.yaw, 0);
     this.sky.position.copy(this.camera.position);

@@ -13,6 +13,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { buildCafeRoom, furnishCafe, surface } from "./cafe.js";
 import type { Pose } from "./figures.js";
+import { buildHuts, inHut, SHOPKEEPER, swingDoors, TILL, type Door } from "./huts.js";
 import type { PlaceKit, Regular } from "./places.js";
 import { Builder, canvasTexture, std, type Built, type Rect } from "./world-build.js";
 
@@ -436,6 +437,8 @@ function bench(b: Builder, wood: THREE.Material, metal: THREE.Material, x: numbe
 // ---- the sea ---------------------------------------------------------------
 
 let seaTime: { value: number } | null = null;
+let doors: Door[] = [];
+let doorTime = 0;
 let foamMaterial: THREE.MeshStandardMaterial | null = null;
 let shoreFoam: THREE.Mesh | null = null;
 const breakers: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>[] = [];
@@ -515,7 +518,6 @@ function build(): Built {
   const wetSand = surface("damp_beach_sand", [40, 3]);
   const boards = surface("weathered_planks", [30, 2]);
   const pierBoards = surface("weathered_planks", [1, 20]);
-  const hutWood = surface("blue_painted_planks", [1, 1]);
   const kioskWood = surface("white_planks_clean", [2, 1]);
   const wood = std(0x7a5a3e, { roughness: 0.7 });
   const darkWood = std(0x4a3526, { roughness: 0.7 });
@@ -719,20 +721,8 @@ function build(): Built {
   b.solids.push({ x0: K.x0, x1: K.x1, z0: K.z0, z1: K.z1 });
   fishAndChips(b, K, wood, darkWood);
 
-  // five beach huts in painted boards, each its own colour
-  const hutColours = [0x6fa9d6, 0xf2d06b, 0x8fd1b4, 0xf0a3a8, 0xf4f1ea];
-  hutColours.forEach((colour, i) => {
-    const x0 = 15 + i * 4.2;
-    const x1 = x0 + 3.2;
-    const z0 = -8.5;
-    const z1 = -4.6;
-    const paint = hutWood.clone();
-    paint.color.setHex(colour);
-    b.box(paint, x0, x1, 0, 2.6, z0, z1, { occludes: true, solid: true });
-    b.box(darkWood, x0 + 1.0, x1 - 1.0, 0, 2.0, z1, z1 + 0.04, { shadow: false });
-    b.box(std(0xe9e3d6), x0 + 1.1, x1 - 1.1, 1.2, 1.5, z1 + 0.04, z1 + 0.06, { shadow: false });
-    gable(b, std(0xf4f1ea, { roughness: 0.8 }), x0, x1, z0, z1, 2.6, 1.1);
-  });
+  // five huts: toilets, showers and a souvenir shop, with doors that open
+  doors = buildHuts(b, wood);
 
   // a lifeguard tower on the sand: four legs, a red hut, a ladder
   const T = T_LIFE;
@@ -833,6 +823,7 @@ const SCATTER: Scatter[] = [
   },
   { id: "dead_tree_trunk", height: 0.4, at: [{ x: -9, z: -93.7, turn: 0.3, size: 1.2 }], solid: 0 },
   { id: "tree_stump_01", height: 0.55, at: [{ x: 6, z: -85.2 }, { x: -13, z: -90.6 }, { x: 9, z: -48, turn: 2 }], solid: 0.6 },
+  { id: "CashRegister_01", height: 0.22, at: [{ x: TILL.x, z: TILL.z, y: TILL.y, turn: Math.PI }] },
   { id: "Lantern_01", height: 0.35, at: [{ x: CAFE_AT.x + 5.6, z: CAFE_AT.z + 10.4, y: 0.04 }, { x: CAFE_AT.x + 8.4, z: CAFE_AT.z + 10.4, y: 0.04 }, { x: -32.5, z: 71, y: 0.08 }] },
   { id: "wooden_crate_01", height: 0.4, at: [{ x: 11.6, z: -5.2, y: 0.04 }, { x: 11.7, z: -5.2, y: 0.44, turn: 0.3 }, { x: -33.2, z: 66, y: 0.08, turn: 1 }], solid: 0.45 },
   { id: "lifebuoy", height: 0.8, at: [{ x: PIER.x1 - 0.02, z: 44, y: 0.2, turn: Math.PI / 2 }, { x: T_LIFE.x + 1.15, z: T_LIFE.z - 0.3, y: 2.7, turn: Math.PI / 2 }] },
@@ -942,6 +933,8 @@ const KIOSK = { x0: 4.5, x1: 11, z0: -10, z1: -4.4 };
 const CHIPPY: Regular[] = [
   { x: KIOSK.x0 + 2.4, z: KIOSK.z1 - 1.1, pose: "stand", alt: "back" },
   { x: KIOSK.x1 - 1.6, z: KIOSK.z1 + 0.8, pose: "back" },
+  // and someone minding the souvenir shop
+  { x: SHOPKEEPER.x, z: SHOPKEEPER.z, pose: "stand", alt: "back" },
 ];
 // a bench just west of the café's door, between two lamps
 const BUSKER_BENCH = -20.5;
@@ -954,7 +947,7 @@ const regularsOf = (...groups: [string, number[]][]): Regular[] =>
 export const seasideKit: PlaceKit = {
   build,
   furnish,
-  isInside: inCafe,
+  isInside: (x, z) => inCafe(x, z) || inHut(x, z),
   zoneAt,
   regulars: {
     weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER, ...CHIPPY],
@@ -1018,7 +1011,10 @@ export const seasideKit: PlaceKit = {
   onTrail(x, z) {
     return z > -18 || nearestOnTrail(x, z).d < RETURNED;
   },
-  animate(t) {
+  animate(t, people) {
+    // doors open for whoever comes up to them, whatever the motion setting
+    swingDoors(doors, people, Math.max(0, t - doorTime));
+    doorTime = t;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) t = 0;
     if (seaTime) seaTime.value = t;
     for (const map of rippleMaps) map.offset.set(t * 0.008, t * 0.013);
