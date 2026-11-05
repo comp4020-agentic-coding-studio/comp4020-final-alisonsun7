@@ -5,6 +5,16 @@ import type { Light } from "./sky.js";
 import type { Pose } from "./figures.js";
 import type { Built } from "./world-build.js";
 
+// A room within a place. A private one (a toilet or shower) is for one
+// person at a time, who may leave its `sound` for while they're in (ADR 013).
+export interface Room {
+  id: string;
+  name: string;
+  private: boolean;
+  sound?: string;
+  door: { x: number; z: number };
+}
+
 export interface Regular {
   x: number;
   z: number;
@@ -41,8 +51,11 @@ export interface PlaceKit {
   // how many raindrops (default 2400), for a place bigger than a street
   rainCount?: number;
   // moving water, doors and the like, every frame (seconds since the page
-  // opened, and where the people in the place are standing)
-  animate?(seconds: number, people: { x: number; z: number }[]): void;
+  // opened, and where the people in the place are standing; `me` is you)
+  animate?(seconds: number, people: { x: number; z: number; me?: boolean }[]): void;
+  // a room with a door inside the place (a toilet, a shower, a shop) that
+  // (x, z) is in, if any
+  roomAt?(x: number, z: number): Room | undefined;
   // If you've wandered too far from where you're meant to walk, the nearest
   // point back on it, and which way to face there; otherwise null.
   offTrail?(x: number, z: number): { x: number; z: number; yaw: number } | null;

@@ -22,6 +22,9 @@ export interface PlacedSound {
   by: string; // the name of whoever left it
   byId: string; // their participant id
   at: string; // when, ISO
+  // the toilet or shower it was left in, if it lasts only while they're
+  // inside (ADR 013)
+  whileIn?: string;
 }
 
 // Sent on every (re)connect.
@@ -72,6 +75,9 @@ export interface SoundRemoved {
   soundId: string;
   by: string; // the name of whoever removed it
   byId: string;
+  // it went because whoever left it came out of the toilet or shower
+  // (ADR 013), rather than because someone removed it
+  left?: boolean;
 }
 
 export type ServerMessage = Snapshot | Presence | Moves | Said | SoundLeft | SoundRemoved;

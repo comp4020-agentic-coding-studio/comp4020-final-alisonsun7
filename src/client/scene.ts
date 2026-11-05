@@ -5,6 +5,7 @@ import type { Person, PlacedSound, ServerMessage, Snapshot, SoundRemoved } from 
 import { FAMILIES, SOUNDS, findSound } from "../shared/sounds.js";
 import { figureSvg } from "./figures.js";
 import { Soundscape } from "./soundscape.js";
+import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
 
 interface Boot {
@@ -42,6 +43,8 @@ const world = new WorldView(stage, scene, mode.id, {
     here = { x: l.x, z: l.z };
   },
   onNear: (person) => showChat(person),
+  onRoom: (room) => enteredRoom(room),
+  onWait: (room) => say(`Someone is in ${room.name}. Please wait: the light by the door turns green when it's free.`),
 });
 let here = { x: 0, z: 0 };
 
@@ -191,13 +194,65 @@ const zoneTitle = (x: number, z: number): string => findZone(scene, world.zoneAt
 function soundLeft(sound: PlacedSound): void {
   if (soundscape.has(sound.id)) return;
   soundscape.add(sound);
-  if (sound.byId !== me()?.id) say(`${sound.by} left ${soundName(sound.soundId)} at ${zoneTitle(sound.x, sound.z)}.`);
+  // a stay in the toilets or showers isn't news
+  if (sound.byId !== me()?.id && !sound.whileIn) say(`${sound.by} left ${soundName(sound.soundId)} at ${zoneTitle(sound.x, sound.z)}.`);
 }
 
 function soundRemoved(msg: SoundRemoved): void {
   if (!soundscape.has(msg.id)) return;
   soundscape.remove(msg.id);
-  if (msg.byId !== me()?.id) say(`${msg.by} removed ${soundName(msg.soundId)}.`);
+  // a sound left for a stay in the toilets or showers ends quietly as its
+  // person comes out; only they are told
+  if (msg.left) {
+    if (msg.byId === me()?.id) say(`${soundName(msg.soundId)} stopped as you came out.`);
+  } else if (msg.byId !== me()?.id) say(`${msg.by} removed ${soundName(msg.soundId)}.`);
+}
+
+// ---- toilets and showers (ADR 013) ------------------------------------------
+
+// Going into a toilet or shower asks whether to leave its sound for while
+// you're in; coming out ends it (the server sees you leave).
+let roomPrompt: HTMLDivElement | null = null;
+let room: Room | null = null;
+function enteredRoom(now: Room | null): void {
+  room = now;
+  roomPrompt?.remove();
+  roomPrompt = null;
+  if (!room?.private || !room.sound || !boot.joined) return;
+  const here = room;
+  const what = soundName(here.sound!).toLowerCase();
+  roomPrompt = ask(`You're in ${here.name}. Leave the sound of ${what} here while you're in? Everyone nearby hears it, and it stops when you come out.`, [
+    [`Leave ${what}`, () => void leaveSound(here.sound!, true)],
+    ["Not now", () => {}],
+  ]);
+}
+
+// A small card over the world with a question and a button per answer; it
+// goes when one is chosen.
+function ask(text: string, answers: [string, () => void][]): HTMLDivElement {
+  const card = document.createElement("div");
+  card.className = "prompt-card";
+  card.setAttribute("role", "dialog");
+  const p = document.createElement("p");
+  p.textContent = text;
+  const row = document.createElement("div");
+  row.className = "prompt-actions";
+  answers.forEach(([label, act], i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = i === 0 ? "btn primary" : "btn";
+    b.textContent = label;
+    b.onclick = () => {
+      card.remove();
+      if (roomPrompt === card) roomPrompt = null;
+      act();
+      world.focusCanvas();
+    };
+    row.append(b);
+  });
+  card.append(p, row);
+  stage.append(card);
+  return card;
 }
 
 const REFUSED: Record<string, string> = {
@@ -212,6 +267,8 @@ const REFUSED: Record<string, string> = {
   // the page and the server disagree on the sounds on offer, as when one
   // has been updated and the other not yet
   bad_request: "The place doesn't know that sound yet: it may have just been updated. Reload the page and try again.",
+  not_inside: "You've already come out, so that sound wasn't left.",
+  already: "You've already left a sound for while you're in here.",
 };
 const refused = (code?: string): string => (code && REFUSED[code]) || "That didn't work. Check your connection and try again.";
 
@@ -224,14 +281,14 @@ async function post(path: string, method: string, body?: unknown): Promise<{ ok:
   return res ? ((await res.json().catch(() => null)) as { ok: boolean; code?: string; sound?: PlacedSound } | null) : null;
 }
 
-async function leaveSound(soundId: string): Promise<void> {
+async function leaveSound(soundId: string, whileInside = false): Promise<void> {
   // leaving a sound is a click, so it can turn sound on
   if (!soundscape.on) setSound(true);
-  const result = await post("sounds", "POST", { soundId });
+  const result = await post("sounds", "POST", whileInside ? { soundId, whileInside } : { soundId });
   if (!result?.ok || !result.sound) return say(refused(result?.code));
   soundscape.add(result.sound);
   closePalette();
-  say(`You left ${soundName(soundId)} here. Everyone in the place can hear it now.`);
+  say(whileInside ? `${soundName(soundId)} is playing. It stops when you come out.` : `You left ${soundName(soundId)} here. Everyone in the place can hear it now.`);
 }
 
 async function removeSound(sound: PlacedSound): Promise<void> {
@@ -426,6 +483,8 @@ const done = (): void => {
   enter.remove();
   setSound(remembered() !== "off");
   world.focusCanvas();
+  // arriving already inside a toilet or shower asks, as walking in would
+  enteredRoom(room);
 };
 form.onsubmit = async (e) => {
   e.preventDefault();

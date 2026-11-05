@@ -3,6 +3,7 @@ import { describe, expect, inject, it } from "vitest";
 import { SCENES } from "../src/shared/catalog.ts";
 import type { PlacedSound, Snapshot } from "../src/shared/protocol.ts";
 import { SOUNDS, soundUrl } from "../src/shared/sounds.ts";
+import { HUTS } from "../src/shared/huts.ts";
 import { seasideKit } from "../src/client/seaside.ts";
 import { Stream, join, type Person } from "./helpers.ts";
 
@@ -96,8 +97,8 @@ describe("sounds people leave (ADR 011)", () => {
     await call(who, "POST", "move", { x, z, yaw: 0 });
     await wait(120);
   };
-  const leave = async (who: Person, soundId: string) => {
-    const res = await call(who, "POST", "sounds", { soundId });
+  const leave = async (who: Person, soundId: string, whileInside = false) => {
+    const res = await call(who, "POST", "sounds", whileInside ? { soundId, whileInside } : { soundId });
     const body = (await res.json()) as { ok: boolean; code?: string; sound?: PlacedSound };
     await wait(1050); // one change a second per person
     return { status: res.status, ...body };
@@ -188,6 +189,37 @@ describe("sounds people leave (ADR 011)", () => {
     await stand(cy, 950.5, 950.5);
     for (const id of ids) expect((await remove(cy, id)).ok).toBe(true);
   }, 40_000);
+
+  // ADR 013: inside a toilet or shower you may leave its own sound for as
+  // long as you're in; it goes, for everyone, when you come out.
+  it("a toilet's flush lasts only while you're inside, and goes when you come out", async () => {
+    const dot = await join(baseUrl, "Dot");
+    const toilet = HUTS.find((h) => h.kind === "womens-toilet")!;
+    const inX = (toilet.x0 + toilet.x1) / 2;
+    const inZ = toilet.z1 - 0.8;
+    const watcher = await Stream.open(baseUrl, world.id, "weekday", null);
+
+    // outside, it's refused
+    await stand(dot, inX, toilet.z1 + 2);
+    expect(await leave(dot, "toilet-flush", true)).toMatchObject({ status: 409, code: "not_inside" });
+    // inside, only the toilet's own sound, and only one
+    await stand(dot, inX, inZ);
+    expect(await leave(dot, "shower", true)).toMatchObject({ status: 400, code: "bad_request" });
+    const flush = await leave(dot, "toilet-flush", true);
+    expect(flush).toMatchObject({ status: 201, ok: true, sound: { soundId: "toilet-flush", whileIn: toilet.id } });
+    expect(await leave(dot, "toilet-flush", true)).toMatchObject({ status: 409, code: "already" });
+    const id = flush.sound!.id;
+    expect((await snapshot("weekday")).sounds.find((s) => s.id === id)?.whileIn).toBe(toilet.id);
+
+    // walking about inside keeps it; coming out ends it, for everyone
+    await stand(dot, inX - 0.5, inZ - 0.5);
+    expect((await snapshot("weekday")).sounds.some((s) => s.id === id)).toBe(true);
+    await stand(dot, inX, toilet.z1 + 1.5);
+    const gone = await watcher.next((m) => m.type === "sound-removed" && m.id === id, 1500);
+    expect(gone).toMatchObject({ by: "Dot", left: true });
+    expect((await snapshot("weekday")).sounds.some((s) => s.id === id)).toBe(false);
+    watcher.close();
+  }, 20_000);
 });
 
 describe("people in the place (ADR 007)", () => {

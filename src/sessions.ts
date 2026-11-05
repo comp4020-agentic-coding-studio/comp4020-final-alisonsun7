@@ -13,6 +13,7 @@ import { log } from "./log.js";
 import { placeMode, roomKey } from "./shared/catalog.js";
 import type { Avatar, Person, PlacedSound, Snapshot } from "./shared/protocol.js";
 import { CROWD_MAX, CROWD_RADIUS, PLACE_MAX, REACH, SAME_APART, findSound } from "./shared/sounds.js";
+import { hutAt, isPrivate, privateSound } from "./shared/huts.js";
 import type { User } from "./users.js";
 
 const newId = (prefix: string): string => `${prefix}_${randomBytes(8).toString("hex")}`;
@@ -123,6 +124,7 @@ export function unsubscribe(res: ServerResponse, sceneId: string, mode: string, 
   if (room.size === 0) rooms.delete(key);
   if (user && ![...room.values()].some((u) => u?.id === user.id)) {
     if (standing.get(key)?.delete(user.id)) moved.add(key);
+    endHutSounds(sceneId, mode, user, "left_place");
     log("person_left", { user: user.id, nickname: user.nickname, scene: sceneId });
     sendPresence(sceneId, mode);
   }
@@ -174,6 +176,8 @@ setInterval(() => {
       if (now - s.at > 20_000) {
         here.delete(userId);
         moved.add(key);
+        const [sceneId, mode] = key.split(":");
+        endHutSounds(sceneId, mode, { id: userId, nickname: s.person.name } as User, "went_quiet");
       }
   }
   for (const key of moved) sendMoves(key);
@@ -197,6 +201,10 @@ export function move(user: User, sessionId: string, raw: unknown): { ok: boolean
   standing.set(key, here);
   here.set(user.id, { person: ensureParticipant(session, user), x: o.x, z: o.z, yaw: o.yaw, at: now });
   moved.add(key);
+  // out of the toilet or shower: whatever they left there for while they
+  // were in goes (ADR 013)
+  const hut = hutAt(o.x, o.z);
+  endHutSounds(session.scene_id, session.mode, user, "came_out", hut?.id);
   return { ok: true };
 }
 
@@ -249,14 +257,24 @@ interface PlacedRow {
   name: string;
   placed_by: string;
   placed_at: string;
+  while_in: string | null;
 }
 
-const placedFrom = (r: PlacedRow): PlacedSound => ({ id: r.id, soundId: r.sound_id, x: r.x, z: r.z, by: r.name, byId: r.placed_by, at: r.placed_at });
+const placedFrom = (r: PlacedRow): PlacedSound => ({
+  id: r.id,
+  soundId: r.sound_id,
+  x: r.x,
+  z: r.z,
+  by: r.name,
+  byId: r.placed_by,
+  at: r.placed_at,
+  ...(r.while_in ? { whileIn: r.while_in } : {}),
+});
 
 function liveSounds(sessionId: string): PlacedSound[] {
   const rows = db
     .prepare(
-      `SELECT s.id, s.sound_id, s.x, s.z, p.display_name AS name, s.placed_by, s.placed_at FROM placed_sounds s
+      `SELECT s.id, s.sound_id, s.x, s.z, p.display_name AS name, s.placed_by, s.placed_at, s.while_in FROM placed_sounds s
        JOIN participants p ON p.id = s.placed_by WHERE s.session_id = ? AND s.removed_at IS NULL ORDER BY s.placed_at`,
     )
     .all(sessionId) as unknown as PlacedRow[];
@@ -270,22 +288,44 @@ const soundTimes = new Map<string, number>();
 export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: boolean; code?: string; sound?: PlacedSound } {
   const session = getSession(sessionId);
   if (!session) return { ok: false, code: "no_session" };
-  const kind = findSound((raw as Record<string, unknown> | null)?.soundId);
+  const body = (raw ?? {}) as Record<string, unknown>;
+  const kind = findSound(body.soundId);
   if (!kind) return { ok: false, code: "bad_request" };
   const key = roomKey(session.scene_id, session.mode);
   const me = standing.get(key)?.get(user.id);
   if (!me) return { ok: false, code: "not_here" };
   const now = Date.now();
   if (now - (soundTimes.get(user.id) ?? 0) < 1000) return { ok: false, code: "slow_down" };
+  // For while you're inside (ADR 013): only in a toilet or shower, only
+  // its own sound, one at a time; the room rules don't apply, since it
+  // goes as soon as you come out.
+  const hut = body.whileInside === true ? hutAt(me.x, me.z) : undefined;
+  if (body.whileInside === true) {
+    if (!hut || !isPrivate(hut)) return { ok: false, code: "not_inside" };
+    if (privateSound(hut) !== kind.id) return { ok: false, code: "bad_request" };
+  }
 
   const result = inTransaction((): { ok: boolean; code?: string; sound?: PlacedSound } => {
     const live = liveSounds(session.id);
     if (live.length >= PLACE_MAX) return { ok: false, code: "place_full" };
-    const near = live.filter((p) => Math.hypot(p.x - me.x, p.z - me.z) <= CROWD_RADIUS);
-    if (near.some((p) => p.soundId === kind.id && Math.hypot(p.x - me.x, p.z - me.z) < SAME_APART)) return { ok: false, code: "too_close" };
-    if (near.length >= CROWD_MAX) return { ok: false, code: "crowded" };
-    const sound: PlacedSound = { id: newId("snd"), soundId: kind.id, x: Math.round(me.x * 100) / 100, z: Math.round(me.z * 100) / 100, by: me.person.name, byId: me.person.id, at: nowIso() };
-    db.prepare("INSERT INTO placed_sounds (id, session_id, sound_id, x, z, placed_by, placed_at) VALUES (?, ?, ?, ?, ?, ?, ?)").run(
+    if (hut) {
+      if (live.some((p) => p.byId === me.person.id && p.whileIn)) return { ok: false, code: "already" };
+    } else {
+      const near = live.filter((p) => Math.hypot(p.x - me.x, p.z - me.z) <= CROWD_RADIUS);
+      if (near.some((p) => p.soundId === kind.id && Math.hypot(p.x - me.x, p.z - me.z) < SAME_APART)) return { ok: false, code: "too_close" };
+      if (near.length >= CROWD_MAX) return { ok: false, code: "crowded" };
+    }
+    const sound: PlacedSound = {
+      id: newId("snd"),
+      soundId: kind.id,
+      x: Math.round(me.x * 100) / 100,
+      z: Math.round(me.z * 100) / 100,
+      by: me.person.name,
+      byId: me.person.id,
+      at: nowIso(),
+      ...(hut ? { whileIn: hut.id } : {}),
+    };
+    db.prepare("INSERT INTO placed_sounds (id, session_id, sound_id, x, z, placed_by, placed_at, while_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(
       sound.id,
       session.id,
       sound.soundId,
@@ -293,6 +333,7 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: b
       sound.z,
       me.person.id,
       sound.at,
+      hut?.id ?? null,
     );
     return { ok: true, sound };
   });
@@ -300,9 +341,30 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: b
   soundTimes.set(user.id, now);
   const sound = result.sound!;
   sendAll(session.scene_id, session.mode, { type: "sound-left", sessionId: session.id, sound });
-  log("sound_left", { user: user.id, nickname: user.nickname, session: session.id, sound: sound.soundId, id: sound.id, x: sound.x, z: sound.z });
+  log("sound_left", { user: user.id, nickname: user.nickname, session: session.id, sound: sound.soundId, id: sound.id, x: sound.x, z: sound.z, ...(hut ? { while_in: hut.id } : {}) });
   return result;
 }
+
+// Whatever someone left for while they were inside a toilet or shower goes
+// once they're no longer in it: they came out (`stillIn` is the hut they're
+// in now, if any), left the place, or went quiet (ADR 013).
+function endHutSounds(sceneId: string, mode: string, user: Pick<User, "id" | "nickname">, reason: string, stillIn?: string): void {
+  const session = openSession(sceneId, mode);
+  const participant = db.prepare("SELECT id, display_name FROM participants WHERE session_id = ? AND user_id = ?").get(session.id, user.id) as { id: string; display_name: string } | undefined;
+  if (!participant) return;
+  const rows = db
+    .prepare("SELECT id, sound_id, while_in FROM placed_sounds WHERE session_id = ? AND placed_by = ? AND while_in IS NOT NULL AND removed_at IS NULL")
+    .all(session.id, participant.id) as { id: string; sound_id: string; while_in: string }[];
+  for (const row of rows) {
+    if (row.while_in === stillIn) continue;
+    db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(participant.id, nowIso(), row.id);
+    sendAll(sceneId, mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: participant.display_name, byId: participant.id, left: true });
+    log("sound_removed", { user: user.id, nickname: user.nickname, session: session.id, sound: row.sound_id, id: row.id, reason, hut: row.while_in });
+  }
+}
+
+// After a restart nobody is inside anything: end what was left for a stay.
+db.prepare("UPDATE placed_sounds SET removed_by = placed_by, removed_at = ? WHERE while_in IS NOT NULL AND removed_at IS NULL").run(nowIso());
 
 export function removeSound(user: User, sessionId: string, soundRowId: string): { ok: boolean; code?: string } {
   const session = getSession(sessionId);

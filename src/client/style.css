@@ -1573,3 +1573,30 @@ h3 {
     right: 16px;
   }
 }
+
+/* a question over the world: leave a sound in the toilet or shower (ADR 013) */
+.prompt-card {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  z-index: 15;
+  transform: translateX(-50%);
+  width: min(420px, calc(100% - 32px));
+  background: rgba(24, 21, 17, 0.96);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--amber);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.prompt-card p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.prompt-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

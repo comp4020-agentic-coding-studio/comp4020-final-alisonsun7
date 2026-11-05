@@ -128,6 +128,11 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS placed_sounds_live ON placed_sounds (session_id, removed_at);
 `);
 
+// A sound left for as long as someone is inside a toilet or shower (ADR 013)
+// names that hut; added to tables made before it, no row changed.
+if (!(db.prepare("PRAGMA table_info(placed_sounds)").all() as { name: string }[]).some((c) => c.name === "while_in"))
+  db.exec("ALTER TABLE placed_sounds ADD COLUMN while_in TEXT");
+
 // Reference rows the foreign keys point at. Upserted from the catalogue on
 // every start, never deleted, so old rows keep resolving.
 const upsertScene = db.prepare(

@@ -14,6 +14,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { buildCafeRoom, furnishCafe, surface } from "./cafe.js";
 import type { Pose } from "./figures.js";
 import { buildHuts, inHut, SHOPKEEPER, swingDoors, TILL, type Door } from "./huts.js";
+import { hutAt, isPrivate, privateSound } from "../shared/huts.js";
 import type { PlaceKit, Regular } from "./places.js";
 import { Builder, canvasTexture, std, sway, type Built, type Rect } from "./world-build.js";
 
@@ -956,6 +957,11 @@ export const seasideKit: PlaceKit = {
   build,
   furnish,
   isInside: (x, z) => inCafe(x, z) || inHut(x, z),
+  roomAt(x, z) {
+    const h = hutAt(x, z);
+    if (!h) return undefined;
+    return { id: h.id, name: h.name, private: isPrivate(h), sound: privateSound(h), door: { x: (h.door.x0 + h.door.x1) / 2, z: h.z1 } };
+  },
   zoneAt,
   regulars: {
     weekday: [...regularsOf(["barista", [0]], ["queue", [0, 1]], ["tables", [0, 1, 2, 3, 4, 5]], ["bar", [0, 1, 2]], ["door", [0, 1]]), BUSKER, ...CHIPPY],

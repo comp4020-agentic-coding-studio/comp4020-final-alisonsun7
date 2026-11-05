@@ -902,3 +902,27 @@ that commit apart from the wind clock; the plants still sway.
 
 **Checks:** spec and e2e against a fresh server (counts in the commit's
 verify run).
+
+## 36. Toilets and showers, one at a time (2026-11-06, ADR 013)
+
+**Prompt (Wen, translated):** when a player goes into a toilet or shower,
+the light outside turns red; when someone else comes near, a notice asks
+them to wait; whoever is inside is asked whether to leave a flush or shower
+sound there; when they come out, the sound goes by itself.
+
+**Done:** ADR 013. Server: shared hut layout, `while_in` on
+`placed_sounds`, `whileInside` sounds with their own refusals, ended on
+moving out, leaving or going quiet, and on start. Page: a light by each
+toilet and shower door, locked doors, a wait notice, a question on going in,
+and quiet endings.
+
+**Failures and corrections:** the question didn't appear for someone who
+arrives already inside, since joining happened after the page saw them
+enter; it now asks again on joining. And the door opened for anyone inside
+within 2 m of it, which in a 3.9 m hut showed whoever was in to whoever
+waited outside; now an occupied hut opens only for its person at the door.
+
+**Checks:** spec 40/40 (the new test fails without the server ending the
+sound on the way out); e2e against a fresh server; the two-browser run
+in ADR 013, with screenshots of the shut door and red light, then the open
+door and green light.

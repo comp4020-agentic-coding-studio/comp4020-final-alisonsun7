@@ -27,6 +27,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/shared/catalog.js": js("/shared/catalog.js"),
   "/shared/protocol.js": js("/shared/protocol.js"),
   "/shared/sounds.js": js("/shared/sounds.js"),
+  "/shared/huts.js": js("/shared/huts.js"),
   "/client/soundscape.js": js("/client/soundscape.js"),
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
 };

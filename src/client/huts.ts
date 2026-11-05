@@ -7,17 +7,12 @@
 // Metres: x east, y up, z south. Each hut is 3.2 m wide and 3.9 m deep, its
 // door on the boardwalk side (+z).
 import * as THREE from "three";
-import { Builder, canvasTexture, std, type Rect } from "./world-build.js";
+import { Builder, canvasTexture, std } from "./world-build.js";
 
-export type HutKind = "mens-toilet" | "womens-toilet" | "mens-shower" | "womens-shower" | "shop";
+import { HUTS, isPrivate, type Hut, type HutKind } from "../shared/huts.js";
+import type { Rect } from "./world-build.js";
 
-export interface Hut extends Rect {
-  kind: HutKind;
-  // where its door is, along x
-  door: { x0: number; x1: number };
-  // a window in the front wall, if it has one
-  window?: { x0: number; x1: number; y0: number; y1: number };
-}
+export { HUTS };
 
 const W = 3.2;
 const D = 3.9;
@@ -26,31 +21,34 @@ const RISE = 1.0; // the roof's ridge above the walls
 const T = 0.1; // walls
 const DOOR_H = 2.05;
 
-const KINDS: { kind: HutKind; paint: string; door: number }[] = [
-  { kind: "mens-toilet", paint: "#5b93c9", door: 1.1 },
-  { kind: "womens-toilet", paint: "#ee8f8f", door: 1.1 },
-  { kind: "mens-shower", paint: "#6cc0ad", door: 1.1 },
-  { kind: "womens-shower", paint: "#efcf63", door: 1.1 },
-  { kind: "shop", paint: "#f6f1e7", door: 0.4 },
-];
-
-export const HUTS: Hut[] = KINDS.map((k, i) => {
-  const x0 = 15 + i * 4.2;
-  const door = { x0: x0 + k.door, x1: x0 + k.door + 1.0 };
-  const window = k.kind === "shop" ? { x0: door.x1 + 0.4, x1: x0 + W - 0.3, y0: 0.9, y1: 1.95 } : undefined;
-  return { kind: k.kind, x0, x1: x0 + W, z0: -8.5, z1: -4.6, door, window };
-});
+const PAINT: Record<HutKind, string> = {
+  "mens-toilet": "#5b93c9",
+  "womens-toilet": "#ee8f8f",
+  "mens-shower": "#6cc0ad",
+  "womens-shower": "#efcf63",
+  shop: "#f6f1e7",
+};
 
 // Inside a hut's walls (sounds left in a hut are heard through its walls).
 export const inHut = (x: number, z: number): boolean => HUTS.some((h) => x > h.x0 && x < h.x1 && z > h.z0 && z < h.z1);
 
 // A door turning on its hinge, and how far open it is (0 shut, 1 open).
 export interface Door {
+  hut: Hut;
   pivot: THREE.Object3D;
   x: number;
   z: number;
   open: number;
+  // a toilet's or shower's light by the door: green when free, red when
+  // someone is in (ADR 013)
+  lamp: THREE.MeshStandardMaterial | null;
+  // the doorway, made solid while it's locked against you
+  doorway: Rect;
+  solids: Rect[];
 }
+
+const FREE = new THREE.Color(0x35d07f);
+const IN_USE = new THREE.Color(0xff3b30);
 
 // ---- textures, drawn on canvases ---------------------------------------
 
@@ -458,7 +456,15 @@ function shell(k: Kit, h: Hut, paint: string, lining: THREE.Material, liningSize
     pivot.add(handle);
   }
   b.root.add(pivot);
-  return { pivot, x: (dx0 + dx1) / 2, z: h.z1, open: 0 };
+  // a round light beside the door, on a little bracket
+  let lamp: THREE.MeshStandardMaterial | null = null;
+  if (isPrivate(h)) {
+    lamp = std(0x35d07f, { emissive: FREE, emissiveIntensity: 1.6, roughness: 0.3, flatShading: false });
+    k.b.box(k.steel, dx1 + 0.17, dx1 + 0.33, 1.84, 2.0, h.z1, h.z1 + 0.06);
+    const bulb = add(k, new THREE.SphereGeometry(0.075, 18, 12), lamp, dx1 + 0.25, 1.92, h.z1 + 0.11);
+    bulb.castShadow = false;
+  }
+  return { hut: h, pivot, x: (dx0 + dx1) / 2, z: h.z1, open: 0, lamp, doorway: { x0: dx0, x1: dx1, z0: h.z1 - T, z1: h.z1 }, solids: b.solids };
 }
 
 // ---- what's inside ----------------------------------------------------------
@@ -663,7 +669,7 @@ export function buildHuts(b: Builder, wood: THREE.MeshStandardMaterial): Door[] 
   const shopWalls = lit(weatherboard("#fbf7ee"), 0.8);
   const shopFloor = lit(tiles("#c9a77a", "#a4845c", 4), 0.7);
   return HUTS.map((h, i) => {
-    const paint = KINDS[i].paint;
+    const paint = PAINT[h.kind];
     const door = h.kind === "shop" ? shell(k, h, paint, shopWalls, 1.44, shopFloor) : shell(k, h, paint, wallTiles, 1.2, floorTiles);
     if (h.kind === "mens-toilet") {
       cubicles(k, h, 2, std(0x3d6f99, { roughness: 0.4 }));
@@ -685,10 +691,26 @@ export function buildHuts(b: Builder, wood: THREE.MeshStandardMaterial): Door[] 
 }
 
 // Each door opens as anyone comes within 2 m of it, and closes behind them.
-export function swingDoors(doors: Door[], people: { x: number; z: number }[], dt: number): void {
+// A toilet or shower with someone inside (ADR 013) shows a red light and
+// stays shut, so nobody sees in; it opens only when whoever is inside comes
+// right up to it to leave. To anyone else it's locked: its doorway is
+// solid. `me` marks you among the people.
+export function swingDoors(doors: Door[], people: { x: number; z: number; me?: boolean }[], dt: number): void {
   for (const d of doors) {
-    const near = people.some((p) => Math.hypot(p.x - d.x, p.z - d.z) < 2);
+    const h = d.hut;
+    const inside = people.filter((p) => p.x > h.x0 && p.x < h.x1 && p.z > h.z0 && p.z < h.z1);
+    const taken = isPrivate(h) && inside.length > 0;
+    const locked = taken && !inside.some((p) => p.me);
+    const near = taken ? inside.some((p) => Math.hypot(p.x - d.x, p.z - d.z) < 0.9) : people.some((p) => Math.hypot(p.x - d.x, p.z - d.z) < 2);
     d.open += ((near ? 1 : 0) - d.open) * Math.min(1, dt * 5);
     d.pivot.rotation.y = d.open * 1.5;
+    if (d.lamp) {
+      const colour = inside.length ? IN_USE : FREE;
+      d.lamp.color.copy(colour);
+      d.lamp.emissive.copy(colour);
+    }
+    const i = d.solids.indexOf(d.doorway);
+    if (locked && i < 0) d.solids.push(d.doorway);
+    else if (!locked && i >= 0) d.solids.splice(i, 1);
   }
 }

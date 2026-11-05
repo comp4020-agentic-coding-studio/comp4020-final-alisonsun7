@@ -9,7 +9,7 @@ import { figureAspect, figureSvg, KID_ASPECT, kidSvg, kangarooSvg, passerAvatar,
 import { beachBallTexture } from "./huts.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
-import type { PlaceKit } from "./places.js";
+import type { PlaceKit, Room } from "./places.js";
 import { seasideKit } from "./seaside.js";
 import { canStand, wind, type Built } from "./world-build.js";
 
@@ -29,6 +29,10 @@ interface Options {
   onListen?: (l: Listener) => void;
   // the nearest other person within talking distance, or null, when it changes
   onNear?: (person: Person | null) => void;
+  // you went into a room (a toilet, a shower, the shop) or out of it (null)
+  onRoom?: (room: Room | null) => void;
+  // you came up to the door of a private room someone else is in
+  onWait?: (room: Room) => void;
 }
 
 // Someone else in the place, as the server last placed them.
@@ -232,6 +236,9 @@ export class WorldView {
   } | null = null;
   private strayFor = 0;
   private others = new Map<string, OtherView>();
+  private room: Room | null = null;
+  // private rooms you've already been asked to wait at, until you walk off
+  private waited = new Set<string>();
   private near: string | null = null;
   // zone changes are only reported once the page has its view
   private ready = false;
@@ -867,7 +874,9 @@ export class WorldView {
     this.watchTrail(dt);
     const bobY = Math.sin(this.bob) * 0.035;
     this.camera.position.set(this.x, EYE + bobY, this.z);
-    this.kit.animate?.(now / 1000, [{ x: this.x, z: this.z }, ...[...this.others.values()].map((o) => ({ x: o.at.x, z: o.at.z }))]);
+    const people = [{ x: this.x, z: this.z, me: true }, ...[...this.others.values()].map((o) => ({ x: o.at.x, z: o.at.z }))];
+    this.kit.animate?.(now / 1000, people);
+    this.watchRooms(people);
     this.followSun();
     this.camera.rotation.set(this.pitch, this.yaw, 0);
     this.sky.position.copy(this.camera.position);
@@ -906,6 +915,35 @@ export class WorldView {
       yaw: this.yaw,
       inside: this.kit.isInside(this.x, this.z),
     });
+  }
+
+  // Rooms: tell the page when you go into one or come out, and when you come
+  // up to a private one someone else is in (once, until you walk away).
+  private watchRooms(people: { x: number; z: number; me?: boolean }[]): void {
+    const roomAt = this.kit.roomAt;
+    if (!roomAt) return;
+    const mine = roomAt(this.x, this.z) ?? null;
+    if (mine?.id !== this.room?.id) {
+      this.room = mine;
+      this.opts.onRoom?.(mine);
+    }
+    const taken = new Map<string, Room>();
+    for (const p of people) {
+      const r = p.me ? null : roomAt(p.x, p.z);
+      if (r?.private) taken.set(r.id, r);
+    }
+    for (const r of taken.values()) {
+      if (mine?.id === r.id) continue;
+      const d = Math.hypot(this.x - r.door.x, this.z - r.door.z);
+      if (d < 2.3 && !this.waited.has(r.id)) {
+        this.waited.add(r.id);
+        this.opts.onWait?.(r);
+      }
+    }
+    for (const id of this.waited) {
+      const r = taken.get(id);
+      if (!r || Math.hypot(this.x - r.door.x, this.z - r.door.z) > 3.5) this.waited.delete(id);
+    }
   }
 
   // ---- other people --------------------------------------------------------
