@@ -926,3 +926,24 @@ waited outside; now an occupied hut opens only for its person at the door.
 sound on the way out); e2e against a fresh server; the two-browser run
 in ADR 013, with screenshots of the shut door and red light, then the open
 door and green light.
+
+## 37. Mateo sits on his bench, and says who he is (2026-11-06)
+
+**Prompt (Wen, translated):** the guitarist isn't sitting: the bench goes
+through his body. Make him sit on it, as a busker, with a sign beside him
+introducing himself (suggest what it says).
+
+**Cause:** a figure is a flat picture turned to face you, and his stood at
+z 1.86, inside the bench's seat (z 1.68 to 2.12), so the seat cut across
+his legs. Café sitters had the same problem with chairs.
+
+**Done:** anyone sitting is drawn up to 30 cm towards you from where they
+sit, every frame (`placeSitters`), so the seat is behind them from any
+side. The busker's pitch (`buskerPitch`): a chalkboard on an easel reading
+"MATEO, on guitar. Catalan & Spanish folk by the sea. Now playing: El Noi
+de la Mare (the recording his sound is). Requests welcome: just ask!
+Thanks for listening", and his guitar case open on the ground, lined red,
+with a few coins. Both are solid.
+
+**Checks:** spec and e2e against a fresh server; screenshots from the
+boardwalk, along it, and from the sand behind.

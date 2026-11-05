@@ -433,6 +433,89 @@ function fishAndChips(b: Builder, K: Rect, wood: THREE.Material, darkWood: THREE
   b.solids.push({ x0: ax - 0.35, x1: ax + 0.35, z0: az - 0.25, z1: az + 0.25 });
 }
 
+// The busker's pitch beside his bench: a chalkboard on an easel saying who
+// he is and what he plays (the recording is "El Noi de la Mare"), and his
+// guitar case open on the ground for tips.
+function buskerPitch(b: Builder, wood: THREE.Material, x: number, z: number): void {
+  const chalk = canvasTexture(
+    300,
+    420,
+    (g) => {
+      g.fillStyle = "#23282a";
+      g.fillRect(0, 0, 300, 420);
+      g.strokeStyle = "#8a6a45";
+      g.lineWidth = 14;
+      g.strokeRect(7, 7, 286, 406);
+      g.fillStyle = "#f3ede0";
+      g.textAlign = "center";
+      g.font = "bold 46px Georgia, serif";
+      g.fillText("MATEO", 150, 78);
+      g.fillStyle = "#f2c14e";
+      g.font = "italic 26px Georgia, serif";
+      g.fillText("\u266A on guitar \u266A", 150, 116);
+      g.fillStyle = "#f3ede0";
+      g.font = "21px sans-serif";
+      g.fillText("Catalan & Spanish folk", 150, 168);
+      g.fillText("by the sea", 150, 194);
+      g.fillStyle = "#9fd3c7";
+      g.font = "18px sans-serif";
+      g.fillText("Now playing:", 150, 240);
+      g.font = "italic 22px Georgia, serif";
+      g.fillText("El Noi de la Mare", 150, 268);
+      g.fillStyle = "#f3ede0";
+      g.font = "19px sans-serif";
+      g.fillText("Requests welcome:", 150, 318);
+      g.fillText("just ask!", 150, 342);
+      g.fillStyle = "#f0a3a8";
+      g.font = "italic 20px Georgia, serif";
+      g.fillText("Thanks for listening", 150, 390);
+    },
+    [1, 1],
+  );
+  // the easel: two legs in front, one behind, a ledge, and the board on it,
+  // facing the boardwalk (-z)
+  const easel = new THREE.Group();
+  easel.position.set(x, 0, z);
+  easel.rotation.y = Math.PI;
+  const leg = (lx: number, lz: number, tilt: number): void => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.45, 0.04), wood);
+    m.position.set(lx, 0.7, lz);
+    m.rotation.x = tilt;
+    m.castShadow = true;
+    easel.add(m);
+  };
+  leg(-0.26, 0.1, 0.12);
+  leg(0.26, 0.1, 0.12);
+  leg(0, -0.25, -0.3);
+  const ledge = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.03, 0.07), wood);
+  ledge.position.set(0, 0.62, 0.17);
+  easel.add(ledge);
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.78), std(0xffffff, { map: chalk, roughness: 0.9 }));
+  board.position.set(0, 1.02, 0.2);
+  board.rotation.x = -0.12;
+  board.castShadow = true;
+  easel.add(board);
+  b.root.add(easel);
+  b.solids.push({ x0: x - 0.35, x1: x + 0.35, z0: z - 0.3, z1: z + 0.3 });
+
+  // the guitar case, open, lined in red, with a few coins in it
+  const cx = x + 0.7;
+  const cz = z - 0.55;
+  const shell = std(0x2a2522, { roughness: 0.6 });
+  b.box(shell, cx - 0.5, cx + 0.5, 0, 0.1, cz - 0.18, cz + 0.18);
+  b.box(std(0x8e2b30, { roughness: 1 }), cx - 0.46, cx + 0.46, 0.1, 0.105, cz - 0.14, cz + 0.14, { shadow: false });
+  const lid = b.box(shell, cx - 0.5, cx + 0.5, 0, 0.03, cz, cz + 0.36);
+  lid.position.set(cx, 0.2, cz + 0.2);
+  lid.rotation.x = -1.2;
+  const gold = std(0xd9b44a, { metalness: 0.8, roughness: 0.3 });
+  for (let i = 0; i < 6; i++) {
+    const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.004, 12), gold);
+    coin.position.set(cx - 0.25 + ((i * 37) % 9) * 0.05, 0.108, cz - 0.08 + ((i * 23) % 7) * 0.025);
+    b.root.add(coin);
+  }
+  b.solids.push({ x0: cx - 0.5, x1: cx + 0.5, z0: cz - 0.2, z1: cz + 0.2 });
+}
+
 function bench(b: Builder, wood: THREE.Material, metal: THREE.Material, x: number, z: number): void {
   b.box(wood, x - 0.9, x + 0.9, 0.42, 0.47, z - 0.22, z + 0.22);
   b.box(wood, x - 0.9, x + 0.9, 0.55, 0.85, z + 0.18, z + 0.24);
@@ -671,6 +754,7 @@ function build(): Built {
   }
   // the one by the café's door is where the guitarist sits
   for (const x of [BUSKER_BENCH, -6.5, 13, 36]) bench(b, wood, metal, x, 1.9);
+  buskerPitch(b, wood, BUSKER_BENCH - 1.45, 1.75);
 
   // ---- buildings along the boardwalk ----
 
@@ -947,8 +1031,9 @@ const CHIPPY: Regular[] = [
 ];
 // a bench just west of the café's door, between two lamps
 const BUSKER_BENCH = -20.5;
-// in the middle of the seat: sitting, the hips are at the seat's height
-const BUSKER: Regular = { x: BUSKER_BENCH, z: 1.86, pose: "guitar" };
+// on the seat, facing the boardwalk: the world draws sitters a little
+// towards you, so the bench is behind him, not through him
+const BUSKER: Regular = { x: BUSKER_BENCH, z: 1.8, pose: "guitar" };
 
 const regularsOf = (...groups: [string, number[]][]): Regular[] =>
   groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose, alt]) => ({ x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose, alt })));

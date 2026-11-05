@@ -74,6 +74,10 @@ interface Passer {
 interface RegularView {
   sprite: THREE.Sprite;
   height: number;
+  // where they are; someone sitting is drawn a little towards you from
+  // there, so the chair or bench they sit on is behind them, not through them
+  at: THREE.Vector3;
+  sits: boolean;
   // their usual pose's texture and the one they change to, if any
   keys: [string, string] | null;
   // seconds for one round, the share of it spent in the second pose, and
@@ -500,7 +504,7 @@ export class WorldView {
       const second: Pose | undefined = r.pose === "guitar" ? "strum" : r.pose === "talk" ? "stand" : r.alt;
       if (second) svgTexture(`${seed}:${second}`, figureSvg(avatar, second, seed));
       const [period, share] = r.pose === "guitar" ? [0.52, 0.5] : r.pose === "talk" ? [2 + (i % 3) * 0.5, 0.45] : [7 + (i % 4) * 1.5, 0.35];
-      this.regulars.push({ sprite, height: sprite.scale.y, keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
+      this.regulars.push({ sprite, height: sprite.scale.y, at: new THREE.Vector3(r.x, 0, r.z), sits: r.pose === "sit" || r.pose === "guitar", keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
     }
   }
 
@@ -585,6 +589,18 @@ export class WorldView {
       k.hop = Math.max(0, k.hop - dt);
       k.sprite.position.y = Math.sin((k.hop / 0.35) * Math.PI) * 0.12;
     });
+  }
+
+  // Sitters a little towards you (every frame, whatever the motion setting).
+  private placeSitters(): void {
+    for (const r of this.regulars) {
+      if (!r.sits) continue;
+      const dx = this.x - r.at.x;
+      const dz = this.z - r.at.z;
+      const d = Math.hypot(dx, dz) || 1;
+      const k = Math.min(0.3, d * 0.5) / d;
+      r.sprite.position.set(r.at.x + dx * k, 0, r.at.z + dz * k);
+    }
   }
 
   private idle(now: number): void {
@@ -887,6 +903,7 @@ export class WorldView {
       this.playBall(dt);
     }
     this.moveOthers(dt);
+    this.placeSitters();
     if (this.rain && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
       const a = pos.array as Float32Array;
