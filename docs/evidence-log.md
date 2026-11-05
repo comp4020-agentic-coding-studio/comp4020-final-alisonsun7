@@ -889,3 +889,16 @@ passed was found (entry 32).
 on the beach. `world-two-browsers.mjs` failed one check once (8/9); the
 run didn't record which, and three reruns on a fresh server passed 9/9.
 The verify script now keeps each run's log.
+
+## 35. Back to the sharper picture (2026-11-06)
+
+**Prompt (Wen, translated):** the picture looks very blurry now; restore
+the image quality from before.
+
+**Done:** ambient occlusion is gone (entry 33): the scene draws straight
+to the screen again, without the composer's intermediate target and the
+occlusion's denoising, which softened it. `world.ts` is as it was before
+that commit apart from the wind clock; the plants still sway.
+
+**Checks:** spec and e2e against a fresh server (counts in the commit's
+verify run).
