@@ -9,9 +9,13 @@ import { figureAspect, figureSvg, KID_ASPECT, kidSvg, kangarooSvg, passerAvatar,
 import { beachBallTexture } from "./huts.js";
 import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import type { PlaceKit } from "./places.js";
 import { seasideKit } from "./seaside.js";
-import { canStand, type Built } from "./world-build.js";
+import { canStand, wind, type Built } from "./world-build.js";
 
 const KITS: Record<string, PlaceKit> = { seaside: seasideKit };
 
@@ -187,6 +191,9 @@ void main(){
 
 export class WorldView {
   private renderer: THREE.WebGLRenderer;
+  // the picture drawn through ambient occlusion, or null once a slow
+  // device has been given a lighter one
+  private composer: EffectComposer | null = null;
   private scene3 = new THREE.Scene();
   private camera: THREE.PerspectiveCamera;
   private built: Built;
@@ -304,6 +311,7 @@ export class WorldView {
     this.sun.target.position.set(...this.kit.sunTarget);
     this.scene3.add(this.sun, this.sun.target, this.hemi);
     this.scene3.fog = new THREE.Fog(0xffffff, 20, 120);
+    this.buildOcclusion();
 
     const base = lightFor(mode);
     const sunDir = this.kit.sunDirs?.[mode];
@@ -837,11 +845,43 @@ export class WorldView {
 
   // ---- each frame --------------------------------------------------------
 
+  // Ambient occlusion: the soft shade where things meet (in corners, under
+  // benches and counters, round the foot of a tree, inside the huts) that
+  // a place drawn from simple shapes otherwise lacks. Drawn into a
+  // multisampled target, so edges stay smooth, then tone mapped once.
+  private buildOcclusion(): void {
+    const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    const composer = new EffectComposer(this.renderer, target);
+    composer.addPass(new RenderPass(this.scene3, this.camera));
+    const ao = new GTAOPass(this.scene3, this.camera, 1, 1);
+    ao.updateGtaoMaterial({ radius: 1.1, distanceExponent: 1.2, thickness: 1.5, scale: 1.4, samples: 16 });
+    ao.blendIntensity = 1;
+    // People are flat pictures turned to face you, the drawn sky a far
+    // shell, and glass and water see-through: none of them should shade
+    // what's around them.
+    const hideAlways = ao.overrideVisibility.bind(ao);
+    ao.overrideVisibility = () => {
+      hideAlways();
+      this.scene3.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+        const clear = Array.isArray(m) ? m.some((x) => x.transparent) : !!m?.transparent;
+        if (o instanceof THREE.Sprite || o === this.sky || clear) o.visible = false;
+      });
+    };
+    composer.addPass(ao);
+    composer.addPass(new OutputPass());
+    this.composer = composer;
+  }
+
   private resize(): void {
     const w = this.host.clientWidth;
     const h = this.host.clientHeight;
     if (!w || !h) return;
     this.renderer.setSize(w, h, false);
+    if (this.composer) {
+      this.composer.setPixelRatio(this.renderer.getPixelRatio());
+      this.composer.setSize(w, h);
+    }
     this.camera.aspect = w / h;
     this.camera.fov = w / h < 0.8 ? 78 : 68;
     this.camera.updateProjectionMatrix();
@@ -892,7 +932,9 @@ export class WorldView {
       pos.needsUpdate = true;
     }
 
-    this.renderer.render(this.scene3, this.camera);
+    if (!reduced()) wind.value = now / 1000;
+    if (this.composer) this.composer.render(dt);
+    else this.renderer.render(this.scene3, this.camera);
     // where you are, for the end-to-end checks, a few times a second
     if (now - this.reportedAt > 160) {
       this.reportedAt = now;
@@ -1200,8 +1242,8 @@ export class WorldView {
   }
 
   // A slow device gets a lighter picture rather than a slideshow: if frames
-  // run under 24 a second, first drop to one pixel per CSS pixel, then turn
-  // off shadows and draw at half resolution. Never raised again, so it can't
+  // run under 24 a second, first drop ambient occlusion and draw at one
+  // pixel per CSS pixel, then turn off shadows and draw at half resolution. Never raised again, so it can't
   // flicker between the two.
   private adaptQuality(now: number): void {
     const p = this.perf;
@@ -1220,7 +1262,12 @@ export class WorldView {
       return;
     }
     p.lowered++;
-    if (p.lowered === 1) this.renderer.setPixelRatio(1);
+    if (p.lowered === 1) {
+      // occlusion costs most, so it goes first
+      this.composer?.dispose();
+      this.composer = null;
+      this.renderer.setPixelRatio(1);
+    }
     else {
       this.renderer.setPixelRatio(0.5);
       this.renderer.shadowMap.enabled = false;

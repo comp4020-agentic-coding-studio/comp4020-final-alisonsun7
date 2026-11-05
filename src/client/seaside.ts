@@ -15,7 +15,7 @@ import { buildCafeRoom, furnishCafe, surface } from "./cafe.js";
 import type { Pose } from "./figures.js";
 import { buildHuts, inHut, SHOPKEEPER, swingDoors, TILL, type Door } from "./huts.js";
 import type { PlaceKit, Regular } from "./places.js";
-import { Builder, canvasTexture, std, type Built, type Rect } from "./world-build.js";
+import { Builder, canvasTexture, std, sway, type Built, type Rect } from "./world-build.js";
 
 // where the café's room sits (its own x 0..14, z 0..10, glass front at z 10)
 const CAFE_AT = { x: -24, z: -14 };
@@ -140,7 +140,10 @@ function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
     vertices.setXYZ(i, x * edge, y + (1 - y) * 0.065 * Math.sin(a * 7), z * edge);
   }
   crown.computeVertexNormals();
-  const needles = new THREE.InstancedMesh(crown, std(0xffffff, { roughness: 0.95 }), trees.length * layers);
+  const needleMat = std(0xffffff, { roughness: 0.95 });
+  // a 15 m crown's top moves about 20 cm in the wind
+  sway(needleMat, 0.0009);
+  const needles = new THREE.InstancedMesh(crown, needleMat, trees.length * layers);
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const c = new THREE.Color();
@@ -199,7 +202,9 @@ function edgeGrass(b: Builder): void {
     }
   }
   for (let i = 0; i < 180; i++) points.push({ x: (r() > 0.5 ? 1 : -1) * (39 + r() * 17), z: 5 + r() * 21, coastal: true });
-  const mesh = new THREE.InstancedMesh(g, std(0xffffff, { side: THREE.DoubleSide, roughness: 1 }), points.length);
+  const grassMat = std(0xffffff, { side: THREE.DoubleSide, roughness: 1 });
+  sway(grassMat, 0.12);
+  const mesh = new THREE.InstancedMesh(g, grassMat, points.length);
   const dummy = new THREE.Object3D();
   const color = new THREE.Color();
   points.forEach((p, i) => {
@@ -789,6 +794,7 @@ interface Scatter {
   // positions, turns and size changes (1 = the given height)
   at: { x: number; z: number; y?: number; turn?: number; size?: number }[];
   solid?: number; // half-width of the footprint, if you can't walk through it
+  sway?: number; // how much it moves in the wind (see world-build's sway)
 }
 
 function scatterPoints(seed: number, n: number, pick: (r: () => number) => [number, number] | null, size: [number, number]): Scatter["at"] {
@@ -804,9 +810,9 @@ function scatterPoints(seed: number, n: number, pick: (r: () => number) => [numb
 const inForest = (x: number, z: number): boolean => distanceToTrail(x, z) > 2.2 && Math.abs(z - CREEK_Z) > CREEK_HALF + 0.8;
 
 const SCATTER: Scatter[] = [
-  { id: "fern_02", height: 0.5, at: scatterPoints(21, 260, (r) => [-46 + r() * 92, -134 + r() * 112], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
-  { id: "grass_medium_02", height: 0.45, at: scatterPoints(22, 220, (r) => [-48 + r() * 96, -44 + r() * 40], [0.8, 1.8]).filter((p) => distanceToTrail(p.x, p.z) > 1.6 && !inCafe(p.x, p.z) && (p.z < -14 || p.x < -30)) },
-  { id: "shrub_02", height: 1.2, at: scatterPoints(23, 40, (r) => [-46 + r() * 92, -133 + r() * 111], [0.6, 1.2]).filter((p) => distanceToTrail(p.x, p.z) > 3.5 && Math.abs(p.z - CREEK_Z) > CREEK_HALF + 1.4), solid: 0.6 },
+  { id: "fern_02", height: 0.5, sway: 0.2, at: scatterPoints(21, 260, (r) => [-46 + r() * 92, -134 + r() * 112], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
+  { id: "grass_medium_02", height: 0.45, sway: 0.25, at: scatterPoints(22, 220, (r) => [-48 + r() * 96, -44 + r() * 40], [0.8, 1.8]).filter((p) => distanceToTrail(p.x, p.z) > 1.6 && !inCafe(p.x, p.z) && (p.z < -14 || p.x < -30)) },
+  { id: "shrub_02", height: 1.2, sway: 0.04, at: scatterPoints(23, 40, (r) => [-46 + r() * 92, -133 + r() * 111], [0.6, 1.2]).filter((p) => distanceToTrail(p.x, p.z) > 3.5 && Math.abs(p.z - CREEK_Z) > CREEK_HALF + 1.4), solid: 0.6 },
   { id: "rock_07", height: 0.2, at: scatterPoints(24, 60, (r) => [-46 + r() * 92, -134 + r() * 164], [0.8, 2.5]).filter((p) => distanceToTrail(p.x, p.z) > 1.8 && !inCafe(p.x, p.z) && (p.z < -16 || p.z > 4)) },
   {
     id: "boulder_01",
@@ -845,6 +851,8 @@ function placeInstanced(root: THREE.Object3D, model: THREE.Object3D, s: Scatter,
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   for (const mesh of meshes) {
+    // grass, ferns and shrubs move in the wind
+    if (s.sway) sway(mesh.material as THREE.Material, s.sway);
     const inst = new THREE.InstancedMesh(mesh.geometry, mesh.material, s.at.length);
     s.at.forEach((p, i) => {
       const size = k * (p.size ?? 1);

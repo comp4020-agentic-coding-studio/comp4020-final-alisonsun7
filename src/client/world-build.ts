@@ -87,6 +87,37 @@ export class Builder {
   }
 }
 
+// ---- wind ----------------------------------------------------------------
+
+// One clock for the wind, which the world view moves on every frame.
+export const wind = { value: 0 };
+
+// Plants lean with the wind: each vertex moves sideways by `strength` times
+// the square of its height above the ground (so a tree's top moves, its
+// base doesn't), in gusts that pass across the place rather than every
+// plant in step.
+export function sway(mat: THREE.Material, strength: number): void {
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.windTime = wind;
+    shader.vertexShader = shader.vertexShader.replace("#include <common>", "#include <common>\nuniform float windTime;").replace(
+      "#include <project_vertex>",
+      `vec4 mvPosition = vec4( transformed, 1.0 );
+#ifdef USE_INSTANCING
+  mvPosition = instanceMatrix * mvPosition;
+#endif
+vec4 swayAt = modelMatrix * mvPosition;
+float swayPhase = windTime * 1.1 + swayAt.x * 0.13 + swayAt.z * 0.09;
+float swayGust = 0.6 + 0.4 * sin(windTime * 0.23 + swayAt.x * 0.02);
+float swayH = max(swayAt.y, 0.0);
+swayAt.x += (sin(swayPhase) + 0.35 * sin(swayPhase * 2.7 + 1.3)) * swayGust * ${strength.toFixed(5)} * swayH * swayH;
+swayAt.z += 0.5 * cos(swayPhase * 0.83) * swayGust * ${strength.toFixed(5)} * swayH * swayH;
+mvPosition = viewMatrix * swayAt;
+gl_Position = projectionMatrix * mvPosition;`,
+    );
+  };
+  mat.customProgramCacheKey = () => `sway-${strength}`;
+}
+
 export const std = (color: number, more: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial =>
   new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, flatShading: true, ...more });
 

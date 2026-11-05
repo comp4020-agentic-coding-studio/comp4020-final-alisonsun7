@@ -839,3 +839,31 @@ face.
 **Checks:** spec 39/39 and e2e 9/9, 16/16, 17/17 against a fresh server;
 the children drawn flat, standing and arms up; six screenshots 250 ms apart
 from the boardwalk with the ball in flight and held.
+
+## 33. A fuller picture: ambient occlusion, and wind in the plants (2026-11-06)
+
+**Prompt (Wen, translated):** use three.js 3D to improve all the scenes
+overall.
+
+**Done:** the renderer already had ACES tone mapping, soft shadows, an HDR
+sky lighting the models and fog. What the place drawn from simple shapes
+lacked was the soft shade where things meet. The world view now draws
+through an `EffectComposer`: the scene into a multisampled half-float
+target (so edges stay smooth), `GTAOPass` ambient occlusion (radius 1.1 m),
+then `OutputPass` for tone mapping. Figures (flat sprites), the drawn sky
+and anything transparent are hidden from the occlusion pass, so they
+don't shade what's around them. A slow device drops occlusion first,
+before the existing steps. And the plants move: `sway()` in
+`world-build.ts` leans a material's vertices with a shared wind clock, by
+the square of their height, in gusts that pass across the place; pine
+crowns (about 20 cm at the top of a 15 m tree), edge grass, grass, ferns
+and shrubs. Reduced motion stills the wind.
+
+**Failure and correction:** the first settings (radius 0.7 m, blend 0.85)
+were too faint to see beside the same view without them; now stronger.
+
+**Checks:** spec 39/39 and e2e 9/9, 16/16, 17/17 against a fresh server.
+Screenshots of the boardwalk, forest, café, huts and a toilet, with no page
+errors, compared with the same views from the commit before; two forest
+frames a second apart differ in the crowns and the ground plants. Not
+checked: frame rate on a phone (the quality fallback covers it, unproven).
