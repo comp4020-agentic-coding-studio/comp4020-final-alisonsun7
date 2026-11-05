@@ -98,6 +98,8 @@ without Wen's go-ahead.
   green. A new check should be seen to fail without its fix.
 
 A green spec is not proof the page works: look at the screenshots before
-calling UI work done. Commit verified milestones. Log prompts, failures and
+calling UI work done. Commit continually as you develop (Wen's rule): each
+verified step gets its own commit, never one large commit at the end, so
+the history shows the work as it grew. Log prompts, failures and
 corrections in `docs/evidence-log.md`. Report what wasn't run as not run
 (Docker isn't installed locally). Keep secrets out of git and logs.
