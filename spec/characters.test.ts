@@ -12,6 +12,38 @@ const part = (figure: AnimalFigure, name: string): THREE.Mesh => figure.getObjec
 const material = (mesh: THREE.Mesh): THREE.Material => mesh.material as THREE.Material;
 
 describe("the original Quiet Light people", () => {
+  it("sculpts paired feline muzzle pads and a canine bridge, with wrapped UVs and inset dark eyes", () => {
+    const cat = new AnimalFigure({ avatar: "cat", seed: "anatomy" });
+    const dog = new AnimalFigure({ avatar: "dog", seed: "anatomy" });
+    const front = (figure: AnimalFigure, x: number, y: number): number => {
+      // Evaluate the authored shape before any pose/world transform. This
+      // catches the old stretched-sphere muzzle without snapshot matching.
+      const face = new THREE.Mesh(part(figure, "head-fur").geometry, new THREE.MeshStandardMaterial());
+      const ray = new THREE.Raycaster(new THREE.Vector3(x, y, 0.3), new THREE.Vector3(0, 0, -1));
+      const hits = ray.intersectObject(face);
+      (face.material as THREE.Material).dispose();
+      expect(hits.length).toBeGreaterThan(0);
+      return hits[0].point.z;
+    };
+    const lipCentre = front(cat, 0, -0.023);
+    expect(front(cat, -0.016, -0.023)).toBeGreaterThan(lipCentre + 0.002);
+    expect(front(cat, 0.016, -0.023)).toBeGreaterThan(lipCentre + 0.002);
+    expect(front(dog, 0, -0.023)).toBeGreaterThan(0.12);
+    for (const figure of [cat, dog]) {
+      const face = part(figure, "head-fur");
+      const uv = face.geometry.getAttribute("uv");
+      expect(uv.count).toBe(face.geometry.getAttribute("position").count);
+      for (let i = 0; i < uv.count; i++) {
+        expect(Number.isFinite(uv.getX(i)) && Number.isFinite(uv.getY(i))).toBe(true);
+      }
+      expect((face.material as THREE.MeshStandardMaterial).name).toContain("generated directional short fur");
+      expect(part(figure, "left-iris").scale.x / part(figure, "left-eye").scale.x).toBeGreaterThan(0.7);
+      expect(part(figure, "dark-pupils")).toBeInstanceOf(THREE.Mesh);
+      expect(part(figure, "directional-face-fur")).toBeInstanceOf(THREE.Mesh);
+      figure.dispose();
+    }
+  });
+
   it("has grounded three-dimensional adult bodies, a small head, and a finite rig in every pose", () => {
     for (const avatar of ["cat", "dog"] as const) for (const child of [false, true]) {
       const figure = new AnimalFigure({ avatar, seed: "quiet-light", height: 1, child });
@@ -163,6 +195,22 @@ describe("the original Quiet Light people", () => {
     figure.setPose("guitar");
     expect(figure.headAnchor.getWorldPosition(new THREE.Vector3()).y).toBeLessThan(standingHead - 0.2);
     expect(figure.getObjectByName("acoustic-guitar")?.visible).toBe(true);
+    const soundboard = part(figure, "guitar-spruce-soundboard");
+    expect(soundboard.geometry.getAttribute("position").count).toBeGreaterThanOrEqual(96);
+    const woodUV = soundboard.geometry.getAttribute("uv");
+    for (let i = 0; i < woodUV.count; i++) {
+      // The guitar selects one board, rather than shrinking eight board
+      // joints and nail heads onto an instrument only a few centimetres wide.
+      expect(woodUV.getY(i)).toBeGreaterThan(0.18);
+      expect(woodUV.getY(i)).toBeLessThan(0.235);
+    }
+    expect((soundboard.material as THREE.MeshStandardMaterial).name).toContain("fine-grain soundboard");
+    expect(figure.getObjectByName("guitar-body-detail-levels")).toBeInstanceOf(THREE.LOD);
+    let playingTriangles = 0;
+    figure.traverseVisible((object) => {
+      if (object instanceof THREE.Mesh) playingTriangles += (object.geometry.index?.count ?? object.geometry.getAttribute("position").count) / 3;
+    });
+    expect(playingTriangles).toBeLessThan(35000);
     for (const name of ["left-shoe", "right-shoe"]) expect(box(part(figure, name)).min.y).toBeCloseTo(0, 5);
     const firstHand = part(figure, "right-hand").getWorldPosition(new THREE.Vector3());
     figure.setPose("strum");
