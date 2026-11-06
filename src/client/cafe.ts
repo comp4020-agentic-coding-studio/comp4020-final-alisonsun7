@@ -100,8 +100,11 @@ export function buildCafeRoom(b: Builder): CafeRoom {
   const darkWood = std(0x554a38, { roughness: 0.9 });
   const blackMetal = std(0x1d1e20, { metalness: 0.6, roughness: 0.4 });
   const ceiling = std(0x575347);
-  const joinery = std(0x9c8460, { roughness: 0.92 });
-  const glass = new THREE.MeshStandardMaterial({ color: 0xb7c9bd, transparent: true, opacity: 0.12, roughness: 0.16, metalness: 0.02, depthWrite: false });
+  const joinery = surface("brown_planks_05", [1, 2]);
+  joinery.color.setHex(0xa18a69); joinery.normalScale.setScalar(0.12);
+  const limewash = surface("plastered_wall", [3, 1]);
+  limewash.color.setHex(0xd8ccb5); limewash.normalScale.setScalar(0.1);
+  const glass = new THREE.MeshStandardMaterial({ color: 0xc4d0c0, transparent: true, opacity: 0.075, roughness: 0.13, metalness: 0.02, depthWrite: false });
   const bulbs = std(0xfff1dc, { emissive: 0xffc98a, emissiveIntensity: 0.4 });
 
   // ---- inside --------------------------------------------------------------
@@ -127,14 +130,14 @@ export function buildCafeRoom(b: Builder): CafeRoom {
     b.box(brickOut, x0, x1, 0, 0.55, 9.85, 10.15, { solid: true });
     b.box(joinery, x0, x1, 0.50, 0.59, 9.77, 10.26);
     b.box(glass, x0, x1, 0.55, 3.1, 9.97, 10.03, { shadow: false });
-    for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 3) b.box(joinery, x - 0.075, x + 0.075, 0.55, 3.25, 9.78, 10.23);
+    for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 3) b.box(joinery, x - 0.065, x + 0.065, 0.55, 3.25, 9.88, 10.12);
     b.solids.push({ x0, x1, z0: 9.8, z1: 10.2 });
   }
-  b.box(darkWood, -0.15, 14.15, 3.08, 3.29, 9.76, 10.28);
-  b.box(joinery, -0.15, 14.15, 3.29, 3.40, 9.76, 10.24);
+  b.box(limewash, -0.15, 14.15, 3.08, 3.29, 9.88, 10.16);
+  b.box(limewash, -0.15, 14.15, 3.29, 3.40, 9.88, 10.16);
   b.box(brickOut, 0, 14, 3.4, H + 0.35, 9.85, 10.15, { occludes: true });
-  b.box(joinery, DOOR.x0 - 0.10, DOOR.x0, 0, 3.29, 9.76, 10.25);
-  b.box(joinery, DOOR.x1, DOOR.x1 + 0.10, 0, 3.29, 9.76, 10.25);
+  b.box(joinery, DOOR.x0 - 0.10, DOOR.x0, 0, 3.29, 9.88, 10.16);
+  b.box(joinery, DOOR.x1, DOOR.x1 + 0.10, 0, 3.29, 9.88, 10.16);
   // Low olive canvas has a little sag and stitched hems. The doorway and
   // floor are unchanged; all new supports sit above people's heads.
   const awning = canvasTexture(256, 128, (g) => {
@@ -156,19 +159,21 @@ export function buildCafeRoom(b: Builder): CafeRoom {
   }
   awGeometry.computeVertexNormals();
   const aw = new THREE.Mesh(awGeometry, cloth);
-  aw.position.set(7, 3.48, 10.88);
+  aw.position.set(7, 3.18, 10.88);
   aw.rotation.x = -Math.PI / 2 + 0.31;
   aw.castShadow = aw.receiveShadow = true;
   b.root.add(aw);
   const valance = new THREE.Mesh(new THREE.PlaneGeometry(14.7, 0.23), cloth);
-  valance.position.set(7, 3.08, 11.79);
+  valance.position.set(7, 2.78, 11.79);
   valance.castShadow = true;
   b.root.add(valance);
   b.box(darkWood, -0.36, 14.36, 3.88, 4.07, 10.04, 10.48);
   for (const x of [0.12, 4.25, 9.75, 13.88]) {
-    const bracket = b.box(darkWood, x - 0.035, x + 0.035, 3.05, 3.75, 10.17, 11.44, { shadow: false });
-    // A shallow diagonal, tucked beneath the cloth, reads as visible joinery.
-    bracket.rotation.x = -0.18;
+    const start = new THREE.Vector3(x, 2.82, 10.18), end = new THREE.Vector3(x, 3.06, 11.73);
+    const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, start.distanceTo(end), 7), darkWood);
+    strut.position.copy(start).add(end).multiplyScalar(0.5);
+    strut.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.sub(start).normalize());
+    strut.castShadow = true; b.root.add(strut);
   }
 
   // the window bar inside the glass, both sides of the door
@@ -304,6 +309,8 @@ const PROPS: Prop[] = [
   { id: "shrub_04", height: 0.75, at: [0.6, 3.4], y: 0.42 },
   { id: "shrub_04", height: 0.75, at: [13.4, 3.4], y: 0.42, turn: 2 },
   { id: "shrub_04", height: 0.6, at: [-1.0, 11.0], y: 0.42, turn: 1 },
+  { id: "shrub_04", height: 1.0, at: [11.5, 11.05], y: 0.60, turn: 0.5 },
+  { id: "shrub_04", height: 0.85, at: [4.3, 11.0], y: 0.52, turn: 1.8 },
 ];
 
 // Loads the café's furniture into `parent` (the room's root, wherever it has
@@ -363,17 +370,35 @@ export async function furnishCafe(parent: THREE.Object3D, solids: Rect[], progre
     if (p.id === "shrub_04") {
       const c = new THREE.Mesh(potGeometry, pot);
       c.position.set(p.at[0], 0, p.at[1]);
+      const potScale = (p.y ?? 0.42) / 0.42; c.scale.setScalar(potScale);
       c.castShadow = c.receiveShadow = true;
       parent.add(c);
       const earth = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.235, 0.018, 18), soil);
-      earth.position.set(p.at[0], 0.42, p.at[1]);
+      earth.position.set(p.at[0], 0.42 * potScale, p.at[1]);
+      earth.scale.set(potScale, 1, potScale);
       parent.add(earth);
       const at = parent.localToWorld(new THREE.Vector3(p.at[0], 0, p.at[1]));
-      solids.push({ x0: at.x - 0.3, x1: at.x + 0.3, z0: at.z - 0.3, z1: at.z + 0.3 });
+      solids.push({ x0: at.x - 0.3 * potScale, x1: at.x + 0.3 * potScale, z0: at.z - 0.3 * potScale, z1: at.z + 0.3 * potScale });
     }
     if (p.id === "CoffeeCart_01" || p.id === "steel_frame_shelves_01") {
       const half = new THREE.Box3().setFromObject(holder);
       solids.push({ x0: half.min.x, x1: half.max.x, z0: half.min.z, z1: half.max.z });
     }
   }
+  const porchPlants = PROPS.filter(p => p.id === "shrub_04" && (p.y ?? 0) > 0.5);
+  const flowerCount = porchPlants.length * 16;
+  const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.032, 7, 4), std(0xeee5cd, { roughness: 1 }), flowerCount);
+  const stalks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.0035, 0.0045, 1, 5), std(0x7c8964, { roughness: 1 }), flowerCount);
+  const flowerDummy = new THREE.Object3D();
+  porchPlants.forEach((p, plant) => {
+    for (let j = 0; j < 16; j++) {
+      const a = j * 2.399, radius = 0.10 + ((j * 7) % 11) / 11 * 0.25;
+      const x = p.at[0] + Math.cos(a) * radius, z = p.at[1] + Math.sin(a) * radius;
+      const top = (p.y ?? 0.5) + 0.62 + ((j * 3) % 7) * 0.065;
+      const bottom = p.y ?? 0.5, height = top - bottom, i = plant * 16 + j;
+      flowerDummy.position.set(x, top, z); flowerDummy.scale.set(1, 0.38, 1); flowerDummy.rotation.set(0, 0, 0); flowerDummy.updateMatrix(); heads.setMatrixAt(i, flowerDummy.matrix);
+      flowerDummy.position.set(x, bottom + height / 2, z); flowerDummy.scale.set(1, height, 1); flowerDummy.updateMatrix(); stalks.setMatrixAt(i, flowerDummy.matrix);
+    }
+  });
+  heads.computeBoundingSphere(); stalks.computeBoundingSphere(); parent.add(heads, stalks);
 }
