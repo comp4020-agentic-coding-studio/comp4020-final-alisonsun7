@@ -65,3 +65,9 @@ in `.cache/d-fidelity-build/` and a scratch review on port 18876. Use the same
 clean-checkout method above with this tag to recover the first art version.
 Keep the current database: western landscape changes do not migrate or move
 stored contribution rows.
+
+`d-walkable-rebuild-2026-11-07` marks the reconstructed 3D version. The local
+18861 preview serves it with the original current database, verified across all
+12 persistent tables. `.cache/d-fidelity-promotion.json` records the previous
+compiled output and table comparison. Use Clear + Afternoon explicitly for the
+reference lighting; promotion does not reset the shared clock or weather.

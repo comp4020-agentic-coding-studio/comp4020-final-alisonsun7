@@ -1980,3 +1980,19 @@ Retained actual captures: [reference-size boardwalk](screenshots/20-d-reference-
 [real-page interface evidence](evidence/d-reference-ui-2026-11-07.json) and
 [physical-route evidence](evidence/d-reference-physics-2026-11-07.json) retain the
 measurements separately from the visual assessment.
+
+## 69. Promote code without rewinding the shared place (2026-11-07)
+
+Promoted the verified compiled candidate to 18861 at application commit
+`e55340e`, retaining the exact current SQLite path. A fresh consistent backup
+was taken after stopping the verified previous listener. All contents of all
+12 persistent tables match before and after startup, including 18 sound rows,
+one reply, two operations and the existing weather/clock anchor. No database
+was restored or migrated. Five served modules/styles match the installed
+compiled files byte for byte. The replacement process is detached with parent1
+and no controlling terminal. [Preview evidence](evidence/d-reference-preview-2026-11-07.json)
+records the verification without including private row content.
+
+The previous compiled `dist` is retained in ignored promotion cache; the Git
+rollback tag remains `before-d-fidelity-2026-11-07`. The completed rebuild is
+marked `d-walkable-rebuild-2026-11-07`. No push, merge or deployment occurred.

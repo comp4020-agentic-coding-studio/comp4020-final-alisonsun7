@@ -1,0 +1,54 @@
+{
+  "applicationCommit": "e55340ea2b44a49ff7e68d5f4925822fae36e9d1",
+  "port": 18861,
+  "databaseUnchanged": true,
+  "tableCounts": {
+    "memories": 0,
+    "participants": 23,
+    "placed_sounds": 18,
+    "placements": 0,
+    "scenes": 1,
+    "session_environments": 1,
+    "session_events": 0,
+    "sessions": 1,
+    "sound_assets": 0,
+    "sound_operations": 2,
+    "sound_replies": 1,
+    "users": 25
+  },
+  "rollbackTag": "before-d-fidelity-2026-11-07",
+  "persistentTablesCompared": 12,
+  "resources": [
+    {
+      "path": "/client/world.js",
+      "status": 200,
+      "matchesCompiledOutput": true,
+      "sha256": "d0530d3c2da3eef0d4c2aea0136b22a1cf44c0a63baf44ede4093a4c23fd346b"
+    },
+    {
+      "path": "/client/characters.js",
+      "status": 200,
+      "matchesCompiledOutput": true,
+      "sha256": "c34778c6ec29d3c5e5639126c1986fa7a5a0fa2bddecffb151f83297f2d3ab69"
+    },
+    {
+      "path": "/client/coastal-renderer.js",
+      "status": 200,
+      "matchesCompiledOutput": true,
+      "sha256": "851e8b27ad7724d2db37e5d8badc70a61228ed2d5caa6e10d9c6fa4459665cb2"
+    },
+    {
+      "path": "/client/d-pines.js",
+      "status": 200,
+      "matchesCompiledOutput": true,
+      "sha256": "2885e5472eca8f6e01d2ec6e9fa645d6b7953403e15c45d86bffde75489e16bc"
+    },
+    {
+      "path": "/client/style.css",
+      "status": 200,
+      "matchesCompiledOutput": true,
+      "sha256": "93e49fb87df8840c27292a69c9a1da984f5e221a6fe827f3588dd1b893adfaab"
+    }
+  ],
+  "note": "Code promotion only; original current SQLite data and shared environment retained. Browser tests used the separate scratch candidate."
+}
