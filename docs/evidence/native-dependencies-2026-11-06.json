@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-06",
+  "packageManager": "pnpm@11.9.0",
+  "verificationNode": "24.10.0",
+  "platform": "darwin-arm64",
+  "installedPackages": 97,
+  "lockSha256": "d809b66619b33b0378536e932cd5b59b901d90087402a6523dc56facc6b16f3b",
+  "manifestSha256": "6baeedaaba6c6a6134fd3b582d5e70af32036fc5c71bae42f3e43003de13fab8",
+  "store": "<project>/.cache/pnpm-store/v11",
+  "nativeFiles": [
+    {
+      "path": "node_modules/.pnpm/@esbuild+darwin-arm64@0.28.2/node_modules/@esbuild/darwin-arm64/bin/esbuild",
+      "sha256": "10b6243df618d374bb2d5c9cfbe7052e1405f6aa4e53a6164f11a91b9f2e1384",
+      "quarantineBefore": "0083;6aed58fe;Keka;3B3C7670-A8F3-4ABA-8D72-53E339E28E6A",
+      "quarantineAfter": null
+    },
+    {
+      "path": "node_modules/.pnpm/@rolldown+binding-darwin-arm64@1.2.9/node_modules/@rolldown/binding-darwin-arm64/rolldown-binding.darwin-arm64.node",
+      "sha256": "6c530f1a82893925f733d1ba412c323684fa3e524a8aa6cbb2cb4aa04937abaa",
+      "quarantineBefore": "0083;6aed58fe;Keka;3B3C7670-A8F3-4ABA-8D72-53E339E28E6A",
+      "quarantineAfter": null
+    },
+    {
+      "path": "node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/bin/esbuild",
+      "sha256": "10b6243df618d374bb2d5c9cfbe7052e1405f6aa4e53a6164f11a91b9f2e1384",
+      "quarantineBefore": "0083;6aed58fe;Keka;3B3C7670-A8F3-4ABA-8D72-53E339E28E6A",
+      "quarantineAfter": null
+    },
+    {
+      "path": "node_modules/.pnpm/fsevents@2.3.2/node_modules/fsevents/fsevents.node",
+      "sha256": "8e6e4ac89bec65903c90bc6ed7f17f45ecb2464d56fe4bf203620f75b6224292",
+      "quarantineBefore": "0083;6aed58fe;Keka;3B3C7670-A8F3-4ABA-8D72-53E339E28E6A",
+      "quarantineAfter": null
+    },
+    {
+      "path": "node_modules/.pnpm/fsevents@2.3.3/node_modules/fsevents/fsevents.node",
+      "sha256": "40f2f51199e4f5fc46fa6b985fb3461bb63e6cd86c62bfa9bcee45ed4438d5fb",
+      "quarantineBefore": "0083;6aed58fe;Keka;3B3C7670-A8F3-4ABA-8D72-53E339E28E6A",
+      "quarantineAfter": null
+    },
+    {
+      "path": "node_modules/.pnpm/lightningcss-darwin-arm64@1.33.0/node_modules/lightningcss-darwin-arm64/lightningcss.darwin-arm64.node",
+      "sha256": "aee1601d7145d89f262d4c777f308ef06ed53046ee49b780d31a98f02db2e253",
+      "quarantineBefore": "0083;6aed58fe;Keka;3B3C7670-A8F3-4ABA-8D72-53E339E28E6A",
+      "quarantineAfter": null
+    }
+  ],
+  "checks": {
+    "fseventsVersions": [
+      "2.3.2",
+      "2.3.3"
+    ],
+    "nativeFileChangeEvents": true,
+    "noNativePathOverrideOrPreload": true,
+    "typecheck": "passed",
+    "build": "passed",
+    "specs": {
+      "files": 6,
+      "passed": 53
+    },
+    "browserSuite": "e2e/busker-sound.mjs",
+    "browserObservations": 12,
+    "browserPageErrors": 0,
+    "repeatFrozenOfflineInstallWithoutStoreArgument": "passed"
+  }
+}

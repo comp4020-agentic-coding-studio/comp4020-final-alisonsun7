@@ -1399,3 +1399,49 @@ previous review database preserved, including the additive reply tables. Its
 scene and new conversation module returned 200; the actual final review view
 was captured and viewed. Source and tests were committed in verified steps on
 `feat/sound-discovery-polish`. No push, merge or deployment was performed.
+
+## 51. Repair macOS native dependency startup warnings (2026-11-06)
+
+**Prompt:** Wen reported Apple's cannot-verify warning for `fsevents.node` at
+startup. The copied `node_modules` tree carried Keka quarantine attributes on
+both required fsevents versions (2.3.2 through Playwright, 2.3.3 through
+Vitest/Vite), Rolldown, Lightning CSS and both esbuild executables. Its pnpm
+metadata also pointed to the previous machine's store. This was an installation
+problem; the four `.node` hashes matched fresh official locked packages.
+
+**Repair:** downloaded the project-pinned pnpm 11.9.0 from the npm registry and
+verified its SHA-512 integrity against the registry metadata. A staging install
+used the existing manifest, frozen lockfile, esbuild build permission and an
+empty store. After verifying the staging native modules, retained the old tree
+as a temporary backup and rebuilt the real project offline from that verified
+store. The final store is the ignored `.cache/pnpm-store`, configured only in
+`pnpm-workspace.yaml`, so a later ordinary install does not depend on the repair
+directory. A repeated frozen offline install with no store argument succeeded.
+The manifest, lockfile and tool pins stayed byte-for-byte unchanged. No global
+package, GitHub identity, OS security setting or user database was changed;
+quarantine attributes were not removed. The old quarantined tree remains in
+`/private/tmp/soac-native-repair-0ardo1zc/original-node_modules` for rollback.
+
+**Verification:** both genuine fsevents versions received writes to disposable
+probe files; Playwright, Vite and Vitest imported and esbuild transformed TS.
+All commands explicitly unset the old `NODE_OPTIONS` preload and native-library
+path override. The first watcher probe in the sandbox timed out; a canonical
+path probe with real OS event access passed, including the actual changed file.
+The initial Python xattr inspection lacked platform support and was replaced
+with the native `xattr` reader; no file attributes were altered. The rebuilt
+tree passed 53/53 tests in six files. After moving to the permanent project
+store, typecheck and build passed again, all six native files were verified
+without quarantine, both watchers started and stopped, and the existing Chrome
+busker suite passed all 12 observations, including measurable guitar output,
+with no page errors. Native checks and package hashes are recorded in
+`docs/evidence/native-dependencies-2026-11-06.json`.
+
+Checks used the locally available Node 24.10.0 and the verified pnpm 11.9.0;
+the committed Node pin remains 24.21.0. Docker and the other eight browser suites
+were not rerun for this installation repair; their previous results are above.
+The temporary 18870 test service used a separate database and was stopped after
+verification. The existing 18861
+review service continued serving the scene, Three.js and conversation script
+with HTTP 200. `docs/local-development.md` records fixed-version setup and a
+backup-first repair recipe; its shell blocks passed sh and zsh syntax checks.
+The evidence-link check and `git diff --check` also passed.

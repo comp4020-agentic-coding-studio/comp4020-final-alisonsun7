@@ -1,3 +1,6 @@
 # esbuild (used by Vitest) needs its postinstall to set up its native binary.
 allowBuilds:
   esbuild: true
+
+# Keep installs local to this project, including after a native-module repair.
+storeDir: .cache/pnpm-store
