@@ -9,7 +9,7 @@ import { kangarooSvg, passerAvatar, type Pose } from "./figures.js";
 import { AnimalFigure } from "./characters.js";
 import { CoastalRenderer } from "./coastal-renderer.js";
 import { beachBallTexture } from "./huts.js";
-import { environmentLight, mixLight, type Light } from "./sky.js";
+import { environmentLight, mixLight, separateSkySun, type Light } from "./sky.js";
 import { minuteAt, timePhase, type Environment } from "../shared/environment.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import type { PlaceKit, Room } from "./places.js";
@@ -444,6 +444,9 @@ export class WorldView {
     if (!sky) return;
     try {
       const tex = await new RGBELoader().loadAsync(sky.url);
+      const pixels: unknown = tex.image.data;
+      if (pixels instanceof Uint16Array || pixels instanceof Float32Array) separateSkySun(pixels);
+      tex.needsUpdate = true;
       tex.mapping = THREE.EquirectangularReflectionMapping;
       this.scene3.environment = tex;
       this.skyIntensity = sky.intensity;

@@ -2014,3 +2014,26 @@ looks like flat brown boxes. These require another source/review iteration.
 An initial scratch start failed for a missing README symlink; corrected the
 isolated build links. Sandbox localhost bind then required the normal local
 server escalation. Existing preview and persistent tables were untouched.
+
+Second/third review corrections: moved the foreground trunk behind the camera,
+kept a real overhanging bough, reduced porch flowers, moved the pitch board off
+the guitarist, removed the closest obstructing lamp and kept the pier surface
+above local swell. Needles now have lit translucency and normalized albedo;
+rails use the existing CC0 timber scan with shallow eased edges. The narrow
+physical route harness passed 2,884 route samples, six water exclusion points
+and five floor rays. Existing full spec: 74 passed before the final cloth/sky
+changes; final affected character/sky spec: 10 passed. The new float/half HDR
+check first failed at unbounded luminance 18,824, then passed with solar energy
+separated. The original source HDR remains unchanged.
+
+The installed r170 renderer was inspected: there is no duplicate colour-space
+conversion in Composer/OutputPass. The HDR has a bright solar disk contributing
+unshadowed indirect light. Its loaded lighting data now limits only that peak,
+preserving normal sky pixels, alpha and sun hue; the moving DirectionalLight
+supplies the actual shadow-casting sun. The SSAO auxiliary pass now retains
+the beauty pass's needle shadows and avoids redrawing the shadow map. Reviewed
+at 1672 × 941, Chrome/Metal: 60.47 fps, 2,315 total render calls and 22.84M
+submitted triangles across all passes, down from the first new review's 3,265
+calls / 29.29M. Browser errors: none. This is a desktop measurement, not a
+claim of performance on a physical phone. Final gameplay and weather review
+are recorded separately before promotion.

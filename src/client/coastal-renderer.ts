@@ -19,8 +19,18 @@ class ContactPass extends SSAOPass {
         hidden.push(object); object.visible = false;
       }
     });
+    // The beauty pass has already drawn alpha-tested sun shadows. Do not
+    // overwrite that map with the auxiliary normal pass's hidden foliage.
+    const autoShadows = renderer.shadowMap.autoUpdate;
+    const updateShadows = renderer.shadowMap.needsUpdate;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = false;
     try { super.renderOverride(renderer, material, target, clearColor, clearAlpha); }
-    finally { for (const object of hidden) object.visible = true; }
+    finally {
+      renderer.shadowMap.autoUpdate = autoShadows;
+      renderer.shadowMap.needsUpdate = updateShadows;
+      for (const object of hidden) object.visible = true;
+    }
   }
 }
 

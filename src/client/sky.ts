@@ -7,6 +7,24 @@
 // is low and warm so shadows are long and blue, the lamps are off, and the
 // distance is soft with mist.
 import type { Weather } from "../shared/environment.js";
+import { DataUtils } from "three";
+
+// The explicit, shadow-casting light supplies the moving sun. The HDR
+// supplies diffuse sky and reflections rather than a second unshadowed sun.
+export function separateSkySun(data: Uint16Array | Float32Array): void {
+  const half = data instanceof Uint16Array;
+  for (let i = 0; i < data.length; i += 4) {
+    const r = half ? DataUtils.fromHalfFloat(data[i]) : data[i];
+    const g = half ? DataUtils.fromHalfFloat(data[i + 1]) : data[i + 1];
+    const b = half ? DataUtils.fromHalfFloat(data[i + 2]) : data[i + 2];
+    const luminance = r * 0.2126 + g * 0.7152 + b * 0.0722;
+    if (luminance <= 32) continue;
+    const scale = 32 / luminance;
+    data[i] = half ? DataUtils.toHalfFloat(r * scale) : r * scale;
+    data[i + 1] = half ? DataUtils.toHalfFloat(g * scale) : g * scale;
+    data[i + 2] = half ? DataUtils.toHalfFloat(b * scale) : b * scale;
+  }
+}
 
 export interface Light {
   skyTop: number;
@@ -69,7 +87,7 @@ export const LIGHTS: Record<string, Light> = {
     wet: false,
     figureTint: 0xfff0e0,
     exposure: 1.05,
-    environment: 0.28,
+    environment: 0.4,
     stars: 0,
     cloudCover: 0,
     wetness: 0,
@@ -98,7 +116,7 @@ export const LIGHTS: Record<string, Light> = {
     wet: false,
     figureTint: 0xffffff,
     exposure: 1.08,
-    environment: 0.28,
+    environment: 0.4,
     stars: 0,
     cloudCover: 0,
     wetness: 0,
