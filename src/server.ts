@@ -222,11 +222,16 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
   // Leaving a sound where you stand, and removing one you stand beside
   // (ADR 011).
+  const repliesApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/sounds\/(snd_[a-f0-9]{16})\/replies$/);
+  if (method === "GET" && repliesApi) {
+    const result = sessions.soundReplies(repliesApi[1], repliesApi[2], url.searchParams.get("after") ?? undefined);
+    return json(res, result.ok ? 200 : result.code === "bad_request" ? 400 : result.code === "reply_private" ? 409 : 404, result);
+  }
   const soundApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/sounds(?:\/(snd_[a-f0-9]{16}))?$/);
   if (soundApi && ((method === "POST" && !soundApi[2]) || (method === "DELETE" && soundApi[2]))) {
     if (!user) return json(res, 401, { ok: false, code: "no_session" });
     const result = soundApi[2] ? sessions.removeSound(user, soundApi[1], soundApi[2]) : sessions.leaveSound(user, soundApi[1], await readJson(req));
-    const status = result.ok ? (soundApi[2] ? 200 : 201) : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
+    const status = result.ok ? (soundApi[2] || ("replayed" in result && result.replayed) ? 200 : 201) : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
     return json(res, status, result);
   }
 

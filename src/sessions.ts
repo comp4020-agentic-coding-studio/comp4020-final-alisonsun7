@@ -11,7 +11,7 @@ import { randomBytes } from "node:crypto";
 import { db, inTransaction, nowIso } from "./db.js";
 import { log } from "./log.js";
 import { placeMode, roomKey } from "./shared/catalog.js";
-import type { Avatar, MoveResult, Person, PlacedSound, Snapshot } from "./shared/protocol.js";
+import type { Avatar, MoveResult, Person, PlacedSound, Snapshot, SoundPlacementResult, SoundReference, SoundReplies } from "./shared/protocol.js";
 import { CROWD_MAX, CROWD_RADIUS, PLACE_MAX, REACH, SAME_APART, findSound } from "./shared/sounds.js";
 import { hutAt, isPrivate, privateSound } from "./shared/huts.js";
 import type { User } from "./users.js";
@@ -275,6 +275,7 @@ export function say(user: User, sessionId: string, raw: unknown): { ok: boolean;
 
 interface PlacedRow {
   id: string;
+  session_id: string;
   sound_id: string;
   x: number;
   z: number;
@@ -282,9 +283,11 @@ interface PlacedRow {
   placed_by: string;
   placed_at: string;
   while_in: string | null;
+  removed_at: string | null;
+  parent_id: string | null;
 }
 
-const placedFrom = (r: PlacedRow): PlacedSound => ({
+const referenceFrom = (r: PlacedRow): SoundReference => ({
   id: r.id,
   soundId: r.sound_id,
   x: r.x,
@@ -292,34 +295,88 @@ const placedFrom = (r: PlacedRow): PlacedSound => ({
   by: r.name,
   byId: r.placed_by,
   at: r.placed_at,
-  ...(r.while_in ? { whileIn: r.while_in } : {}),
+  ...(r.parent_id ? { replyToId: r.parent_id } : {}),
+  ...(r.removed_at ? { removedAt: r.removed_at } : {}),
 });
+
+const PLACED_SELECT = `SELECT s.id, s.session_id, s.sound_id, s.x, s.z, p.display_name AS name,
+  s.placed_by, s.placed_at, s.while_in, s.removed_at, link.parent_id FROM placed_sounds s
+  JOIN participants p ON p.id = s.placed_by LEFT JOIN sound_replies link ON link.sound_id = s.id`;
+
+function soundRow(sessionId: string, id: string): PlacedRow | undefined {
+  return db.prepare(`${PLACED_SELECT} WHERE s.session_id = ? AND s.id = ?`).get(sessionId, id) as PlacedRow | undefined;
+}
+
+function placedFrom(row: PlacedRow): PlacedSound {
+  const parent = row.parent_id ? soundRow(row.session_id, row.parent_id) : undefined;
+  return {
+    ...referenceFrom(row),
+    ...(row.while_in ? { whileIn: row.while_in } : {}),
+    ...(parent && !parent.while_in ? { replyTo: referenceFrom(parent) } : {}),
+  };
+}
 
 function liveSounds(sessionId: string): PlacedSound[] {
   const rows = db
-    .prepare(
-      `SELECT s.id, s.sound_id, s.x, s.z, p.display_name AS name, s.placed_by, s.placed_at, s.while_in FROM placed_sounds s
-       JOIN participants p ON p.id = s.placed_by WHERE s.session_id = ? AND s.removed_at IS NULL ORDER BY s.placed_at`,
-    )
+    .prepare(`${PLACED_SELECT} WHERE s.session_id = ? AND s.removed_at IS NULL ORDER BY s.placed_at, s.id`)
     .all(sessionId) as unknown as PlacedRow[];
   return rows.map(placedFrom);
+}
+
+// One parent and a bounded page of direct answers. Removed endpoints remain
+// readable metadata; this route never restores or plays their recordings.
+export function soundReplies(sessionId: string, id: string, after?: string): SoundReplies | { ok: false; code: string } {
+  if (!getSession(sessionId)) return { ok: false, code: "no_session" };
+  const row = soundRow(sessionId, id);
+  if (!row) return { ok: false, code: "gone" };
+  if (row.while_in) return { ok: false, code: "reply_private" };
+  const cursor = after ? soundRow(sessionId, after) : undefined;
+  if (after && (!/^snd_[a-f0-9]{16}$/.test(after) || cursor?.parent_id !== id)) return { ok: false, code: "bad_request" };
+  const children = db.prepare(`${PLACED_SELECT} WHERE s.session_id = ? AND link.parent_id = ? AND s.while_in IS NULL
+    ${cursor ? "AND (s.placed_at > ? OR (s.placed_at = ? AND s.id > ?))" : ""}
+    ORDER BY s.placed_at, s.id LIMIT 51`).all(sessionId, id, ...(cursor ? [cursor.placed_at, cursor.placed_at, cursor.id] : [])) as unknown as PlacedRow[];
+  const parent = row.parent_id ? soundRow(sessionId, row.parent_id) : undefined;
+  return {
+    ok: true,
+    sound: referenceFrom(row),
+    parent: parent && !parent.while_in ? referenceFrom(parent) : null,
+    replies: children.slice(0, 50).map(referenceFrom),
+    nextCursor: children.length > 50 ? children[49].id : null,
+  };
 }
 
 const soundTimes = new Map<string, number>();
 
 // At most one change a second per person; the same sound needs room; a spot
 // can't crowd up; nor can the whole place.
-export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: boolean; code?: string; sound?: PlacedSound } {
+export function leaveSound(user: User, sessionId: string, raw: unknown): SoundPlacementResult {
   const session = getSession(sessionId);
   if (!session) return { ok: false, code: "no_session" };
   const body = (raw ?? {}) as Record<string, unknown>;
   const kind = findSound(body.soundId);
   if (!kind) return { ok: false, code: "bad_request" };
+  const parentId = body.replyToId;
+  const operationId = body.operationId;
+  if (body.whileInside !== undefined && typeof body.whileInside !== "boolean") return { ok: false, code: "bad_request" };
+  if (parentId !== undefined && (typeof parentId !== "string" || !/^snd_[a-f0-9]{16}$/.test(parentId))) return { ok: false, code: "bad_request" };
+  if (operationId !== undefined && (typeof operationId !== "string" || !/^[A-Za-z0-9_-]{8,80}$/.test(operationId))) return { ok: false, code: "bad_request" };
+  if (parentId && !operationId) return { ok: false, code: "bad_request" };
+  if (parentId && body.whileInside === true) return { ok: false, code: "reply_private" };
+  const requestKey = JSON.stringify([kind.id, parentId ?? null, body.whileInside === true]);
+  // A committed retry is a read, including after a disconnect or removal.
+  // Fresh operation ids still pass every ordinary position/rate/space check.
+  if (operationId) {
+    const previous = db.prepare("SELECT sound_id, request_key FROM sound_operations WHERE session_id = ? AND user_id = ? AND operation_id = ?").get(sessionId, user.id, operationId) as { sound_id: string; request_key: string } | undefined;
+    if (previous) {
+      if (previous.request_key !== requestKey) return { ok: false, code: "operation_conflict" };
+      const row = soundRow(sessionId, previous.sound_id)!;
+      return { ok: true, sound: placedFrom(row), replayed: true };
+    }
+  }
   const key = roomKey(session.scene_id, session.mode);
   const me = standing.get(key)?.get(user.id);
   if (!me) return { ok: false, code: "not_here" };
   const now = Date.now();
-  if (now - (soundTimes.get(user.id) ?? 0) < 1000) return { ok: false, code: "slow_down" };
   // For while you're inside (ADR 013): only in a toilet or shower, only
   // its own sound, one at a time; the room rules don't apply, since it
   // goes as soon as you come out.
@@ -329,7 +386,11 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: b
     if (privateSound(hut) !== kind.id) return { ok: false, code: "bad_request" };
   }
 
-  const result = inTransaction((): { ok: boolean; code?: string; sound?: PlacedSound } => {
+  const result = inTransaction((): SoundPlacementResult => {
+    const parent = parentId ? soundRow(session.id, parentId) : undefined;
+    if (parentId && (!parent || parent.removed_at)) return { ok: false, code: "reply_gone" };
+    if (parent?.while_in) return { ok: false, code: "reply_private" };
+    if (now - (soundTimes.get(user.id) ?? 0) < 1000) return { ok: false, code: "slow_down" };
     const live = liveSounds(session.id);
     if (hut) {
       if (live.some((p) => p.byId === me.person.id && p.whileIn)) return { ok: false, code: "already" };
@@ -351,6 +412,7 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: b
       byId: me.person.id,
       at: nowIso(),
       ...(hut ? { whileIn: hut.id } : {}),
+      ...(parent ? { replyToId: parent.id, replyTo: referenceFrom(parent) } : {}),
     };
     db.prepare("INSERT INTO placed_sounds (id, session_id, sound_id, x, z, placed_by, placed_at, while_in) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(
       sound.id,
@@ -362,13 +424,15 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: b
       sound.at,
       hut?.id ?? null,
     );
+    if (parent) db.prepare("INSERT INTO sound_replies (sound_id, parent_id, created_at) VALUES (?, ?, ?)").run(sound.id, parent.id, sound.at);
+    if (operationId) db.prepare("INSERT INTO sound_operations (session_id, user_id, operation_id, request_key, sound_id, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(session.id, user.id, operationId, requestKey, sound.id, sound.at);
     return { ok: true, sound };
   });
   if (!result.ok) return result;
   soundTimes.set(user.id, now);
   const sound = result.sound!;
   sendAll(session.scene_id, session.mode, { type: "sound-left", sessionId: session.id, sound });
-  log("sound_left", { user: user.id, nickname: user.nickname, session: session.id, sound: sound.soundId, id: sound.id, x: sound.x, z: sound.z, ...(hut ? { while_in: hut.id } : {}) });
+  log("sound_left", { user: user.id, nickname: user.nickname, session: session.id, sound: sound.soundId, id: sound.id, x: sound.x, z: sound.z, ...(hut ? { while_in: hut.id } : {}), ...(parentId ? { reply_to: parentId } : {}) });
   return result;
 }
 
@@ -384,8 +448,9 @@ function endHutSounds(sceneId: string, mode: string, user: Pick<User, "id" | "ni
     .all(session.id, participant.id) as { id: string; sound_id: string; while_in: string }[];
   for (const row of rows) {
     if (row.while_in === stillIn) continue;
-    db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(participant.id, nowIso(), row.id);
-    sendAll(sceneId, mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: participant.display_name, byId: participant.id, left: true });
+    const removedAt = nowIso();
+    db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(participant.id, removedAt, row.id);
+    sendAll(sceneId, mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: participant.display_name, byId: participant.id, removedAt, left: true });
     log("sound_removed", { user: user.id, nickname: user.nickname, session: session.id, sound: row.sound_id, id: row.id, reason, hut: row.while_in });
   }
 }
@@ -410,10 +475,11 @@ export function removeSound(user: User, sessionId: string, soundRowId: string): 
   if (!row) return { ok: false, code: "gone" };
   if (Math.hypot(row.x - me.x, row.z - me.z) > REACH) return { ok: false, code: "too_far" };
   // only the first of two people removing it at once removes it
-  const changed = db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(me.person.id, nowIso(), row.id);
+  const removedAt = nowIso();
+  const changed = db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(me.person.id, removedAt, row.id);
   if (Number(changed.changes) === 0) return { ok: false, code: "gone" };
   soundTimes.set(user.id, now);
-  sendAll(session.scene_id, session.mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: me.person.name, byId: me.person.id });
+  sendAll(session.scene_id, session.mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: me.person.name, byId: me.person.id, removedAt });
   log("sound_removed", { user: user.id, nickname: user.nickname, session: session.id, sound: row.sound_id, id: row.id, left_by: row.name });
   return { ok: true };
 }

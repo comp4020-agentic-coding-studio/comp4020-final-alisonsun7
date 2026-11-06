@@ -133,6 +133,30 @@ db.exec(`
 if (!(db.prepare("PRAGMA table_info(placed_sounds)").all() as { name: string }[]).some((c) => c.name === "while_in"))
   db.exec("ALTER TABLE placed_sounds ADD COLUMN while_in TEXT");
 
+// Additive reply metadata only: existing sound rows are not rewritten. The
+// ordinary placement already records the answer's author and creation time.
+db.exec(`
+  BEGIN IMMEDIATE;
+  CREATE TABLE IF NOT EXISTS sound_replies (
+    sound_id TEXT PRIMARY KEY REFERENCES placed_sounds(id),
+    parent_id TEXT NOT NULL REFERENCES placed_sounds(id),
+    created_at TEXT NOT NULL,
+    CHECK (sound_id <> parent_id)
+  );
+  CREATE INDEX IF NOT EXISTS sound_replies_parent ON sound_replies (parent_id, sound_id);
+
+  CREATE TABLE IF NOT EXISTS sound_operations (
+    session_id TEXT NOT NULL REFERENCES sessions(id),
+    user_id TEXT NOT NULL REFERENCES users(id),
+    operation_id TEXT NOT NULL,
+    request_key TEXT NOT NULL,
+    sound_id TEXT NOT NULL REFERENCES placed_sounds(id),
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (session_id, user_id, operation_id)
+  );
+  COMMIT;
+`);
+
 // Reference rows the foreign keys point at. Upserted from the catalogue on
 // every start, never deleted, so old rows keep resolving.
 const upsertScene = db.prepare(

@@ -26,8 +26,9 @@ export interface Person {
   avatar: Avatar;
 }
 
-// A sound someone left, where they stood when they left it (ADR 011).
-export interface PlacedSound {
+// Public contribution metadata, including a soft-removed endpoint of a reply.
+// Private-stay sounds never appear in reply references or conversations.
+export interface SoundReference {
   id: string;
   soundId: string;
   x: number;
@@ -35,9 +36,32 @@ export interface PlacedSound {
   by: string; // the name of whoever left it
   byId: string; // their participant id
   at: string; // when, ISO
+  replyToId?: string;
+  removedAt?: string;
+}
+
+// A live sound, or the original acknowledgement of an idempotently retried
+// placement. A retry may carry removedAt; it must never restart that sound.
+export interface PlacedSound extends SoundReference {
+  replyTo?: SoundReference;
   // the toilet or shower it was left in, if it lasts only while they're
   // inside (ADR 013)
   whileIn?: string;
+}
+
+export interface SoundReplies {
+  ok: true;
+  sound: SoundReference;
+  parent: SoundReference | null;
+  replies: SoundReference[];
+  nextCursor: string | null;
+}
+
+export interface SoundPlacementResult {
+  ok: boolean;
+  code?: string;
+  sound?: PlacedSound;
+  replayed?: true;
 }
 
 // Sent on every (re)connect.
@@ -88,6 +112,7 @@ export interface SoundRemoved {
   soundId: string;
   by: string; // the name of whoever removed it
   byId: string;
+  removedAt: string;
   // it went because whoever left it came out of the toilet or shower
   // (ADR 013), rather than because someone removed it
   left?: boolean;

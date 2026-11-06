@@ -1257,3 +1257,30 @@ scratch review database preserved. The scene and new Controls module both
 returned 200. Separate test services were stopped after verification. No
 production database, global Git identity or remote branch was changed; no
 push, merge or deployment occurred.
+
+## 47. Durable sound replies and safe retries (2026-11-06)
+
+**Prompt (user, translated):** the proposed multiplayer play is good; develop
+it, and improve the scene's design and beauty. The first implementation is
+Option A, Sounds answering sounds, as recommended in the proposal. The route
+and gathering options remain later proposals.
+
+**Backend step:** ordinary placements can name an ordinary parent contribution.
+Two additive tables retain relationships and operation identities without
+rewriting old sound rows. Snapshot/live messages include parent attribution;
+a public, paged neighbourhood query includes removed endpoints as metadata.
+A source removed before a fresh request commits yields reply_gone, not an
+unlinked sound. Private-stay sounds cannot be parents or answers. Existing
+position, spacing, crowding, rate and capacity checks apply to every new
+placement. Replaying a committed operation for the same user returns that
+original result without another row, broadcast or rate charge, including a
+removedAt acknowledgement if it has since been removed.
+
+**Checks:** seven controlled-SQLite tests and one real HTTP/SSE test passed
+(8/8, 3.19 seconds). They cover branch attribution, same-operation concurrent
+requests (201+200, one ID and one event), conflicting content, ordinary limits,
+removed-source refusal, both private boundaries, restart/tombstone recovery,
+50+1 pagination and an old database gaining tables without changing its rows.
+The new test run with HEAD's former sessions implementation failed on missing
+replyTo; the implementation passed. Type check and compilation passed. These
+checks used isolated temporary databases; front-end and art verification follow.
