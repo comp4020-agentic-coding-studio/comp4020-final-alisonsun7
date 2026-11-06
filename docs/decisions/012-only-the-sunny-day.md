@@ -2,6 +2,10 @@
 
 ## Status
 
+The visual restriction is superseded by ADR 018 (2026-11-06), following Wen's
+request for weather and time systems. The canonical route, retired-link
+compatibility and historical room identity below still apply.
+
 Accepted, 2026-11-05. Narrows ADR 007's "one place at every time of day":
 the place keeps one time of day, Sunny Day. Early morning and rainy dusk
 are retired.

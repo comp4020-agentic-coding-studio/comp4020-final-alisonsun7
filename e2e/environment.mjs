@@ -5,7 +5,7 @@ import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright";
 
-const base = process.env.APP_URL ?? "http://localhost:18872";
+const base = process.env.APP_URL ?? "http://localhost:8080";
 const address = new URL(base);
 assert.ok(["localhost", "127.0.0.1"].includes(address.hostname) && address.port !== "18861", "Use a scratch localhost server, never the user's preview");
 const output = process.argv[2] ? resolve(process.argv[2]) : null;

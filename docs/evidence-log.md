@@ -1539,3 +1539,48 @@ pending deduplication, guest access, conflict review and retained drafts.
 Desktop and phone panel/scene screenshots were viewed and selected captures
 are in `docs/screenshots/18-*`. The new browser suite is included in the e2e
 script. The nine existing browser suites are being checked together next.
+
+## 55. Integrated environment checks and preview update (2026-11-06)
+
+The final typecheck, build, evidence-link check and diff checks passed. The
+64/64 HTTP/local tests and new 25-observation environment browser suite passed
+as recorded above. Of the nine existing Chrome suites, eight passed: world
+walking, meeting/talk, leaving/removing sounds, sound discovery (including the
+five-observation context fixture), look preferences, authoritative private
+huts, cooperative play (33 observations) and its ACK race (12). No assertion
+was removed or relaxed. The new environment suite uses the same default
+localhost:8080 as the existing chain, and all tests ran only on scratch data.
+
+**Audio limitation:** the existing busker suite's first actual-source check
+passed, but its real output-RMS assertion timed out. An isolated rerun and a
+visible-Chrome diagnostic also timed out. Diagnostics showed a decoded
+130-second nonempty buffer and a running, visible AudioContext whose clock
+stayed at 0.005333 seconds after the 12-second wait, with zero output at every
+instrumented stage. A blank Chrome page with no app code likewise stayed at
+0.005333 seconds after a 1.5-second timer. This establishes an audio-clock stall
+outside the application as well; the underlying device/browser cause remains
+unknown. The file decoded completely with no sustained silence at -75 dB, and
+the sound file, audio engine, listener and spawn coordinates were unchanged by
+this feature. The initial ffmpeg inspection hit a local Homebrew dyld error;
+the already documented process-local library path allowed read-only analysis.
+No browser/OS audio setting was changed and no test threshold was lowered.
+Guitar output verification remains **not passed for this run**; the two
+remaining cooperative suites were then run separately and passed.
+
+The review database was backed up through a read-only SQLite connection before
+restarting the existing 18861 preview. Its 16 contribution rows, reply and
+operation rows, and 25 user rows were then compared exactly with the backup
+and were unchanged. The new environment row starts clear at 14:00, paused.
+The scene and all three new browser modules returned 200. A separate unjoined
+visitor viewed the actual preview at desktop and a fresh 375-by-812 touch
+viewport, with zero page errors or horizontal overflow. The first capture
+immediately after resizing had a transient compositing artifact; a fresh touch
+context rendered correctly and was viewed. Its canvas ends at 799px, keeping
+the touch stick inside the 812px viewport. The reviewed phone image is
+`docs/screenshots/18-world-phone.png`.
+
+Both scratch services were stopped; the updated 18861 preview remains running
+against its preserved database. No push, deployment or production-data change
+was performed. Docker, physical devices, a screen reader and human listening
+were not run. Work was committed in separate persistence, rendering, interface
+and final-verification steps.
