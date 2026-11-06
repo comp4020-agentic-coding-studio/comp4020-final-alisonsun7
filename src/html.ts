@@ -21,7 +21,7 @@ const page = (title: string, bodyClass: string, body: string): string => `<!doct
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${escapeHtml(title)}</title>
-<meta name="description" content="Walk from a forest to the sea, and meet whoever else is there." />
+<meta name="description" content="Build a soundscape together. Leave a sound, answer someone else's, and hear this shared place change." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='5' fill='%23d9a25b'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23d9a25b' stroke-width='2' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='15' fill='none' stroke='%23d9a25b' stroke-width='1.5' opacity='.3'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="/client/style.css" />
 <script type="importmap">{"imports":{"three":"/vendor/three.module.min.js","three/addons/":"/vendor/addons/"}}</script>
@@ -65,15 +65,18 @@ export function renderLanding(user: User | null): string {
     "Sound of a City",
     "landing",
     `<main class="hero">
-  <div class="hero-photo" aria-hidden="true"></div>
+  <div class="hero-photo sound-field" aria-hidden="true"><span class="field-ring field-water"></span><span class="field-ring field-animal"></span><span class="field-ring field-people"></span></div>
   <div class="hero-text">
-    <p class="kicker">From the forest to the sea</p>
+    <p class="kicker">A place we make by listening</p>
     <h1>Sound of a City</h1>
-    <p class="lede">Walk a trail through the trees down to the sea, and meet whoever else is there.</p>
+    <p class="subtitle">Leave a sound. Hear what happens together.</p>
+    <p class="lede">Walk from the forest to the sea. Listen to what others have left, answer with a sound of your own, and meet the people changing this place with you.</p>
+    <p class="hero-promise">The sounds we leave stay here after we go, until someone beside them removes them.</p>
     <p class="actions">
-      <a class="btn primary" href="/scene/seaside">Enter the world</a>
+      <a class="btn primary" href="/scene/seaside">Enter &amp; listen</a>
       <a class="btn ghost" href="/about#how">How it Works</a>
     </p>
+    <ul class="hero-families" aria-label="Three kinds of shared sound"><li class="family-water">Water &amp; wind</li><li class="family-animal">Animals</li><li class="family-people">People</li></ul>
     ${user ? `<p class="fine">Welcome back, ${escapeHtml(user.nickname)}.</p>` : ""}
     <p class="independent">An independent student project.</p>
   </div>
@@ -106,19 +109,19 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
         <div class="place-body">
           <h2>${scene.title}</h2>
           <p>${scene.summary}</p>
-          <p class="badge real">Walkable · free CC0 models</p>
+          <p class="badge real">One shared place · lasting sounds</p>
           <ul class="modes">${modes}</ul>
         </div>
       </article>`;
   }).join("\n");
 
   return page(
-    "Places — Sound of a City",
+    "Our shared place — Sound of a City",
     "explore",
     `${nav}
 <main class="explore-main">
-  <h1>Choose a place</h1>
-  <p class="lede">Walk in, look around, meet whoever else is there, and leave a sound for everyone to hear.</p>
+  <h1>Our shared place</h1>
+  <p class="lede">Everyone walks in the same world. Leave a sound, answer a contribution, or follow what someone else has made. Shared sounds stay after you leave, until someone beside them removes them.</p>
   ${
     user
       ? `<form method="post" action="/leave" class="you-are">${avatarMark(user.avatar)} You're <strong>${escapeHtml(user.nickname)}</strong>. <button class="link-btn" type="submit">Change</button></form>`
@@ -143,7 +146,7 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
     `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
   <a class="back" href="/explore" aria-label="Places"><span aria-hidden="true">←</span><span class="back-label">Places</span></a>
-  <div class="where"><h1>${scene.title}</h1></div>
+  <div class="where"><h1>Sound of a City</h1></div>
   <div class="world-actions">
     <button type="button" class="btn ghost controls-switch" id="look-settings" aria-label="Controls" title="Controls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9v6m-3-3h6m5-3h2m-2 6h2"/></svg><span class="world-action-label">Controls</span></button>
     <button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false" aria-label="Sound off" title="Sound off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m11 4-5 4H2v8h4l5 4Z"/><g class="sound-on-wave"><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></g><path class="sound-off-line" d="m16 9 6 6m0-6-6 6"/></svg><span class="world-action-label">Sound off</span></button>
@@ -161,9 +164,11 @@ ${modeNav}
   </section>
 </main>
 <dialog class="world-tools-panel" id="world-tools-panel" aria-labelledby="world-tools-title" hidden>
-  <div class="tools-panel-heading"><div><p class="world-caption">One place · made by all of us</p><h2 id="world-tools-title">Walk &amp; listen</h2></div><button type="button" class="btn ghost" id="world-tools-close" autofocus>Close</button></div>
-  <p class="mode-name">A shared, changing world</p>
+  <div class="tools-panel-heading"><div><p class="world-caption">One place · made by all of us</p><h2 id="world-tools-title">Our soundscape</h2></div><button type="button" class="btn ghost" id="world-tools-close" autofocus>Close</button></div>
+  <p class="mode-name">From the forest to the sea</p>
   <div class="people" id="people" aria-live="polite"></div>
+  <div id="shared-sound-place"></div>
+  <div id="tools-listening"></div>
     <div class="world-tools" aria-label="World settings">
       <div class="world-conditions"><span class="world-conditions-label">The shared sky</span><span id="world-conditions">${escapeHtml(WEATHER_LABELS[snap.environment.weather])} · ${formatTime(minuteAt(snap.environment, Date.parse(snap.serverNow)))}</span><span id="world-clock-mode">${snap.environment.clockRunning ? "24-minute day" : "Time paused"}</span></div>
       <div class="world-tool-actions">
@@ -171,7 +176,6 @@ ${modeNav}
         <button type="button" class="world-tool" id="scene-settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="3"/><circle cx="16" cy="8" r="2"/><path d="m3 17 6-7 5 6 3-3 5 6"/></svg>Explore scenes</button>
       </div>
     </div>
-  <div id="tools-listening"></div>
     <nav class="goto" id="zones" aria-label="Go to"><span class="goto-label">Go to</span>${scene.zones
       .map((z) => `<a href="?mode=${mode.id}&amp;zone=${z.id}" data-zone="${z.id}"${z.id === zone.id ? ' aria-current="true"' : ""}>${escapeHtml(z.title)}</a>`)
       .join("")}</nav>
@@ -201,11 +205,12 @@ export function renderAbout(): string {
     <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
     <li>Walk with W A S D or the arrow keys, drag to look, or use <em>Go to</em>. Wander far off the forest trail and a kangaroo comes to point you back.</li>
     <li>Everyone in the place sees everyone else. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
-    <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone until someone standing beside it removes it. Anyone can leave or remove any sound, and everyone is told who did.</li>
+    <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone until someone standing beside it removes it. It stays after you leave. Anyone can leave or remove any sound, and everyone is told who did.</li>
+    <li>Find someone else's sound and choose <em>Reply with a sound</em>. Walk to a spot, choose your answer, and leave it there. The two sounds stay connected in their conversation.</li>
   </ol>
 
   <h2>Where the place comes from</h2>
-  <p>It's imagined, not a real location. Ground, sand, timber, furniture, food, plants and skies are free CC0 (public domain) models, surfaces and HDR skies from <a href="https://polyhaven.com">Poly Haven</a>; each is listed with its author in <code>public/assets-manifest.json</code>. Trees, buildings and the water are drawn from simple shapes. The cats, dogs and the kangaroo are the app's own drawings.</p>
+  <p>It's imagined, not a real location. Ground, sand, timber, furniture, food, plants and skies use free CC0 (public domain) models, surfaces and HDR skies from <a href="https://polyhaven.com">Poly Haven</a>. Pine-needle textures are CC0 by Yughues / Nobiax, from <a href="https://opengameart.org/content/branches-textures-pack-02">OpenGameArt</a>. Each external asset and its author is recorded in <code>public/assets-manifest.json</code>. Trees, buildings, water and animal people use original three-dimensional geometry. The short-fur texture is original AI-generated project material, recorded separately from the CC0 assets.</p>
   <p>The sounds are recordings from <a href="https://commons.wikimedia.org">Wikimedia Commons</a> that are CC0 or in the public domain, cut into loops; each is listed with its author and what was done to it in <code>public/assets-manifest.json</code>.</p>
 
   <h2>What is stored</h2>

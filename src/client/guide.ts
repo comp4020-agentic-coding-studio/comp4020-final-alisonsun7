@@ -38,9 +38,10 @@ interface Step {
 }
 
 const TOUR: Step[] = [
-  { text: "Welcome! Walk with W A S D or the arrow keys, drag to look around, or click the floor to walk there. On a phone, use the stick." },
+  { target: "#shared-sound-toggle", text: "This is a place we make by listening. Open Our soundscape to find what people have left, see who is here, and follow their sound conversations." },
+  { text: "Walk with W A S D or the arrow keys, drag to look around, or click the floor to walk there. On a phone, use the stick." },
   { target: "#zones", text: "In Tools, Go to takes you straight to any part of the place, from the forest trail to the end of the pier." },
-  { target: "#leave-sound", text: "Leave a sound where you stand: pick one and everyone here hears it, from where it is. Stand beside a sound to remove it.", joinedOnly: true },
+  { target: "#leave-sound", text: "Leave a sound where you stand, for everyone to hear. It stays after you go, until someone beside it removes it. Beside another person's sound, choose Reply with a sound to leave an answer.", joinedOnly: true },
   { target: "#sound-switch", text: "Turn the sound on or off here." },
   { text: "Other people here are cats and dogs with their names over them. Walk up to someone to talk." },
 ];
@@ -56,12 +57,12 @@ interface Place {
 const PLACES: Record<string, Place> = {
   forest: {
     title: "The forest trail",
-    text: "Tall pines, ferns and birds. Follow the trail downhill to the creek, or leave Bird sounds where you stand.",
+    text: "Follow the trail downhill to the creek. Listen for sounds someone has left among the pines, then leave Bird sounds or an answer of your own.",
     next: { zone: "creek", label: "Take me to the creek" },
   },
   creek: {
     title: "The creek",
-    text: "Stand by the water and leave a trickling stream, then cross the footbridge towards the sea.",
+    text: "Stand by the water and listen to what is already here. Leave a trickling stream, or answer a nearby sound before crossing the footbridge towards the sea.",
     next: { zone: "boardwalk", label: "Take me to the boardwalk" },
   },
   "forest-edge": {
@@ -71,22 +72,22 @@ const PLACES: Record<string, Place> = {
   },
   boardwalk: {
     title: "The boardwalk",
-    text: "Along here: the Corner Café, the fish and chip kiosk, the toilets, showers and souvenir shop (doors open as you walk up; a red light means someone's in), and Mateo playing guitar on his bench.",
+    text: "Meet by the Corner Café and listen to Mateo's guitar. Leave a sound along the boardwalk or answer someone nearby. The toilets and showers lock while occupied; a red light means someone's in.",
     next: { zone: "counter", label: "Take me into the café" },
   },
   cafe: {
     title: "The Corner Café",
-    text: "Leave the espresso machine, café chatter or café music in here; outside, people hear it through the walls.",
+    text: "Make the café sound like a place people share: leave the espresso machine, café chatter or café music, or answer someone else's contribution. Outside, people hear it through the walls.",
     next: { zone: "beach", label: "Take me to the beach" },
   },
   beach: {
     title: "The beach",
-    text: "Children are playing ball. Walk down to the water and leave the waves on the beach, or children playing.",
+    text: "Children are playing ball. Follow the shore, listen for shared sounds, and add waves or children playing to what someone else has made.",
     next: { zone: "pier", label: "Take me to the pier" },
   },
   pier: {
     title: "The pier",
-    text: "Walk out to the end, over the water, and listen back to the shore.",
+    text: "Walk out over the water and listen back to the shore. Follow a contribution in Our soundscape, or leave something for the next person to discover.",
     next: { zone: "forest", label: "Back to the forest trail" },
   },
   shop: {

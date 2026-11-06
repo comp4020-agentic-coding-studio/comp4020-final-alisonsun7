@@ -10,6 +10,7 @@ import { SoundLibrary } from "./sound-library.js";
 import { ListeningTrail } from "./listening-trail.js";
 import { LookSettings } from "./look-settings.js";
 import { SoundConversations } from "./sound-conversations.js";
+import { SharedSoundPlace } from "./shared-sound-place.js";
 import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
 import { WEATHER_LABELS, formatTime, minuteAt, type Environment } from "../shared/environment.js";
 import { HUTS } from "../shared/huts.js";
@@ -45,6 +46,7 @@ let replyTarget: SoundReference | null = null;
 let replyRevision = 0;
 let operation: { key: string; id: string } | null = null;
 const me = (): Person | null => snapshot.you;
+let sharedPlace: SharedSoundPlace | null = null;
 
 const world = new WorldView(stage, scene, mode.id, {
   startZone: zoneId,
@@ -58,6 +60,7 @@ const world = new WorldView(stage, scene, mode.id, {
     reportPosition(l.x, l.z, l.yaw);
     soundscape.frame(l);
     trail.frame(l.x, l.z, l.yaw, soundscape.on);
+    sharedPlace?.frame(l.x, l.z);
     here = { x: l.x, z: l.z };
   },
   onNear: (person) => showChat(person),
@@ -73,14 +76,22 @@ let here = { x: 0, z: 0 };
 const toolsToggle = $<HTMLButtonElement>("world-tools-toggle");
 const toolsDrawer = $<HTMLDialogElement>("world-tools-panel");
 let toolsReturnToWorld = false;
+let toolsOpener: HTMLElement = toolsToggle;
 toolsToggle.onclick = () => {
   if (toolsDrawer.open) return closeWorldTools();
+  openWorldTools(toolsToggle);
+};
+function openWorldTools(opener: HTMLElement): void {
+  if (toolsDrawer.open) return;
+  toolsOpener = opener;
   toolsReturnToWorld = false;
   toolsDrawer.hidden = false;
   toolsDrawer.showModal();
+  toolsDrawer.scrollTop = 0;
   toolsToggle.setAttribute("aria-expanded", "true");
+  sharedPlace?.setExpanded(true);
   world.setInputPaused(true);
-};
+}
 $("world-tools-close").onclick = () => closeWorldTools();
 toolsDrawer.addEventListener("keydown", (event) => {
   if (event.key !== "Tab" || !toolsDrawer.open) return;
@@ -101,17 +112,21 @@ toolsDrawer.addEventListener("keydown", (event) => {
     first.focus();
   }
 });
-toolsDrawer.addEventListener("cancel", () => { toolsToggle.setAttribute("aria-expanded", "false"); });
+toolsDrawer.addEventListener("cancel", () => {
+  toolsToggle.setAttribute("aria-expanded", "false");
+  sharedPlace?.setExpanded(false);
+});
 toolsDrawer.addEventListener("close", () => {
   if (toolsDrawer.open) return;
   toolsDrawer.hidden = true;
   toolsToggle.setAttribute("aria-expanded", "false");
+  sharedPlace?.setExpanded(false);
   // A selected tool may already have opened its own modal when close fires.
   const modalOpen = !!document.querySelector("dialog:modal");
   world.setInputPaused(modalOpen);
   if (!modalOpen) {
     if (toolsReturnToWorld) world.focusCanvas();
-    else toolsToggle.focus();
+    else toolsOpener.focus();
   }
   toolsReturnToWorld = false;
 });
@@ -233,6 +248,7 @@ function connect(): void {
         renderReply();
       }
       conversations.changed();
+      renderSharedPlace();
     } else if (msg.sessionId !== snapshot.sessionId) return;
     else if (msg.type === "presence") {
       snapshot = { ...snapshot, online: msg.online };
@@ -383,6 +399,8 @@ function soundLeft(sound: PlacedSound): void {
   soundscape.add(sound);
   trail.add(sound);
   conversations.changed(sound.id, sound.replyTo?.id);
+  sharedPlace?.changed(sound, "left", sound.by);
+  renderSharedPlace();
   // a stay in the toilets or showers isn't news
   if (sound.byId !== me()?.id && !sound.whileIn) say(sound.replyTo
     ? `${sound.by} answered ${sound.replyTo.by}'s ${soundName(sound.replyTo.soundId)} with ${soundName(sound.soundId)}.`
@@ -391,6 +409,7 @@ function soundLeft(sound: PlacedSound): void {
 
 function soundRemoved(msg: SoundRemoved): void {
   removedSounds.add(msg.id);
+  const previous = contributions.get(msg.id);
   contributions.delete(msg.id);
   const removedAt = msg.removedAt ?? new Date().toISOString();
   for (const [id, sound] of contributions) {
@@ -401,6 +420,8 @@ function soundRemoved(msg: SoundRemoved): void {
     renderReply();
   }
   conversations.changed(msg.id);
+  if (previous) sharedPlace?.changed(previous, "removed", msg.by);
+  renderSharedPlace();
   if (!soundscape.has(msg.id)) return;
   soundscape.remove(msg.id);
   trail.remove(msg.id);
@@ -552,6 +573,7 @@ function setSound(on: boolean): void {
   } catch {
     // not remembered; that's all
   }
+  renderSharedPlace();
 }
 soundSwitch.onclick = () => setSound(!soundscape.on);
 
@@ -649,6 +671,33 @@ const conversations = new SoundConversations({
 });
 stage.append(conversations.element);
 
+// Community comes before scenery settings. Reuse the existing native drawer
+// and its input/focus handoff for every action, including the new entry point.
+sharedPlace = new SharedSoundPlace({
+  open: () => openWorldTools(sharedPlace!.trigger),
+  add: () => {
+    if (!boot.joined) { location.reload(); return; }
+    closeWorldTools();
+    openLibrary();
+  },
+  face: sound => {
+    closeWorldTools(true);
+    world.faceSound(sound.x, sound.z);
+    say("Facing " + soundName(sound.soundId) + ". Walk closer to listen and reply.");
+  },
+  reply: sound => { closeWorldTools(); startReply(sound); },
+  conversation: sound => { closeWorldTools(); conversations.open(sound.id); },
+  toggleSound: () => setSound(!soundscape.on),
+  zone: (x, z) => zoneTitle(x, z),
+});
+stage.append(sharedPlace.trigger);
+$("shared-sound-place").append(sharedPlace.element);
+
+function renderSharedPlace(): void {
+  sharedPlace?.setState({ sounds: [...contributions.values()], people: snapshot.online,
+    you: me()?.id ?? null, joined: boot.joined, connected, soundOn: soundscape.on });
+}
+
 // ---- the page around the world --------------------------------------------
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
@@ -666,10 +715,12 @@ function renderStatus(): void {
   status.className = `status${connected ? "" : " offline"}`;
   status.textContent = connected ? "" : "Connection lost. Trying again…";
   environmentPanel.setAvailability({ joined: boot.joined, connected });
+  renderSharedPlace();
   renderReply();
 }
 
 function renderPeople(): void {
+  renderSharedPlace();
   const online = snapshot.online;
   const box = $("people");
   box.textContent = "";
@@ -711,7 +762,8 @@ const you = snapshot.you;
 const art = (a: "cat" | "dog"): string => figureSvg(a, "stand", "preview");
 enter.innerHTML = `<form class="enter-box">
     <h2></h2>
-    <p class="enter-intro">Walk with W A S D, drag to look. Meet someone to talk.</p>
+    <p class="enter-intro">A place made of the sounds we leave. Listen, add your own, or answer someone else. Your sounds stay for the next visitor, until someone removes them.</p>
+    <p class="enter-movement">Walk with W A S D, drag to look. Meet a named visitor to talk.</p>
     ${
       you
         ? `<p class="enter-welcome">Welcome back, <strong class="enter-name"></strong>. <button type="button" class="link-btn" data-leave>Not you?</button></p>`

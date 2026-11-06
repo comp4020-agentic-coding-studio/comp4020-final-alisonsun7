@@ -16,6 +16,9 @@ while they're in; 014 adds the searchable sound library and nearby listening
 with an explicit rollback point; 020 rebuilds the D reference composition
 after the first art result was rejected; 021 records the asset-led correction
 after the second rejection (003, 008 and 009 are history).
+ADR 022 records Wen's current priority: coherent, harmonious and distinctive
+style serving shared sound-making and playful human interaction. D remains an
+atmosphere reference; cinematic fidelity is no longer the product goal.
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
