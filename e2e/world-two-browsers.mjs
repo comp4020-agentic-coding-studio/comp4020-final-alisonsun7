@@ -7,6 +7,7 @@
 //   APP_URL=http://localhost:8080 node e2e/world-two-browsers.mjs [shotsDir]
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
+import { openTools, openListening } from "./world-ui.mjs";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
 const out = process.argv[2];
@@ -42,11 +43,13 @@ await b.waitForSelector("canvas.world-canvas");
 for (const p of [a, b]) await p.click(".enter-card [data-enter]");
 
 // Go to the counter
+await openTools(a);
 await a.click('#zones a[data-zone="counter"]');
 await a.waitForTimeout(600);
 check(a.url().includes("zone=counter"), "Go to moves Ada to the counter");
 
 // Bo backs away from the window: S carries him across the room to the counter.
+await openTools(b);
 await b.click('#zones a[data-zone="window"]');
 await b.waitForTimeout(500);
 await b.locator("canvas.world-canvas").focus();
@@ -59,6 +62,7 @@ if (out) await b.screenshot({ path: `${out}/world-b-walked.jpg`, type: "jpeg", q
 
 // The creek is crossed on the footbridge: from its north side, W carries Bo
 // over it to the south bank.
+await openTools(b);
 await b.click('#zones a[data-zone="creek"]');
 await b.waitForTimeout(500);
 await b.locator("canvas.world-canvas").focus();
@@ -74,6 +78,7 @@ check(northZ < -75.2 && southZ > -62.8, `W carries Bo over the footbridge (z ${n
 
 // The forest and the shore are one place: from the forest's edge, W walks
 // down the trail and out onto the boardwalk.
+await openTools(b);
 await b.click('#zones a[data-zone="forest-edge"]');
 await b.waitForTimeout(500);
 await b.locator("canvas.world-canvas").focus();
@@ -86,6 +91,7 @@ if (out) await b.screenshot({ path: `${out}/world-b-boardwalk.jpg`, type: "jpeg"
 
 // Wander off the trail in the forest and a kangaroo hops in to say so; its
 // button takes you back to the trail.
+await openTools(b);
 await b.click('#zones a[data-zone="forest"]');
 await b.waitForTimeout(500);
 await b.locator("canvas.world-canvas").focus();

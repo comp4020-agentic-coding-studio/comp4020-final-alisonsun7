@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
+import { openTools, openListening } from "./world-ui.mjs";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
 const out = process.argv[2];
@@ -57,10 +58,13 @@ try {
   check(Number(await page.getAttribute("#stage", "data-marks") ?? 0) === 0, "the NPC does not seed a shared sound or a light");
   if (out) await page.screenshot({ path: out + "/busker-playing.png" });
 
+  await openTools(page);
+
   await page.click('#zones [data-zone="forest"]');
   await page.waitForFunction(() => document.getElementById("stage").dataset.buskerVoice === "0");
   await page.waitForTimeout(800);
   check(await active() === 0, "walking out of his hearing distance stops the guitar source");
+  await openTools(page);
   await page.click('#zones [data-zone="boardwalk"]');
   await page.waitForFunction(() => document.getElementById("stage").dataset.buskerVoice === "1");
   check(await active() === 1, "coming back starts Mateo's guitar again");

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium } from "playwright";
+import { openTools, openListening } from "./world-ui.mjs";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
 const address = new URL(base);
@@ -39,8 +40,7 @@ async function person(name, viewport = { width: 1280, height: 900 }) {
   page.setDefaultTimeout(12000);
   page.on("pageerror", (error) => errors.push(`${name ?? "visitor"}: ${error.message}`));
   await page.goto(base + "/scene/seaside?zone=boardwalk");
-  // This deliberately fails against the previous build, before joining or writing.
-  await page.locator("#environment-settings").waitFor({ state: "visible", timeout: 2500 });
+  await page.locator("#world-tools-toggle").waitFor({ state: "visible", timeout: 2500 });
   if (name) {
     await page.fill('.enter-card input[name="nickname"]', name);
     await page.click(".enter-card [data-enter]");
@@ -53,7 +53,10 @@ async function person(name, viewport = { width: 1280, height: 900 }) {
 async function open(page, scenes = false) {
   if (await dialog(page).evaluate((element) => element.open)) {
     await page.locator(scenes ? "#scenes-tab" : "#environment-tab").click();
-  } else await page.click(scenes ? "#scene-settings" : "#environment-settings");
+  } else {
+    await openTools(page);
+    await page.click(scenes ? "#scene-settings" : "#environment-settings");
+  }
   await dialog(page).waitFor({ state: "visible" });
 }
 

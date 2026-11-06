@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
+import { openTools, openListening } from "./world-ui.mjs";
 import { HUTS } from "../src/shared/huts.ts";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
@@ -56,6 +57,7 @@ try {
       const { SCENES } = await import("/shared/catalog.js");
       Object.assign(SCENES[0].zones.find((zone) => zone.id === "boardwalk").spawn, { x, z, yaw: 0 });
     }, { x, z });
+    await openTools(page);
     await page.click('#zones a[data-zone="boardwalk"]');
     await page.waitForTimeout(350);
   }

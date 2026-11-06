@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
+import { openTools, openListening } from "./world-ui.mjs";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
 const endpoint = new URL(base);
@@ -65,8 +66,7 @@ async function openConversation(page, id) {
   await closePanels(page);
   await page.waitForFunction((id) => !!document.querySelector(`.sound-label[data-id="${id}"]`), id);
   if (!await label(page, id).locator(".sound-conversation").isVisible()) {
-    const trail = page.locator("#listening-trail");
-    if (!await trail.evaluate((details) => details.open)) await trail.locator("summary").click();
+    await openListening(page);
     await page.locator(`.trail-sounds li[data-id="${id}"]`).getByRole("button", { name: /^Face / }).click();
   }
   await label(page, id).locator(".sound-conversation").click();
@@ -130,6 +130,7 @@ try {
   await label(b, source.id).waitFor({ state: "visible", timeout: 1500 });
   check((await label(b, source.id).textContent()).includes(ada.name), "Bo discovers Ada's contribution and its author");
   // Give Bo room to walk without another avatar at the exact same spawn.
+  await openTools(a);
   await a.click('#zones [data-zone="forest"]');
   await a.waitForFunction(() => Number(document.getElementById("stage").dataset.at.split(",")[1]) < -100);
 
@@ -183,6 +184,8 @@ try {
   check(await b.locator("#reply-intent").isHidden(), "confirmed placement clears the pending reply");
   await a.waitForFunction((id) => !!document.querySelector(`.sound-label[data-id="${id}"]`), reply.id);
   check((await a.locator("#toast").textContent()).includes("answered"), "Ada receives a real-time acknowledgement of the sound answering hers");
+
+  await openTools(a);
 
   await a.click('#zones [data-zone="boardwalk"]');
   await openConversation(a, source.id);

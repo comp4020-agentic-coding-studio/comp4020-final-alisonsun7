@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
+import { openTools, openListening } from "./world-ui.mjs";
 import { SOUNDS } from "../src/shared/sounds.ts";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
@@ -176,6 +177,7 @@ async function worldChecks() {
   await a.waitForSelector("#sound-palette", { state: "hidden" });
   await b.waitForFunction((label) => [...document.querySelectorAll(".trail-text strong")].some((item) => item.textContent === label), kind.label);
   check((await b.locator(".trail-text").filter({ hasText: kind.label }).textContent()).includes("Alison"), "another person finds the contribution and its author");
+  await openListening(b);
   const beforeFacing = await b.getAttribute("#stage", "data-at");
   await b.locator(".trail-sounds li").filter({ hasText: kind.label }).getByRole("button", { name: "Face " + kind.label, exact: true }).click();
   await b.waitForTimeout(700);
@@ -199,6 +201,8 @@ async function worldChecks() {
   await a.locator("#sound-palette .library-close").click();
   await a.evaluate(() => scrollTo(0, 0));
   await shot(a, "mobile-world");
+
+  await openTools(b);
 
   await b.click('#zones [data-zone="boardwalk"]');
   await b.locator(".sound-label.in-reach .sound-remove").first().click();

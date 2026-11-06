@@ -39,7 +39,7 @@ interface Step {
 
 const TOUR: Step[] = [
   { text: "Welcome! Walk with W A S D or the arrow keys, drag to look around, or click the floor to walk there. On a phone, use the stick." },
-  { target: "#zones", text: "Go to takes you straight to any part of the place, from the forest trail to the end of the pier." },
+  { target: "#zones", text: "In Tools, Go to takes you straight to any part of the place, from the forest trail to the end of the pier." },
   { target: "#leave-sound", text: "Leave a sound where you stand: pick one and everyone here hears it, from where it is. Stand beside a sound to remove it.", joinedOnly: true },
   { target: "#sound-switch", text: "Turn the sound on or off here." },
   { text: "Other people here are cats and dogs with their names over them. Walk up to someone to talk." },

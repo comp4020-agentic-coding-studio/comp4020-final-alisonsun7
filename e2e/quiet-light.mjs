@@ -19,6 +19,7 @@ try {
     document.body.replaceChildren();document.body.className='scene-page';
     document.body.style.cssText='margin:0;width:100vw;height:100vh;overflow:hidden';
     const host=document.createElement('div');host.style.cssText='position:relative;width:100vw;height:100vh;overflow:hidden';document.body.append(host);
+    Object.assign(SCENES[0].zones.find(z=>z.id==='boardwalk').spawn,{x:-3,z:1.6,yaw:0.95});
     window.artWorld=new WorldView(host,SCENES[0],'weekday',{startZone:'boardwalk',onListen:l=>window.artSounds?.frame(l)});
     window.artSounds=new Soundscape(window.artWorld,host,{canChange:()=>true,onRemove:()=>{},onReply:()=>{},onConversation:()=>{}});
     const now=new Date().toISOString();

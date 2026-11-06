@@ -68,13 +68,46 @@ const world = new WorldView(stage, scene, mode.id, {
   onWait: (room) => say(`Someone is in ${room.name}. Please wait: the light by the door turns green when it's free.`),
 });
 let here = { x: 0, z: 0 };
+
+// The small Tools drawer keeps secondary controls within one native focus scope.
+const toolsToggle = $<HTMLButtonElement>("world-tools-toggle");
+const toolsDrawer = $<HTMLDialogElement>("world-tools-panel");
+let toolsReturnToWorld = false;
+toolsToggle.onclick = () => {
+  if (toolsDrawer.open) return closeWorldTools();
+  toolsReturnToWorld = false;
+  toolsDrawer.hidden = false;
+  toolsDrawer.showModal();
+  toolsToggle.setAttribute("aria-expanded", "true");
+  world.setInputPaused(true);
+};
+$("world-tools-close").onclick = () => closeWorldTools();
+toolsDrawer.addEventListener("close", () => {
+  if (toolsDrawer.open) return;
+  toolsDrawer.hidden = true;
+  toolsToggle.setAttribute("aria-expanded", "false");
+  // A selected tool may already have opened its own modal when close fires.
+  const modalOpen = !!document.querySelector("dialog:modal");
+  world.setInputPaused(modalOpen);
+  if (!modalOpen) {
+    if (toolsReturnToWorld) world.focusCanvas();
+    else toolsToggle.focus();
+  }
+  toolsReturnToWorld = false;
+});
+function closeWorldTools(returnToWorld = false): void {
+  if (!toolsDrawer.open) return;
+  toolsReturnToWorld = returnToWorld;
+  toolsDrawer.close();
+}
+
 const lookSettings = new LookSettings({
   change: (mode) => world.setLookMode(mode),
   open: () => world.setInputPaused(true),
   close: () => restoreWorldInput(),
 });
 stage.append(lookSettings.element);
-$("look-settings").onclick = () => lookSettings.open();
+$("look-settings").onclick = () => { closeWorldTools(); lookSettings.open(); };
 
 // One durable sky for everyone; scene destinations only change your own path.
 let environment = snapshot.environment;
@@ -101,8 +134,8 @@ const environmentPanel = new EnvironmentPanel({
   close: () => restoreWorldInput(),
 });
 stage.append(environmentPanel.element);
-$("environment-settings").onclick = () => environmentPanel.open("environment");
-$("scene-settings").onclick = () => environmentPanel.open("scenes");
+$("environment-settings").onclick = () => { closeWorldTools(); environmentPanel.open("environment"); };
+$("scene-settings").onclick = () => { closeWorldTools(); environmentPanel.open("scenes"); };
 
 function receiveEnvironment(next: Environment, serverNow: string): void {
   // SSE may already have delivered a newer edit before an older POST ACK.
@@ -143,10 +176,12 @@ const soundscape = new Soundscape(world, stage, {
 soundscape.setAll(snapshot.sounds);
 const trail = new ListeningTrail((sound) => {
   world.faceSound(sound.x, sound.z);
+  closeWorldTools(true);
   say("Facing " + soundName(sound.soundId) + ". Walk closer to hear it clearly.");
 });
 trail.setAll(snapshot.sounds);
-stage.append(trail.element);
+trail.element.open = false;
+$("tools-listening").append(trail.element);
 
 // ---- the server's stream --------------------------------------------------
 
@@ -474,7 +509,7 @@ async function removeSound(sound: PlacedSound): Promise<void> {
   say(`You removed ${soundName(sound.soundId)}.`);
 }
 
-// The sound switch in the header: remembered in this browser.
+// The compact sound switch keeps its full changing accessible name.
 const soundSwitch = $<HTMLButtonElement>("sound-switch");
 const SOUND_KEY = "soac-sound";
 const remembered = (): string | null => {
@@ -487,7 +522,10 @@ const remembered = (): string | null => {
 function setSound(on: boolean): void {
   soundscape.setOn(on);
   soundSwitch.setAttribute("aria-pressed", String(on));
-  soundSwitch.textContent = on ? "Sound on" : "Sound off";
+  const label = on ? "Sound on" : "Sound off";
+  soundSwitch.querySelector<HTMLElement>(".world-action-label")!.textContent = label;
+  soundSwitch.setAttribute("aria-label", label);
+  soundSwitch.title = label;
   try {
     localStorage.setItem(SOUND_KEY, on ? "on" : "off");
   } catch {
@@ -501,7 +539,8 @@ const leaveBtn = document.createElement("button");
 leaveBtn.type = "button";
 leaveBtn.className = "btn primary leave-sound";
 leaveBtn.id = "leave-sound";
-leaveBtn.innerHTML = '<span aria-hidden="true" class="leave-icon">+</span> Leave a sound here';
+leaveBtn.setAttribute("aria-label", "Leave a sound here");
+leaveBtn.innerHTML = '<svg class="leave-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 11v6m5-11v16m5-20v24m5-20v16m5-11v6"/></svg><span>Leave a sound</span>';
 const library = new SoundLibrary({
   zone: () => ({ id: world.zoneAt(here.x, here.z), title: zoneTitle(here.x, here.z) }),
   listen: (id) => soundscape.listen(id),
@@ -637,6 +676,7 @@ function renderZone(): void {
 for (const a of document.querySelectorAll<HTMLAnchorElement>("#zones a")) {
   a.onclick = (e) => {
     e.preventDefault();
+    closeWorldTools(true);
     world.goTo(a.dataset.zone!);
   };
 }

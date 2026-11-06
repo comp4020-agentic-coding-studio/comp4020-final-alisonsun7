@@ -142,14 +142,28 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
     `${scene.title} — Sound of a City`,
     `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
-  <a class="back" href="/explore"><span aria-hidden="true">←</span> Places</a>
-  <div class="where"><span class="world-caption">One place · made by all of us</span><h1>${scene.title}</h1><span class="mode-name">A shared, changing world</span></div>
-  <div class="people" id="people" aria-live="polite"></div>
-  <div class="world-actions"><button type="button" class="btn ghost controls-switch" id="look-settings">Controls</button><button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false">Sound off</button></div>
+  <a class="back" href="/explore" aria-label="Places"><span aria-hidden="true">←</span><span class="back-label">Places</span></a>
+  <div class="where"><h1>${scene.title}</h1></div>
+  <div class="world-actions">
+    <button type="button" class="btn ghost controls-switch" id="look-settings" aria-label="Controls" title="Controls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9v6m-3-3h6m5-3h2m-2 6h2"/></svg><span class="world-action-label">Controls</span></button>
+    <button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false" aria-label="Sound off" title="Sound off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m11 4-5 4H2v8h4l5 4Z"/><g class="sound-on-wave"><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></g><path class="sound-off-line" d="m16 9 6 6m0-6-6 6"/></svg><span class="world-action-label">Sound off</span></button>
+    <button type="button" class="btn ghost world-tools-toggle" id="world-tools-toggle" aria-label="Tools" aria-haspopup="dialog" aria-controls="world-tools-panel" aria-expanded="false" title="Tools: weather, scenes and nearby sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></svg><span class="world-action-label">Tools</span></button>
+  </div>
 </header>
 ${modeNav}
 <main class="scene-main world-only">
   <section class="stage-area" aria-label="The place">
+    <div class="stage-frame world-frame" id="stage-frame">
+      <div class="stage world-stage" id="stage">
+        <p class="world-help" aria-hidden="true"><span class="keys">Drag to look · W A S D or arrows to walk · click the floor to walk there</span><span class="touch">Drag to look · stick to walk · tap the floor to walk there</span></p>
+      </div>
+    </div>
+  </section>
+</main>
+<dialog class="world-tools-panel" id="world-tools-panel" aria-labelledby="world-tools-title" hidden>
+  <div class="tools-panel-heading"><div><p class="world-caption">One place · made by all of us</p><h2 id="world-tools-title">Walk &amp; listen</h2></div><button type="button" class="btn ghost" id="world-tools-close" autofocus>Close</button></div>
+  <p class="mode-name">A shared, changing world</p>
+  <div class="people" id="people" aria-live="polite"></div>
     <div class="world-tools" aria-label="World settings">
       <div class="world-conditions"><span class="world-conditions-label">The shared sky</span><span id="world-conditions">${escapeHtml(WEATHER_LABELS[snap.environment.weather])} · ${formatTime(minuteAt(snap.environment, Date.parse(snap.serverNow)))}</span><span id="world-clock-mode">${snap.environment.clockRunning ? "24-minute day" : "Time paused"}</span></div>
       <div class="world-tool-actions">
@@ -157,19 +171,14 @@ ${modeNav}
         <button type="button" class="world-tool" id="scene-settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="3"/><circle cx="16" cy="8" r="2"/><path d="m3 17 6-7 5 6 3-3 5 6"/></svg>Explore scenes</button>
       </div>
     </div>
-    <div class="stage-frame world-frame" id="stage-frame">
-      <div class="stage world-stage" id="stage">
-        <p class="world-help" aria-hidden="true"><span class="keys">Drag to look · W A S D or arrows to walk · click the floor to walk there</span><span class="touch">Drag to look · stick to walk · tap the floor to walk there</span></p>
-      </div>
-    </div>
+  <div id="tools-listening"></div>
     <nav class="goto" id="zones" aria-label="Go to"><span class="goto-label">Go to</span>${scene.zones
       .map((z) => `<a href="?mode=${mode.id}&amp;zone=${z.id}" data-zone="${z.id}"${z.id === zone.id ? ' aria-current="true"' : ""}>${escapeHtml(z.title)}</a>`)
       .join("")}</nav>
     <p class="evidence"><span class="label">Here</span> <span id="zone-text">${escapeHtml(zone.description)}</span></p>
     <p class="mode-note">${escapeHtml(scene.about)}</p>
     <p class="fine not-affiliated">${NOT_AFFILIATED} <a href="/about">Sources</a></p>
-  </section>
-</main>
+</dialog>
 <div class="status" id="status" role="status" aria-live="polite"></div>
 <div class="toast" id="toast" aria-live="polite"></div>
 <noscript><p class="noscript">This place needs JavaScript to show it and the people in it.</p></noscript>
