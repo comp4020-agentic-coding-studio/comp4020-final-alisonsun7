@@ -563,7 +563,7 @@ export class WorldView {
       this.built.root.add(sprite);
       // each at their own pace, a little either side of 1.35 m/s
       const speed = (this.mode === "weekday" ? 1.2 : 0.9) + (i % 3) * 0.12 + Math.random() * 0.1;
-      this.passers.push({ sprite, path, t: (i * 0.37 + 0.17) % 1, speed, gait: umbrella ? null : newGait(), wait: 0 });
+      this.passers.push({ sprite, path, t: (i * 0.37 + 0.23) % 1, speed, gait: umbrella ? null : newGait(), wait: 0 });
     }
   }
 
