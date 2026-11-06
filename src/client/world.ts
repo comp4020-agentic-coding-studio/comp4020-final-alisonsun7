@@ -157,7 +157,7 @@ void main(){
   float cloudMask = smoothstep(0.54 - cloudCover * 0.18, 0.69 - cloudCover * 0.13, cloudShape);
   cloudMask *= smoothstep(0.015, 0.20, h) * (1.0 - smoothstep(0.66, 1.0, h));
   float lightEdge = cloudsAt(cloudUV + normalize(sunDir.xz) * 0.15) - cloudShape;
-  vec3 cloudColour = mix(horizon * 0.78, vec3(1.0, 0.97, 0.90) * 1.22, smoothstep(-0.06, 0.07, lightEdge));
+  vec3 cloudColour = mix(horizon * 0.78, horizon * (vec3(1.10) + sunColor * 0.035), smoothstep(-0.06, 0.07, lightEdge));
   c = mix(c, cloudColour, cloudMask * (0.70 + cloudCover * 0.25));
   // A fixed celestial sky: no textures, extra draw calls or flickering.
   vec2 starUV = vec2(atan(direction.z, direction.x), asin(clamp(h, -1.0, 1.0))) * vec2(96.0, 76.0);

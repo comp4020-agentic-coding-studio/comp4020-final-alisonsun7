@@ -75,6 +75,7 @@ describe("the original Quiet Light people", () => {
       expect(g.userData.closedGarment, name).toBe(true);
       const indices = g.index!;
       let volume = 0;
+      const edges = new Map<string, { count: number; direction: number }>();
       // A closed surface with outward winding has positive signed volume.
       // Unlike radial tube checks, this also covers the armpits and crotch.
       for (let i = 0; i < indices.count; i += 3) {
@@ -82,8 +83,18 @@ describe("the original Quiet Light people", () => {
         const b = new THREE.Vector3().fromBufferAttribute(positions, indices.getX(i + 1));
         const c = new THREE.Vector3().fromBufferAttribute(positions, indices.getX(i + 2));
         volume += a.dot(b.cross(c)) / 6;
+        const ids = [indices.getX(i), indices.getX(i + 1), indices.getX(i + 2)];
+        for (let j = 0; j < 3; j++) {
+          const a = ids[j], b = ids[(j + 1) % 3], key = a < b ? `${a}/${b}` : `${b}/${a}`;
+          const edge = edges.get(key) ?? { count: 0, direction: 0 };
+          edge.count++; edge.direction += a < b ? 1 : -1; edges.set(key, edge);
+        }
       }
       expect(volume, name).toBeGreaterThan(0.001);
+      for (const [key, edge] of edges) {
+        expect(edge.count, `${name} closed edge ${key}`).toBe(2);
+        expect(edge.direction, `${name} consistently oriented edge ${key}`).toBe(0);
+      }
       for (let i = 0; i < positions.count; i++) {
         expect(Math.hypot(normals.getX(i), normals.getY(i), normals.getZ(i)), name).toBeCloseTo(1, 4);
       }

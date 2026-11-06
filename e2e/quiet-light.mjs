@@ -70,5 +70,29 @@ try {
   });
   check(narrow.fits&&narrow.buttons.every(h=>h>=44),'nearest sound actions fit a 375px view with 44px controls: '+JSON.stringify(narrow));
   if(out)await page.screenshot({path:out+'/aligned-sounds-phone.png'});
+  const skyBrightness=async(minute,revision)=>{
+    await page.evaluate(({minute,revision})=>{
+      const w=window.artWorld,now=new Date().toISOString();
+      w.goTo('beach');w.pitch=.15;
+      w.setEnvironment({weather:'cloudy',minuteOfDay:minute,clockRunning:false,revision,updatedAt:now},now);
+    },{minute,revision});
+    await page.waitForTimeout(1000);
+    return page.evaluate(()=>{
+      const w=window.artWorld,r=w.renderer,gl=r.getContext(),canvas=r.domElement;
+      w.picture.render();
+      const pixels=new Uint8Array(canvas.width*canvas.height*4);
+      gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+      const samples=[];
+      for(let y=.55;y<.95;y+=.05)for(let x=.1;x<.95;x+=.08){
+        const i=(Math.floor(y*canvas.height)*canvas.width+Math.floor(x*canvas.width))*4;
+        samples.push(pixels[i]*.2126+pixels[i+1]*.7152+pixels[i+2]*.0722);
+      }
+      samples.sort((a,b)=>a-b);
+      return samples[samples.length-1];
+    });
+  };
+  const daySky=await skyBrightness(840,2),nightSky=await skyBrightness(1320,3);
+  check(daySky>170&&nightSky<150,'cloud highlights follow the night sky instead of staying daylight white: '+JSON.stringify({daySky,nightSky}));
+  if(out)await page.screenshot({path:out+'/cloudy-night-sky.png'});
   check(errors.length===0,'no page or resource errors: '+errors.join(' | '));
 }finally{await browser.close();}

@@ -47,7 +47,8 @@ For the 3D option, first compare a locked hero camera to D at the same aspect:
 
 The ratios are manually estimated art targets, not a measured similarity score.
 Keep reference and actual screenshots side by side and report remaining gaps.
-Only after the hero view is accepted should the treatment spread elsewhere.
+Review the actual hero camera before carrying its treatment through the rest
+of the world. Passing behaviour tests does not establish visual acceptance.
 Preserve the single room, contributions/replies, private-hut admission, sound
 choices, shared weather/time protocol, and both pointer-direction preferences.
 Any layout change must update physical floors/collision coherently and must not

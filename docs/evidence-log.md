@@ -1930,3 +1930,42 @@ that geometry despite its low draw count and started a solid layered crown
 rebuild; this checkpoint is not visual acceptance or preview promotion.
 The user's current four live contributions were read for reachability: all
 remain on unchanged dry land. No persistent position or environment was edited.
+
+## 68. Final visual corrections and verification (2026-11-07)
+
+The sparse-crown attempt was replaced with closed irregular three-dimensional
+branch pads and short surface needles; the 520-tree forest is spatially batched
+in 24m cells for frustum culling. Timber UVs now sample one licensed plank with
+grain along the real board, rather than compressing a nine-plank image into it.
+The final reference-size page retains real movement, thin chrome, the glass
+facade, nearby cove, clothed animal figures and the grounded sound action.
+
+A final character sheet exposed small white garment cracks. Shared-edge winding
+checks fail on the previous mesh and pass after adjacency-based orientation;
+keeping the lower shirt outside the actual trouser surface also removes the
+waist intersection. Single-sided materials and the original skeleton remain.
+All seven rig and both rendering-quality checks pass after the correction.
+
+The final sweep covers all nine destinations and 16 weather/time combinations,
+with 36 captures, no browser errors, no rain under roofs, reduced-motion and
+clock-revision checks passing. Desktop rain/forest and the narrow viewport are
+about 60fps on the Apple M5 Pro GPU at DPR1; this is not a physical-phone result.
+The sweep exposed overly white night clouds. Cloud highlights now derive from
+the current horizon light. A new GPU check samples the cloud band rather than
+the cloud-free zenith: daytime highlight 211.29/255, nighttime 111.84/255.
+The daylight-white shader is an isolated negative control, restored after the
+expected failure. Silent audio, shoreline exclusion and accessible source-card
+actions pass in the same visual suite.
+
+All 73 spec checks and the 12 browser suites have passed during this rebuild;
+the walking and new UI suites were rerun after correcting the obstructed helper
+and keyboard-focus failures. The final geometry/rendering checks were rerun
+after their respective fixes. Docker, physical phones and human listening were
+not run; measured audio output is covered by the busker browser test.
+
+This is a reviewable freely walkable reconstruction, not user acceptance of
+reference fidelity. The spatial composition is substantially closer to D;
+foliage, character surfaces, water and indirect lighting still read as procedural
+3D rather than the concept's photographic detail. No similarity percentage is
+claimed. Current persisted weather/time is retained when promoting, so the
+reference lighting is selected explicitly with Clear and Afternoon in Tools.

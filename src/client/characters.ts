@@ -92,6 +92,50 @@ function limb(a: THREE.Vector3, b: THREE.Vector3, r0: number, r1: number, folds 
   };
 }
 
+// An SDF gradient at one vertex is ambiguous at a clipped edge. Orient a
+// closed surface by its shared edges instead: adjacent faces must traverse
+// every shared edge in opposite directions, then positive volume faces out.
+function orientClosedSurface(indices: number[], positions: number[]): void {
+  const count = indices.length / 3;
+  const neighbours: { face: number; opposite: boolean }[][] = Array.from({ length: count }, () => []);
+  const edges = new Map<string, { face: number; forward: boolean }>();
+  for (let face = 0; face < count; face++) {
+    const tri = indices.slice(face * 3, face * 3 + 3);
+    for (let j = 0; j < 3; j++) {
+      const a = tri[j], b = tri[(j + 1) % 3], forward = a < b;
+      const key = forward ? `${a}/${b}` : `${b}/${a}`;
+      const other = edges.get(key);
+      if (other) {
+        const opposite = forward === other.forward;
+        neighbours[face].push({ face: other.face, opposite });
+        neighbours[other.face].push({ face, opposite });
+      } else edges.set(key, { face, forward });
+    }
+  }
+  const flips = new Int8Array(count).fill(-1);
+  for (let start = 0; start < count; start++) {
+    if (flips[start] !== -1) continue;
+    const component = [start]; flips[start] = 0;
+    for (let at = 0; at < component.length; at++) for (const edge of neighbours[component[at]]) {
+      if (flips[edge.face] !== -1) continue;
+      flips[edge.face] = flips[component[at]] ^ Number(edge.opposite);
+      component.push(edge.face);
+    }
+    let volume = 0;
+    for (const face of component) {
+      const i = face * 3;
+      if (flips[face]) [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
+      const a = indices[i] * 3, b = indices[i + 1] * 3, c = indices[i + 2] * 3;
+      volume += positions[a] * (positions[b + 1] * positions[c + 2] - positions[b + 2] * positions[c + 1])
+        + positions[a + 1] * (positions[b + 2] * positions[c] - positions[b] * positions[c + 2])
+        + positions[a + 2] * (positions[b] * positions[c + 1] - positions[b + 1] * positions[c]);
+    }
+    if (volume < 0) for (const face of component) {
+      const i = face * 3; [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
+    }
+  }
+}
+
 /** Closed marching-tetrahedra surface with smooth normals and blend weights. */
 function implicit(key: string, field: Field, volumes: Volume[], low: number[], high: number[], step: number): THREE.BufferGeometry {
   return geometry(key, () => {
@@ -151,6 +195,7 @@ function implicit(key: string, field: Field, volumes: Volume[], low: number[], h
         }
       }
     }
+    orientClosedSurface(indices, positions);
     const g = new THREE.BufferGeometry();
     g.setIndex(indices);
     g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
@@ -166,7 +211,10 @@ function implicit(key: string, field: Field, volumes: Volume[], low: number[], h
 function garments(avatar: Avatar, thigh: number, shin: number, step: number): [THREE.BufferGeometry, THREE.BufferGeometry] {
   const body: Field = (x, y, z) => {
     const width = 0.085 + 0.021 * Math.exp(-(((y - 0.19) / 0.075) ** 2)) + 0.01 * Math.exp(-(((y + 0.015) / 0.05) ** 2));
-    const depth = 0.055 + 0.016 * Math.exp(-(((y - 0.16) / 0.09) ** 2));
+    // The loose shirt/jacket must enclose the trouser seat at the waist;
+    // otherwise the trousers hide the hem and leave its pale binding floating
+    // across the front of the pants as a visible slit.
+    const depth = 0.067 + 0.004 * Math.exp(-(((y - 0.16) / 0.09) ** 2));
     const folds = 0.0015 * Math.sin(Math.atan2(z, x) * 7 + y * 24) * Math.exp(-(((y - 0.035) / 0.08) ** 2));
     const radial = (Math.hypot(x / width, z / depth) - 1) * depth - folds;
     const shoulders = 0.276 - 0.25 * Math.abs(x);
@@ -185,6 +233,10 @@ function garments(avatar: Avatar, thigh: number, shin: number, step: number): [T
   const upperField: Field = (x, y, z) => {
     let d = upper[0].field(x, y, z);
     for (let i = 1; i < upper.length; i++) d = smoothMin(d, upper[i].field(x, y, z), 0.025);
+    // Smooth unions make the trouser seat fuller than its individual oval.
+    // Follow that actual surface with clearance, rather than guessing a shirt
+    // radius and allowing the pants to poke through the lower front panels.
+    if (y < 0.04) d = smoothMin(d, Math.max(lowerField(x, y, z) - 0.007, y - 0.025), 0.01);
     // Neck opening; the dog has a genuinely open front over a separate shirt.
     d = Math.max(d, -Math.max(Math.hypot(x, z) - 0.035, 0.244 - y));
     if (avatar === "dog") d = Math.max(d, -Math.max(Math.abs(x) - (0.018 + 0.08 * Math.max(0, y - 0.07)), 0.014 - z));
@@ -446,7 +498,7 @@ export class AnimalFigure extends THREE.Group {
     this.part(this.upperBody, "shirt-collar-and-placket", shirtDetails(), collar, false);
     this.part(this.upperBody, "bound-garment-edges", geometry(`${avatar} bound garment edges`, () => {
       const parts: THREE.BufferGeometry[] = [];
-      const hem = new THREE.CatmullRomCurve3(Array.from({length: 49}, (_, i) => new THREE.Vector3(Math.cos(i / 48 * TAU) * 0.095, -0.033, Math.sin(i / 48 * TAU) * 0.055)), true);
+      const hem = new THREE.CatmullRomCurve3(Array.from({length: 49}, (_, i) => new THREE.Vector3(Math.cos(i / 48 * TAU) * 0.095, -0.033, Math.sin(i / 48 * TAU) * 0.067)), true);
       parts.push(new THREE.TubeGeometry(hem, 48, 0.002, 5, true));
       if (avatar === "dog") for (const side of [-1, 1]) {
         parts.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
@@ -552,7 +604,7 @@ export class AnimalFigure extends THREE.Group {
     this.hips.position.y = this.hipHeight;
     this.skeleton = new THREE.Skeleton([this.hips, this.upperBody, this.head, this.arms[0].upper, this.arms[0].fore, this.arms[1].upper, this.arms[1].fore,
       this.legs[0].thigh, this.legs[0].shin, this.legs[0].foot, this.legs[1].thigh, this.legs[1].shin, this.legs[1].foot]);
-    const levels = [0.0153, 0.028, 0.048];
+    const levels = [0.0155, 0.028, 0.048];
     const shirtLod = new THREE.LOD(), trousersLod = new THREE.LOD();
     shirtLod.name = "continuous-shirt-levels"; trousersLod.name = "continuous-trouser-levels";
     this.hips.add(shirtLod, trousersLod);
