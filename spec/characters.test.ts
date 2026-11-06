@@ -22,14 +22,15 @@ describe("the original Quiet Light people", () => {
       expect(head.y).toBeLessThan(0.19);
       let triangles = 0;
       let meshes = 0;
-      figure.traverse((object) => {
+      figure.traverseVisible((object) => {
         if (!(object instanceof THREE.Mesh)) return;
         meshes++;
         triangles += (object.geometry.index?.count ?? object.geometry.getAttribute("position").count) / 3;
         expect(object.material).toBeInstanceOf(THREE.MeshStandardMaterial);
       });
       expect(meshes).toBeLessThan(35);
-      expect(triangles).toBeLessThan(8000);
+      // The selected fidelity rebuild explicitly budgets up to 35K per hero.
+      expect(triangles).toBeLessThan(35000);
       for (const pose of POSES) {
         figure.setPose(pose);
         figure.setMotion(0.23, pose.startsWith("walk"));
@@ -67,19 +68,82 @@ describe("the original Quiet Light people", () => {
 
   it("lights the outside of clothing rather than showing reversed hollow sleeves and trousers", () => {
     const figure = new AnimalFigure({ avatar: "cat", seed: "linen" });
-    for (const name of ["linen-shirt", "left-upper-sleeve", "left-lower-sleeve", "left-trouser-thigh", "left-trouser-shin"]) {
+    for (const name of ["linen-shirt", "continuous-trousers"]) {
       const g = part(figure, name).geometry;
       const positions = g.getAttribute("position");
       const normals = g.getAttribute("normal");
-      let outsideFaces = 0;
-      for (let i = 0; i < positions.count; i++) {
-        if (Math.hypot(positions.getX(i), positions.getZ(i)) < 0.01 || Math.abs(normals.getY(i)) > 0.75) continue;
-        expect(normals.getX(i) * positions.getX(i) + normals.getZ(i) * positions.getZ(i), name).toBeGreaterThan(0);
-        outsideFaces++;
+      expect(g.userData.closedGarment, name).toBe(true);
+      const indices = g.index!;
+      let volume = 0;
+      // A closed surface with outward winding has positive signed volume.
+      // Unlike radial tube checks, this also covers the armpits and crotch.
+      for (let i = 0; i < indices.count; i += 3) {
+        const a = new THREE.Vector3().fromBufferAttribute(positions, indices.getX(i));
+        const b = new THREE.Vector3().fromBufferAttribute(positions, indices.getX(i + 1));
+        const c = new THREE.Vector3().fromBufferAttribute(positions, indices.getX(i + 2));
+        volume += a.dot(b.cross(c)) / 6;
       }
-      expect(outsideFaces, name).toBeGreaterThan(10);
+      expect(volume, name).toBeGreaterThan(0.001);
+      for (let i = 0; i < positions.count; i++) {
+        expect(Math.hypot(normals.getX(i), normals.getY(i), normals.getZ(i)), name).toBeCloseTo(1, 4);
+      }
+      expect(part(figure, name)).toBeInstanceOf(THREE.SkinnedMesh);
     }
     figure.dispose();
+  });
+
+  it("blends shoulder, elbow and knee deformation through one continuous garment and simplifies at distance", () => {
+    const figure = new AnimalFigure({ avatar: "dog", seed: "fidelity", height: 1 });
+    for (const name of ["linen-shirt", "continuous-trousers"]) {
+      const mesh = part(figure, name) as THREE.SkinnedMesh;
+      const weights = mesh.geometry.getAttribute("skinWeight");
+      const boneIndices = mesh.geometry.getAttribute("skinIndex");
+      let blendedVertices = 0;
+      for (let i = 0; i < weights.count; i++) {
+        const w = [weights.getX(i), weights.getY(i), weights.getZ(i), weights.getW(i)];
+        expect(w.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 5);
+        expect(w.every((v) => v >= 0 && v <= 1)).toBe(true);
+        if (w.filter((v) => v > 0.1).length > 1) blendedVertices++;
+        for (const n of [boneIndices.getX(i), boneIndices.getY(i), boneIndices.getZ(i), boneIndices.getW(i)]) expect(n).toBeLessThan(mesh.skeleton.bones.length);
+      }
+      expect(blendedVertices, name).toBeGreaterThan(100);
+      const lod = mesh.parent as THREE.LOD;
+      expect(lod).toBeInstanceOf(THREE.LOD);
+      const camera = new THREE.PerspectiveCamera(); camera.position.z = 30; camera.updateMatrixWorld();
+      lod.update(camera);
+      expect(lod.levels[2].object.visible).toBe(true);
+      expect(lod.levels[0].object.visible).toBe(false);
+      const distant = lod.levels[2].object as THREE.Mesh;
+      expect(distant.geometry.index!.count).toBeLessThan(mesh.geometry.index!.count / 4);
+    }
+    figure.dispose();
+  });
+
+  it("keeps a flat, torso-bound garment hem when the arms rise and confines the dog's white shirt to the front", () => {
+    for (const avatar of ["cat", "dog"] as const) {
+      const figure = new AnimalFigure({ avatar, seed: "finished-hem", height: 1 });
+      const mesh = part(figure, "linen-shirt") as THREE.SkinnedMesh;
+      const hem = mesh.geometry.userData.hemVertices as number[];
+      expect(hem.length).toBeGreaterThan(20);
+      const p = mesh.geometry.getAttribute("position"), w = mesh.geometry.getAttribute("skinWeight"), b = mesh.geometry.getAttribute("skinIndex");
+      for (const i of hem) {
+        expect(p.getY(i)).toBeCloseTo(-0.035, 6);
+        expect(w.getX(i)).toBe(1);
+        expect(b.getX(i)).toBe(1);
+      }
+      figure.setPose("arms-up"); figure.updateMatrixWorld(true);
+      const heights = hem.map((i) => mesh.getVertexPosition(i, new THREE.Vector3()).y);
+      expect(Math.max(...heights) - Math.min(...heights)).toBeLessThan(0.00001);
+      if (avatar === "dog") {
+        const g = part(figure, "linen-under-shirt").geometry;
+        const normal = g.getAttribute("normal"), p = g.getAttribute("position");
+        for (let i = 0; i < p.count; i++) {
+          expect(p.getZ(i)).toBeGreaterThan(0.02);
+          expect(normal.getZ(i)).toBeGreaterThan(0.9);
+        }
+      }
+      figure.dispose();
+    }
   });
 
   it("sits over grounded feet and only shows the guitar while playing", () => {
