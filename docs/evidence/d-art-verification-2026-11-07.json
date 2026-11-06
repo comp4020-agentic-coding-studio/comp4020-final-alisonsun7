@@ -1,0 +1,353 @@
+{
+  "date": "2026-11-07",
+  "fullCheckSourceCommit": "056d054",
+  "applicationCommit": "b1b0eec4f4da4c73953a690b2f3330d597e6ea19",
+  "spec": {
+    "files": 11,
+    "tests": 76,
+    "passed": true
+  },
+  "endToEnd": [
+    {
+      "command": [
+        "node",
+        "e2e/world-two-browsers.mjs"
+      ],
+      "seconds": 41.62,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/meet-and-talk.mjs"
+      ],
+      "seconds": 54.74,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/leave-a-sound.mjs"
+      ],
+      "seconds": 9.61,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/sound-discovery.mjs"
+      ],
+      "seconds": 10.06,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/look-controls.mjs"
+      ],
+      "seconds": 9.74,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/huts.mjs"
+      ],
+      "seconds": 46.01,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/busker-sound.mjs"
+      ],
+      "seconds": 8.52,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/cooperative-play.mjs"
+      ],
+      "seconds": 25.21,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/cooperative-ack-race.mjs"
+      ],
+      "seconds": 16.89,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/environment.mjs"
+      ],
+      "seconds": 19.32,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/quiet-light.mjs"
+      ],
+      "seconds": 5.47,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/d-reference-ui.mjs"
+      ],
+      "seconds": 15.33,
+      "exitCode": 0
+    }
+  ],
+  "followUp": {
+    "change": "Initial passer phase moved from .17 to .23 to keep walkers from overlapping the cafe pair on arrival. No movement rule changed.",
+    "sourceCommit": "b1b0eec",
+    "checks": [
+      "tsc build",
+      "e2e/d-reference-ui.mjs, all 47 desktop/phone/landscape checks",
+      "actual full-page desktop/phone screenshots, no page errors"
+    ]
+  },
+  "rendering": {
+    "matrixCases": 16,
+    "screenshots": 36,
+    "performance": {
+      "desktopRain": {
+        "frames": 181,
+        "elapsedMs": 3004.699999999997,
+        "fps": 60.23895896428934,
+        "medianFrameMs": 16.69999999999709,
+        "p95FrameMs": 16.799999999995634,
+        "render": {
+          "frame": 32603,
+          "calls": 1165,
+          "triangles": 12613715,
+          "points": 0,
+          "lines": 2880
+        },
+        "pixelRatio": 1,
+        "shadows": true
+      },
+      "desktopForest": {
+        "frames": 181,
+        "elapsedMs": 3004.9999999821157,
+        "fps": 60.23294509187262,
+        "medianFrameMs": 16.69999999999709,
+        "p95FrameMs": 16.70000000001164,
+        "render": {
+          "frame": 35042,
+          "calls": 3975,
+          "triangles": 26320983,
+          "points": 0,
+          "lines": 1440
+        },
+        "pixelRatio": 1,
+        "shadows": true
+      },
+      "narrowRain": {
+        "frames": 181,
+        "elapsedMs": 3004.399999976158,
+        "fps": 60.24497403855557,
+        "medianFrameMs": 16.699999999999818,
+        "p95FrameMs": 16.700000000000728,
+        "render": {
+          "frame": 2489,
+          "calls": 722,
+          "triangles": 7109905,
+          "points": 0,
+          "lines": 900
+        },
+        "pixelRatio": 1,
+        "shadows": true
+      }
+    },
+    "checks": {
+      "groundedSoundMarks": [
+        {
+          "weather": "clear",
+          "minute": 840,
+          "zone": "boardwalk",
+          "anchors": [
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593033,
+              "anchor": 0.07499999910593033,
+              "core": 0.15999999910593032
+            }
+          ]
+        },
+        {
+          "weather": "clear",
+          "minute": 840,
+          "zone": "beach",
+          "anchors": [
+            {
+              "ground": 0,
+              "anchor": 0.035,
+              "core": 0.12
+            },
+            {
+              "ground": 0,
+              "anchor": 0.035,
+              "core": 0.12
+            },
+            {
+              "ground": -0.04789280688791919,
+              "anchor": -0.01289280688791919,
+              "core": 0.0721071931120808
+            }
+          ]
+        },
+        {
+          "weather": "clear",
+          "minute": 1320,
+          "zone": "boardwalk",
+          "anchors": [
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593033,
+              "anchor": 0.07499999910593033,
+              "core": 0.15999999910593032
+            }
+          ]
+        },
+        {
+          "weather": "rain",
+          "minute": 840,
+          "zone": "boardwalk",
+          "anchors": [
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593033,
+              "anchor": 0.07499999910593033,
+              "core": 0.15999999910593032
+            }
+          ]
+        },
+        {
+          "weather": "mist",
+          "minute": 840,
+          "zone": "boardwalk",
+          "anchors": [
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593122,
+              "anchor": 0.07499999910593122,
+              "core": 0.1599999991059312
+            },
+            {
+              "ground": 0.03999999910593033,
+              "anchor": 0.07499999910593033,
+              "core": 0.15999999910593032
+            }
+          ]
+        }
+      ],
+      "runtimeReducedMotionHidesRain": true,
+      "runtimeMotionRestoresRain": true,
+      "environmentCannotRestoreDisabledShadows": true,
+      "sunFollowsWithoutDirectionDrift": true,
+      "sameRevisionCatchUp": {
+        "caughtUp": 960.2,
+        "afterOldAck": 960.4,
+        "passed": true
+      }
+    },
+    "errors": [],
+    "note": "Chrome/Metal on this desktop. Narrow viewport is an emulation, not a physical phone benchmark. Matrix preceded the one-constant initial passer spacing change."
+  },
+  "skyEnergy": {
+    "asset": "qwantani_noon_puresky.hdr",
+    "engine": "three 0.170.0",
+    "storage": "HalfFloatType",
+    "width": 2048,
+    "height": 1024,
+    "method": "RGBELoader parse; upper hemisphere cosine-weighted radiance integral before/after runtime solar separation. Source file untouched. This is not a GPU PMREM measurement.",
+    "before": {
+      "integratedSky": 4.396693383539633,
+      "lambertianMean": 1.399510970499526,
+      "peak": 65503.99999999999,
+      "aboveSolarThreshold": 116
+    },
+    "after": {
+      "integratedSky": 0.5226180081801075,
+      "lambertianMean": 0.1663544787014094,
+      "peak": 32,
+      "aboveSolarThreshold": 0
+    }
+  },
+  "preview": {
+    "port": 18861,
+    "databaseUnchanged": true,
+    "tableCounts": {
+      "memories": 0,
+      "participants": 23,
+      "placed_sounds": 18,
+      "placements": 0,
+      "scenes": 1,
+      "session_environments": 1,
+      "session_events": 0,
+      "sessions": 1,
+      "sound_assets": 0,
+      "sound_operations": 2,
+      "sound_replies": 1,
+      "users": 25
+    },
+    "verifiedModules": {
+      "client/world.js": "56e2bcbed1d696349808ce2393255be8374343a21fa42de612cd06976f805f0c",
+      "client/coastal-renderer.js": "5d48223777f6d20b488293450366e75097ed82a9fa0fe312fdda21846ffea826",
+      "client/characters.js": "fb7b363c5ec5dedc9d075c19a162a9217e09c2ee5ca12475ba6e5b2b428c5201",
+      "client/seaside.js": "4994948cebb8d4b4ec505e7a9127f2b5190a867f83d33c170f80d7a62699c86a",
+      "client/d-pines.js": "73f70c8bf4cf34705d1fdd5096e7a997a78fd9ea4217126a66890bb0cdc0cf09",
+      "client/cafe.js": "22eb9a8e6368fae9b0bb905fcac166e340b2cf53c1dc85dcb0fd38c5257de9ee",
+      "client/sky.js": "ec8e1f446b908b1300cbc175d6a2b6c06546cd697e6669872f6da5f83d35723c",
+      "shared/catalog.js": "b88456d7af18eb9d356576a106dcc5ebc984a7161b206d63615ce39ee2acaa50",
+      "client/style.css": "93e49fb87df8840c27292a69c9a1da984f5e221a6fe827f3588dd1b893adfaab"
+    },
+    "verifiedTextureCount": 3,
+    "ordinaryLiveSoundCount": 4,
+    "sharedEnvironmentPreserved": true,
+    "rollbackTag": "before-d-art-assets-2026-11-07"
+  },
+  "notRun": [
+    "Docker (not installed)"
+  ],
+  "visualAssessment": "This is a freely walkable real-time 3D asset/lighting correction, not an exact reproduction of the D concept. The concept still has finer character, vegetation and architectural detail. User visual acceptance has not been claimed."
+}

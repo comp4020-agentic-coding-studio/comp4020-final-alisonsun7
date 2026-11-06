@@ -2037,3 +2037,28 @@ submitted triangles across all passes, down from the first new review's 3,265
 calls / 29.29M. Browser errors: none. This is a desktop measurement, not a
 claim of performance on a physical phone. Final gameplay and weather review
 are recorded separately before promotion.
+
+Final verification: 76 tests in 11 spec files and all 12 end-to-end suites
+passed at `056d054`, including real two-browser movement/talk, sound audio,
+both look modes, all four huts, NPC guitar output, cooperative reply races,
+shared weather and desktop/phone/landscape dialogs. A 16-case weather/time
+matrix produced 36 screenshots, with no errors or roof-interior rain vertices;
+desktop rain, forest and narrow-viewport rain measured approximately 60 fps
+on the local M5 Pro/Metal GPU. Only desktop hardware was measured. Docker
+was not run because it is not installed. See `d-art-verification-2026-11-07.json`.
+
+The final full-page image revealed a passing figure standing immediately behind
+the hero cat under reduced motion. A one-constant initial phase change spaces
+that arrival out; the full desktop/phone/landscape D interface test and actual
+desktop/phone screenshots were repeated, all passed, at `b1b0eec`. No walking
+rules or persistent state changed. New actual screenshots use prefix `21-`.
+
+Promoted `b1b0eec` to the original 18861 preview. Its original current DB was
+compared across all 12 persistent tables before/after: every digest matched;
+all 18 contribution rows, one reply, two operation rows and all 25 users were
+retained. The four active ordinary sounds keep their positions. Cloudy/shared
+clock/revision remain unchanged; Clear + Afternoon is used only in the scratch
+reference screenshots. Verified nine served source modules/styles and three
+new texture files byte-for-byte against the tested build/assets. The preview
+runs detached without a TTY. No push/deploy. Prior compiled output is retained;
+visual rollback uses the current DB, never an old copy.

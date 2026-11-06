@@ -71,3 +71,22 @@ stored contribution rows.
 12 persistent tables. `.cache/d-fidelity-promotion.json` records the previous
 compiled output and table comparison. Use Clear + Afternoon explicitly for the
 reference lighting; promotion does not reset the shared clock or weather.
+
+## Asset-led correction after the second rejection
+
+`before-d-art-assets-2026-11-07` preserves `e80f104`, before the next art pass.
+The new branch is `codex/d-art-assets`; the isolated candidate uses
+`.cache/d-art-build/dist`, port 18878 and its own scratch DB. A convenience
+copy of the former stable compiled output is `.cache/d-art-baseline/dist`.
+Use the separate-checkout method above with this new rollback tag to recover
+that visual version. Keep the current database, including later player sounds
+and shared time/weather. The source correction, original generated material,
+external CC0 needle source and review are recorded in ADR 021.
+
+`d-asset-rebuild-2026-11-07` marks this verified asset/lighting pass. The 18861
+preview serves application source commit `b1b0eec` with the same current DB;
+all 12 tables matched at promotion. The old compiled directory is recorded in
+ignored `.cache/d-art-promotion.json`. The shared sky was not reset. Actual
+reference screenshots use Clear + Afternoon; choose that explicitly to compare
+with D. The visual reference remains more detailed than this real-time 3D
+reconstruction; the tag records a tested version, not user visual acceptance.
