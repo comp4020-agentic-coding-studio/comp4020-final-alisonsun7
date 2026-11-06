@@ -1,0 +1,26 @@
+{
+  "applicationCommit": "f05ee3d12c7c197bfe072a9540445d4564365d22",
+  "port": 18861,
+  "databaseUnchanged": true,
+  "tableCounts": {
+    "memories": 0,
+    "participants": 23,
+    "placed_sounds": 18,
+    "placements": 0,
+    "scenes": 1,
+    "session_environments": 1,
+    "session_events": 0,
+    "sessions": 1,
+    "sound_assets": 0,
+    "sound_operations": 2,
+    "sound_replies": 1,
+    "users": 25
+  },
+  "rollbackTag": "before-quiet-light-2026-11-07",
+  "durableProcess": {
+    "pid": 93350,
+    "parent": 1,
+    "terminal": null
+  },
+  "browserRefresh": "Existing in-app error tab could not be acquired: browser URL security policy rejected the action. No workaround was attempted; user must refresh manually."
+}

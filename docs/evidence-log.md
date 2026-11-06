@@ -1815,3 +1815,37 @@ the AI concept image. The final runtime images and measured limitations are the
 evidence of what was actually implemented. Docker, physical-phone tests, a
 screen reader and human listening were not run. Local output audio was measured
 by the real Chrome suite, not inferred from a playing badge.
+
+
+## 64. Promote the reviewed build without rewinding the place (2026-11-07)
+
+Promoted the candidate's compiled files to the original 18861 local preview.
+Before stopping it, checked the recorded PID, command and actual listening port.
+The complete old compiled output stays in ignored cache alongside the portable
+Git rollback tag. A fresh read-only SQLite backup was made immediately before
+promotion; startup and route checks were followed by an exact comparison of
+all twelve user tables. Every row matched: 18 contributions, one reply, two
+operation records and 25 users remain, including changes made during this art
+work. The older 16-row backup was never restored. Environment state was not
+reset, and no schema/migration or public asset changed.
+
+The scene, new character/world modules, CSS and landing route returned 200.
+An independent subsequent check confirmed PID 93350 still owned 18861, had
+parent 1, its own process group and no terminal. Promoted server/world/character/
+CSS files exactly matched the reviewed candidate. The verified scratch 18874
+service was stopped. The stable review continues against its original database.
+
+The in-app browser inventory still contained an earlier error tab. Acquiring
+that tab to refresh it was rejected by the browser URL security policy. No
+alternate browser surface or other workaround was used for that blocked action;
+Wen is told to refresh manually. This limits the automatic handoff, not the
+already completed HTTP and independent candidate visual checks.
+
+Source work was committed in rollback, interface, rig, landscape, integration
+and final-polish steps, followed by this verification record. The final visual
+regression has nine observations and passed, in addition to all ten existing
+suites; discovery/cooperation also passed again after label layout changed.
+All 69 local/HTTP/rig checks, typecheck, candidate build, collision comparison,
+evidence-link and diff checks passed. No assertion was weakened, no production
+DB was used, and no push, merge or deployment was performed. The two version
+tags and rollback guide retain the path back without losing later sound data.

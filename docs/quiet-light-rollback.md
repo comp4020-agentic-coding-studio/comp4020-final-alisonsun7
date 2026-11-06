@@ -42,3 +42,15 @@ Before work, a read-only SQLite backup was saved to
 **do not restore it for a visual rollback**, because it would rewind later
 people, contributions and shared settings. This art change adds no database
 schema. Keep using the live database when returning to the old application.
+
+
+## Reviewed Quiet Light version
+
+`quiet-light-v1-2026-11-07` marks the completed, verified art version. The
+source history has separate rollback, interface, character, landscape,
+integration and polish commits; use `git log --oneline
+before-quiet-light-2026-11-07..quiet-light-v1-2026-11-07` to compare them.
+The local 18861 preview uses the updated build with its original current DB.
+The ignored `.cache/quiet-light-promotion.json` records the retained previous
+compiled directory and the exact table comparison. Both visual directions
+can use the same current schema and persistent contribution history.
