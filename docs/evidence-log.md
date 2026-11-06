@@ -1235,3 +1235,25 @@ match earlier occupants. The test now checks this run's three participant IDs,
 every position and successful move acknowledgements, and the full rerun passed.
 No existing assertions were dropped. Browser-suite integration is in
 `package.json`; final combined runs and screenshots are recorded below.
+
+## 46. Combined final verification (2026-11-06)
+
+After the code changes were committed, all seven Chrome/Metal suites passed
+serially against the same final build and an isolated scratch SQLite DB:
+`world-two-browsers`, `meet-and-talk`, `leave-a-sound`, `sound-discovery`,
+`look-controls` (15 checks), `huts` (21) and `busker-sound` (12).
+No page errors were reported. This follows the full 45/45 spec run in entry 45;
+there were no further application-code changes. Final occupied/free hut and
+busker screenshots were viewed and added under `docs/screenshots/15-*`.
+
+Type checking, compilation, evidence-link checks and `git diff --check` passed.
+The local pnpm version remains below the repository's required version, so the
+same compiler and test executables were invoked directly, with the verified
+locked Rolldown native and optional-fsevents fallback described above. Docker,
+a physical phone, screen-reader use and human listening were not run.
+
+The 18861 review service was restarted from this build with its existing
+scratch review database preserved. The scene and new Controls module both
+returned 200. Separate test services were stopped after verification. No
+production database, global Git identity or remote branch was changed; no
+push, merge or deployment occurred.
