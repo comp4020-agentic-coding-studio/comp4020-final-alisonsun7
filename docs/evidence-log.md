@@ -1128,3 +1128,39 @@ and no page errors. It does not join a room or change shared data.
 `tsc --noEmit`, application compilation and `git diff --check` passed.
 The full HTTP and multiplayer suites from entry 41 were not rerun for this
 pointer-only change.
+
+## 43. Restore the seaside guitarist (2026-11-06)
+
+**Prompt (user, translated):** the seaside guitar player's sound has gone.
+Also requested configurable look direction, a multiplayer design first, and
+checks for toilets, showers, flushing and occupied doors.
+
+**Done:** Mateo's figure was still animated, but no audio source was connected
+to it. His figure and a narrowly scoped local guitar voice now share one
+position in `seaside.ts`. The voice is audible within 18 m, with HRTF, distance
+attenuation and the existing indoor low-pass treatment. It respects Sound off
+and page visibility. A selected nearby player guitar takes precedence so the
+same recording does not double. There are no seeded sounds, marks, rows or
+quota changes. The empty nearby guide now says no *shared* sounds are nearby,
+since the NPC may be audible. This is Wen's explicit exception to silent NPCs,
+not an automatic background bed.
+
+**Checks:** TypeScript check and compilation passed. The new actual
+Chrome/Metal `e2e/busker-sound.mjs` passed all 12 checks: one real source,
+nonzero Analyser output, no contribution, distance exit/return, Sound off/on,
+AudioContext suspension/resumption, player-guitar precedence/removal and no
+page errors. Screenshots were viewed. Chrome automation kept multiple tabs
+visible in both headed and headless runs; the bounded real-tab visibility
+assertion failed. The final visibility test explicitly supplies only the
+platform visibility event and checks the real AudioContext state and source;
+it does not claim an actual tab switch or human listening approval.
+
+**Environment:** optional native `fsevents` stalled during verification. A
+process-local preload makes only that optional import report MODULE_NOT_FOUND,
+using its existing fallback. Original dependencies and OS settings are untouched.
+Tests ran against an isolated scratch service and DB; its service is stopped.
+
+**Design only:** `docs/proposals/cooperative-play.md` proposes sound replies,
+shared listening walks and optional nearby listening invitations. It states
+that none is implemented; replies are recommended first to keep collaboration
+about the sounds people leave. Committed separately as `8fe95d4`.

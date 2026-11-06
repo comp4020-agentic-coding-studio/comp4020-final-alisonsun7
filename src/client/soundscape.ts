@@ -11,6 +11,7 @@ import * as THREE from "three";
 import type { PlacedSound } from "../shared/protocol.js";
 import { FAMILIES, HEAR, REACH, VOICES, findSound, soundUrl } from "../shared/sounds.js";
 import type { Listener, WorldView } from "./world.js";
+import { BUSKER_SOUND } from "./seaside.js";
 
 const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const LIGHT_Y = 1.15;
@@ -113,6 +114,8 @@ export class Soundscape {
   private preview: GainNode | null = null;
   private buffers = new Map<string, Promise<AudioBuffer | null>>();
   private voices = new Map<string, Voice>();
+  // The busker is local scene audio, never a placed sound or a shared quota.
+  private busker: Voice | null = null;
   private listener: Listener | null = null;
   private choseAt = 0;
   private reachable: string | null = null;
@@ -124,12 +127,14 @@ export class Soundscape {
     private host: HTMLElement,
     private opts: SoundscapeOptions,
   ) {
+    this.host.dataset.buskerVoice = "0";
     // a hidden tab goes quiet, and comes back as it was
     document.addEventListener("visibilitychange", () => {
       if (!this.ctx) return;
       if (document.hidden) {
         this.stopPreview();
         void this.ctx.suspend();
+        this.reportBusker();
       } else if (this.on) void this.ctx.resume();
     });
   }
@@ -239,8 +244,10 @@ export class Soundscape {
     } else if (this.ctx) {
       this.place!.gain.setTargetAtTime(0, this.ctx.currentTime, 0.15);
       for (const id of [...this.voices.keys()]) this.stopVoice(id);
+      this.stopBusker();
     }
     this.host.dataset.soundOn = on ? "1" : "0";
+    this.reportBusker();
   }
 
   private load(soundId: string): Promise<AudioBuffer | null> {
@@ -385,6 +392,81 @@ export class Soundscape {
       if (!v) void this.startVoice(m);
       else this.muffle(m, v);
     }
+    // A contribution near Mateo takes precedence over his scene recording.
+    // It keeps its usual lifetime and all ordinary placement rules.
+    const playerGuitar = near.some(({ m }) => m.sound.soundId === BUSKER_SOUND.soundId
+      && Math.hypot(m.sound.x - BUSKER_SOUND.x, m.sound.z - BUSKER_SOUND.z) <= BUSKER_SOUND.hear);
+    this.chooseBusker(playerGuitar);
+  }
+
+  private chooseBusker(playerGuitar: boolean): void {
+    const l = this.listener!;
+    if (playerGuitar || Math.hypot(l.x - BUSKER_SOUND.x, l.z - BUSKER_SOUND.z) > BUSKER_SOUND.hear) {
+      this.stopBusker();
+      return;
+    }
+    if (!this.busker) void this.startBusker();
+    else this.muffleBusker(this.busker);
+  }
+
+  private async startBusker(): Promise<void> {
+    if (this.busker || !this.ctx || !this.on) return;
+    const ctx = this.ctx;
+    const voice: Voice = {
+      src: ctx.createBufferSource(),
+      gain: new GainNode(ctx, { gain: 0 }),
+      filter: new BiquadFilterNode(ctx, { type: "lowpass", frequency: 20000 }),
+      panner: new PannerNode(ctx, {
+        panningModel: "HRTF", distanceModel: "inverse", refDistance: 2.5,
+        rolloffFactor: 1.1, maxDistance: BUSKER_SOUND.hear,
+        positionX: BUSKER_SOUND.x, positionY: BUSKER_SOUND.y, positionZ: BUSKER_SOUND.z,
+      }),
+      muffled: null,
+    };
+    this.busker = voice;
+    const buf = await this.load(BUSKER_SOUND.soundId);
+    if (!buf || this.busker !== voice || !this.on) {
+      if (this.busker === voice) this.busker = null;
+      return;
+    }
+    voice.src.buffer = buf;
+    voice.src.loop = true;
+    voice.src.connect(voice.filter).connect(voice.gain).connect(voice.panner).connect(this.place!);
+    voice.src.onended = () => {
+      voice.src.disconnect();
+      voice.filter.disconnect();
+      voice.gain.disconnect();
+      voice.panner.disconnect();
+    };
+    voice.src.start(ctx.currentTime, Math.random() * buf.duration);
+    this.muffleBusker(voice);
+    this.reportBusker();
+  }
+
+  private muffleBusker(voice: Voice): void {
+    if (!this.ctx || !this.listener) return;
+    const muffled = this.world.isInside(BUSKER_SOUND.x, BUSKER_SOUND.z) !== this.listener.inside;
+    if (muffled === voice.muffled) return;
+    voice.muffled = muffled;
+    voice.filter.frequency.setTargetAtTime(muffled ? 700 : 20000, this.ctx.currentTime, 0.2);
+    voice.gain.gain.setTargetAtTime(muffled ? 0.4 : 1, this.ctx.currentTime, 0.3);
+  }
+
+  private stopBusker(): void {
+    const voice = this.busker;
+    if (!voice) return;
+    this.busker = null;
+    if (this.ctx && voice.src.buffer) {
+      voice.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.06);
+      voice.src.stop(this.ctx.currentTime + 0.3);
+    }
+    this.reportBusker();
+  }
+
+  private reportBusker(): void {
+    const playing = this.on && !document.hidden && this.ctx?.state === "running" && !!this.busker?.src.buffer;
+    const value = playing ? "1" : "0";
+    if (this.host.dataset.buskerVoice !== value) this.host.dataset.buskerVoice = value;
   }
 
   private moveListener(l: Listener): void {
@@ -424,6 +506,7 @@ export class Soundscape {
       }
     }
     this.drawMarks(l, now);
+    this.reportBusker();
   }
 
   private drawMarks(l: Listener, now: number): void {

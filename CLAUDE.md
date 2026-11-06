@@ -39,7 +39,10 @@ place it or move the person.
 - **Sound is Wen's design (ADR 011).** Sounds are left where you stand and
   removed from beside them; only the room rules in ADR 011, no owners or
   quotas; no background bed; nothing fades. Don't add sounds, a bed or new
-  rules on your own: Wen chooses every sound by ear. The tables from before
+  rules on your own: Wen chooses every sound by ear. Wen explicitly requested
+  restoring Mateo's nearby guitar: that one NPC has local spatial audio,
+  respects Sound off, and yields to a nearby player guitar; it never creates
+  a contribution or database row. The tables from before
   ADR 010 stay untouched (`before-sound-removal` tag); `placed_sounds` rows
   are never deleted (removing sets `removed_at`).
 - **Toilets and showers are one at a time (ADR 013).** A red light and a

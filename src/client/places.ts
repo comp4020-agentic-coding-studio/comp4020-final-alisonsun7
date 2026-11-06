@@ -35,7 +35,7 @@ export interface PlaceKit {
   // each a walk there and back, in metres on the floor
   passerPaths: [number, number][][];
   // people who stay put (sitting, queuing, chatting), per mode; like
-  // passers-by they have no names and make no sound
+  // passers-by they have no names. Mateo's guitar is the sole sound exception.
   regulars?: Partial<Record<string, Regular[]>>;
   // where children stand passing a beach ball between them, if anywhere
   ballGame?: [number, number][];

@@ -1197,9 +1197,12 @@ const CHIPPY: Regular[] = [
 ];
 // a bench just west of the café's door, between two lamps
 const BUSKER_BENCH = -20.5;
+// Mateo is the one audible NPC, requested separately from people's sounds.
+// Both his figure and his spatial recording use this same position.
+export const BUSKER_SOUND = { soundId: "guitar", x: BUSKER_BENCH, y: 0.9, z: 1.8, hear: 18 };
 // on the seat, facing the boardwalk: the world draws sitters a little
 // towards you, so the bench is behind him, not through him
-const BUSKER: Regular = { x: BUSKER_BENCH, z: 1.8, pose: "guitar" };
+const BUSKER: Regular = { x: BUSKER_SOUND.x, z: BUSKER_SOUND.z, pose: "guitar" };
 
 const regularsOf = (...groups: [string, number[]][]): Regular[] =>
   groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose, alt]) => ({ x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose, alt })));
