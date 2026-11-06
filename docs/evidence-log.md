@@ -1996,3 +1996,21 @@ records the verification without including private row content.
 The previous compiled `dist` is retained in ignored promotion cache; the Git
 rollback tag remains `before-d-fidelity-2026-11-07`. The completed rebuild is
 marked `d-walkable-rebuild-2026-11-07`. No push, merge or deployment occurred.
+# 2026-11-07 — Asset-led D correction
+
+Prompt: Wen rejected the visual gap again and asked to use existing skills,
+texture libraries and generation. Preserved `before-d-art-assets-2026-11-07`
+at `e80f104`, with a separate build and scratch preview on port 18878.
+Read external Three.js materials/graphics guidance and verified APIs against
+installed r170. Used the Yughues/Nobiax branch pack's explicit CC0 readme;
+recorded original and derived SHA256 hashes. Generated a short-fur material;
+recorded it as original AI work under Wen's explicit instruction. Rejected
+the generated pine cutout and broad-leaf #27 after inspection. See ADR 021.
+
+First GPU review: 1672 × 941, Mac Chrome/Metal, 60.22 fps over a 2 s sample,
+no console/page errors. Source typecheck passed. Failed visual items: trunk
+occupies too much of the left view, porch plants hide the guitarist, rail
+looks like flat brown boxes. These require another source/review iteration.
+An initial scratch start failed for a missing README symlink; corrected the
+isolated build links. Sandbox localhost bind then required the normal local
+server escalation. Existing preview and persistent tables were untouched.

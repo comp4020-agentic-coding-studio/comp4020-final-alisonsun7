@@ -840,6 +840,47 @@
       "sourceSha1": "30402262824befdb156ec3b9e66932ce026b5a66",
       "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/44/Boat_by_a_wharf_1.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
       "processing": "mono, 26 s from 1 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "yughues-needle-branches-28",
+      "files": [
+        "public/assets/textures/coastal_pine_28/diffuse.png",
+        "public/assets/textures/coastal_pine_28/normal.png"
+      ],
+      "source": "Yughues / Nobiax, Branches Textures Pack 02, branch #28; original archive includes readme.txt with public-domain dedication",
+      "sourceUrl": "https://opengameart.org/content/branches-textures-pack-02",
+      "downloadUrl": "https://opengameart.org/sites/default/files/pack26-30_0.7z",
+      "archiveSha256": "71c2423c8cc7da31acbae491a0e2f4a59ead621bda3d0f0df17d4c4a214d0fad",
+      "usage": "PBR alpha-tested needle-bearing twigs on real 3D branches",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 Universal (public domain dedication)",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "processing": "Lossless native sips TGA-to-PNG conversion, original alpha retained. Diffuse is sRGB; tangent-space normal is linear data. Not a whole-tree billboard.",
+      "derivedFiles": [
+        {
+          "path": "public/assets/textures/coastal_pine_28/diffuse.png",
+          "sourceSHA256": "188a145afdc66369d6ef95ca1850f6b36d4510c56a79988af4663b20f1a67bcb",
+          "sha256": "999966a9ce51856e9b19c13617214e48f9798155361159410d5802d336a2d56e",
+          "bytes": 1236185
+        },
+        {
+          "path": "public/assets/textures/coastal_pine_28/normal.png",
+          "sourceSHA256": "e95c3c54323be68dc736af450300dfc33007d1427487be247687bd00e1bc4f2a",
+          "sha256": "d6f12cc68dd0b6d3befc11222a14fa5c689721e84857636f88d3778c4401d653",
+          "bytes": 760110
+        }
+      ]
+    },
+    {
+      "id": "original-generated-coastal-fur",
+      "path": "public/assets/textures/coastal_fur/diffuse.png",
+      "source": "Original OpenAI imagegen output generated for this project on 2026-11-07, at the user’s explicit request to use generated materials",
+      "usage": "Short cream fur base colour on original three-dimensional cat and dog heads",
+      "publicAllowed": true,
+      "rights": "Original AI-generated project material, user-authorized; not a third-party CC0 asset",
+      "sha256": "7b512d47408d253dce7ba98441c7497ad4c3d0c246866168e30d28a95bcb8e8a",
+      "processing": "Original generated PNG; no third-party image or character used. Generated as flat diffuse albedo; tiling is visually reviewed, not guaranteed by a source licence.",
+      "prompt": "Square seamless fine short cream and pale beige animal fur material; straight-on macro, uniform diffuse albedo, subtle coherent downward growth, no face, anatomy, text, watermark, baked hard light or shadows."
     }
   ],
   "notUsed": [
@@ -854,6 +895,10 @@
     {
       "source": "social media (Xiaohongshu, Instagram, Facebook)",
       "reason": "searched for layout facts only; no images used"
+    },
+    {
+      "source": "Generated transparent pine atlas candidate, 2026-11-07",
+      "reason": "Evaluated but not shipped: branch cutout edge colour and dense interior were less suitable than the verified CC0 #28 needle texture."
     }
   ]
 }

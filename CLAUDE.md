@@ -73,6 +73,9 @@ reuse its operation key on explicit retry. Observed removals outrank late ACKs.
   checked, needs ffmpeg); each is in `public/assets-manifest.json`. Never
   add an asset that isn't CC0 or public domain, or whose site refuses
   scripted downloads; never get around such a refusal (so not YouTube).
+  Wen explicitly authorized original generated materials on 2026-11-07.
+  Record their prompt and provenance as original AI-generated work, never
+  describe them as third-party CC0. External assets still follow this rule.
 - **Published images are processed derivatives only.** `public/scenes/`
   (Wen's photos, blurred, no metadata) is unused now but stays. The
   originals are gitignored and must never be committed: this repo is public.
