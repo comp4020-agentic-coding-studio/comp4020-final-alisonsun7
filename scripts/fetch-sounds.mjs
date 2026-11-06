@@ -7,6 +7,7 @@
 // public/assets-manifest.json with its author, licence and what was done.
 //
 //   node scripts/fetch-sounds.mjs        (needs ffmpeg on PATH)
+//   node scripts/fetch-sounds.mjs --only coastal-gulls,bicycle-bell
 //
 // Originals are kept in .cache/sounds/ (gitignored). Re-running skips
 // downloads that are already there and match.
@@ -42,7 +43,36 @@ const SOUNDS = [
   { id: "espresso", label: "Espresso machine", family: "anthrophony", kind: "loop", zones: ["counter", "tables"], file: "Espresso machine.ogg", from: 0, seconds: 26 },
   { id: "cafe-music", label: "Café music", family: "anthrophony", kind: "loop", zones: ["tables", "window", "counter"], file: "John Bartmann - Mellow Cafe Vibe.ogg", from: 0, seconds: 98 },
   { id: "guitar", label: "Someone playing guitar", family: "anthrophony", kind: "loop", zones: ["boardwalk", "beach", "pier"], file: "El Noi de la Mare (guitar).ogg", from: 0, seconds: 130 },
+  // More choices for people to leave; none is an automatic background bed.
+  { id: "coastal-gulls", label: "Seagulls", family: "biophony", kind: "loop", zones: ["beach", "pier"], file: "Gull 1.ogg", from: 0, seconds: 16 },
+  { id: "gentle-breeze", label: "Breeze and birds", family: "geophony", kind: "loop", zones: ["forest", "forest-edge", "creek"], file: "Gentle breeze and birds singing.ogg", from: 2, seconds: 28 },
+  { id: "summer-cicadas", label: "Summer cicadas", family: "biophony", kind: "loop", zones: ["forest", "forest-edge"], file: "HyalessaFuscata KR.flac", from: 15, seconds: 36 },
+  // Keep a quiet interval in the recording itself: the spatial player loops
+  // assets, so a brief bell must not ring repeatedly without a pause.
+  { id: "bicycle-bell", label: "Bicycle bell", family: "anthrophony", kind: "now-and-then", zones: ["boardwalk", "forest-edge"], file: "Rotating-bicycle-bell.wav", from: 0, seconds: 1.3, pause: 14.7 },
+  { id: "cafe-dishes", label: "Cups and dishes", family: "anthrophony", kind: "loop", zones: ["counter", "tables", "window"], file: "Kitchen tidy up.ogg", from: 4, seconds: 32 },
+  { id: "harbour-boat", label: "Boat by the pier", family: "anthrophony", kind: "loop", zones: ["pier", "beach"], file: "Boat by a wharf 1.ogg", from: 1, seconds: 26 },
 ];
+
+// A targeted run must neither re-encode existing recordings nor remove their
+// provenance. Validate arguments before touching files or contacting Commons.
+const args = process.argv.slice(2);
+let only;
+if (args.length) {
+  if (args[0] === "--help" && args.length === 1) {
+    console.log("Usage: node scripts/fetch-sounds.mjs [--only id,id,...]");
+    process.exit(0);
+  }
+  const value = args[0] === "--only" && args.length === 2 ? args[1]
+    : args.length === 1 && args[0].startsWith("--only=") ? args[0].slice(7) : undefined;
+  if (!value) throw new Error("Usage: node scripts/fetch-sounds.mjs [--only id,id,...]");
+  only = new Set(value.split(",").map((id) => id.trim()).filter(Boolean));
+  if (!only.size) throw new Error("--only needs at least one sound id");
+  for (const id of only) {
+    if (!SOUNDS.some((s) => s.id === id)) throw new Error(`Unknown sound id: ${id}`);
+  }
+}
+const selected = only ? SOUNDS.filter((s) => only.has(s.id)) : SOUNDS;
 
 const XFADE = 2; // seconds of tail crossfaded into the head of a loop
 const LOUDNESS = -20; // integrated LUFS every sound is brought to
@@ -62,7 +92,7 @@ async function info(titles) {
     iiextmetadatafilter: "LicenseShortName|LicenseUrl|Artist",
   };
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url, { headers: { "User-Agent": UA } });
+  const res = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`Commons API: ${res.status}`);
   const pages = Object.values((await res.json()).query.pages);
   return new Map(pages.map((p) => [p.title.replace(/^File:/, ""), p]));
@@ -70,7 +100,7 @@ async function info(titles) {
 
 async function download(url, file, sum) {
   if (existsSync(file) && sha1(readFileSync(file)) === sum) return;
-  const res = await fetch(url, { headers: { "User-Agent": UA } });
+  const res = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60_000) });
   if (!res.ok) throw new Error(`${url}: ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
   if (sha1(buf) !== sum) throw new Error(`${url}: checksum mismatch`);
@@ -86,7 +116,7 @@ function ffmpeg(args) {
 function cutFilter(s) {
   const pick = `[0:a]aformat=channel_layouts=mono,atrim=${s.from}:${s.from + s.seconds + (s.kind === "loop" ? XFADE : 0)},asetpts=PTS-STARTPTS`;
   if (s.kind !== "loop") {
-    return `${pick},afade=t=in:d=0.02,afade=t=out:st=${s.seconds - 0.4}:d=0.4`;
+    return `${pick},afade=t=in:d=0.02,afade=t=out:st=${s.seconds - 0.4}:d=0.4${s.pause ? `,apad=pad_dur=${s.pause}` : ""}`;
   }
   const L = s.seconds;
   return [
@@ -111,14 +141,14 @@ mkdirSync(OUT, { recursive: true });
 mkdirSync(CACHE, { recursive: true });
 
 const meta = new Map();
-const files = [...new Set(SOUNDS.map((s) => s.file))];
+const files = [...new Set(selected.map((s) => s.file))];
 for (let i = 0; i < files.length; i += 10) {
   for (const [k, v] of await info(files.slice(i, i + 10))) meta.set(k, v);
   await sleep(1500);
 }
 
 const entries = [];
-for (const s of SOUNDS) {
+for (const s of selected) {
   const page = meta.get(s.file);
   const ii = page?.imageinfo?.[0];
   if (!ii) throw new Error(`${s.file}: not on Commons`);
@@ -142,16 +172,20 @@ for (const s of SOUNDS) {
     usage: "sound",
     publicAllowed: true,
     rights: licence.toLowerCase() === "cc0" ? "CC0 1.0 (public domain dedication)" : "Public domain (as stated on its Commons page)",
+    sourceSha1: ii.sha1,
+    sourceUrl: ii.url,
+    ...(m.LicenseUrl?.value ? { licenseUrl: m.LicenseUrl.value } : {}),
     processing: s.kind === "loop"
       ? `mono, ${s.seconds} s from ${s.from} s, last ${XFADE} s crossfaded into the start for a seamless loop, loudness ${LOUDNESS} LUFS, MP3 96 kbps, metadata removed`
-      : `mono, ${s.seconds} s clip from ${s.from} s with short fades, loudness ${LOUDNESS} LUFS, MP3 96 kbps, metadata removed`,
+      : `mono, ${s.seconds} s clip from ${s.from} s with short fades${s.pause ? ` and ${s.pause} s quiet interval` : ""}, loudness ${LOUDNESS} LUFS, MP3 96 kbps, metadata removed`,
   });
   console.log(`${s.kind.padEnd(12)} ${s.id.padEnd(15)} ${licence}`);
 }
 
 const manifestPath = "public/assets-manifest.json";
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-manifest.assets = [...manifest.assets.filter((a) => !a.id.startsWith("commons-")), ...entries];
+const replaced = new Set(entries.map((a) => a.id));
+manifest.assets = [...manifest.assets.filter((a) => !replaced.has(a.id)), ...entries];
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 writeFileSync(join(OUT, "sounds.json"), `${JSON.stringify(SOUNDS.map(({ file, from, ...s }) => s), null, 2)}\n`);
 console.log(`${entries.length} sounds`);

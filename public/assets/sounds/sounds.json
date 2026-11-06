@@ -108,5 +108,74 @@
       "pier"
     ],
     "seconds": 130
+  },
+  {
+    "id": "coastal-gulls",
+    "label": "Seagulls",
+    "family": "biophony",
+    "kind": "loop",
+    "zones": [
+      "beach",
+      "pier"
+    ],
+    "seconds": 16
+  },
+  {
+    "id": "gentle-breeze",
+    "label": "Breeze and birds",
+    "family": "geophony",
+    "kind": "loop",
+    "zones": [
+      "forest",
+      "forest-edge",
+      "creek"
+    ],
+    "seconds": 28
+  },
+  {
+    "id": "summer-cicadas",
+    "label": "Summer cicadas",
+    "family": "biophony",
+    "kind": "loop",
+    "zones": [
+      "forest",
+      "forest-edge"
+    ],
+    "seconds": 36
+  },
+  {
+    "id": "bicycle-bell",
+    "label": "Bicycle bell",
+    "family": "anthrophony",
+    "kind": "now-and-then",
+    "zones": [
+      "boardwalk",
+      "forest-edge"
+    ],
+    "seconds": 1.3,
+    "pause": 14.7
+  },
+  {
+    "id": "cafe-dishes",
+    "label": "Cups and dishes",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "counter",
+      "tables",
+      "window"
+    ],
+    "seconds": 32
+  },
+  {
+    "id": "harbour-boat",
+    "label": "Boat by the pier",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "pier",
+      "beach"
+    ],
+    "seconds": 26
   }
 ]

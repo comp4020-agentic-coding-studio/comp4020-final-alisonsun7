@@ -772,6 +772,74 @@
       "publicAllowed": true,
       "rights": "Public domain (as stated on its Commons page)",
       "processing": "mono, 130 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-coastal-gulls",
+      "path": "public/assets/sounds/coastal-gulls.mp3",
+      "source": "Wikimedia Commons, \"Gull 1.ogg\" by avphillips: https://commons.wikimedia.org/wiki/File:Gull_1.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "sourceSha1": "028e3f7d5efaf5e24dba4b52da0b406b5f40b755",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/43/Gull_1.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "processing": "mono, 16 s from 0 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-gentle-breeze",
+      "path": "public/assets/sounds/gentle-breeze.mp3",
+      "source": "Wikimedia Commons, \"Gentle breeze and birds singing.ogg\" by ezwa: https://commons.wikimedia.org/wiki/File:Gentle_breeze_and_birds_singing.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "sourceSha1": "8a88bdb353adb8361e04e65f4db5fec671352ccf",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Gentle_breeze_and_birds_singing.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "processing": "mono, 28 s from 2 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-summer-cicadas",
+      "path": "public/assets/sounds/summer-cicadas.mp3",
+      "source": "Wikimedia Commons, \"HyalessaFuscata KR.flac\" by 金旻秀 (kim.min.su): https://commons.wikimedia.org/wiki/File:HyalessaFuscata_KR.flac",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "sourceSha1": "7e1cd406834c7dd876b0474408416da13358b2de",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/HyalessaFuscata_KR.flac?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "processing": "mono, 36 s from 15 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-bicycle-bell",
+      "path": "public/assets/sounds/bicycle-bell.mp3",
+      "source": "Wikimedia Commons, \"Rotating-bicycle-bell.wav\" by AntumDeluge: https://commons.wikimedia.org/wiki/File:Rotating-bicycle-bell.wav",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "sourceSha1": "bdcaa14c23d02245cfda2ba5cbf182a0e6fe9446",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Rotating-bicycle-bell.wav?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "processing": "mono, 1.3 s clip from 0 s with short fades and 14.7 s quiet interval, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-cafe-dishes",
+      "path": "public/assets/sounds/cafe-dishes.mp3",
+      "source": "Wikimedia Commons, \"Kitchen tidy up.ogg\" by starlite: https://commons.wikimedia.org/wiki/File:Kitchen_tidy_up.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "sourceSha1": "a37fc6aa49a1d1ec5be6f1b8c8df1f1345da44d2",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Kitchen_tidy_up.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "processing": "mono, 32 s from 4 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-harbour-boat",
+      "path": "public/assets/sounds/harbour-boat.mp3",
+      "source": "Wikimedia Commons, \"Boat by a wharf 1.ogg\" by ezwa: https://commons.wikimedia.org/wiki/File:Boat_by_a_wharf_1.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "sourceSha1": "30402262824befdb156ec3b9e66932ce026b5a66",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/44/Boat_by_a_wharf_1.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "processing": "mono, 26 s from 1 s, last 2 s crossfaded into the start for a seamless loop, loudness -20 LUFS, MP3 96 kbps, metadata removed"
     }
   ],
   "notUsed": [

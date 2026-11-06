@@ -35,6 +35,12 @@ export const SOUNDS: SoundKind[] = [
   { id: "espresso", label: "Espresso machine", family: "anthrophony", zones: ["counter", "tables"] },
   { id: "cafe-music", label: "Café music", family: "anthrophony", zones: ["tables", "window", "counter"] },
   { id: "guitar", label: "Someone playing guitar", family: "anthrophony", zones: ["boardwalk", "beach", "pier"] },
+  { id: "coastal-gulls", label: "Seagulls", family: "biophony", zones: ["beach", "pier"] },
+  { id: "gentle-breeze", label: "Breeze and birds", family: "geophony", zones: ["forest", "forest-edge", "creek"] },
+  { id: "summer-cicadas", label: "Summer cicadas", family: "biophony", zones: ["forest", "forest-edge"] },
+  { id: "bicycle-bell", label: "Bicycle bell", family: "anthrophony", zones: ["boardwalk", "forest-edge"] },
+  { id: "cafe-dishes", label: "Cups and dishes", family: "anthrophony", zones: ["counter", "tables", "window"] },
+  { id: "harbour-boat", label: "Boat by the pier", family: "anthrophony", zones: ["pier", "beach"] },
 ];
 
 export const findSound = (id: unknown): SoundKind | undefined => SOUNDS.find((s) => s.id === id);
