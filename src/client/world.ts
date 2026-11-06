@@ -1394,25 +1394,25 @@ export class WorldView {
     const w = this.host.clientWidth;
     const x = onScreen ? ((v.x + 1) / 2) * w : w / 2;
     const y = onScreen ? ((1 - v.y) / 2) * this.host.clientHeight : 0;
-    this.keepInView(roo.bubble, x, y);
+    this.keepInView(roo.bubble, x, y, 110);
   }
 
   // Put a bubble's tail at (x, y) on the view, but never let any of it fall
   // outside: near the top, the whole bubble moves down rather than being cut.
-  private keepInView(el: HTMLElement, x: number, y: number): void {
+  private keepInView(el: HTMLElement, x: number, y: number, bottomReserve = 10): void {
     const w = this.host.clientWidth;
     const h = this.host.clientHeight;
     const bw = el.offsetWidth;
     const bh = el.offsetHeight;
     const margin = 10;
     const left = Math.max(margin, Math.min(w - bw - margin, x - bw / 2));
-    const top = Math.max(margin, Math.min(h - bh - margin, y - bh - 8));
+    const top = Math.max(margin, Math.min(h - bh - bottomReserve, y - bh - 8));
     el.style.transform = `translate(${left}px, ${top}px)`;
     // the tail only points at the speaker when the bubble is where it should be
     el.classList.toggle("moved", Math.abs(left - (x - bw / 2)) > 1 || Math.abs(top - (y - bh - 8)) > 1);
   }
 
-  // Shadows are drawn for about 40 m around the sun's target; in a place
+  // Shadows are drawn for about 26 m around the sun's target; in a place
   // bigger than that, the target follows you (in 8 m steps, so the shadows
   // don't shimmer as you walk).
   private followSun(): void {
@@ -1428,8 +1428,8 @@ export class WorldView {
   }
 
   // A slow device gets a lighter picture rather than a slideshow: if frames
-  // run under 24 a second, first drop to one pixel per CSS pixel, then turn
-  // off shadows and draw at half resolution. Never raised again, so it can't
+  // run under 24 a second, first drop effects and use one pixel per CSS
+  // pixel, then turn off shadows and draw at half resolution. Never raised again, so it can't
   // flicker between the two.
   private adaptQuality(now: number): void {
     const p = this.perf;
@@ -1443,10 +1443,7 @@ export class WorldView {
     const fps = (p.frames * 1000) / elapsed;
     p.frames = 0;
     p.since = now;
-    if (fps >= 24) {
-      p.lowered = 2;
-      return;
-    }
+    if (fps >= 24) return;
     p.lowered++;
     this.picture.setQuality(false);
     if (p.lowered === 1) this.renderer.setPixelRatio(1);

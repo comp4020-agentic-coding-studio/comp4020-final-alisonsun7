@@ -5,12 +5,17 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { SSAOPass } from "three/addons/postprocessing/SSAOPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 
 export class CoastalRenderer {
-  private composer: EffectComposer;
-  private contacts: SSAOPass;
+  private composer?: EffectComposer;
+  private contacts?: SSAOPass;
+  private edges?: SMAAPass;
 
-  constructor(private renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
+  constructor(private renderer: THREE.WebGLRenderer, private scene: THREE.Scene, private camera: THREE.PerspectiveCamera) {
+    // WebGL2 alone does not guarantee renderable floating-point targets.
+    // Retain the ordinary ACES-lit renderer on those devices.
+    if (!renderer.extensions.has("EXT_color_buffer_float") && !renderer.extensions.has("EXT_color_buffer_half_float")) return;
     this.composer = new EffectComposer(renderer);
     this.composer.addPass(new RenderPass(scene, camera));
     this.contacts = new SSAOPass(scene, camera, 1, 1, 12);
@@ -21,21 +26,26 @@ export class CoastalRenderer {
     // OutputPass applies the renderer's exposure, ACES and sRGB conversion
     // once, after the linear-light contact shading.
     this.composer.addPass(new OutputPass());
+    this.edges = new SMAAPass(1, 1);
+    this.composer.addPass(this.edges);
   }
 
   resize(width: number, height: number): void {
+    if (!this.composer) return;
     const ratio = this.renderer.getPixelRatio();
     this.composer.setPixelRatio(ratio);
     this.composer.setSize(width, height);
     // The broad contact shadows need fewer pixels than the final picture.
-    this.contacts.setSize(Math.max(1, Math.round(width * ratio * 0.6)), Math.max(1, Math.round(height * ratio * 0.6)));
+    this.contacts!.setSize(Math.max(1, Math.round(width * ratio * 0.6)), Math.max(1, Math.round(height * ratio * 0.6)));
   }
 
   setQuality(full: boolean): void {
-    this.contacts.enabled = full;
+    if (this.contacts) this.contacts.enabled = full;
+    if (this.edges) this.edges.enabled = full;
   }
 
   render(): void {
-    this.composer.render();
+    if (this.composer) this.composer.render();
+    else this.renderer.render(this.scene, this.camera);
   }
 }

@@ -54,6 +54,12 @@ try {
   check(result.transmission===0,'small lamps do not trigger a full-scene transmission render');
   check(result.people,'all animal visitors use actual 3D bodies and head anchors');
   check(result.silent,'a visual review never starts audio automatically');
+  const waterBlocked=await page.evaluate(async()=>{
+    const {canStand}=await import('/client/world-build.js');
+    return [[-20,15],[-40,28],[-10,18],[30,30.65],[31,30.65],[32,30.65]]
+      .every(([x,z])=>!canStand(window.artWorld.built,x,z));
+  });
+  check(waterBlocked,'the curved western and eastern waterline both exclude submerged ground');
   if(out)await page.screenshot({path:out+'/aligned-sounds.png'});
   await page.setViewportSize({width:375,height:812});
   await page.waitForTimeout(250);

@@ -82,6 +82,26 @@ toolsToggle.onclick = () => {
   world.setInputPaused(true);
 };
 $("world-tools-close").onclick = () => closeWorldTools();
+toolsDrawer.addEventListener("keydown", (event) => {
+  if (event.key !== "Tab" || !toolsDrawer.open) return;
+  // Chrome can put focus on BODY between the last dialog link and its
+  // browser toolbar. Wrap at the actual visible endpoints before that step.
+  const focusable = [...toolsDrawer.querySelectorAll<HTMLElement>("a[href], button, input, select, textarea, summary, [tabindex]")]
+    .filter((element) => element.tabIndex >= 0 && !element.matches(":disabled")
+      && !element.closest("[hidden], [inert]") && element.getClientRects().length > 0
+      && getComputedStyle(element).visibility !== "hidden");
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (!first) { event.preventDefault(); return; }
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last!.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+toolsDrawer.addEventListener("cancel", () => { toolsToggle.setAttribute("aria-expanded", "false"); });
 toolsDrawer.addEventListener("close", () => {
   if (toolsDrawer.open) return;
   toolsDrawer.hidden = true;
@@ -98,6 +118,7 @@ toolsDrawer.addEventListener("close", () => {
 function closeWorldTools(returnToWorld = false): void {
   if (!toolsDrawer.open) return;
   toolsReturnToWorld = returnToWorld;
+  toolsToggle.setAttribute("aria-expanded", "false");
   toolsDrawer.close();
 }
 

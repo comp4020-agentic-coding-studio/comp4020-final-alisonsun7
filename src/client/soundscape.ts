@@ -15,6 +15,9 @@ import { BUSKER_SOUND } from "./seaside.js";
 
 const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const LIGHT_Y = 1.15;
+// The cue rests above the actual ground; the spatial audio stays at its
+// established height independently of this small visual light.
+const CUE_Y = 0.12;
 // labels show within this distance; the nearest within REACH can be removed
 const LABEL_NEAR = 9;
 
@@ -73,9 +76,9 @@ function lightSprite(colour: string, size: number, opacity: number, additive: bo
   return s;
 }
 
-// A thin column of light from the ground up through the sound.
-const BEAM = new THREE.CylinderGeometry(0.012, 0.012, 1.35, 8, 1, true);
-BEAM.translate(0, 0.675, 0);
+// A short glint, not a tall marker through the coastal view.
+const BEAM = new THREE.CylinderGeometry(0.008, 0.008, 0.14, 8, 1, true);
+BEAM.translate(0, 0.07, 0);
 function beam(colour: string): THREE.Mesh {
   const mat = new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, toneMapped: false });
   return new THREE.Mesh(BEAM, mat);
@@ -161,12 +164,12 @@ export class Soundscape {
     const colour = FAMILIES[kind.family].colour;
     const glowS = lightSprite(colour, 0.8, 0.32, true);
     const core = lightSprite(colour, 0.24, 1, false);
+    const floorY = this.world.surfaceHeight(sound.x, sound.z);
     for (const s of [glowS, core]) {
-      s.position.set(sound.x, LIGHT_Y, sound.z);
+      s.position.set(sound.x, floorY + CUE_Y, sound.z);
       s.renderOrder = 2;
       this.world.root.add(s);
     }
-    const floorY = this.world.surfaceHeight(sound.x, sound.z);
     const column = beam(colour);
     column.position.set(sound.x, floorY, sound.z);
     column.renderOrder = 2;
