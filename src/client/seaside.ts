@@ -960,6 +960,7 @@ function build(): Built {
     b.solids.push({ x0: x - 0.12, x1: x + 0.12, z0: 2.13, z1: 2.37 });
     if (Math.abs(x - 12) < 7 || Math.abs(x + 14) < 7) {
       const l = new THREE.PointLight(0xffcf8a, 0, 16, 1.6);
+      l.userData.outdoorLamp = true;
       l.position.set(x, 3.9, 2.25);
       b.root.add(l);
       lamps.push(l);
@@ -1367,11 +1368,12 @@ export const seasideKit: PlaceKit = {
     ],
   ],
   rainAt(r) {
-    for (;;) {
+    for (let attempt = 0; attempt < 32; attempt++) {
       const x = -48 + r() * 96;
       const z = -134 + r() * 170;
-      if (!inCafe(x, z)) return [x, z];
+      if (!inCafe(x, z) && !inHut(x, z)) return [x, z];
     }
+    return [0, 20]; // uncovered sand; also bounds an adversarial random source
   },
   rainCount: 7000,
   sunTarget: [0, 0, -10],

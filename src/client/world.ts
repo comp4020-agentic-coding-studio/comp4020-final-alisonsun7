@@ -7,7 +7,8 @@ import type { Scene } from "../shared/catalog.js";
 import type { Avatar, Person } from "../shared/protocol.js";
 import { figureAspect, figureSvg, KID_ASPECT, kidAspect, kidSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
 import { beachBallTexture } from "./huts.js";
-import { BEFORE_DAWN, lightFor, mixLight, type Light } from "./sky.js";
+import { environmentLight, mixLight, type Light } from "./sky.js";
+import { minuteAt, timePhase, type Environment } from "../shared/environment.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import type { PlaceKit, Room } from "./places.js";
 import { seasideKit } from "./seaside.js";
@@ -202,13 +203,24 @@ function figureSprite(key: string, svg: string, umbrella: boolean, tint: number)
 }
 
 const SKY_VERT = `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
-const SKY_FRAG = `uniform vec3 top; uniform vec3 horizon; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float glow;
+const SKY_FRAG = `uniform vec3 top; uniform vec3 horizon; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float glow; uniform float stars; uniform float cloudCover;
 varying vec3 vDir;
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 void main(){
-  float h = vDir.y;
+  vec3 direction = normalize(vDir);
+  float h = direction.y;
   vec3 c = h > 0.0 ? mix(horizon, top, pow(min(h * 1.6, 1.0), 0.7)) : mix(horizon, bottom, min(-h * 4.0, 1.0));
-  float s = max(dot(normalize(vDir), normalize(sunDir)), 0.0);
+  float s = max(dot(direction, normalize(sunDir)), 0.0);
   c += sunColor * glow * (pow(s, 8.0) * 0.45 + pow(s, 600.0) * 1.6);
+  float clouds = sin(direction.x * 17.0 + direction.z * 11.0) * sin(direction.z * 13.0 - direction.y * 8.0);
+  c = mix(c, horizon * 0.92, cloudCover * smoothstep(-0.5, 0.65, clouds) * smoothstep(0.0, 0.4, h) * 0.35);
+  // A fixed celestial sky: no textures, extra draw calls or flickering.
+  vec2 starUV = vec2(atan(direction.z, direction.x), asin(clamp(h, -1.0, 1.0))) * vec2(96.0, 76.0);
+  vec2 cell = floor(starUV);
+  float star = step(0.986, hash(cell)) * (1.0 - smoothstep(0.025, 0.13, length(fract(starUV) - 0.5)));
+  float moon = smoothstep(0.99955, 0.99972, dot(direction, normalize(vec3(0.38, 0.62, -0.69))));
+  c += vec3(0.74, 0.84, 1.0) * stars * smoothstep(0.05, 0.25, h) * star * 1.8;
+  c += vec3(0.84, 0.9, 1.0) * stars * moon * 1.4;
   gl_FragColor = vec4(c, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -244,7 +256,11 @@ export class WorldView {
   private zone: string;
   private last = performance.now();
   private reportedAt = 0;
-  private sunrise: { from: number; ms: number } | null = null;
+  private environment: { value: Environment; serverMs: number; receivedAt: number } | null = null;
+  private lightTransition: { from: Light; startedAt: number } | null = null;
+  private lightAppliedAt = 0;
+  private qualityShadows = true;
+  private skyIntensity = 1;
   // with a photographed sky lighting the models, the drawn fill light is less
   private hemiScale = 1;
   // frames counted to decide whether this device needs a lighter picture
@@ -318,6 +334,8 @@ export class WorldView {
           sunDir: { value: new THREE.Vector3() },
           sunColor: { value: new THREE.Color() },
           glow: { value: 0 },
+          stars: { value: 0 },
+          cloudCover: { value: 0 },
         },
       }),
     );
@@ -340,16 +358,12 @@ export class WorldView {
     this.scene3.add(this.sun, this.sun.target, this.hemi);
     this.scene3.fog = new THREE.Fog(0xffffff, 20, 120);
 
-    const base = lightFor(mode);
-    const sunDir = this.kit.sunDirs?.[mode];
-    this.light = { ...base, ...(sunDir ? { sunDir } : {}), ...this.kit.light?.[mode] };
-    if (mode === "morning" && !reduced()) this.sunrise = { from: performance.now(), ms: 3800 };
-    this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
+    this.light = environmentLight(840, "clear");
+    this.applyLight(this.light);
 
     this.buildPassers();
     this.buildRegulars();
     this.buildGame();
-    if (mode === "rainy-dusk") this.buildRain();
 
     this.zone = opts.startZone;
     this.placeAt(opts.startZone);
@@ -386,6 +400,24 @@ export class WorldView {
 
   setLookMode(mode: LookMode): void {
     this.lookMode = mode;
+  }
+
+  // Room time is authoritative; elapsed time uses the monotonic clock so a
+  // changed computer clock cannot jump the sun or rewind a shared update.
+  setEnvironment(environment: Environment, serverNow: string): void {
+    const current = this.environment;
+    if (current && environment.revision < current.value.revision) return;
+    const serverMs = Date.parse(serverNow);
+    if (!Number.isFinite(serverMs)) return;
+    const now = performance.now();
+    const sameRevision = current?.value.revision === environment.revision;
+    const sampledNow = sameRevision ? Math.max(serverMs, current.serverMs + Math.max(0, now - current.receivedAt)) : serverMs;
+    this.environment = { value: { ...environment }, serverMs: sampledNow, receivedAt: now };
+    // A fresh snapshot catches a suspended tab up without letting an old ACK
+    // rewind it or repeatedly restarting a transition already under way.
+    if (!sameRevision) this.lightTransition = reduced() ? null : { from: this.light, startedAt: now };
+    if (environment.weather === "rain" && !this.rain) this.buildRain();
+    this.updateEnvironment(now, true);
   }
 
   // A rejected move returns to the last position accepted by the server.
@@ -452,9 +484,11 @@ export class WorldView {
       const tex = await new RGBELoader().loadAsync(sky.url);
       tex.mapping = THREE.EquirectangularReflectionMapping;
       this.scene3.environment = tex;
-      this.scene3.environmentIntensity = sky.intensity * 0.55;
+      this.skyIntensity = sky.intensity;
       this.hemiScale = 0.72;
-      this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
+      // Loading may finish after someone changes time or weather. Never
+      // restore the original daytime exposure or illumination here.
+      this.applyLight(this.light);
     } catch {
       // the drawn sky stays
     }
@@ -479,6 +513,7 @@ export class WorldView {
   // ---- light -------------------------------------------------------------
 
   private applyLight(l: Light): void {
+    this.light = l;
     const u = this.sky.material.uniforms;
     (u.top.value as THREE.Color).setHex(l.skyTop);
     (u.horizon.value as THREE.Color).setHex(l.skyHorizon);
@@ -486,15 +521,18 @@ export class WorldView {
     (u.sunDir.value as THREE.Vector3).set(...l.sunDir).normalize();
     (u.sunColor.value as THREE.Color).setHex(l.sunColor);
     u.glow.value = l.sunGlow;
+    u.stars.value = l.stars;
+    u.cloudCover.value = l.cloudCover;
 
     const dir = new THREE.Vector3(...l.sunDir).normalize();
     this.sun.position.copy(this.sun.target.position).addScaledVector(dir, 90);
     this.sun.color.setHex(l.sunColor);
     this.sun.intensity = l.sunIntensity;
-    this.sun.castShadow = l.shadows;
+    this.sun.castShadow = l.shadows && this.qualityShadows;
     this.hemi.color.setHex(l.hemiSky);
     this.hemi.groundColor.setHex(l.hemiGround);
     this.hemi.intensity = l.hemiIntensity * this.hemiScale;
+    this.scene3.environmentIntensity = this.skyIntensity * l.environment;
     const fog = this.scene3.fog as THREE.Fog;
     fog.color.setHex(l.fog);
     fog.near = l.fogNear;
@@ -504,19 +542,43 @@ export class WorldView {
     b.ceilingStrips.emissive.setHex(l.ceiling);
     b.ceilingStrips.emissiveIntensity = 0.3 + l.ceilingIntensity;
     for (const c of b.ceilingLights) {
-      c.color.setHex(l.ceiling);
-      c.intensity = l.ceilingIntensity * 9;
+      const outdoors = c.userData.outdoorLamp === true;
+      c.color.setHex(outdoors ? l.lamp || 0xffffff : l.ceiling);
+      c.intensity = outdoors ? l.lampIntensity : l.ceilingIntensity * 9;
     }
     b.lamp.color.setHex(l.lamp || 0xffffff);
     b.lamp.intensity = l.lampIntensity;
     b.lampHead.emissive.setHex(l.lamp || 0x000000);
-    b.lampHead.emissiveIntensity = l.lampIntensity > 0 ? 2.5 : 0;
+    b.lampHead.emissiveIntensity = Math.min(2.5, l.lampIntensity / 8);
     b.windows.emissiveIntensity = l.windowGlow * 0.32;
-    b.paving.roughness = l.wet ? 0.22 : 0.8;
-    b.paving.metalness = l.wet ? 0.18 : 0;
-    b.paving.color.setHex(l.wet ? 0x8f8d90 : 0xffffff);
+    b.paving.roughness = 0.8 - l.wetness * 0.58;
+    b.paving.metalness = l.wetness * 0.18;
+    b.paving.color.setHex(0xffffff).lerp(new THREE.Color(0x8f8d90), l.wetness);
     this.renderer.toneMappingExposure = l.exposure;
     for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? [])]) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
+    for (const other of this.others.values()) (other.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
+    if (this.roo) (this.roo.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
+  }
+
+  private updateEnvironment(now: number, force = false): void {
+    const clock = this.environment;
+    if (!clock) return;
+    const minute = minuteAt(clock.value, clock.serverMs + Math.max(0, now - clock.receivedAt));
+    const reduce = reduced();
+    if (reduce) this.lightTransition = null;
+    if (force || this.lightTransition || now - this.lightAppliedAt >= 100) {
+      const target = environmentLight(minute, clock.value.weather);
+      const transition = this.lightTransition;
+      const progress = transition ? Math.min(1, (now - transition.startedAt) / 1200) : 1;
+      this.applyLight(transition ? mixLight(transition.from, target, progress * progress * (3 - 2 * progress)) : target);
+      if (progress >= 1) this.lightTransition = null;
+      this.lightAppliedAt = now;
+      this.host.dataset.weather = clock.value.weather;
+      this.host.dataset.timePhase = timePhase(minute);
+      this.host.dataset.worldMinute = minute.toFixed(1);
+    }
+    if (this.rain) this.rain.visible = clock.value.weather === "rain" && !reduce;
+    this.host.dataset.rain = clock.value.weather !== "rain" ? "off" : reduce ? "reduced-motion" : "visible";
   }
 
 
@@ -806,19 +868,38 @@ export class WorldView {
   }
 
   private buildRain(): void {
-    const full = this.kit.rainCount ?? 2400;
-    const n = reduced() ? Math.round(full / 4) : full;
+    // One reusable, camera-local buffer. The old full-world sheet spent
+    // most drops off screen and could draw through the private huts.
+    const budget = Math.min(innerWidth, innerHeight) < 700 ? 900 : 2400;
+    const n = Math.min(this.kit.rainCount ?? 2400, budget);
     const pos = new Float32Array(n * 6);
     for (let i = 0; i < n; i++) {
-      const [x, z] = this.kit.rainAt(Math.random);
-      const y = Math.random() * 14 - 2;
-      pos.set([x, y, z, x - 0.03, y + 0.45, z], i * 6);
+      this.resetRainDrop(pos, i * 6, true);
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    this.rain = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xaab8cc, transparent: true, opacity: 0.38 }));
+    this.rain = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xc1d1df, transparent: true, opacity: 0.3, depthWrite: false }));
     this.rain.frustumCulled = false;
+    this.rain.visible = !reduced();
     this.scene3.add(this.rain);
+  }
+
+  private resetRainDrop(pos: Float32Array, i: number, scatter: boolean): void {
+    let x = 0;
+    let z = 0;
+    let outdoors = false;
+    // Roof rejection is bounded even if a future indoor area is larger
+    // than this rain volume. A failed drop stays invisibly below ground.
+    for (let attempt = 0; attempt < 24; attempt++) {
+      x = this.x + (Math.random() - 0.5) * 52;
+      z = this.z + (Math.random() - 0.5) * 52;
+      if (!this.kit.isInside(x, z) && !this.kit.isInside(x - 0.03, z)) {
+        outdoors = true;
+        break;
+      }
+    }
+    const y = outdoors ? (scatter ? Math.random() * 16 - 2 : 14) : -100;
+    pos.set([x, y, z, x - 0.03, y + 0.45, z], i);
   }
 
   // ---- moving ------------------------------------------------------------
@@ -1037,12 +1118,7 @@ export class WorldView {
     const dt = Math.min(0.25, (now - this.last) / 1000);
     this.last = now;
 
-    if (this.sunrise) {
-      const t = Math.min(1, (now - this.sunrise.from) / this.sunrise.ms);
-      const eased = t * t * (3 - 2 * t);
-      this.applyLight(mixLight(BEFORE_DAWN, this.light, eased));
-      if (t >= 1) this.sunrise = null;
-    }
+    this.updateEnvironment(now);
 
     this.adaptQuality(now);
     const steps = Math.ceil(dt / 0.04);
@@ -1065,16 +1141,13 @@ export class WorldView {
     }
     this.moveOthers(dt);
     this.placeSitters();
-    if (this.rain && !reduced()) {
+    if (this.rain?.visible && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
       const a = pos.array as Float32Array;
       for (let i = 0; i < a.length; i += 6) {
         a[i + 1] -= 13 * dt;
         a[i + 4] -= 13 * dt;
-        if (a[i + 1] < -3.5) {
-          a[i + 1] += 15;
-          a[i + 4] += 15;
-        }
+        if (a[i + 1] < -3.5 || Math.abs(a[i] - this.x) > 28 || Math.abs(a[i + 2] - this.z) > 28) this.resetRainDrop(a, i, false);
       }
       pos.needsUpdate = true;
     }
@@ -1085,6 +1158,10 @@ export class WorldView {
     if (now - this.reportedAt > 160) {
       this.reportedAt = now;
       this.host.dataset.at = `${this.x.toFixed(1)},${this.z.toFixed(1)}`;
+      this.host.dataset.environmentRevision = String(this.environment?.value.revision ?? 0);
+      this.host.dataset.rainDrops = String(this.rain?.visible ? this.rain.geometry.getAttribute("position").count / 2 : 0);
+      this.host.dataset.lampIntensity = this.built.lamp.intensity.toFixed(2);
+      this.host.dataset.environmentIntensity = this.scene3.environmentIntensity.toFixed(3);
     }
     this.opts.onListen?.({
       x: this.x,
@@ -1441,7 +1518,7 @@ export class WorldView {
     else {
       this.renderer.setPixelRatio(0.5);
       this.renderer.shadowMap.enabled = false;
-      this.light = { ...this.light, shadows: false };
+      this.qualityShadows = false;
       this.sun.castShadow = false;
     }
     this.resize();

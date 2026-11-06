@@ -1,0 +1,778 @@
+{
+  "base": "http://localhost:18872",
+  "matrix": [
+    {
+      "weather": "clear",
+      "phase": "dawn",
+      "zone": "forest",
+      "at": "0.0,-130.0",
+      "environmentRevision": "1",
+      "rainDrops": "0",
+      "lampIntensity": "12.00",
+      "environmentIntensity": "0.160",
+      "timePhase": "dawn",
+      "worldMinute": "360.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 1.45,
+        "lamp": 12,
+        "hdr": 0.16,
+        "fogNear": 45,
+        "fogFar": 310,
+        "stars": 0.08,
+        "wetness": 0
+      },
+      "position": [
+        0,
+        -130,
+        3.141592653589793
+      ],
+      "sunDirectionLength": 90.00000000000001,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": true,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 120,
+        "calls": 1613,
+        "triangles": 20240800,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "clear",
+      "phase": "day",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "2",
+      "rainDrops": "0",
+      "lampIntensity": "0.00",
+      "environmentIntensity": "0.550",
+      "timePhase": "day",
+      "worldMinute": "840.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 2.3,
+        "lamp": 0,
+        "hdr": 0.55,
+        "fogNear": 75,
+        "fogFar": 440,
+        "stars": 0,
+        "wetness": 0
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": true,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 218,
+        "calls": 440,
+        "triangles": 19976966,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "clear",
+      "phase": "dusk",
+      "zone": "beach",
+      "at": "4.0,19.0",
+      "environmentRevision": "3",
+      "rainDrops": "0",
+      "lampIntensity": "16.00",
+      "environmentIntensity": "0.140",
+      "timePhase": "dusk",
+      "worldMinute": "1110.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 1.3,
+        "lamp": 16,
+        "hdr": 0.14,
+        "fogNear": 60,
+        "fogFar": 380,
+        "stars": 0.02,
+        "wetness": 0
+      },
+      "position": [
+        4,
+        19,
+        2.8415926535897933
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 295,
+        "calls": 99,
+        "triangles": 5179800,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "clear",
+      "phase": "night",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "4",
+      "rainDrops": "0",
+      "lampIntensity": "32.00",
+      "environmentIntensity": "0.035",
+      "timePhase": "night",
+      "worldMinute": "1320.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.2,
+        "lamp": 32,
+        "hdr": 0.035,
+        "fogNear": 45,
+        "fogFar": 310,
+        "stars": 1,
+        "wetness": 0
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 392,
+        "calls": 439,
+        "triangles": 19976964,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "cloudy",
+      "phase": "dawn",
+      "zone": "forest",
+      "at": "0.0,-130.0",
+      "environmentRevision": "5",
+      "rainDrops": "0",
+      "lampIntensity": "12.00",
+      "environmentIntensity": "0.101",
+      "timePhase": "dawn",
+      "worldMinute": "360.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.64148,
+        "lamp": 12,
+        "hdr": 0.10096000000000001,
+        "fogNear": 45,
+        "fogFar": 310,
+        "stars": 0.01440000000000001,
+        "wetness": 0
+      },
+      "position": [
+        0,
+        -130,
+        3.141592653589793
+      ],
+      "sunDirectionLength": 90.00000000000001,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 428,
+        "calls": 1613,
+        "triangles": 20240800,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "cloudy",
+      "phase": "day",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "6",
+      "rainDrops": "0",
+      "lampIntensity": "0.00",
+      "environmentIntensity": "0.347",
+      "timePhase": "day",
+      "worldMinute": "840.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 1.01752,
+        "lamp": 0,
+        "hdr": 0.3470500000000001,
+        "fogNear": 75,
+        "fogFar": 440,
+        "stars": 0,
+        "wetness": 0
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 526,
+        "calls": 439,
+        "triangles": 19976964,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "cloudy",
+      "phase": "dusk",
+      "zone": "beach",
+      "at": "4.0,19.0",
+      "environmentRevision": "7",
+      "rainDrops": "0",
+      "lampIntensity": "16.00",
+      "environmentIntensity": "0.088",
+      "timePhase": "dusk",
+      "worldMinute": "1110.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.5751200000000001,
+        "lamp": 16,
+        "hdr": 0.08834000000000002,
+        "fogNear": 60,
+        "fogFar": 380,
+        "stars": 0.0036000000000000025,
+        "wetness": 0
+      },
+      "position": [
+        4,
+        19,
+        2.8415926535897933
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 622,
+        "calls": 98,
+        "triangles": 5179798,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "cloudy",
+      "phase": "night",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "8",
+      "rainDrops": "0",
+      "lampIntensity": "32.00",
+      "environmentIntensity": "0.022",
+      "timePhase": "night",
+      "worldMinute": "1320.0",
+      "rain": {
+        "visible": false,
+        "count": 0,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.08848,
+        "lamp": 32,
+        "hdr": 0.022085000000000004,
+        "fogNear": 45,
+        "fogFar": 310,
+        "stars": 0.18000000000000005,
+        "wetness": 0
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 719,
+        "calls": 439,
+        "triangles": 19976964,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "rain",
+      "phase": "dawn",
+      "zone": "forest",
+      "at": "0.0,-130.0",
+      "environmentRevision": "9",
+      "rainDrops": "2400",
+      "lampIntensity": "12.00",
+      "environmentIntensity": "0.088",
+      "timePhase": "dawn",
+      "worldMinute": "360.0",
+      "rain": {
+        "visible": true,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.46399999999999997,
+        "lamp": 12,
+        "hdr": 0.08800000000000001,
+        "fogNear": 20,
+        "fogFar": 190,
+        "stars": 0,
+        "wetness": 1
+      },
+      "position": [
+        0,
+        -130,
+        3.141592653589793
+      ],
+      "sunDirectionLength": 90.00000000000001,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 816,
+        "calls": 1614,
+        "triangles": 20240800,
+        "points": 0,
+        "lines": 2400
+      }
+    },
+    {
+      "weather": "rain",
+      "phase": "day",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "10",
+      "rainDrops": "2400",
+      "lampIntensity": "8.00",
+      "environmentIntensity": "0.303",
+      "timePhase": "day",
+      "worldMinute": "840.0",
+      "rain": {
+        "visible": true,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.736,
+        "lamp": 8,
+        "hdr": 0.30250000000000005,
+        "fogNear": 20,
+        "fogFar": 190,
+        "stars": 0,
+        "wetness": 1
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 913,
+        "calls": 440,
+        "triangles": 19976964,
+        "points": 0,
+        "lines": 2400
+      }
+    },
+    {
+      "weather": "rain",
+      "phase": "dusk",
+      "zone": "beach",
+      "at": "4.0,19.0",
+      "environmentRevision": "11",
+      "rainDrops": "2400",
+      "lampIntensity": "16.00",
+      "environmentIntensity": "0.077",
+      "timePhase": "dusk",
+      "worldMinute": "1110.0",
+      "rain": {
+        "visible": true,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.41600000000000004,
+        "lamp": 16,
+        "hdr": 0.07700000000000001,
+        "fogNear": 20,
+        "fogFar": 190,
+        "stars": 0,
+        "wetness": 1
+      },
+      "position": [
+        4,
+        19,
+        2.8415926535897933
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 1009,
+        "calls": 100,
+        "triangles": 5179800,
+        "points": 0,
+        "lines": 2400
+      }
+    },
+    {
+      "weather": "rain",
+      "phase": "night",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "12",
+      "rainDrops": "2400",
+      "lampIntensity": "32.00",
+      "environmentIntensity": "0.019",
+      "timePhase": "night",
+      "worldMinute": "1320.0",
+      "rain": {
+        "visible": true,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.064,
+        "lamp": 32,
+        "hdr": 0.019250000000000003,
+        "fogNear": 20,
+        "fogFar": 190,
+        "stars": 0,
+        "wetness": 1
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 1106,
+        "calls": 439,
+        "triangles": 19976962,
+        "points": 0,
+        "lines": 2400
+      }
+    },
+    {
+      "weather": "mist",
+      "phase": "dawn",
+      "zone": "forest",
+      "at": "0.0,-130.0",
+      "environmentRevision": "13",
+      "rainDrops": "0",
+      "lampIntensity": "12.00",
+      "environmentIntensity": "0.104",
+      "timePhase": "dawn",
+      "worldMinute": "360.0",
+      "rain": {
+        "visible": false,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.841,
+        "lamp": 12,
+        "hdr": 0.10400000000000001,
+        "fogNear": 9,
+        "fogFar": 105,
+        "stars": 0,
+        "wetness": 0
+      },
+      "position": [
+        0,
+        -130,
+        3.141592653589793
+      ],
+      "sunDirectionLength": 90.00000000000001,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 1203,
+        "calls": 1613,
+        "triangles": 20240800,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "mist",
+      "phase": "day",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "14",
+      "rainDrops": "0",
+      "lampIntensity": "0.00",
+      "environmentIntensity": "0.358",
+      "timePhase": "day",
+      "worldMinute": "840.0",
+      "rain": {
+        "visible": false,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 1.3339999999999999,
+        "lamp": 0,
+        "hdr": 0.35750000000000004,
+        "fogNear": 9,
+        "fogFar": 105,
+        "stars": 0,
+        "wetness": 0
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 1300,
+        "calls": 438,
+        "triangles": 19976962,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "mist",
+      "phase": "dusk",
+      "zone": "beach",
+      "at": "4.0,19.0",
+      "environmentRevision": "15",
+      "rainDrops": "0",
+      "lampIntensity": "16.00",
+      "environmentIntensity": "0.091",
+      "timePhase": "dusk",
+      "worldMinute": "1110.0",
+      "rain": {
+        "visible": false,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.754,
+        "lamp": 16,
+        "hdr": 0.09100000000000001,
+        "fogNear": 9,
+        "fogFar": 105,
+        "stars": 0,
+        "wetness": 0
+      },
+      "position": [
+        4,
+        19,
+        2.8415926535897933
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 1397,
+        "calls": 98,
+        "triangles": 5179798,
+        "points": 0,
+        "lines": 0
+      }
+    },
+    {
+      "weather": "mist",
+      "phase": "night",
+      "zone": "boardwalk",
+      "at": "-3.0,1.6",
+      "environmentRevision": "16",
+      "rainDrops": "0",
+      "lampIntensity": "32.00",
+      "environmentIntensity": "0.023",
+      "timePhase": "night",
+      "worldMinute": "1320.0",
+      "rain": {
+        "visible": false,
+        "count": 2400,
+        "roofVertices": 0,
+        "invalidRain": 0
+      },
+      "light": {
+        "sun": 0.11599999999999999,
+        "lamp": 32,
+        "hdr": 0.022750000000000003,
+        "fogNear": 9,
+        "fogFar": 105,
+        "stars": 0,
+        "wetness": 0
+      },
+      "position": [
+        -3,
+        1.6,
+        0.95
+      ],
+      "sunDirectionLength": 89.99999999999999,
+      "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+      "shadowMapEnabled": true,
+      "shadowCast": false,
+      "pixelRatio": 1,
+      "render": {
+        "frame": 1493,
+        "calls": 438,
+        "triangles": 19976962,
+        "points": 0,
+        "lines": 0
+      }
+    }
+  ],
+  "shots": [
+    "/private/tmp/soac-environment-review/render/clear-dawn-forest.png",
+    "/private/tmp/soac-environment-review/render/clear-day-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/clear-dusk-beach.png",
+    "/private/tmp/soac-environment-review/render/clear-night-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/cloudy-dawn-forest.png",
+    "/private/tmp/soac-environment-review/render/cloudy-day-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/cloudy-dusk-beach.png",
+    "/private/tmp/soac-environment-review/render/cloudy-night-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/rain-dawn-forest.png",
+    "/private/tmp/soac-environment-review/render/rain-day-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/rain-dusk-beach.png",
+    "/private/tmp/soac-environment-review/render/rain-night-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/mist-dawn-forest.png",
+    "/private/tmp/soac-environment-review/render/mist-day-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/mist-dusk-beach.png",
+    "/private/tmp/soac-environment-review/render/mist-night-boardwalk.png",
+    "/private/tmp/soac-environment-review/render/cafe-rain-night.png",
+    "/private/tmp/soac-environment-review/render/cafe-clear-night.png",
+    "/private/tmp/soac-environment-review/render/sea-clear-night.png",
+    "/private/tmp/soac-environment-review/render/cafe-rain-day.png",
+    "/private/tmp/soac-environment-review/render/narrow-rain-day.png"
+  ],
+  "performance": {
+    "desktopRain": {
+      "frames": 181,
+      "elapsedMs": 3010.800000011921,
+      "fps": 60.11691244828064,
+      "medianFrameMs": 16.69999999999709,
+      "p95FrameMs": 16.799999999995634,
+      "render": {
+        "frame": 2155,
+        "calls": 438,
+        "triangles": 19976960,
+        "points": 0,
+        "lines": 2400
+      },
+      "pixelRatio": 1,
+      "shadows": true
+    },
+    "narrowRain": {
+      "frames": 181,
+      "elapsedMs": 3002.30000000596,
+      "fps": 60.28711321308353,
+      "medianFrameMs": 16.699999999999818,
+      "p95FrameMs": 16.700000000000728,
+      "render": {
+        "frame": 259,
+        "calls": 366,
+        "triangles": 19674294,
+        "points": 0,
+        "lines": 900
+      },
+      "pixelRatio": 1,
+      "shadows": true
+    }
+  },
+  "checks": {
+    "runtimeReducedMotionHidesRain": true,
+    "runtimeMotionRestoresRain": true,
+    "environmentCannotRestoreDisabledShadows": true,
+    "sunFollowsWithoutDirectionDrift": true,
+    "sameRevisionCatchUp": {
+      "caughtUp": 960.2,
+      "afterOldAck": 960.4,
+      "passed": true
+    }
+  },
+  "errors": []
+}

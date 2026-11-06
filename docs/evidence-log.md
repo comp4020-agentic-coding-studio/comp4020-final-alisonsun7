@@ -1466,3 +1466,39 @@ time. Removing only the revision guard in a separate copied source tree made
 the stale-edit test fail: a competing old choice was incorrectly accepted.
 The real repository was not mutated for that negative control. HTTP/SSE and
 browser integration results follow in the next entry.
+
+## 53. Light and weather throughout the coastal day (2026-11-06)
+
+Continuous light keyframes now drive sky, sun, fog, warm night lamps, figure
+tints, wet boardwalk materials and HDR intensity. A procedural moon and stars
+need no new assets. Rain reuses at most 2,400 line particles (900 at a narrow
+initial viewport); both endpoints avoid the cafe, shop and private hut roof
+footprints. Runtime reduced motion hides rain and skips transitions. An
+asynchronously loaded HDR respects the current environment, and later changes
+cannot undo adaptive shadow reductions. The second existing outdoor light is
+explicitly distinguished from cafe ceiling lights.
+
+The actual renderer passed all 16 weather/time combinations, with 21 captures,
+zero page errors, invalid rain vertices or rain vertices under roofs. Following
+sun-shadow targets stayed 90 m from the target after scene travel. A sampled
+5,760 minute/weather light profiles were finite and bounded; clear 14:00 still
+matches the original afternoon. Desktop rain measured 60.12 fps and the 390px
+viewport 60.29 fps over three seconds, with p95 frame intervals 16.8/16.7 ms.
+These are local desktop-GPU measurements, not physical-phone results. Reduced
+motion hide/restore, persistent quality reduction and clock resynchronization
+also passed. Metrics are in `docs/evidence/environment-rendering-2026-11-06.json`;
+viewed representative dawn, dusk and rainy-night images are in
+`docs/screenshots/18-*`. The first Chrome launch lacked sandbox permission;
+the same harness passed with scoped local browser/GPU access.
+
+The integrated HTTP/local suite also passed 64/64 in eight files, including
+cookie authorization, attributed environment SSE and stale-edit responses.
+Review caught a same-revision acknowledgement resetting a running clock after
+its SSE event had already arrived. HUD, panel and renderer now retain the
+greater of the incoming server sample and the projected monotonic sample;
+new revisions may deliberately reset time. Three real DOM/promise tests cover
+that eight-second delayed ACK, a fresh sample after sleep, and a later edit
+preceding an older success. Removing the panel guard in a copied source made
+the delayed-ACK assertion fail (14:08 became 14:00). A direct renderer fixture
+also verified a fresh same-revision sample catches up and an old one cannot
+rewind. Full typecheck and build passed. Browser interaction checks follow.
