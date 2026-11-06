@@ -16,12 +16,16 @@ const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").ma
 const LIGHT_Y = 1.15;
 // labels show within this distance; the nearest within REACH can be removed
 const LABEL_NEAR = 9;
+// Hover above planks and the footbridge, without needing a terrain query.
+const WAVE_Y = 0.55;
 
 interface Mark {
   sound: PlacedSound;
   glow: THREE.Sprite;
   core: THREE.Sprite;
   beam: THREE.Mesh;
+  anchor: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
+  wave: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   label: HTMLDivElement;
   phase: number;
 }
@@ -78,6 +82,22 @@ function beam(colour: string): THREE.Mesh {
   return new THREE.Mesh(BEAM, mat);
 }
 
+// Shared by every mark; only each mark's tint and opacity need a material.
+// A quiet ring locates the sound, and a spreading wave means it is playing.
+const RING = new THREE.RingGeometry(0.94, 1, 48);
+RING.rotateX(-Math.PI / 2);
+function ring(colour: string): THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial> {
+  return new THREE.Mesh(RING, new THREE.MeshBasicMaterial({
+    color: colour,
+    transparent: true,
+    opacity: 0,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    fog: false,
+    toneMapped: false,
+  }));
+}
+
 const shortDate = (iso: string): string => new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "short" });
 
 export interface SoundscapeOptions {
@@ -96,6 +116,7 @@ export class Soundscape {
   private listener: Listener | null = null;
   private choseAt = 0;
   private reachable: string | null = null;
+  private previewRequest = 0;
   on = false;
 
   constructor(
@@ -106,8 +127,10 @@ export class Soundscape {
     // a hidden tab goes quiet, and comes back as it was
     document.addEventListener("visibilitychange", () => {
       if (!this.ctx) return;
-      if (document.hidden) void this.ctx.suspend();
-      else if (this.on) void this.ctx.resume();
+      if (document.hidden) {
+        this.stopPreview();
+        void this.ctx.suspend();
+      } else if (this.on) void this.ctx.resume();
     });
   }
 
@@ -134,6 +157,13 @@ export class Soundscape {
     column.position.set(sound.x, 0, sound.z);
     column.renderOrder = 2;
     this.world.root.add(column);
+    const anchor = ring(colour);
+    const wave = ring(colour);
+    for (const r of [anchor, wave]) {
+      r.position.set(sound.x, WAVE_Y, sound.z);
+      r.renderOrder = 1;
+      this.world.root.add(r);
+    }
     const label = document.createElement("div");
     label.className = "sound-label";
     label.hidden = true;
@@ -151,7 +181,7 @@ export class Soundscape {
     remove.onclick = () => this.opts.onRemove(sound);
     label.append(name, by, remove);
     this.world.labels.append(label);
-    this.marks.set(sound.id, { sound, glow: glowS, core, beam: column, label, phase: Math.random() * Math.PI * 2 });
+    this.marks.set(sound.id, { sound, glow: glowS, core, beam: column, anchor, wave, label, phase: Math.random() * Math.PI * 2 });
     this.choseAt = 0;
     this.host.dataset.marks = String(this.marks.size);
   }
@@ -159,10 +189,12 @@ export class Soundscape {
   remove(id: string): void {
     const m = this.marks.get(id);
     if (!m) return;
-    this.world.root.remove(m.glow, m.core, m.beam);
+    this.world.root.remove(m.glow, m.core, m.beam, m.anchor, m.wave);
     (m.beam.material as THREE.Material).dispose();
     m.glow.material.dispose();
     m.core.material.dispose();
+    m.anchor.material.dispose();
+    m.wave.material.dispose();
     m.label.remove();
     this.marks.delete(id);
     this.stopVoice(id);
@@ -231,29 +263,44 @@ export class Soundscape {
   // A few seconds of a sound, only for you, without turning the place's sound
   // on.
   private previewing: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
-  async listen(soundId: string): Promise<void> {
-    const ctx = this.ensureContext();
-    void ctx.resume();
-    const buf = await this.load(soundId);
-    if (!buf) return;
+  // false means loading failed, or this request was superseded/cancelled.
+  async listen(soundId: string): Promise<boolean> {
     this.stopPreview();
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    const gain = ctx.createGain();
-    const t = ctx.currentTime;
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.8, t + 0.3);
-    gain.gain.setValueAtTime(0.8, t + 4.2);
-    gain.gain.linearRampToValueAtTime(0, t + 5);
-    src.connect(gain).connect(this.preview!);
-    src.start(t, Math.min(2, buf.duration / 4), 5);
-    this.previewing = { src, gain };
-    src.onended = () => {
-      if (this.previewing?.src === src) this.previewing = null;
-    };
+    const request = this.previewRequest;
+    try {
+      const ctx = this.ensureContext();
+      await ctx.resume();
+      if (request !== this.previewRequest || document.hidden) return false;
+      const buf = await this.load(soundId);
+      if (!buf || request !== this.previewRequest || document.hidden) return false;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const gain = ctx.createGain();
+      const t = ctx.currentTime;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.8, t + 0.3);
+      gain.gain.setValueAtTime(0.8, t + 4.2);
+      gain.gain.linearRampToValueAtTime(0, t + 5);
+      src.connect(gain).connect(this.preview!);
+      src.onended = () => {
+        src.disconnect();
+        gain.disconnect();
+        if (this.previewing?.src === src) this.previewing = null;
+      };
+      // Start at the beginning: short calls such as the bicycle bell are
+      // followed by intentional silence, which must not become the preview.
+      src.start(t, 0, Math.min(5, buf.duration));
+      this.previewing = { src, gain };
+      return true;
+    } catch {
+      // Audio may be unavailable or permission may have been denied.
+      return false;
+    }
   }
 
   stopPreview(): void {
+    // Also cancel a preview which is still waiting for resume/fetch/decode.
+    this.previewRequest++;
     if (!this.previewing || !this.ctx) return;
     const { src, gain } = this.previewing;
     gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.05);
@@ -387,10 +434,28 @@ export class Soundscape {
     let nearest: Mark | null = null;
     let nearestD = REACH;
     for (const m of this.marks.values()) {
-      // a slow breath, so a light reads as something alive
-      const s = still ? 1 : 1 + Math.sin(now / 700 + m.phase) * 0.12;
-      m.glow.scale.set(2.4 * s, 2.4 * s, 1);
       const d = Math.hypot(m.sound.x - l.x, m.sound.z - l.z);
+      const near = d <= REACH;
+      const playing = this.on && this.ctx?.state === "running" && !!this.voices.get(m.sound.id)?.src.buffer;
+      // Motion has one meaning: a sound this listener is actually hearing.
+      // Keep distant marks quiet and reduced-motion marks completely still.
+      const s = playing && !still ? 1 + Math.sin(now / 850 + m.phase) * 0.08 : 1;
+      const glowSize = near ? 2.8 : 2.4;
+      m.glow.scale.set(glowSize * s, glowSize * s, 1);
+      m.glow.material.opacity = playing ? 0.8 : 0.55;
+      const coreSize = near ? 0.76 : playing ? 0.66 : 0.6;
+      m.core.scale.set(coreSize, coreSize, 1);
+      (m.beam.material as THREE.MeshBasicMaterial).opacity = near ? 0.45 : playing ? 0.35 : 0.22;
+      m.anchor.visible = d <= HEAR;
+      m.anchor.scale.setScalar(near ? 0.8 : 0.65);
+      m.anchor.material.opacity = near ? 0.7 : playing ? 0.48 : 0.25;
+      m.wave.visible = playing && d <= LABEL_NEAR;
+      if (m.wave.visible) {
+        const phase = still ? 0.45 : (now / 2800 + m.phase / (Math.PI * 2)) % 1;
+        m.wave.scale.setScalar(0.85 + phase * 1.1);
+        m.wave.material.opacity = still ? 0.16 : Math.sin(phase * Math.PI) * 0.3;
+      }
+      m.label.classList.toggle("is-playing", playing);
       if (d < nearestD) {
         nearestD = d;
         nearest = m;

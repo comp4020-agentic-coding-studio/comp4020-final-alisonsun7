@@ -145,7 +145,7 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
     `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
   <a class="back" href="/explore"><span aria-hidden="true">←</span> Places</a>
-  <div class="where"><h1>${scene.title}</h1><span class="mode-name">${mode.label}</span></div>
+  <div class="where"><span class="world-caption">One place · made by all of us</span><h1>${scene.title}</h1><span class="mode-name">${mode.label}</span></div>
   <div class="people" id="people" aria-live="polite"></div>
   <button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false">Sound off</button>
 </header>

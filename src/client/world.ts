@@ -263,6 +263,7 @@ export class WorldView {
   private near: string | null = null;
   // zone changes are only reported once the page has its view
   private ready = false;
+  private inputPaused = false;
 
   constructor(
     private host: HTMLElement,
@@ -369,12 +370,29 @@ export class WorldView {
     }, 260);
   }
 
+  // Modal browsing keeps the world alive but releases movement already held.
+  setInputPaused(paused: boolean): void {
+    this.inputPaused = paused;
+    this.keys.clear();
+    this.stick = { x: 0, y: 0 };
+    this.target = null;
+  }
+
+  // Orient towards a contribution; walking and collision remain in your hands.
+  faceSound(x: number, z: number): void {
+    if (!Number.isFinite(x) || !Number.isFinite(z)) return;
+    this.target = null;
+    this.yaw = Math.atan2(-(x - this.x), -(z - this.z));
+    this.pitch = -0.04;
+    this.focusCanvas();
+  }
+
   currentZone(): string {
     return this.zone;
   }
 
   focusCanvas(): void {
-    this.renderer.domElement.focus();
+    this.renderer.domElement.focus({ preventScroll: true });
   }
 
   // What client/soundscape.ts draws with: the world to add its lights to,
@@ -809,6 +827,7 @@ export class WorldView {
     const typing = (e: KeyboardEvent): boolean => {
       const t = e.target as HTMLElement | null;
       if (!t || t === document.body || t === canvas) return false;
+      if (t.closest("dialog[open], [role=dialog]")) return true;
       if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement) return true;
       // tabs use the arrows to move between kinds of sound
       return t.getAttribute("role") === "tab" || e.key.startsWith("Arrow");
@@ -938,6 +957,7 @@ export class WorldView {
   }
 
   private move(dt: number): void {
+    if (this.inputPaused) return;
     const k = this.keys;
     const turn = (k.has("arrowleft") || k.has("q") ? 1 : 0) - (k.has("arrowright") || k.has("e") ? 1 : 0);
     this.yaw += turn * 1.9 * dt;
