@@ -1164,3 +1164,74 @@ Tests ran against an isolated scratch service and DB; its service is stopped.
 shared listening walks and optional nearby listening invitations. It states
 that none is implemented; replies are recommended first to keep collaboration
 about the sounds people leave. Committed separately as `8fe95d4`.
+
+## 44. A remembered choice of look direction (2026-11-06)
+
+**Prompt:** offer both mouse/trackpad directions as settings and explain them
+when entering the place.
+
+**Done:** the arrival card explains Follow pointer and Drag the scene with
+explicit down/left examples. Follow pointer remains the default. Both axes
+change together; the preference is saved in this browser and can be changed
+later in Controls. The native dialog pauses movement and returns canvas focus
+on Escape or Done. Walking, sensitivity and pitch limits are unchanged.
+
+**Checks:** actual Chrome `e2e/look-controls.mjs` passed 15 checks, including
+arrival selection, reload persistence, Controls changes, Escape focus and
+camera direction for up/down/left/right in both modes without moving position.
+A test-only intercepted world module that forced Follow pointer for both
+preferences failed at the first Drag the scene direction assertion, as
+expected; no product file was changed for this mutation.
+
+The first screenshot showed the added choices pushing Enter below the stage's
+edge. Arrival now uses the viewport, with scrolling on short screens. Desktop
+1280×840 and phone 375×812 show all arrival actions without scrolling; 375×600
+keeps the card in the viewport and scrolls to a usable action. Controls fits
+the phone without horizontal overflow. Screenshots were viewed; evidence is
+under `docs/screenshots/15-*`. Type checking and compilation passed.
+
+## 45. Occupied huts stay private, including under latency (2026-11-06)
+
+**Prompt:** include toilets and showers in testing: flushing and doors that
+cannot open after someone occupies the room.
+
+**Done:** the existing red light, door animation and collision now have a
+server admission check behind them. Exactly one concurrent arrival is accepted;
+a rejected move receives its previous valid position or a point outside the
+door. A new stream receives existing positions immediately. Temporary sounds
+remain outside permanent capacity/spacing/crowding rules, as ADR 013 intended.
+
+**Review findings and corrections:** a delayed 409 could roll back a more
+recently accepted move while its success response was still in flight. The
+client now sends only one position command at a time, aborts a stuck request
+after five seconds, and uses the current frame for its next report. A second
+review found that a reconnect within the expiry sweep's 200 ms window could
+revive an expired position inside someone else's occupied hut. Rejection now
+discards expired/contested fallback positions, broadcasts their removal and
+soft-ends their temporary sounds. No database rows are deleted.
+
+**Targeted checks:** four added HTTP tests cover simultaneous admission,
+rejected first arrival, current positions on new SSE, last-page disconnect,
+multiple tabs, real 20-second inactivity and temporary sounds at the full
+150 permanent-sound limit. The controlled-clock `spec/hut-admission.test.ts`
+jumps 20,001 ms without running the sweep, proving the reconnect boundary:
+without the correction it failed by returning inside; with it the original
+sound row has removal attribution, only the current occupant is broadcast,
+and the rejected person cannot leave another private sound.
+
+Two actual Chrome identities passed all 21 `e2e/huts.mjs` checks, covering
+both toilet and shower: red light/shut locked door, real W collision, server
+refusal and client correction, real audio-source start, exit clearing the
+sound, green light and entry by the waiting person. A real 409 held for 700 ms
+while Q changes the view produces no overlapping move; after release, an
+outside move is accepted again. Removing just the server admission check in
+a throwaway compiled copy made the concurrent-entry assertion fail. A separate
+restart fixture confirmed orphan temporary rows are soft removed on start.
+
+**Full HTTP/local regression:** 45/45 passed across four files on the final
+build and an isolated DB. The first full run found an old presence test using
+any frame with three people; initial-position delivery now made that predicate
+match earlier occupants. The test now checks this run's three participant IDs,
+every position and successful move acknowledgements, and the full rerun passed.
+No existing assertions were dropped. Browser-suite integration is in
+`package.json`; final combined runs and screenshots are recorded below.

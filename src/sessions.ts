@@ -11,7 +11,7 @@ import { randomBytes } from "node:crypto";
 import { db, inTransaction, nowIso } from "./db.js";
 import { log } from "./log.js";
 import { placeMode, roomKey } from "./shared/catalog.js";
-import type { Avatar, Person, PlacedSound, Snapshot } from "./shared/protocol.js";
+import type { Avatar, MoveResult, Person, PlacedSound, Snapshot } from "./shared/protocol.js";
 import { CROWD_MAX, CROWD_RADIUS, PLACE_MAX, REACH, SAME_APART, findSound } from "./shared/sounds.js";
 import { hutAt, isPrivate, privateSound } from "./shared/huts.js";
 import type { User } from "./users.js";
@@ -114,6 +114,9 @@ export function subscribe(res: ServerResponse, sceneId: string, mode: string, us
     log("person_arrived", { user: user.id, nickname: user.nickname, scene: sceneId, session: session.id });
     sendPresence(sceneId, mode);
   }
+  // A new page needs to see a taken hut immediately, even if its person
+  // hasn't moved since before this page connected.
+  sendMoves(key);
 }
 
 export function unsubscribe(res: ServerResponse, sceneId: string, mode: string, user: User | null): void {
@@ -187,7 +190,7 @@ setInterval(() => {
 const finite = (v: unknown, limit: number): v is number => typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= limit;
 const moveTimes = new Map<string, number>();
 
-export function move(user: User, sessionId: string, raw: unknown): { ok: boolean; code?: string } {
+export function move(user: User, sessionId: string, raw: unknown): MoveResult {
   const session = getSession(sessionId);
   if (!session) return { ok: false, code: "no_session" };
   const o = (raw ?? {}) as Record<string, unknown>;
@@ -199,11 +202,32 @@ export function move(user: User, sessionId: string, raw: unknown): { ok: boolean
   const key = roomKey(session.scene_id, session.mode);
   const here = standing.get(key) ?? new Map<string, Standing>();
   standing.set(key, here);
+  const hut = hutAt(o.x, o.z);
+  // Checking and accepting a move are synchronous in this single process:
+  // two arrivals cannot both claim the same private hut. The browser's
+  // locked doorway is helpful feedback, not the authority for admission.
+  if (hut && isPrivate(hut) && [...here].some(([id, s]) => id !== user.id && now - s.at <= 20_000 && hutAt(s.x, s.z)?.id === hut.id)) {
+    let previous = here.get(user.id);
+    // A reconnect may beat the expiry sweep after another person has
+    // entered. Never refresh or return to that expired/contested position.
+    if (previous && (now - previous.at > 20_000 || hutAt(previous.x, previous.z)?.id === hut.id)) {
+      here.delete(user.id);
+      moved.add(key);
+      endHutSounds(session.scene_id, session.mode, user, now - previous.at > 20_000 ? "went_quiet" : "hut_taken");
+      previous = undefined;
+    }
+    if (previous) previous.at = now;
+    return {
+      ok: false,
+      code: "hut_taken",
+      hutId: hut.id,
+      position: previous ? { x: previous.x, z: previous.z, yaw: previous.yaw } : { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 1, yaw: o.yaw },
+    };
+  }
   here.set(user.id, { person: ensureParticipant(session, user), x: o.x, z: o.z, yaw: o.yaw, at: now });
   moved.add(key);
   // out of the toilet or shower: whatever they left there for while they
   // were in goes (ADR 013)
-  const hut = hutAt(o.x, o.z);
   endHutSounds(session.scene_id, session.mode, user, "came_out", hut?.id);
   return { ok: true };
 }
@@ -307,11 +331,14 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): { ok: b
 
   const result = inTransaction((): { ok: boolean; code?: string; sound?: PlacedSound } => {
     const live = liveSounds(session.id);
-    if (live.length >= PLACE_MAX) return { ok: false, code: "place_full" };
     if (hut) {
       if (live.some((p) => p.byId === me.person.id && p.whileIn)) return { ok: false, code: "already" };
     } else {
-      const near = live.filter((p) => Math.hypot(p.x - me.x, p.z - me.z) <= CROWD_RADIUS);
+      // Sounds tied to a stay cannot fill the enduring soundscape or use
+      // up a neighbour's room: they end as soon as their person leaves.
+      const kept = live.filter((p) => !p.whileIn);
+      if (kept.length >= PLACE_MAX) return { ok: false, code: "place_full" };
+      const near = kept.filter((p) => Math.hypot(p.x - me.x, p.z - me.z) <= CROWD_RADIUS);
       if (near.some((p) => p.soundId === kind.id && Math.hypot(p.x - me.x, p.z - me.z) < SAME_APART)) return { ok: false, code: "too_close" };
       if (near.length >= CROWD_MAX) return { ok: false, code: "crowded" };
     }

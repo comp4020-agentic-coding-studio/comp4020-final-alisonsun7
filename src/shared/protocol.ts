@@ -5,6 +5,19 @@
 export type Avatar = "cat" | "dog";
 export const AVATARS: Avatar[] = ["cat", "dog"];
 
+export interface Position {
+  x: number;
+  z: number;
+  yaw: number;
+}
+
+// A private hut is claimed by the first accepted move into it. A rejected
+// page returns to its last accepted position (or the door on first arrival).
+export type MoveResult =
+  | { ok: true }
+  | { ok: false; code: "hut_taken"; hutId: string; position: Position }
+  | { ok: false; code: "no_session" | "bad_request" };
+
 // A person as others see them in one place: participant id, never the user
 // id or anything from their cookie.
 export interface Person {

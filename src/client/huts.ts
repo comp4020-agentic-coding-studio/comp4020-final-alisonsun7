@@ -696,6 +696,7 @@ export function buildHuts(b: Builder, wood: THREE.MeshStandardMaterial): Door[] 
 // right up to it to leave. To anyone else it's locked: its doorway is
 // solid. `me` marks you among the people.
 export function swingDoors(doors: Door[], people: { x: number; z: number; me?: boolean }[], dt: number): void {
+  const states: Record<string, { taken: boolean; locked: boolean; open: number; light: string }> = {};
   for (const d of doors) {
     const h = d.hut;
     const inside = people.filter((p) => p.x > h.x0 && p.x < h.x1 && p.z > h.z0 && p.z < h.z1);
@@ -712,5 +713,10 @@ export function swingDoors(doors: Door[], people: { x: number; z: number; me?: b
     const i = d.solids.indexOf(d.doorway);
     if (locked && i < 0) d.solids.push(d.doorway);
     else if (!locked && i >= 0) d.solids.splice(i, 1);
+    states[h.id] = { taken, locked, open: Math.round(d.open * 100) / 100, light: d.lamp ? (taken ? "red" : "green") : "none" };
   }
+  // As with the world's data-at, expose the state that is actually drawn,
+  // so browser checks can distinguish a shut door from a hidden prompt.
+  const stage = document.getElementById("stage");
+  if (stage) stage.dataset.huts = JSON.stringify(states);
 }

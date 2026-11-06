@@ -9,7 +9,8 @@ CC0 assets, the forest and sea, seeing each other and talk; 010 took the old
 sound out; 011 is Wen's new sound design; 012 keeps only the sunny day;
 013 makes the toilets and showers one person at a time, with a sound for
 while they're in; 014 adds the searchable sound library and nearby listening
-guide (003, 008 and 009 are history).
+  guide; 015 records configurable look, authoritative hut admission and the
+  explicitly requested local guitarist (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -49,7 +50,9 @@ place it or move the person.
   shut, locked door while anyone is in; the sound left for a stay
   (`whileInside`, `placed_sounds.while_in`) is ended by the server as soon
   as its person isn't inside, never by the page. The hut layout lives in
-  `shared/huts.ts` for both sides.
+  `shared/huts.ts` for both sides. The server admits only one person;
+  rejected moves return a safe position. Expired positions cannot be revived
+  inside an occupied hut. Temporary sounds do not consume permanent slots.
 - **Imagined places say so (ADR 005).** The place's page shows its `about`
   text: not a real place, and where its pieces come from.
 - **Only CC0 or public-domain assets, all recorded.** Models, surfaces and
@@ -89,8 +92,10 @@ send on the server (positions finite and bounded, words cleaned and cut to
 120, rate limits). Escape nicknames in HTML and in embedded JSON; set them
 with `textContent` in the client.
 
-Pointer dragging follows the direction of looking: dragging down looks down,
-dragging left looks left. Keep both axes consistent (`e2e/look-controls.mjs`).
+Pointer dragging defaults to Follow pointer: down looks down, left looks left.
+Arrival offers that and Drag the scene, which reverses both axes. Controls can
+change the preference, stored in this browser. Keep both axes consistent and
+release movement while Controls is open (`e2e/look-controls.mjs`).
 
 Every file the browser loads must be in `STATIC` in `src/server.ts`;
 `spec/pages.test.ts` follows every import from every page script.
@@ -112,6 +117,11 @@ without Wen's go-ahead.
   behaviour, delayed-preview cancellation, short-call previews, nearby
   contributions, turning without moving, and the phone layout. It also
   runs as part of `pnpm e2e`.
+- `e2e/look-controls.mjs` checks both axes in both remembered look modes,
+  arrival choices and Controls focus. `e2e/huts.mjs` uses two browsers for
+  locked doors, delayed rejection recovery, flush/shower playback and release.
+  `e2e/busker-sound.mjs` checks actual NPC audio output and its lifecycle.
+  All three run in `pnpm e2e`; use a scratch database for browser tests.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

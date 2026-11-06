@@ -12,6 +12,8 @@ import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import type { PlaceKit, Room } from "./places.js";
 import { seasideKit } from "./seaside.js";
 import { canStand, wind, type Built } from "./world-build.js";
+import { loadLookMode, type LookMode } from "./look-settings.js";
+import type { Position } from "../shared/protocol.js";
 
 const KITS: Record<string, PlaceKit> = { seaside: seasideKit };
 
@@ -264,6 +266,7 @@ export class WorldView {
   // zone changes are only reported once the page has its view
   private ready = false;
   private inputPaused = false;
+  private lookMode: LookMode = loadLookMode();
 
   constructor(
     private host: HTMLElement,
@@ -376,6 +379,21 @@ export class WorldView {
     this.keys.clear();
     this.stick = { x: 0, y: 0 };
     this.target = null;
+  }
+
+  setLookMode(mode: LookMode): void {
+    this.lookMode = mode;
+  }
+
+  // A rejected move returns to the last position accepted by the server.
+  correctPosition(position: Position): void {
+    if (![position.x, position.z, position.yaw].every(Number.isFinite)) return;
+    this.x = position.x;
+    this.z = position.z;
+    this.yaw = position.yaw;
+    this.keys.clear();
+    this.target = null;
+    this.setZone(this.kit.zoneAt(this.x, this.z));
   }
 
   // Orient towards a contribution; walking and collision remain in your hands.
@@ -843,7 +861,7 @@ export class WorldView {
     addEventListener("keyup", (e) => this.keys.delete(e.key.toLowerCase()));
     addEventListener("blur", () => this.keys.clear());
 
-    // Look in the direction of the drag: down looks down, left looks left.
+    // Follow the selected preference on both axes; follow-pointer is default.
     // A tap or click without dragging walks to that spot of floor.
     let look: { id: number; x: number; y: number; moved: number; at: number } | null = null;
     canvas.addEventListener("pointerdown", (e) => {
@@ -859,8 +877,9 @@ export class WorldView {
       look.x = e.clientX;
       look.y = e.clientY;
       if (look.moved < 5) return;
-      this.yaw -= dx * 0.0042;
-      this.pitch = Math.max(-0.9, Math.min(0.75, this.pitch - dy * 0.0034));
+      const direction = this.lookMode === "scene" ? 1 : -1;
+      this.yaw += dx * 0.0042 * direction;
+      this.pitch = Math.max(-0.9, Math.min(0.75, this.pitch + dy * 0.0034 * direction));
     });
     const end = (e: PointerEvent): void => {
       if (!look || e.pointerId !== look.id) return;

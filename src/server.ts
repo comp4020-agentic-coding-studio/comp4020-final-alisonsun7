@@ -23,6 +23,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/guide.js": js("/client/guide.js"),
   "/client/sound-library.js": js("/client/sound-library.js"),
   "/client/listening-trail.js": js("/client/listening-trail.js"),
+  "/client/look-settings.js": js("/client/look-settings.js"),
   "/client/places.js": js("/client/places.js"),
   // three.js, the one library the browser loads (ADR 004), straight from the
   // installed package; pages map the bare "three" import to it

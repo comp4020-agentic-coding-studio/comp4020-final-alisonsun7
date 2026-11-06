@@ -1,13 +1,15 @@
 // The live place: the walkable world, who's in it, talking to whoever is
 // near, and the sounds people leave where they stand (ADR 011).
 import { findScene, findZone, type Scene } from "../shared/catalog.js";
-import type { Person, PlacedSound, ServerMessage, Snapshot, SoundRemoved } from "../shared/protocol.js";
+import type { MoveResult, Person, PlacedSound, ServerMessage, Snapshot, SoundRemoved } from "../shared/protocol.js";
 import { findSound } from "../shared/sounds.js";
 import { figureSvg } from "./figures.js";
 import { Soundscape } from "./soundscape.js";
 import { Guide } from "./guide.js";
 import { SoundLibrary } from "./sound-library.js";
 import { ListeningTrail } from "./listening-trail.js";
+import { LookSettings } from "./look-settings.js";
+import { HUTS } from "../shared/huts.js";
 import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
 
@@ -55,6 +57,13 @@ const world = new WorldView(stage, scene, mode.id, {
   onWait: (room) => say(`Someone is in ${room.name}. Please wait: the light by the door turns green when it's free.`),
 });
 let here = { x: 0, z: 0 };
+const lookSettings = new LookSettings({
+  change: (mode) => world.setLookMode(mode),
+  open: () => world.setInputPaused(true),
+  close: () => { world.setInputPaused(false); world.focusCanvas(); },
+});
+stage.append(lookSettings.element);
+$("look-settings").onclick = () => lookSettings.open();
 
 // cards for someone new: a short tour, then what each part of the place offers
 const guide = new Guide(stage, zoneId, { joined: () => boot.joined, goTo: (zone) => world.goTo(zone), refocus: () => world.focusCanvas() });
@@ -116,19 +125,35 @@ function connect(): void {
 // ---- where you are (ADR 007) ----------------------------------------------
 
 let lastSent = { at: 0, x: NaN, z: NaN, yaw: NaN };
+let moveInFlight = false;
 
 // Five times a second at most, and only when you've moved or turned.
 function reportPosition(x: number, z: number, yaw: number): void {
+  // Keep position commands in order: a delayed rejection must not undo a
+  // newer accepted move. Frames keep running; the next report uses their
+  // latest position as soon as this response has been handled.
+  if (moveInFlight) return;
   if (!boot.joined || !connected) return;
   const now = performance.now();
   if (now - lastSent.at < 200) return;
   if (Math.hypot(x - lastSent.x, z - lastSent.z) < 0.05 && Math.abs(yaw - lastSent.yaw) < 0.05 && now - lastSent.at < 5000) return;
   lastSent = { at: now, x, z, yaw };
+  moveInFlight = true;
   void fetch(`/api/sessions/${snapshot.sessionId}/move`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, yaw: Math.round(yaw * 100) / 100 }),
-  }).catch(() => undefined);
+    signal: AbortSignal.timeout(5000),
+  }).then(async (response) => {
+    if (response.status !== 409) return;
+    const result = await response.json() as MoveResult;
+    if (!result.ok && result.code === "hut_taken") {
+      world.correctPosition(result.position);
+      lastSent = { at: 0, x: NaN, z: NaN, yaw: NaN };
+      const hut = HUTS.find((h) => h.id === result.hutId);
+      say("Someone is in " + (hut?.name ?? "that room") + ". Please wait for the green light.");
+    }
+  }).catch(() => undefined).finally(() => { moveInFlight = false; });
 }
 
 // ---- talking to whoever is near -------------------------------------------
@@ -438,6 +463,12 @@ enter.innerHTML = `<form class="enter-box">
     ${you ? "" : `<p class="enter-look"><button type="button" class="link-btn" data-look>Just look around first</button></p>`}
   </form>`;
 enter.querySelector("h2")!.textContent = scene.title;
+const arrivalLook = lookSettings.choices("arrival-look-mode");
+const lookHint = document.createElement("p");
+lookHint.className = "look-note";
+lookHint.textContent = "You can change this later in Controls.";
+arrivalLook.append(lookHint);
+enter.querySelector(".enter-actions")!.before(arrivalLook);
 if (you) enter.querySelector(".enter-name")!.textContent = you.name;
 stage.append(enter);
 const form = enter.querySelector<HTMLFormElement>("form")!;

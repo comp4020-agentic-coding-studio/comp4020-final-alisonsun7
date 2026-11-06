@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, inject, it } from "vitest";
 import { SCENES } from "../src/shared/catalog.ts";
-import type { PlacedSound, Snapshot } from "../src/shared/protocol.ts";
-import { SOUNDS, soundUrl } from "../src/shared/sounds.ts";
+import type { MoveResult, PlacedSound, Snapshot } from "../src/shared/protocol.ts";
+import { PLACE_MAX, SOUNDS, soundUrl } from "../src/shared/sounds.ts";
 import { HUTS } from "../src/shared/huts.ts";
 import { seasideKit } from "../src/client/seaside.ts";
 import { Stream, join, type Person } from "./helpers.ts";
@@ -94,7 +94,9 @@ describe("sounds people leave (ADR 011)", () => {
   // a move, then long enough for the next to count (moves closer than 90 ms
   // apart are dropped)
   const stand = async (who: Person, x: number, z: number) => {
-    await call(who, "POST", "move", { x, z, yaw: 0 });
+    const res = await call(who, "POST", "move", { x, z, yaw: 0 });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ ok: true });
     await wait(120);
   };
   const leave = async (who: Person, soundId: string, whileInside = false) => {
@@ -222,6 +224,145 @@ describe("sounds people leave (ADR 011)", () => {
   }, 20_000);
 });
 
+describe("private huts (ADR 013)", () => {
+  const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const toilet = HUTS.find((h) => h.kind === "mens-toilet")!;
+  const shower = HUTS.find((h) => h.kind === "mens-shower")!;
+  const inside = (hut: typeof toilet) => ({ x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 - 1.6, yaw: 0 });
+  const outside = (hut: typeof toilet) => ({ x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 1.5, yaw: 0 });
+  const post = async (sessionId: string, who: Person, path: string, body: unknown) => {
+    const res = await fetch(new URL(`/api/sessions/${sessionId}/${path}`, baseUrl), {
+      method: "POST", headers: { "content-type": "application/json", cookie: who.cookie }, body: JSON.stringify(body),
+    });
+    const result = await res.json() as { ok: boolean; code?: string; sound?: PlacedSound; hutId?: string; position?: { x: number; z: number; yaw: number } };
+    return { status: res.status, ...result };
+  };
+
+  it("admits exactly one concurrent arrival, corrects rejected positions, and releases the hut on disconnect", async () => {
+    const a = await join(baseUrl, "Hut Ari");
+    const b = await join(baseUrl, "Hut Ben");
+    const sa = await Stream.open(baseUrl, world.id, "weekday", a);
+    const sb = await Stream.open(baseUrl, world.id, "weekday", b);
+    const sessionId = sa.snapshot().sessionId;
+    const first = outside(toilet);
+    try {
+      for (const who of [a, b]) expect(await post(sessionId, who, "move", first)).toMatchObject({ ok: true });
+      await wait(120);
+      const results = await Promise.all([a, b].map((who) => post(sessionId, who, "move", inside(toilet))));
+      expect(results.filter((r) => r.ok)).toHaveLength(1);
+      expect(results.find((r) => !r.ok)).toMatchObject({ status: 409, code: "hut_taken", hutId: toilet.id, position: first });
+      const winner = results[0].ok ? a : b;
+      const loser = winner === a ? b : a;
+      const winnerStream = winner === a ? sa : sb;
+      const newcomer = await join(baseUrl, "Hut Cy");
+      const rejected = await post(sessionId, newcomer, "move", inside(toilet)) as { status: number } & MoveResult;
+      expect(rejected).toMatchObject({ status: 409, ok: false, code: "hut_taken", hutId: toilet.id });
+      if (!rejected.ok && rejected.code === "hut_taken") expect(rejected.position.z).toBeGreaterThan(toilet.z1);
+      expect(await post(sessionId, newcomer, "sounds", { soundId: "toilet-flush", whileInside: true })).toMatchObject({ code: "not_here" });
+
+      // A newly connected watcher receives existing positions immediately;
+      // the occupant need not move again to lock its door on that page.
+      const watcher = await Stream.open(baseUrl, world.id, "weekday", null);
+      try {
+        const occupantId = winnerStream.snapshot().you!.id;
+        const positions = await watcher.next((m) => m.type === "moves", 1000);
+        expect(positions.type === "moves" && positions.people.filter((p) => p.id === occupantId)).toHaveLength(1);
+        const from = watcher.messages.length;
+        winnerStream.close();
+        await winnerStream.closed;
+        await watcher.next((m) => m.type === "moves" && !m.people.some((p) => p.id === occupantId), 1500, from);
+        await wait(120);
+        expect(await post(sessionId, loser, "move", inside(toilet))).toMatchObject({ status: 200, ok: true });
+      } finally {
+        watcher.close();
+      }
+    } finally {
+      for (const who of [a, b]) await post(sessionId, who, "move", { x: 800, z: 800, yaw: 0 });
+      sa.close(); sb.close();
+    }
+  });
+
+  it("keeps a shower for another open page, then ends its sound when the last page disconnects", async () => {
+    const who = await join(baseUrl, "Shower Dot");
+    const first = await Stream.open(baseUrl, world.id, "weekday", who);
+    const second = await Stream.open(baseUrl, world.id, "weekday", who);
+    const watcher = await Stream.open(baseUrl, world.id, "weekday", null);
+    const sessionId = first.snapshot().sessionId;
+    try {
+      expect(await post(sessionId, who, "move", inside(shower))).toMatchObject({ ok: true });
+      expect(await post(sessionId, who, "sounds", { soundId: "toilet-flush", whileInside: true })).toMatchObject({ status: 400, code: "bad_request" });
+      const left = await post(sessionId, who, "sounds", { soundId: "shower", whileInside: true });
+      expect(left).toMatchObject({ status: 201, ok: true, sound: { whileIn: shower.id } });
+      const id = (left.sound as PlacedSound).id;
+      first.close();
+      await first.closed;
+      expect((await snapshot("weekday")).sounds.some((sound) => sound.id === id)).toBe(true);
+      const from = watcher.messages.length;
+      second.close();
+      await second.closed;
+      expect(await watcher.next((m) => m.type === "sound-removed" && m.id === id, 1500, from)).toMatchObject({ left: true });
+      expect((await snapshot("weekday")).sounds.some((sound) => sound.id === id)).toBe(false);
+    } finally {
+      first.close(); second.close(); watcher.close();
+    }
+  });
+
+  it("ends a stay after position updates stop, even while its stream remains connected", async () => {
+    const who = await join(baseUrl, "Quiet Eli");
+    const own = await Stream.open(baseUrl, world.id, "weekday", who);
+    const watcher = await Stream.open(baseUrl, world.id, "weekday", null);
+    const sessionId = own.snapshot().sessionId;
+    try {
+      expect(await post(sessionId, who, "move", inside(shower))).toMatchObject({ ok: true });
+      const left = await post(sessionId, who, "sounds", { soundId: "shower", whileInside: true });
+      expect(left).toMatchObject({ status: 201, ok: true });
+      const id = (left.sound as PlacedSound).id;
+      expect(await watcher.next((m) => m.type === "sound-removed" && m.id === id, 22_000)).toMatchObject({ left: true });
+      expect((await snapshot("weekday")).sounds.some((sound) => sound.id === id)).toBe(false);
+    } finally {
+      own.close(); watcher.close();
+    }
+  }, 25_000);
+
+  it("allows a temporary flush at the permanent sound limit, and does not charge it to that limit", async () => {
+    const sessionId = (await snapshot("weekday")).sessionId;
+    const made: { who: Person; sound: PlacedSound }[] = [];
+    const who = await join(baseUrl, "Full-place Flo");
+    const own = await Stream.open(baseUrl, world.id, "weekday", who);
+    const remove = async (person: Person, id: string) => fetch(new URL(`/api/sessions/${sessionId}/sounds/${id}`, baseUrl), { method: "DELETE", headers: { cookie: person.cookie } });
+    try {
+      const count = (await snapshot("weekday")).sounds.filter((sound) => !sound.whileIn).length;
+      // Separate contributors avoid changing the one-change-a-second rule;
+      // every created row is removed in finally, even on a failed assertion.
+      for (let i = count; i < PLACE_MAX; i++) {
+        const person = await join(baseUrl, `Room-check ${i}`);
+        expect(await post(sessionId, person, "move", { x: 1100 + (i % 15) * 20, z: 1100 + Math.floor(i / 15) * 20, yaw: 0 })).toMatchObject({ ok: true });
+        const left = await post(sessionId, person, "sounds", { soundId: "guitar" });
+        if (left.ok) made.push({ who: person, sound: left.sound as PlacedSound });
+        expect(left).toMatchObject({ status: 201, ok: true });
+      }
+      expect(await post(sessionId, who, "move", inside(toilet))).toMatchObject({ ok: true });
+      const temporary = await post(sessionId, who, "sounds", { soundId: "toilet-flush", whileInside: true });
+      expect(temporary).toMatchObject({ status: 201, ok: true, sound: { whileIn: toilet.id } });
+      await wait(1100);
+      const spare = made.pop()!;
+      expect((await remove(spare.who, spare.sound.id)).status).toBe(200);
+      // 149 permanent sounds plus the temporary flush still leave one slot.
+      // A lasting flush may share its location: the temporary one neither
+      // uses up that slot nor triggers the same-sound spacing rule.
+      const lasting = await post(sessionId, who, "sounds", { soundId: "toilet-flush" });
+      if (lasting.ok) made.push({ who, sound: lasting.sound as PlacedSound });
+      expect(lasting).toMatchObject({ status: 201, ok: true });
+    } finally {
+      await wait(1100);
+      await Promise.all(made.map(async ({ who: person, sound }) => {
+        expect((await remove(person, sound.id)).status).toBe(200);
+      }));
+      own.close();
+    }
+  }, 30_000);
+});
+
 describe("people in the place (ADR 007)", () => {
   it("lets the arrival card join without leaving the page (JSON), and refuses a blank name", async () => {
     const post = (body: Record<string, string>) =>
@@ -259,11 +400,23 @@ describe("people in the place (ADR 007)", () => {
     // speaking before you're anywhere is refused
     expect((await post(ada, "say", { text: "hello?" })).status).toBe(409);
 
-    await post(ada, "move", { x: 2, z: 10, yaw: 0 });
-    await post(bo, "move", { x: 4, z: 12, yaw: 0 });
-    await post(cy, "move", { x: 2, z: -100, yaw: 0 });
-    const moves = await sb.next((m) => m.type === "moves" && m.people.length >= 3, 3000);
-    expect(moves.type === "moves" && moves.people.find((p) => p.name === "Ada")).toMatchObject({ x: 2, z: 10 });
+    const expected = [
+      { id: sa.snapshot().you!.id, x: 2, z: 10, yaw: 0 },
+      { id: sb.snapshot().you!.id, x: 4, z: 12, yaw: 0 },
+      { id: sc.snapshot().you!.id, x: 2, z: -100, yaw: 0 },
+    ];
+    const movesFrom = sb.messages.length;
+    for (const [i, who] of [ada, bo, cy].entries()) {
+      const { x, z, yaw } = expected[i];
+      const res = await post(who, "move", { x, z, yaw });
+      expect(res.status).toBe(200);
+      expect(await res.json()).toMatchObject({ ok: true });
+    }
+    // A new subscription already receives older occupants' positions. Wait
+    // for this run's participant ids at all three newly accepted positions,
+    // rather than any earlier frame that happens to contain three people.
+    const moves = await sb.next((m) => m.type === "moves" && expected.every((at) => m.people.some((p) => p.id === at.id && p.x === at.x && p.z === at.z && p.yaw === at.yaw)), 3000, movesFrom);
+    for (const at of expected) expect(moves.type === "moves" && moves.people.find((p) => p.id === at.id)).toMatchObject(at);
 
     const from = sc.messages.length;
     const said = await post(ada, "say", { text: "  hi\u0007 there  " + "x".repeat(200) });
