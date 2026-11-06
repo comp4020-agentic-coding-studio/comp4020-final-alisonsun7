@@ -2062,3 +2062,74 @@ reference screenshots. Verified nine served source modules/styles and three
 new texture files byte-for-byte against the tested build/assets. The preview
 runs detached without a TTY. No push/deploy. Prior compiled output is retained;
 visual rollback uses the current DB, never an old copy.
+
+# 2026-11-07 — A coherent identity around making sound together
+
+Prompt: Wen clarified that consistent, harmonious and distinctive style matters
+more than cinematic beauty, with shared sound-making and playful multiplayer
+interaction at the centre. ADR 022 records this priority and supersedes the
+visual-fidelity target. Preserved `before-shared-sound-focus-2026-11-07` at
+`161ae1a`; developed on `codex/shared-sound-focus` with a separate compiled
+candidate and scratch database on port 18879.
+
+The homepage and arrival now invite people to listen, leave something for the
+next visitor and answer another person's sound. Warm paper, timber, sea green
+and the existing blue/green/orange sound families recur throughout the pages,
+public contribution cards and world. The prominent Our soundscape entry shows
+actual joined people and public sounds, opening the existing native drawer.
+The drawer names authors, locations and replies, offers explicit listening and
+safe focus handoffs, and records four deduplicated public changes received in
+this visit. Initial/reconnect snapshots never masquerade as new activity.
+Weather and scene travel remain available after the shared activity.
+
+Real nearby public replies now have a low three-dimensional thread with ends
+on the actual floor. A moving dot requires actual child playback; Sound off,
+hidden pages and reduced motion suppress it. Removed endpoints and private hut
+stays cannot create threads. The existing public sound rules, live chat,
+authoritative huts, spatial guitar, shared weather, single room and persistence
+remain intact. No new recording, schema or server protocol was needed.
+
+Verification: TypeScript check/build passed, all 80 tests in 12 spec files
+passed, and all 13 end-to-end suites passed. The new two-browser suite has
+39 checks covering real counts/authorship, explicit audio, reply/connection,
+private-stay exclusion, activity deduplication, removed-source persistence,
+snapshot recovery, focus and phone controls. It failed against the previous
+isolated interface before any placement, confirming the new entry is tested.
+A temporary private-filter mutation also failed the focused connection test.
+An independent read-only source review found no actionable issue; browser/GPU
+verification was performed separately by the main agent.
+
+Two test-harness faults were found during full regression. Cleanup after a
+private stay could send the next move inside the server's 90ms window and
+silently leave a scratch contribution. The existing removal suite correctly
+failed because that contribution remained. It was soft-removed through the
+normal API; cleanup now waits every iteration, validates responses and checks
+the actual final snapshot. The existing suite passed again after the repaired
+new suite. A held movement key also raced the queued native dialog close
+handler; the test now waits for that handler to finish before holding the key.
+Production movement and rate-limit rules were unchanged. These corrections
+are committed separately as `02e9121`.
+
+Viewed actual home, Explore and arrival pages on desktop and phone, plus the
+real reply and phone drawer screenshots. No horizontal overflow or browser
+errors were observed; primary actions measure at least 44px. The low thread
+was additionally inspected in a silent synthetic visual fixture without a
+join or database write. Phone views are desktop Chrome viewport emulations,
+not physical-device performance results. Docker was not run because it is
+not installed. [Verification](evidence/shared-sound-focus-2026-11-07.json)
+retains the results and limits. Actual captures: [home](screenshots/22-shared-home.png),
+[phone home](screenshots/22-shared-home-phone.png),
+[phone arrival](screenshots/22-shared-arrival-phone.png),
+[phone drawer](screenshots/22-shared-drawer-phone.png),
+[real reply](screenshots/22-shared-reply.png) and the explicitly
+[synthetic thread review](screenshots/22-shared-thread-fixture.png).
+
+Promoted application commit `02e9121` to the original 18861 preview using its
+current DB. Every digest in all 12 persistent tables matched before and after,
+including all 20 sound rows, four operations, one reply and 25 users. Five
+ordinary sounds remain active; the shared weather/clock anchor was retained.
+Eleven served modules/styles match both the tested build and installed files
+byte for byte. The preview is detached with parent 1 and no controlling TTY.
+Prior compiled output is retained, and `shared-sound-focus-2026-11-07` marks
+this verified version. A rollback keeps the current DB. No push or deployment
+occurred, and user visual acceptance has not been claimed.

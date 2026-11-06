@@ -1,0 +1,294 @@
+{
+  "date": "2026-11-07",
+  "productDirection": "Coherent, harmonious and distinctive shared sound-making, with playful human interaction. ADR 022 supersedes cinematic fidelity as the priority.",
+  "fullCheckSourceCommit": "56f8215",
+  "testHarnessCommit": "02e9121",
+  "applicationCommit": "02e912164b9e8e69e0fa66185da4b21c39fba576",
+  "typecheckPassed": true,
+  "buildPassed": true,
+  "spec": {
+    "files": 12,
+    "tests": 80,
+    "passed": true
+  },
+  "endToEnd": [
+    {
+      "command": [
+        "node",
+        "e2e/world-two-browsers.mjs"
+      ],
+      "seconds": 42.44,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/meet-and-talk.mjs"
+      ],
+      "seconds": 31.25,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/leave-a-sound.mjs"
+      ],
+      "exitCode": 0,
+      "note": "Passed once after removal of an earlier scratch fixture leak, and again after the repaired new suite verified cleanup."
+    },
+    {
+      "command": [
+        "node",
+        "e2e/sound-discovery.mjs"
+      ],
+      "seconds": 11.09,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/look-controls.mjs"
+      ],
+      "seconds": 9.7,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/huts.mjs"
+      ],
+      "seconds": 45.74,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/busker-sound.mjs"
+      ],
+      "seconds": 8.63,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/cooperative-play.mjs"
+      ],
+      "seconds": 24.63,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/cooperative-ack-race.mjs"
+      ],
+      "seconds": 16.83,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/environment.mjs"
+      ],
+      "seconds": 18.75,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/quiet-light.mjs"
+      ],
+      "seconds": 5.49,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/d-reference-ui.mjs"
+      ],
+      "seconds": 15.43,
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "node",
+        "e2e/shared-sound-focus.mjs"
+      ],
+      "exitCode": 0,
+      "checks": 39,
+      "testHarnessCommit": "02e9121"
+    }
+  ],
+  "negativeControls": [
+    {
+      "check": "Missing first-class shared entry",
+      "target": "Previous isolated interface on 18878",
+      "result": "New end-to-end test failed on missing Our soundscape before any contribution was published."
+    },
+    {
+      "check": "Private contribution exclusion",
+      "target": "Temporary untracked mutation of sound-connections public filter",
+      "result": "The existing focused assertion failed (1 connection instead of 0); production source was not changed."
+    }
+  ],
+  "failuresAndCorrections": [
+    {
+      "failure": "The new test cleanup silently left one ordinary scratch contribution after a private-stay cleanup move entered the 90ms server move limit. This made the existing leave-a-sound suite fail its zero-live-marks check.",
+      "correction": "Wait before every cleanup iteration, validate move/removal responses and assert the actual final snapshot excludes this suite's ordinary ids. Soft-remove the leaked scratch fixture through normal server authority. Existing leave-a-sound then passed, including after the fixed new suite."
+    },
+    {
+      "failure": "Immediately holding a movement key after dialog.close() raced the queued native close handler's input reset.",
+      "correction": "The test waits for hidden state set by the actual close handler before pressing the movement key. Production movement code was unchanged. All 39 new-suite checks passed."
+    }
+  ],
+  "visualReview": {
+    "base": "http://localhost:18879",
+    "views": [
+      {
+        "name": "home-desktop",
+        "width": 1440,
+        "overflow": false,
+        "primary": [
+          {
+            "text": "Enter & listen",
+            "height": 48
+          }
+        ]
+      },
+      {
+        "name": "home-phone",
+        "width": 390,
+        "overflow": false,
+        "primary": [
+          {
+            "text": "Enter & listen",
+            "height": 48
+          }
+        ]
+      },
+      {
+        "name": "explore-desktop",
+        "width": 1440,
+        "overflow": false,
+        "primary": [
+          {
+            "text": "Join",
+            "height": 44
+          }
+        ]
+      },
+      {
+        "name": "explore-phone",
+        "width": 390,
+        "overflow": false,
+        "primary": [
+          {
+            "text": "Join",
+            "height": 44
+          }
+        ]
+      },
+      {
+        "name": "arrival-desktop",
+        "width": 1440,
+        "overflow": false,
+        "primary": [
+          {
+            "text": "Enter",
+            "height": 46
+          }
+        ],
+        "arrival": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 1000,
+          "top": 0,
+          "right": 1440,
+          "bottom": 1000,
+          "left": 0
+        }
+      },
+      {
+        "name": "arrival-phone",
+        "width": 390,
+        "overflow": false,
+        "primary": [
+          {
+            "text": "Enter",
+            "height": 46
+          }
+        ],
+        "arrival": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      }
+    ],
+    "errors": [],
+    "threadFixture": {
+      "connections": 1,
+      "silent": true,
+      "synthetic": true,
+      "noDatabaseWrites": true,
+      "weather": "clear",
+      "minute": 840
+    }
+  },
+  "preview": {
+    "applicationCommit": "02e912164b9e8e69e0fa66185da4b21c39fba576",
+    "port": 18861,
+    "databaseUnchanged": true,
+    "allPersistentTablesCompared": 12,
+    "tableCounts": {
+      "memories": 0,
+      "participants": 23,
+      "placed_sounds": 20,
+      "placements": 0,
+      "scenes": 1,
+      "session_environments": 1,
+      "session_events": 0,
+      "sessions": 1,
+      "sound_assets": 0,
+      "sound_operations": 4,
+      "sound_replies": 1,
+      "users": 25
+    },
+    "ordinaryLiveSoundCount": 5,
+    "sharedEnvironmentPreserved": true,
+    "detachedProcess": {
+      "pid": 17521,
+      "parentPid": 1,
+      "processGroup": 17521,
+      "tty": "??"
+    },
+    "verifiedModules": {
+      "client/scene.js": "344ef965d7d2dbe8098f38598c6aeb473065e1048816b17ef164843b3df04204",
+      "client/shared-sound-place.js": "09fa3f7a979347d4c19d1283d4a626f93f52496de5667ac27cf89f1a2ab9f81a",
+      "client/sound-connections.js": "b7d38890612d7d43d450fd2a8c9251a2c3c57d4cfdb19df409315b1335b85d9b",
+      "client/soundscape.js": "e61cf00908766b420a8e3b95dbef910e2e61e287f268c46aaf146100802d0f0a",
+      "client/guide.js": "fb045648715085da9984868f3645ad3314e70a895cae22d43e88b6e0e148b03b",
+      "client/world.js": "56e2bcbed1d696349808ce2393255be8374343a21fa42de612cd06976f805f0c",
+      "client/seaside.js": "4994948cebb8d4b4ec505e7a9127f2b5190a867f83d33c170f80d7a62699c86a",
+      "client/characters.js": "fb7b363c5ec5dedc9d075c19a162a9217e09c2ee5ca12475ba6e5b2b428c5201",
+      "client/coastal-renderer.js": "5d48223777f6d20b488293450366e75097ed82a9fa0fe312fdda21846ffea826",
+      "shared/catalog.js": "b88456d7af18eb9d356576a106dcc5ebc984a7161b206d63615ce39ee2acaa50",
+      "client/style.css": "68ce55d7c9747679deb82162985b55e96b1f1fe073e2224b509e80fa037dc092"
+    },
+    "rollbackTag": "before-shared-sound-focus-2026-11-07",
+    "oldCompiledOutputRetained": true
+  },
+  "limits": [
+    "Real Chrome/Metal on the development Mac; phone screenshots use narrow viewports, not a physical phone benchmark.",
+    "The reply-thread screenshot is an explicitly synthetic, silent geometry fixture with no database writes. Real two-browser replies are checked separately.",
+    "No claim of user visual acceptance."
+  ],
+  "notRun": [
+    "Docker (not installed)"
+  ]
+}

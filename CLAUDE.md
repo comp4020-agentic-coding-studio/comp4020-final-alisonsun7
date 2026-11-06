@@ -49,6 +49,10 @@ keeps its relation metadata and never revives either endpoint. Private-stay
 sounds cannot join public conversations. Never automatically resend a draft;
 reuse its operation key on explicit retry. Observed removals outrank late ACKs.
 
+The shared sound entry and public contribution drawer are in
+`client/shared-sound-place.ts` (ADR 022); nearby live public reply threads are
+in `client/sound-connections.ts`. Public counts/activity exclude private stays.
+
 ## Product invariants
 
 - **The standard (Wen):** suits people playing together; keeps what they do,
@@ -159,6 +163,11 @@ without Wen's go-ahead.
 - `e2e/quiet-light.mjs` checks the actual 3D rigs, grounded sound cues, lamp
   rendering and aligned-source labels (including reachable phone actions) in a
   silent fixture with no database writes. It is part of `pnpm e2e`.
+- `e2e/shared-sound-focus.mjs` uses two real identities for the shared entry,
+  public counts/authorship, explicit listening, reply threads, private-stay
+  exclusion, visit-scoped activity, removal/reconnect and phone/focus handoffs.
+  Its cleanup verifies the actual snapshot contains none of its live ordinary
+  sounds. It is part of `pnpm e2e`; never run it on the working 18861 preview.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

@@ -90,3 +90,22 @@ ignored `.cache/d-art-promotion.json`. The shared sky was not reset. Actual
 reference screenshots use Clear + Afternoon; choose that explicitly to compare
 with D. The visual reference remains more detailed than this real-time 3D
 reconstruction; the tag records a tested version, not user visual acceptance.
+
+## Shared sound identity
+
+Wen clarified that a coherent, harmonious and distinctive place supporting
+shared sound-making and playful interaction is the priority (ADR 022).
+`before-shared-sound-focus-2026-11-07` preserves the previous source at
+`161ae1a`. Work is on `codex/shared-sound-focus`; the isolated candidate uses
+`.cache/sound-focus-build/dist` and a scratch DB on port 18879.
+`.cache/sound-focus-baseline/dist` retains the former compiled application.
+
+`shared-sound-focus-2026-11-07` marks the verified new invitation, public
+contribution drawer and nearby reply threads. The original 18861 preview
+serves application commit `02e9121`. Its **current** database was retained:
+all 12 persistent tables matched across promotion, including 20 sound rows,
+four operations and one reply. The shared environment anchor also matched.
+The ignored `.cache/sound-focus-promotion.json` records the old compiled
+directory. Use the separate-checkout method above with the new rollback tag
+and the current DB; never restore a historical DB to change interface styles.
+There is no schema change, push or deployment.
