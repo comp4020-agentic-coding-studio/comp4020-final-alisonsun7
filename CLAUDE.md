@@ -8,7 +8,8 @@ record where the build went from there: 004 to 007 the walkable place, the
 CC0 assets, the forest and sea, seeing each other and talk; 010 took the old
 sound out; 011 is Wen's new sound design; 012 keeps only the sunny day;
 013 makes the toilets and showers one person at a time, with a sound for
-while they're in (003, 008 and 009 are history).
+while they're in; 014 adds the searchable sound library and nearby listening
+guide (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -26,7 +27,10 @@ The place (`seaside`, three.js, Sunny Day only: ADR 012) is the only one. Its
 `PlaceKit` is in `client/seaside.ts` (the café's room in `client/cafe.ts`);
 the toolkit in `client/world-build.ts`; the view in `client/world.ts`; the
 sounds people leave in `client/soundscape.ts`, with the sounds on offer and
-their rules in `shared/sounds.ts`.
+their rules in `shared/sounds.ts`. The library is in
+`client/sound-library.ts`, and the optional nearby guide in
+`client/listening-trail.ts`; browsing and turning towards a sound never
+place it or move the person.
 
 ## Product invariants
 
@@ -98,6 +102,10 @@ without Wen's go-ahead.
   `e2e/leave-a-sound.mjs` (leaving, hearing and removing sounds), each
   in two Chrome sessions on the GPU (`--use-angle=metal`): in software
   rendering the place runs at well under 1 fps.
+- `e2e/sound-discovery.mjs` checks library search, filters, modal keyboard
+  behaviour, delayed-preview cancellation, short-call previews, nearby
+  contributions, turning without moving, and the phone layout. It also
+  runs as part of `pnpm e2e`.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

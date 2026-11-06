@@ -1029,3 +1029,81 @@ lattice at mid distance; hence the irregular map and the distance fade.
 **Checks:** spec and e2e against a fresh server; screenshots of the creek
 from the edge of the forest and the bridge, the sea from the sand and the
 pier, before and after each change, and of the swash in and out.
+
+## 41. More sounds, and a way to find what people leave (2026-11-06, ADR 014)
+
+**Prompt (user, translated):** add sound elements, improve the interface with
+Three.js, and consider useful modules and experience improvements while keeping
+the product focused. Asked about natural or everyday sounds, the user answered:
+"Add both; a little more won't hurt."
+
+**Done:** six source-verified Commons recordings (seagulls, breeze and birds,
+cicadas, a bicycle bell, cups and dishes, a boat by the pier), bringing the
+catalogue to sixteen. The original ten audio files and their provenance are
+unchanged. The new source checksums, licences, cuts and measured outputs are
+recorded in `docs/sound-library-2026-11-06.md`; the new assets total about
+1.77 MiB. A targeted fetch script can rebuild selected recordings without
+rewriting the others.
+
+The native-dialog sound library (`client/sound-library.ts`) offers search,
+family filters, local suggestions, private Listen/Stop, loading feedback,
+empty results and inline placement errors. Modal browsing releases movement
+already held, traps focus in the browser's native dialog, and returns to the
+view without scrolling it. A cancelled or superseded download cannot start a
+preview after the dialog is closed. The optional `client/listening-trail.ts`
+shows the nearest three contributions, their authors, distances and directions;
+Face sound turns the view without moving anyone. It collapses on small screens.
+
+The Three.js sound lights gain shared-geometry anchor rings, and a small
+spreading wave only for a nearby sound the listener is actually playing.
+Reduced motion keeps the marks still; distant waves are hidden, and removal
+releases individual materials. The surrounding interface uses a coastal green
+frame with warm actions and larger touch targets. There is no automatic
+background sound, new ownership rule or additional runtime dependency. UI/UX
+Pro Max informed keyboard, contrast and responsive checks; its Three.js query
+had no matching ready-made sound-marker pattern, so the geometry extends the
+existing renderer directly.
+
+**Failures and corrections:** an initial browser run encountered an old
+running server which still knew only ten sounds while the browser catalogue
+had been rebuilt. Its new-sound request was correctly refused. The server was
+restarted from the complete sixteen-sound build before the final checks.
+Another inspection found that the previous two-second audition offset skipped
+the bicycle bell and played its quiet interval instead. Previews now start at
+the beginning. Restoring the old offset in a throwaway compiled file made the
+new short-call check fail as expected; the real build was restored afterwards.
+
+**Checks run for this change:**
+
+- `node node_modules/typescript/bin/tsc --noEmit`: PASS.
+- App compilation with `tsc -p tsconfig.build.json` and stylesheet copy: PASS.
+- Full Vitest suite against the fresh local service and a scratch SQLite DB:
+  PASS, 40/40 in three files, including every offered audio resource and its
+  licence manifest, imported modules, persistence snapshots and realtime rules.
+- Four Chrome/Metal browser suites: `world-two-browsers.mjs`,
+  `meet-and-talk.mjs`, `leave-a-sound.mjs`, and `sound-discovery.mjs`: PASS.
+  The new suite has twenty checks, including delayed-preview cancellation,
+  short-call preview offset, filters, keyboard behaviour, placement failure,
+  another person's discovery list, turning without teleporting, and a 375 px
+  reduced-motion viewport. The old sound suite now follows the actual catalogue
+  size rather than assuming ten.
+- `node scripts/check-evidence.ts`, JavaScript syntax and `git diff --check`:
+  PASS. New recordings fully decoded and originals matched official SHA-1s.
+- Desktop and phone screenshots were viewed. Final evidence is under
+  `docs/screenshots/14-*`; intermediate runs are in gitignored `test-results/`.
+
+**Local environment:** the shell has pnpm 10.33.2, below the required pnpm 11,
+so the same compiler, test runner and evidence scripts were invoked directly.
+The installed Rolldown native module stalled before test collection. A fresh
+copy of the exact locked `@rolldown/binding-darwin-arm64@1.2.9` was downloaded
+from npm, its SHA-512 matched both registry integrity and the lockfile, and a
+process-local `NAPI_RS_NATIVE_LIBRARY_PATH` selected it for verification.
+Neither original dependencies nor OS quarantine settings were changed.
+The audio pipeline needed process-local IPv6 and dynamic-library settings,
+as documented with its sources; no global settings were changed.
+
+**Limits:** the recordings have technical checks, not human listening approval;
+the breeze includes birds and the boat includes background voices. Real-phone
+performance, a screen reader and the combined listening experience still need
+people trying them. No production database was used. Changes were made on
+`feat/sound-discovery-polish`; no merge, push or deployment was performed.

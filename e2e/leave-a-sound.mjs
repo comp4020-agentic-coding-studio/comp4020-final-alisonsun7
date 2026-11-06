@@ -7,6 +7,7 @@
 //   APP_URL=http://localhost:8080 node e2e/leave-a-sound.mjs [shotsDir]
 import { mkdirSync } from "node:fs";
 import { chromium } from "playwright";
+import { SOUNDS } from "../src/shared/sounds.ts";
 
 const base = process.env.APP_URL ?? "http://localhost:8080";
 const out = process.argv[2];
@@ -51,7 +52,7 @@ for (let i = 0; i < 8 && (await a.locator(".sound-label.in-reach .sound-remove")
 
 const before = await marks(b);
 await a.click("#leave-sound");
-check(await a.locator("#sound-palette:not([hidden]) li").count() === 10, "Leave a sound opens the ten sounds to choose from");
+check(await a.locator("#sound-palette:not([hidden]) li").count() === SOUNDS.length, "Leave a sound opens every sound in the catalogue");
 check((await a.locator("#sound-palette li").first().textContent()).includes("suits here"), "those that suit the boardwalk come first");
 await a.locator("#sound-palette li", { hasText: "Café chatter" }).getByText("Listen").click();
 await a.waitForTimeout(600);
