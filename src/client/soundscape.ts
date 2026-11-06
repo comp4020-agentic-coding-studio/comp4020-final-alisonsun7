@@ -17,8 +17,6 @@ const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").ma
 const LIGHT_Y = 1.15;
 // labels show within this distance; the nearest within REACH can be removed
 const LABEL_NEAR = 9;
-// Hover above planks and the footbridge, without needing a terrain query.
-const WAVE_Y = 0.55;
 
 interface Mark {
   sound: PlacedSound;
@@ -76,8 +74,8 @@ function lightSprite(colour: string, size: number, opacity: number, additive: bo
 }
 
 // A thin column of light from the ground up through the sound.
-const BEAM = new THREE.CylinderGeometry(0.05, 0.05, 3.4, 8, 1, true);
-BEAM.translate(0, 1.7, 0);
+const BEAM = new THREE.CylinderGeometry(0.012, 0.012, 1.35, 8, 1, true);
+BEAM.translate(0, 0.675, 0);
 function beam(colour: string): THREE.Mesh {
   const mat = new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, toneMapped: false });
   return new THREE.Mesh(BEAM, mat);
@@ -161,21 +159,22 @@ export class Soundscape {
       return;
     }
     const colour = FAMILIES[kind.family].colour;
-    const glowS = lightSprite(colour, 2.4, 0.7, true);
-    const core = lightSprite(colour, 0.6, 1, false);
+    const glowS = lightSprite(colour, 0.8, 0.32, true);
+    const core = lightSprite(colour, 0.24, 1, false);
     for (const s of [glowS, core]) {
       s.position.set(sound.x, LIGHT_Y, sound.z);
       s.renderOrder = 2;
       this.world.root.add(s);
     }
+    const floorY = this.world.surfaceHeight(sound.x, sound.z);
     const column = beam(colour);
-    column.position.set(sound.x, 0, sound.z);
+    column.position.set(sound.x, floorY, sound.z);
     column.renderOrder = 2;
     this.world.root.add(column);
     const anchor = ring(colour);
     const wave = ring(colour);
     for (const r of [anchor, wave]) {
-      r.position.set(sound.x, WAVE_Y, sound.z);
+      r.position.set(sound.x, floorY + 0.035, sound.z);
       r.renderOrder = 1;
       this.world.root.add(r);
     }
@@ -556,21 +555,23 @@ export class Soundscape {
     let nearest: Mark | null = null;
     let nearestD = REACH;
     for (const m of this.marks.values()) {
+      m.label.style.top = "0px";
+      m.label.style.left = "0px";
       const d = Math.hypot(m.sound.x - l.x, m.sound.z - l.z);
       const near = d <= REACH;
       const playing = this.on && this.ctx?.state === "running" && !!this.voices.get(m.sound.id)?.src.buffer;
       // Motion has one meaning: a sound this listener is actually hearing.
       // Keep distant marks quiet and reduced-motion marks completely still.
       const s = playing && !still ? 1 + Math.sin(now / 850 + m.phase) * 0.08 : 1;
-      const glowSize = near ? 2.8 : 2.4;
+      const glowSize = near ? 1 : 0.8;
       m.glow.scale.set(glowSize * s, glowSize * s, 1);
-      m.glow.material.opacity = playing ? 0.8 : 0.55;
-      const coreSize = near ? 0.76 : playing ? 0.66 : 0.6;
+      m.glow.material.opacity = playing ? 0.4 : 0.28;
+      const coreSize = near ? 0.3 : playing ? 0.27 : 0.24;
       m.core.scale.set(coreSize, coreSize, 1);
-      (m.beam.material as THREE.MeshBasicMaterial).opacity = near ? 0.45 : playing ? 0.35 : 0.22;
+      (m.beam.material as THREE.MeshBasicMaterial).opacity = near ? 0.16 : playing ? 0.1 : 0.06;
       m.anchor.visible = d <= HEAR;
       m.anchor.scale.setScalar(near ? 0.8 : 0.65);
-      m.anchor.material.opacity = near ? 0.7 : playing ? 0.48 : 0.25;
+      m.anchor.material.opacity = near ? 0.78 : playing ? 0.58 : 0.36;
       m.wave.visible = playing && d <= LABEL_NEAR;
       if (m.wave.visible) {
         const phase = still ? 0.45 : (now / 2800 + m.phase / (Math.PI * 2)) % 1;
@@ -615,6 +616,32 @@ export class Soundscape {
       for (const button of nearest.label.querySelectorAll<HTMLButtonElement>(".sound-actions button"))
         button.hidden = !this.opts.canChange() && !button.classList.contains("sound-conversation");
       nearest.label.classList.add("in-reach");
+      this.separateLabels(nearest, l);
+    }
+  }
+
+  // An aligned distant title must not cover the source's reachable actions.
+  // Keep that card at its source; stack the other titles when projections meet.
+  private separateLabels(nearest: Mark, listener: Listener): void {
+    const bounds = this.host.getBoundingClientRect();
+    const original = nearest.label.getBoundingClientRect();
+    const left = Math.max(bounds.left + 10, Math.min(bounds.right - original.width - 10, original.left));
+    const top = Math.max(bounds.top + 10, Math.min(bounds.bottom - original.height - 10, original.top));
+    nearest.label.style.left = `${left - original.left}px`;
+    nearest.label.style.top = `${top - original.top}px`;
+    const occupied = [nearest.label.getBoundingClientRect()];
+    const others = [...this.marks.values()].filter((m) => m !== nearest && !m.label.hidden)
+      .sort((a, b) => Math.hypot(a.sound.x - listener.x, a.sound.z - listener.z) - Math.hypot(b.sound.x - listener.x, b.sound.z - listener.z));
+    for (const m of others) {
+      let rect = m.label.getBoundingClientRect();
+      if (occupied.some((r) => rect.left < r.right + 8 && rect.right > r.left - 8 && rect.top < r.bottom + 8 && rect.bottom > r.top - 8)) {
+        const above = Math.min(...occupied.map((r) => r.top)) - rect.height - 8;
+        const below = Math.max(...occupied.map((r) => r.bottom)) + 8;
+        const top = above >= bounds.top + 8 ? above : below;
+        m.label.style.top = `${top - rect.top}px`;
+        rect = m.label.getBoundingClientRect();
+      }
+      occupied.push(rect);
     }
   }
 }

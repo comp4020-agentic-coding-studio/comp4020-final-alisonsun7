@@ -1737,3 +1737,53 @@ in memory so the running browser checks never saw a half-written bundle.
 `docs/evidence/quiet-light-collision-2026-11-07.json` records counts and hashes.
 Complete typecheck and the final 69-test suite passed. Final integrated visual
 checks include the revised trees and zero-transmission actual WebGL materials.
+
+
+## 62. Integrate the Quiet Light world and protect sound actions (2026-11-07)
+
+Replaced all in-world cat/dog sprites with the original rigs: peers use server
+yaw when still and movement direction while walking; labels follow their heads.
+NPC seats have fixed physical positions/facing, without the old shift towards
+the camera. Foot and marker anchors query existing floors, including raised
+planks; the listener, player coordinates and all sound audio methods stay the
+same. The illustrated kangaroo helper is retained. A softer shadow filter from
+the installed Three 0.170, warm daylight/cool fill, lower HDR intensity and a
+single-draw procedural cloud sky complete the visual pass. Reduced motion stops
+cloud/plant/NPC movement, and later sky changes cannot restore disabled shadows.
+
+Made source lights smaller and quieter, with rings just above their actual
+floor rather than floating at a constant 0.55m. The first close review still
+showed excessive glow, so its radius/opacity were reduced again. An aligned
+three-source fixture exposed a distant title over the near action card. The
+new `e2e/quiet-light.mjs` failed on that actual overlap before the layout fix.
+Other titles now stack away from the nearest card. The next narrow check found
+its near card at x=-42px; clamping the card to the visible world corrected it.
+The same test then passed all seven observations, including 44px controls,
+actual 3D bodies, grounded rings, zero transmissive lamp materials and no
+automatic audio. No assertions were relaxed. It now runs in the normal chain.
+
+All ten pre-existing Chrome suites passed on scratch 18874, including the full
+busker output-RMS/lifecycle check that previously stalled outside the app. This
+run does not identify the earlier browser/device cause. The final typecheck,
+build, 69/69 HTTP/local/rig checks, collision comparison and evidence-link check
+passed. After the label change, sound discovery and cooperative UI are rerun
+separately; their final result is recorded below. Audio, hut admission, movement
+controls, environment revisions and room logic were also compared by method and
+left intact; visual add/draw and the new label-layout method are the only
+Soundscape changes.
+
+Sixteen weather/time combinations and nine zones were captured and viewed,
+with the added mark checks covering bright sand, night, rain and mist. The final
+matrix and bounded rain/reduced-motion checks passed. On this Mac's M5 Pro via
+Chrome/Metal at DPR1: desktop rain 60.22fps, forest 60.17fps, narrow rain 60.08fps;
+shadows remained on. These are desktop and simulated viewport measurements, not
+physical-phone claims. The metric JSON records exact draws/triangles and
+provenance; representative real runtime captures are in `docs/screenshots/19-*`.
+
+Harness corrections: an initial marker test reused contribution IDs at new
+positions, contrary to immutable source locations; separate IDs corrected the
+fixture. Standalone captures also needed the actual scene-page CSS class. A
+character-sheet helper loading the landing page exposed an unrelated legacy
+photo URL returning 404; landing art is fixed in the next step, and the helper
+now opens About before creating its isolated sheet. Failure logs were retained
+locally; no app audio or assertion was replaced to obtain a pass.

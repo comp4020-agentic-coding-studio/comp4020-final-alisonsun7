@@ -1,0 +1,58 @@
+{
+  "candidate": "http://localhost:18874",
+  "scratchDatabase": true,
+  "suites": [
+    {
+      "suite": "world-two-browsers",
+      "exit": 0,
+      "seconds": 45.2
+    },
+    {
+      "suite": "meet-and-talk",
+      "exit": 0,
+      "seconds": 44.9
+    },
+    {
+      "suite": "leave-a-sound",
+      "exit": 0,
+      "seconds": 8.5
+    },
+    {
+      "suite": "sound-discovery",
+      "exit": 0,
+      "seconds": 12.3
+    },
+    {
+      "suite": "look-controls",
+      "exit": 0,
+      "seconds": 8.3
+    },
+    {
+      "suite": "huts",
+      "exit": 0,
+      "seconds": 45.1
+    },
+    {
+      "suite": "busker-sound",
+      "exit": 0,
+      "seconds": 8.5
+    },
+    {
+      "suite": "cooperative-play",
+      "exit": 0,
+      "seconds": 23.1
+    },
+    {
+      "suite": "cooperative-ack-race",
+      "exit": 0,
+      "seconds": 18.8
+    },
+    {
+      "suite": "environment",
+      "exit": 0,
+      "seconds": 21.2
+    }
+  ],
+  "browser": "Chrome, ANGLE Metal",
+  "notes": "Full behavioral chain ran before the final lamp transmission downgrade; collision/material and rendered-matrix checks follow that visual-only correction. No assertions relaxed."
+}

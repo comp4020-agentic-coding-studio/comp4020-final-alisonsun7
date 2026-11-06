@@ -23,13 +23,14 @@ checks, never draft them.
 
 Sound of a City. One imagined place you walk through in first person, From
 the Forest to the Sea: a forest trail, a creek and footbridge, a boardwalk
-with a café, fish and chip kiosk and beach huts, the beach and a pier. Built from CC0 assets, with drawn cat and dog figures for
+with a café, fish and chip kiosk and beach huts, the beach and a pier. Built from CC0 assets, with original three-dimensional cat and dog figures for
 the people in it, who see each other and can talk when they meet, and
 leave sounds where they stand for everyone to hear (ADR 011).
 
 The place (`seaside`, three.js, shared weather and clock: ADR 018) is the only one. Its
 `PlaceKit` is in `client/seaside.ts` (the café's room in `client/cafe.ts`);
-the toolkit in `client/world-build.ts`; the view in `client/world.ts`; the
+the toolkit in `client/world-build.ts`; original people in `client/characters.ts`;
+the view in `client/world.ts`; the
 sounds people leave in `client/soundscape.ts`, with the sounds on offer and
 their rules in `shared/sounds.ts`. The library is in
 `client/sound-library.ts`, and the optional nearby guide in
@@ -147,6 +148,9 @@ without Wen's go-ahead.
   dirty/conflicting drafts, interrupted requests without automatic retries,
   late acknowledgements, same-room scene travel with lasting contributions,
   reduced motion and phone/landscape keyboard layout. It is part of `pnpm e2e`.
+- `e2e/quiet-light.mjs` checks the actual 3D rigs, grounded sound cues, lamp
+  rendering and aligned-source labels (including reachable phone actions) in a
+  silent fixture with no database writes. It is part of `pnpm e2e`.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

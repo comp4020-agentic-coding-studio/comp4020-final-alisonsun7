@@ -4,8 +4,9 @@
 // played by client/soundscape.ts, through the few things this lends it.
 import * as THREE from "three";
 import type { Scene } from "../shared/catalog.js";
-import type { Avatar, Person } from "../shared/protocol.js";
-import { figureAspect, figureSvg, KID_ASPECT, kidAspect, kidSvg, kangarooSvg, passerAvatar, type Pose } from "./figures.js";
+import type { Person } from "../shared/protocol.js";
+import { kangarooSvg, passerAvatar, type Pose } from "./figures.js";
+import { AnimalFigure } from "./characters.js";
 import { beachBallTexture } from "./huts.js";
 import { environmentLight, mixLight, type Light } from "./sky.js";
 import { minuteAt, timePhase, type Environment } from "../shared/environment.js";
@@ -47,11 +48,12 @@ export interface Other extends Person {
 
 interface OtherView {
   person: Person;
-  sprite: THREE.Sprite;
+  sprite: AnimalFigure;
   gait: Gait;
   pose: "walk" | "stand";
   at: THREE.Vector3;
   goal: THREE.Vector3;
+  yaw: number;
   label: HTMLDivElement;
   bubble: HTMLDivElement;
   bubbleTimer?: ReturnType<typeof setTimeout>;
@@ -62,57 +64,33 @@ const TALK = 3.5;
 const SAID_MS = 5000;
 
 interface Passer {
-  sprite: THREE.Sprite;
+  sprite: AnimalFigure;
   path: THREE.Vector3[];
   t: number;
   speed: number;
-  // null for someone under an umbrella, who keeps one drawing
   gait: Gait | null;
-  // seconds left standing at the end of the path before turning back
   wait: number;
 }
 
-// Someone who stays put, and what they do there: breathe, and now and then
-// change pose (a guitarist's hand, a barista turning to the machine).
 interface RegularView {
-  sprite: THREE.Sprite;
-  height: number;
-  // where they are; someone sitting is drawn a little towards you from
-  // there, so the chair or bench they sit on is behind them, not through them
-  at: THREE.Vector3;
-  sits: boolean;
-  // staff who walk to another spot now and then (`roam`), and back
+  sprite: AnimalFigure;
+  facing: number;
   roam: { home: THREE.Vector3; away: THREE.Vector3; gait: Gait; going: "away" | "home" | null; wait: number } | null;
-  // their usual pose's texture and the one they change to, if any
-  keys: [string, string] | null;
-  // seconds for one round, the share of it spent in the second pose, and
-  // where in the round they start
+  poses: [Pose, Pose];
   period: number;
   share: number;
   offset: number;
 }
 
-// A walking figure: how far through a stride it is, and which drawing,
-// seen from here. The drawings are frames of a stride, swapped as the walker
-// covers ground, so the feet keep pace with the ground and don't slide.
-interface Gait {
-  avatar: Avatar;
-  seed: string;
-  phase: number;
-  facing: Facing;
-  left: boolean;
-  // a child, drawn by kidSvg
-  kid?: boolean;
-}
-type Facing = "walk" | "walk-front" | "walk-back";
-const FRAMES = 8;
+// Stride follows distance travelled, independent of the viewing camera.
+interface Gait { phase: number }
+const newGait = (): Gait => ({ phase: Math.random() });
 
 // Children passing a beach ball. Now and then a throw goes wide: the ball
 // lands, bounces and rolls, and the child it was for runs to fetch it and
 // brings it back to their place.
 interface Kid {
-  sprite: THREE.Sprite;
-  keys: [string, string];
+  sprite: AnimalFigure;
   hop: number;
   home: THREE.Vector3;
   gait: Gait;
@@ -139,7 +117,7 @@ const RUN = 5.6;
 const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 
-// The SVG figures as sprite textures, drawn once per look.
+// The illustrated kangaroo helper retains its original drawing.
 const textureCache = new Map<string, THREE.Texture>();
 // The canvas must have the drawing's own proportions (people are 3:10), or
 // the drawing fills only part of it and the sprite looks too small.
@@ -157,63 +135,28 @@ function svgTexture(key: string, svg: string, width = 180, height = 600): THREE.
   return tex;
 }
 
-// A texture is ready to show once its drawing has loaded; until then a
-// sprite keeps what it had, rather than flashing empty.
-function ready(t: THREE.Texture): boolean {
-  const img = t.image as HTMLImageElement | undefined;
-  return !!img && img.complete && img.naturalWidth > 0;
-}
-
-// A stride's side view is drawn wider than standing, so the sprite takes
-// each drawing's own width.
-function show(sprite: THREE.Sprite, tex: THREE.Texture): void {
-  const mat = sprite.material as THREE.SpriteMaterial;
-  if (mat.map === tex || !ready(tex)) return;
-  mat.map = tex;
-  mat.needsUpdate = true;
-  sprite.scale.x = sprite.scale.y * tex.userData.aspect;
-}
-
-function strideTexture(g: Gait, facing: Facing, frame: number): THREE.Texture {
-  const key = `${g.seed}:${facing}:${frame}`;
-  if (g.kid) return svgTexture(key, kidSvg(g.avatar, facing, g.seed, frame / FRAMES), 648 * kidAspect(facing), 648);
-  return svgTexture(key, figureSvg(g.avatar, facing, g.seed, frame / FRAMES), 600 * figureAspect(facing));
-}
-
-// All of one view's frames at once, so they've loaded by the time they're
-// needed.
-function loadStride(g: Gait, facing: Facing): void {
-  for (let f = 0; f < FRAMES; f++) strideTexture(g, facing, f);
-}
-
-const newGait = (avatar: Avatar, seed: string, kid = false): Gait => {
-  const g: Gait = { avatar, seed, phase: Math.random(), facing: "walk", left: false, kid };
-  loadStride(g, "walk");
-  return g;
-};
-
-// figureSvg's viewBox is 60 × 200 (umbrella: 88 × 206); sprites are 1.75 m
-function figureSprite(key: string, svg: string, umbrella: boolean, tint: number): THREE.Sprite {
-  const mat = new THREE.SpriteMaterial({ map: svgTexture(key, svg), color: tint, transparent: true, alphaTest: 0.05, depthWrite: true });
-  const s = new THREE.Sprite(mat);
-  s.center.set(0.5, 0.03);
-  const h = 1.75;
-  s.scale.set(umbrella ? (h * 88) / 206 : (h * 60) / 200, h, 1);
-  return s;
-}
-
 const SKY_VERT = `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
-const SKY_FRAG = `uniform vec3 top; uniform vec3 horizon; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float glow; uniform float stars; uniform float cloudCover;
+const SKY_FRAG = `uniform vec3 top; uniform vec3 horizon; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float glow; uniform float stars; uniform float cloudCover; uniform float cloudTime;
 varying vec3 vDir;
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p){
+  vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + 1.0), f.x), f.y);
+}
+float cloudsAt(vec2 p){ return noise(p) * 0.58 + noise(p * 2.03 + 7.0) * 0.28 + noise(p * 4.07) * 0.14; }
 void main(){
   vec3 direction = normalize(vDir);
   float h = direction.y;
   vec3 c = h > 0.0 ? mix(horizon, top, pow(min(h * 1.6, 1.0), 0.7)) : mix(horizon, bottom, min(-h * 4.0, 1.0));
   float s = max(dot(direction, normalize(sunDir)), 0.0);
   c += sunColor * glow * (pow(s, 8.0) * 0.45 + pow(s, 600.0) * 1.6);
-  float clouds = sin(direction.x * 17.0 + direction.z * 11.0) * sin(direction.z * 13.0 - direction.y * 8.0);
-  c = mix(c, horizon * 0.92, cloudCover * smoothstep(-0.5, 0.65, clouds) * smoothstep(0.0, 0.4, h) * 0.35);
+  // Broad, softly modelled cloud banks, made in the sky's one draw call.
+  vec2 cloudUV = direction.xz / max(0.12, h + 0.24) * 3.2 + vec2(cloudTime * 0.003, cloudTime * 0.001);
+  float cloudShape = cloudsAt(cloudUV);
+  float cloudMask = smoothstep(0.61 - cloudCover * 0.21, 0.81 - cloudCover * 0.19, cloudShape);
+  cloudMask *= smoothstep(0.015, 0.20, h) * (1.0 - smoothstep(0.66, 1.0, h));
+  vec3 cloudColour = mix(horizon * 0.84, horizon * 1.04 + sunColor * 0.035, smoothstep(0.48, 0.80, cloudShape));
+  c = mix(c, cloudColour, cloudMask * (0.4 + cloudCover * 0.5));
   // A fixed celestial sky: no textures, extra draw calls or flickering.
   vec2 starUV = vec2(atan(direction.z, direction.x), asin(clamp(h, -1.0, 1.0))) * vec2(96.0, 76.0);
   vec2 cell = floor(starUV);
@@ -297,7 +240,7 @@ export class WorldView {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     const canvas = this.renderer.domElement;
     canvas.className = "world-canvas";
     canvas.tabIndex = 0;
@@ -336,6 +279,7 @@ export class WorldView {
           glow: { value: 0 },
           stars: { value: 0 },
           cloudCover: { value: 0 },
+          cloudTime: { value: 0 },
         },
       }),
     );
@@ -362,6 +306,8 @@ export class WorldView {
     this.applyLight(this.light);
 
     this.buildPassers();
+    this.movePassers(0);
+    for (const p of this.passers) { p.sprite.setPose("stand"); p.sprite.setMotion(0, false); }
     this.buildRegulars();
     this.buildGame();
 
@@ -466,6 +412,14 @@ export class WorldView {
     return { w: this.host.clientWidth, h: this.host.clientHeight };
   }
 
+  // Visual anchors sit on actual floor geometry, including raised planks.
+  // This never changes the listener, movement, admission or sound position.
+  surfaceHeight(x: number, z: number): number {
+    for (const floor of this.built.floors) floor.updateWorldMatrix(true, false);
+    const ray = new THREE.Raycaster(new THREE.Vector3(x, 8, z), new THREE.Vector3(0, -1, 0), 0, 16);
+    return ray.intersectObjects(this.built.floors, false)[0]?.point.y ?? 0;
+  }
+
   isInside(x: number, z: number): boolean {
     return this.kit.isInside(x, z);
   }
@@ -555,8 +509,8 @@ export class WorldView {
     b.paving.metalness = l.wetness * 0.18;
     b.paving.color.setHex(0xffffff).lerp(new THREE.Color(0x8f8d90), l.wetness);
     this.renderer.toneMappingExposure = l.exposure;
-    for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? [])]) (p.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
-    for (const other of this.others.values()) (other.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
+    for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? [])]) p.sprite.setTint(l.figureTint);
+    for (const other of this.others.values()) other.sprite.setTint(l.figureTint);
     if (this.roo) (this.roo.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
   }
 
@@ -592,12 +546,11 @@ export class WorldView {
       const umbrella = this.mode === "rainy-dusk" && !this.kit.isInside(path[0].x, path[0].z);
       const seed = `passer-${this.mode}-${i}`;
       const avatar = passerAvatar(seed);
-      const sprite = figureSprite(`${seed}:${umbrella ? "umbrella" : "stand"}`, figureSvg(avatar, umbrella ? "umbrella" : "stand", seed), umbrella, this.light.figureTint);
-      (sprite.material as THREE.SpriteMaterial).opacity = 0.92;
+      const sprite = new AnimalFigure({ avatar, seed, pose: umbrella ? "umbrella" : "stand" });
       this.built.root.add(sprite);
       // each at their own pace, a little either side of 1.35 m/s
       const speed = (this.mode === "weekday" ? 1.2 : 0.9) + (i % 3) * 0.12 + Math.random() * 0.1;
-      this.passers.push({ sprite, path, t: (i * 0.37) % 1, speed, gait: umbrella ? null : newGait(avatar, seed), wait: 0 });
+      this.passers.push({ sprite, path, t: (i * 0.37) % 1, speed, gait: umbrella ? null : newGait(), wait: 0 });
     }
   }
 
@@ -608,19 +561,19 @@ export class WorldView {
     for (const [i, r] of (this.kit.regulars?.[this.mode] ?? []).entries()) {
       const seed = `regular-${i}`;
       const avatar = i % 3 === 1 ? "dog" : "cat";
-      const sprite = figureSprite(`${seed}:${r.pose}`, figureSvg(avatar, r.pose, seed), false, this.light.figureTint);
-      (sprite.material as THREE.SpriteMaterial).opacity = 0.92;
-      // sitting, a head is lower: about 1.3 m rather than 1.6
-      if (r.pose === "sit" || r.pose === "guitar") sprite.scale.multiplyScalar(0.8);
-      sprite.position.set(r.x, 0, r.z);
+      const sprite = new AnimalFigure({ avatar, seed, pose: r.pose });
+      // +Z faces the boardwalk; people at the glass bar face out to sea.
+      const facing = r.facing ?? (r.pose === "back" ? Math.PI : 0);
+      sprite.setFacing(facing);
+      const floorY = this.surfaceHeight(r.x, r.z);
+      sprite.position.set(r.x, floorY, r.z);
       this.built.root.add(sprite);
       // a guitarist's hand goes up and down; talkers gesture and rest; some
       // turn now and then to what they're doing
       const second: Pose | undefined = r.pose === "guitar" ? "strum" : r.pose === "talk" ? "stand" : r.alt;
-      if (second) svgTexture(`${seed}:${second}`, figureSvg(avatar, second, seed));
       const [period, share] = r.pose === "guitar" ? [0.52, 0.5] : r.pose === "talk" ? [2 + (i % 3) * 0.5, 0.45] : [7 + (i % 4) * 1.5, 0.35];
-      const roam = r.roam ? { home: new THREE.Vector3(r.x, 0, r.z), away: new THREE.Vector3(r.roam[0], 0, r.roam[1]), gait: newGait(avatar, seed), going: null, wait: 6 + Math.random() * 10 } : null;
-      this.regulars.push({ sprite, height: sprite.scale.y, at: new THREE.Vector3(r.x, 0, r.z), sits: r.pose === "sit" || r.pose === "guitar", roam, keys: second ? [`${seed}:${r.pose}`, `${seed}:${second}`] : null, period, share, offset: Math.random() });
+      const roam = r.roam ? { home: new THREE.Vector3(r.x, floorY, r.z), away: new THREE.Vector3(r.roam[0], this.surfaceHeight(...r.roam), r.roam[1]), gait: newGait(), going: null, wait: 6 + Math.random() * 10 } : null;
+      this.regulars.push({ sprite, facing, roam, poses: [r.pose, second ?? r.pose], period, share, offset: Math.random() });
     }
   }
 
@@ -631,15 +584,11 @@ export class WorldView {
     const kids = at.map(([x, z], i) => {
       const seed = `kid-${i}`;
       const avatar = i % 2 ? "dog" : "cat";
-      const keys: [string, string] = [`${seed}:stand`, `${seed}:arms-up`];
-      const tex = svgTexture(keys[0], kidSvg(avatar, "stand", seed), 180, 648);
-      svgTexture(keys[1], kidSvg(avatar, "arms-up", seed), 180, 648);
-      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: this.light.figureTint, transparent: true, alphaTest: 0.05, opacity: 0.95 }));
-      sprite.center.set(0.5, 0.03);
-      sprite.scale.set(KID_H * KID_ASPECT, KID_H, 1);
+      const sprite = new AnimalFigure({ avatar, seed, height: KID_H, child: true });
+      sprite.setFacing(Math.atan2(4 - x, 14 - z));
       sprite.position.set(x, 0, z);
       this.built.root.add(sprite);
-      return { sprite, keys, hop: 0, home: new THREE.Vector3(x, 0, z), gait: newGait(avatar, seed, true) };
+      return { sprite, hop: 0, home: new THREE.Vector3(x, 0, z), gait: newGait() };
     });
     const ball = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 14), new THREE.MeshStandardMaterial({ map: beachBallTexture(), roughness: 0.45 }));
     ball.castShadow = true;
@@ -771,20 +720,11 @@ export class WorldView {
       k.sprite.position.y = Math.sin((k.hop / 0.35) * Math.PI) * 0.12;
       // a running child's frames are the stride's
       if (i === runner && !(g.state === "fetching" && g.t > 0)) return;
-      show(k.sprite, textureCache.get(k.keys[up.has(i) ? 1 : 0])!);
+      k.sprite.setPose(up.has(i) ? "arms-up" : "stand");
+      k.sprite.setMotion(0, false);
+      const partner = g.kids[i === g.from ? g.to : g.from].sprite.position;
+      k.sprite.setFacing(Math.atan2(partner.x - k.sprite.position.x, partner.z - k.sprite.position.z));
     });
-  }
-
-  // Sitters a little towards you (every frame, whatever the motion setting).
-  private placeSitters(): void {
-    for (const r of this.regulars) {
-      if (!r.sits) continue;
-      const dx = this.x - r.at.x;
-      const dz = this.z - r.at.z;
-      const d = Math.hypot(dx, dz) || 1;
-      const k = Math.min(0.3, d * 0.5) / d;
-      r.sprite.position.set(r.at.x + dx * k, 0, r.at.z + dz * k);
-    }
   }
 
   // Staff now and then walk to another spot (the other end of the counter,
@@ -815,56 +755,27 @@ export class WorldView {
 
   private idle(now: number): void {
     const t = now / 1000;
-    for (const [i, r] of this.regulars.entries()) {
-      // a breath every three or four seconds
-      r.sprite.scale.y = r.height * (1 + 0.007 * Math.sin(t * (1.6 + (i % 3) * 0.2) + i * 1.3));
+    for (const r of this.regulars) {
       if (r.roam?.going) continue;
-      // away from home, at work: turned to it
-      if (r.roam && r.sprite.position.distanceTo(r.roam.home) > 0.05 && r.keys) {
-        show(r.sprite, textureCache.get(r.keys[1])!);
-        continue;
-      }
-      if (!r.keys) {
-        if (r.roam) show(r.sprite, textureCache.get(`regular-${i}:stand`) ?? (r.sprite.material as THREE.SpriteMaterial).map!);
-        continue;
-      }
-      const second = (t / r.period + r.offset) % 1 > 1 - r.share;
-      show(r.sprite, textureCache.get(r.keys[second ? 1 : 0])!);
+      const away = r.roam && r.sprite.position.distanceTo(r.roam.home) > 0.05;
+      const second = away || (t / r.period + r.offset) % 1 > 1 - r.share;
+      const pose = r.poses[second ? 1 : 0];
+      r.sprite.setPose(pose);
+      r.sprite.setMotion(t / 4 + r.offset, false);
+      r.sprite.setFacing(r.facing + (pose === "back" && r.poses[0] !== "back" ? Math.PI : 0));
     }
   }
 
-  // A walker moved from `from` to `to` in `dt` seconds: on through the
-  // stride by the ground covered, and the drawing for the way they're going
-  // as seen from here (side on, coming towards you, or going away).
-  private stride(sprite: THREE.Sprite, g: Gait, from: THREE.Vector3, to: THREE.Vector3, dt: number): void {
+  private stride(sprite: AnimalFigure, g: Gait, from: THREE.Vector3, to: THREE.Vector3, dt: number): void {
     const dx = to.x - from.x;
     const dz = to.z - from.z;
     const moved = Math.hypot(dx, dz);
     if (moved < 1e-5) return;
-    // a stride (a step of each leg) lengthens as people go faster
     const speed = moved / Math.max(dt, 1e-3);
     g.phase = (g.phase + moved / (1.2 + 0.25 * Math.min(speed, 6))) % 1;
-    const ex = this.x - to.x;
-    const ez = this.z - to.z;
-    const towards = (dx * ex + dz * ez) / (moved * Math.max(Math.hypot(ex, ez), 1e-3));
-    // a little stickiness, so someone walking at an angle doesn't flicker
-    // between views
-    const keep = g.facing === "walk" ? 0.75 : 0.6;
-    const facing: Facing = towards > keep ? "walk-front" : towards < -keep ? "walk-back" : g.facing !== "walk" && Math.abs(towards) > 0.6 ? g.facing : "walk";
-    if (facing !== "walk" && !textureCache.has(`${g.seed}:${facing}:0`)) loadStride(g, facing);
-    const tex = strideTexture(g, facing, Math.floor(g.phase * FRAMES) % FRAMES);
-    if (!ready(tex)) return;
-    g.facing = facing;
-    if (facing === "walk") {
-      // the side view faces right: mirror it when they go left on screen
-      const s0 = from.clone().project(this.camera).x;
-      const s1 = to.clone().project(this.camera).x;
-      if (Math.abs(s1 - s0) > 1e-5) g.left = s1 < s0;
-    }
-    const flip = facing === "walk" && g.left;
-    tex.repeat.x = flip ? -1 : 1;
-    tex.offset.x = flip ? 1 : 0;
-    show(sprite, tex);
+    sprite.setFacing(Math.atan2(dx, dz));
+    sprite.setPose("walk");
+    sprite.setMotion(g.phase, true);
   }
 
   private buildRain(): void {
@@ -1140,7 +1051,6 @@ export class WorldView {
       this.playBall(dt);
     }
     this.moveOthers(dt);
-    this.placeSitters();
     if (this.rain?.visible && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
       const a = pos.array as Float32Array;
@@ -1152,7 +1062,10 @@ export class WorldView {
       pos.needsUpdate = true;
     }
 
-    if (!reduced()) wind.value = now / 1000;
+    if (!reduced()) {
+      wind.value = now / 1000;
+      this.sky.material.uniforms.cloudTime.value = now / 1000;
+    }
     this.renderer.render(this.scene3, this.camera);
     // where you are, for the end-to-end checks, a few times a second
     if (now - this.reportedAt > 160) {
@@ -1210,8 +1123,9 @@ export class WorldView {
       seen.add(p.id);
       let o = this.others.get(p.id);
       if (!o) {
-        const sprite = figureSprite(`${p.avatar}:stand:${p.id}`, figureSvg(p.avatar, "stand", p.id), false, this.light.figureTint);
-        sprite.position.set(p.x, 0, p.z);
+        const sprite = new AnimalFigure({ avatar: p.avatar, seed: p.id });
+        sprite.setFacing(p.yaw + Math.PI);
+        sprite.position.set(p.x, this.surfaceHeight(p.x, p.z), p.z);
         this.built.root.add(sprite);
         const label = document.createElement("div");
         label.className = "other-name";
@@ -1220,14 +1134,15 @@ export class WorldView {
         bubble.className = "said-bubble";
         bubble.hidden = true;
         this.overlay.append(label, bubble);
-        o = { person: p, sprite, gait: newGait(p.avatar, p.id), pose: "stand", at: new THREE.Vector3(p.x, 0, p.z), goal: new THREE.Vector3(p.x, 0, p.z), label, bubble };
+        o = { person: p, sprite, gait: newGait(), pose: "stand", at: sprite.position.clone(), goal: sprite.position.clone(), yaw: p.yaw, label, bubble };
         this.others.set(p.id, o);
       }
-      o.goal.set(p.x, 0, p.z);
+      o.goal.set(p.x, this.surfaceHeight(p.x, p.z), p.z);
+      o.yaw = p.yaw;
     }
     for (const [id, o] of this.others) {
       if (seen.has(id)) continue;
-      this.built.root.remove(o.sprite);
+      o.sprite.dispose();
       o.label.remove();
       o.bubble.remove();
       clearTimeout(o.bubbleTimer);
@@ -1258,7 +1173,11 @@ export class WorldView {
       const speed = before.distanceTo(o.at) / Math.max(dt, 1e-3);
       o.pose = speed > 0.4 ? "walk" : "stand";
       if (o.pose === "walk" && !reduced()) this.stride(o.sprite, o.gait, before, o.at, dt);
-      else show(o.sprite, svgTexture(`${o.person.avatar}:stand:${o.person.id}`, figureSvg(o.person.avatar, "stand", o.person.id)));
+      else {
+        o.sprite.setPose("stand");
+        o.sprite.setMotion(0, false);
+        o.sprite.setFacing(o.yaw + Math.PI);
+      }
       o.sprite.position.copy(o.at);
       const d = Math.hypot(o.at.x - this.x, o.at.z - this.z);
       if (d < nearestD) {
@@ -1266,7 +1185,10 @@ export class WorldView {
         nearest = o;
       }
       // name and words over their head
-      v.copy(o.at).setY(1.95).project(this.camera);
+      o.sprite.updateWorldMatrix(true, true);
+      o.sprite.headAnchor.getWorldPosition(v);
+      v.y += 0.24;
+      v.project(this.camera);
       const visible = v.z < 1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1 && d < 40;
       const x = ((v.x + 1) / 2) * w;
       const y = ((1 - v.y) / 2) * h;
@@ -1533,7 +1455,7 @@ export class WorldView {
       // standing a moment at either end before turning back
       if (p.wait > 0) {
         p.wait -= dt;
-        if (p.gait) show(p.sprite, svgTexture(`${p.gait.seed}:stand`, figureSvg(p.gait.avatar, "stand", p.gait.seed)));
+        if (p.gait) { p.sprite.setPose("stand"); p.sprite.setMotion(0, false); }
         continue;
       }
       // back and forth along the path
@@ -1551,6 +1473,7 @@ export class WorldView {
       const b = p.path[i + 1];
       v.copy(a).lerp(b, Math.min(1, d / a.distanceTo(b)));
       const prev = p.sprite.position.clone();
+      v.y = this.surfaceHeight(v.x, v.z);
       p.sprite.position.copy(v);
       if (p.gait) this.stride(p.sprite, p.gait, prev, v, dt);
     }
