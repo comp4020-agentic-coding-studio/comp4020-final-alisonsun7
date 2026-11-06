@@ -1631,3 +1631,22 @@ These are explicitly AI-generated selection previews, not implemented runtime
 screenshots or CC0 assets. No app code, public asset, database, sound behaviour
 or running preview was changed. No runtime tests or performance measurements
 were warranted for this proposal-only step. JSON parsing and diff checks passed.
+
+
+## 58. Preserve the version before Quiet Light (2026-11-07)
+
+Wen selected D and asked for a recoverable version. Git was clean at `0becc46`.
+Created annotated tag `before-quiet-light-2026-11-07` and branch
+`feat/quiet-light-art`; the former branch remains at its original commit. A
+read-only SQLite backup captured the existing review database in ignored cache.
+Copied the existing compiled bundle before any candidate build, and prepared a
+separate candidate output root. The 18861 preview continues using its old bundle
+and original database while art is developed.
+
+The preserved bundle started against a scratch database on 18875. Scene, world
+module, CSS and Three.js each returned 200; the smoke service was then stopped.
+The first smoke harness incorrectly expected a world-module reference directly
+in HTML (it is imported by the scene module), so its assertion timed out. The
+corrected check fetched each actual route and passed; application code did not
+change to satisfy it. ADR 019 and the rollback guide distinguish app rollback
+from data restoration. No art implementation is claimed verified at this step.

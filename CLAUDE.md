@@ -12,7 +12,8 @@ while they're in; 014 adds the searchable sound library and nearby listening
   guide; 015 records configurable look, authoritative hut admission and the
   explicitly requested local guitarist; 016 adds durable sound replies and
   017 records the coastal art direction; 018 adds shared weather, a clock and
-  scenic destinations (003, 008 and 009 are history).
+  scenic destinations; 019 develops Wen's selected Quiet Light art direction
+with an explicit rollback point (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and

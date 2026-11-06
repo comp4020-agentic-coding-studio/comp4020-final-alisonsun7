@@ -1,6 +1,7 @@
 # Four art directions for From the Forest to the Sea
 
-Status: **Selection proposal; no direction has been approved.**
+Status: **D — Quiet Light selected by Wen on 2026-11-07.**
+Implementation and rollback constraints are recorded in [ADR 019](../decisions/019-quiet-light-art.md).
 
 Wen asked for stronger art and several designs to choose from on 2026-11-06.
 These options develop the place in [ADR 017](../decisions/017-coastal-art-direction.md)
