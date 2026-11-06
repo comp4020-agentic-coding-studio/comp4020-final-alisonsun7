@@ -1,6 +1,7 @@
 // The wire shapes between server and client: SSE (server → client) plus JSON
 // POSTs (client → server). A place's live state is who is there, where they
 // stand, what they say, and the sounds people have left in it (ADR 011).
+import type { Environment } from "./environment.js";
 
 export type Avatar = "cat" | "dog";
 export const AVATARS: Avatar[] = ["cat", "dog"];
@@ -73,6 +74,7 @@ export interface Snapshot {
   online: Person[];
   you: Person | null; // null for someone looking before they've joined
   sounds: PlacedSound[];
+  environment: Environment;
 }
 
 export interface Presence {
@@ -118,4 +120,13 @@ export interface SoundRemoved {
   left?: boolean;
 }
 
-export type ServerMessage = Snapshot | Presence | Moves | Said | SoundLeft | SoundRemoved;
+export interface EnvironmentChanged {
+  type: "environment";
+  sessionId: string;
+  environment: Environment;
+  serverNow: string;
+  by: string;
+  byId: string;
+}
+
+export type ServerMessage = Snapshot | Presence | Moves | Said | SoundLeft | SoundRemoved | EnvironmentChanged;

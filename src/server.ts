@@ -25,6 +25,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/listening-trail.js": js("/client/listening-trail.js"),
   "/client/look-settings.js": js("/client/look-settings.js"),
   "/client/sound-conversations.js": js("/client/sound-conversations.js"),
+  "/client/environment-panel.js": js("/client/environment-panel.js"),
   "/client/places.js": js("/client/places.js"),
   // three.js, the one library the browser loads (ADR 004), straight from the
   // installed package; pages map the bare "three" import to it
@@ -33,6 +34,8 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/shared/protocol.js": js("/shared/protocol.js"),
   "/shared/sounds.js": js("/shared/sounds.js"),
   "/shared/huts.js": js("/shared/huts.js"),
+  "/shared/environment.js": js("/shared/environment.js"),
+  "/shared/landscapes.js": js("/shared/landscapes.js"),
   "/client/soundscape.js": js("/client/soundscape.js"),
   "/client/style.css": { file: new URL("./client/style.css", import.meta.url), type: "text/css" },
 };
@@ -210,13 +213,14 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
-  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/(move|say)$/);
+  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/(move|say|environment)$/);
   // Where a person stands, and something they say to whoever is near (ADR
   // 007). Who it is comes from the cookie, as for every change.
   if (method === "POST" && sessionApi) {
     if (!user) return json(res, 401, { ok: false, code: "no_session" });
     const body = await readJson(req);
-    const result = sessionApi[2] === "move" ? sessions.move(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
+    const result = sessionApi[2] === "move" ? sessions.move(user, sessionApi[1], body)
+      : sessionApi[2] === "environment" ? sessions.changeEnvironment(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
     const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
     return json(res, status, result);
   }

@@ -11,6 +11,7 @@ import { randomBytes } from "node:crypto";
 import { db, inTransaction, nowIso } from "./db.js";
 import { log } from "./log.js";
 import { placeMode, roomKey } from "./shared/catalog.js";
+import { createDefaultEnvironment, WEATHERS, type Environment, type EnvironmentResult, type Weather } from "./shared/environment.js";
 import type { Avatar, MoveResult, Person, PlacedSound, Snapshot, SoundPlacementResult, SoundReference, SoundReplies } from "./shared/protocol.js";
 import { CROWD_MAX, CROWD_RADIUS, PLACE_MAX, REACH, SAME_APART, findSound } from "./shared/sounds.js";
 import { hutAt, isPrivate, privateSound } from "./shared/huts.js";
@@ -85,6 +86,7 @@ export function snapshotFor(session: SessionRow, user: User | null): Snapshot {
     online: onlineIn(session.scene_id, session.mode, session),
     you: user ? ensureParticipant(session, user) : null,
     sounds: liveSounds(session.id),
+    environment: environmentFor(session),
   };
 }
 
@@ -95,6 +97,66 @@ function sendAll(sceneId: string, mode: string, msg: unknown): void {
   if (!room) return;
   const data = frame(msg);
   for (const res of room.keys()) res.write(data);
+}
+
+// ---- the shared sky and clock -------------------------------------------
+
+interface EnvironmentRow {
+  weather: Weather;
+  minute_of_day: number;
+  clock_running: number;
+  updated_at: string;
+  revision: number;
+}
+
+function environmentFor(session: SessionRow, at = nowIso()): Environment {
+  const initial = createDefaultEnvironment(at);
+  db.prepare(`INSERT OR IGNORE INTO session_environments
+    (session_id, weather, minute_of_day, clock_running, updated_at, revision) VALUES (?, ?, ?, 0, ?, 0)`)
+    .run(session.id, initial.weather, initial.minuteOfDay, initial.updatedAt);
+  const row = db.prepare("SELECT weather, minute_of_day, clock_running, updated_at, revision FROM session_environments WHERE session_id = ?")
+    .get(session.id) as unknown as EnvironmentRow;
+  return { weather: row.weather, minuteOfDay: row.minute_of_day, clockRunning: row.clock_running === 1, updatedAt: row.updated_at, revision: row.revision };
+}
+
+const environmentTimes = new Map<string, number>();
+
+// The cookie-authenticated person changes the atmosphere for the same room.
+// Compare the reviewed revision in the transaction so another person's
+// intervening choice is shown for review rather than silently overwritten.
+export function changeEnvironment(user: User, sessionId: string, raw: unknown): EnvironmentResult {
+  const session = getSession(sessionId);
+  if (!session) return { ok: false, code: "no_session" };
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, code: "bad_request" };
+  const o = raw as Record<string, unknown>;
+  if (typeof o.weather !== "string" || !(WEATHERS as readonly string[]).includes(o.weather)
+    || typeof o.minuteOfDay !== "number" || !Number.isInteger(o.minuteOfDay) || o.minuteOfDay < 0 || o.minuteOfDay > 1439
+    || typeof o.clockRunning !== "boolean" || typeof o.revision !== "number" || !Number.isSafeInteger(o.revision) || o.revision < 0)
+    return { ok: false, code: "bad_request" };
+  const now = Date.now();
+  const serverNow = new Date(now).toISOString();
+  const result: EnvironmentResult = inTransaction(() => {
+    const current = environmentFor(session, serverNow);
+    if (o.revision !== current.revision) return { ok: false, code: "stale", environment: current, serverNow };
+    const last = environmentTimes.get(user.id);
+    if (last !== undefined && now - last < 1000) return { ok: false, code: "slow_down" };
+    const environment: Environment = {
+      weather: o.weather as Weather, minuteOfDay: o.minuteOfDay as number,
+      clockRunning: o.clockRunning as boolean, updatedAt: serverNow, revision: current.revision + 1,
+    };
+    db.prepare(`UPDATE session_environments SET weather = ?, minute_of_day = ?, clock_running = ?, updated_at = ?, revision = ?
+      WHERE session_id = ? AND revision = ?`).run(environment.weather, environment.minuteOfDay, Number(environment.clockRunning),
+        environment.updatedAt, environment.revision, session.id, current.revision);
+    return { ok: true, environment, serverNow };
+  });
+  if (result.ok) {
+    environmentTimes.set(user.id, now);
+    const person = ensureParticipant(session, user);
+    sendAll(session.scene_id, session.mode, { type: "environment", sessionId, environment: result.environment, serverNow, by: person.name, byId: person.id });
+    log("environment_changed", { user: user.id, nickname: user.nickname, session: sessionId,
+      weather: result.environment.weather, minute: result.environment.minuteOfDay, running: result.environment.clockRunning, revision: result.environment.revision });
+  }
+  return result;
 }
 
 function sendPresence(sceneId: string, mode: string): void {

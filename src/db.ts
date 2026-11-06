@@ -48,6 +48,17 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS sessions_open ON sessions (scene_id, mode, status);
 
+  -- Additive shared atmosphere. The anchor advances without rewriting sound
+  -- history or creating a second room for another time or kind of weather.
+  CREATE TABLE IF NOT EXISTS session_environments (
+    session_id TEXT PRIMARY KEY REFERENCES sessions(id),
+    weather TEXT NOT NULL CHECK (weather IN ('clear','cloudy','rain','mist')),
+    minute_of_day INTEGER NOT NULL CHECK (minute_of_day BETWEEN 0 AND 1439),
+    clock_running INTEGER NOT NULL CHECK (clock_running IN (0,1)),
+    updated_at TEXT NOT NULL,
+    revision INTEGER NOT NULL DEFAULT 0 CHECK (revision >= 0)
+  );
+
   CREATE TABLE IF NOT EXISTS participants (
     id TEXT PRIMARY KEY,
     session_id TEXT NOT NULL REFERENCES sessions(id),

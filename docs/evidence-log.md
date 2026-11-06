@@ -1445,3 +1445,24 @@ review service continued serving the scene, Three.js and conversation script
 with HTTP 200. `docs/local-development.md` records fixed-version setup and a
 backup-first repair recipe; its shell blocks passed sh and zsh syntax checks.
 The evidence-link check and `git diff --check` also passed.
+
+## 52. Keep one shared weather and clock (2026-11-06, ADR 018)
+
+**Prompt:** Wen asked for weather, time and scene systems. The implementation
+keeps one connected forest-to-sea world and the existing `morning` room, while
+replacing the former Sunny Day-only presentation with a shared environment.
+Weather is clear, cloudy, rain or mist; a persisted time anchor can stay paused
+or advance through a day in 24 real minutes. A separate additive table leaves
+sound and reply history intact. Cookie authorization, strict validation, an
+independent one-second limit and transactional reviewed-revision checks protect
+edits; snapshots and attributed SSE carry the committed result.
+
+The seven isolated database/clock tests passed without native-module workarounds,
+and the full typecheck passed. They cover wraparound, pause, concurrent edits,
+bad input, independent limits, restart recovery and an additive migration with
+pre-existing sounds. The first restart test mixed fake timer advancement with
+module resets; it now verifies the persisted anchor at an explicit recovery
+time. Removing only the revision guard in a separate copied source tree made
+the stale-edit test fail: a competing old choice was incorrectly accepted.
+The real repository was not mutated for that negative control. HTTP/SSE and
+browser integration results follow in the next entry.
