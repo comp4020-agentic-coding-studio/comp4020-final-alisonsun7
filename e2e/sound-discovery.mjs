@@ -131,13 +131,13 @@ async function worldChecks() {
   check(await a.locator(".library-empty").isVisible(), "an empty search explains how to recover");
   await a.locator('[data-family="all"]').click();
   await a.locator(".library-search input").fill("");
-  await a.locator(".library-close").focus();
+  await a.locator("#sound-palette .library-close").focus();
   const at = await a.getAttribute("#stage", "data-at");
   await a.keyboard.down("w");
   await a.waitForTimeout(600);
   await a.keyboard.up("w");
   check(await a.getAttribute("#stage", "data-at") === at, "keys in the library do not move the player behind it");
-  await a.locator(".library-close").focus();
+  await a.locator("#sound-palette .library-close").focus();
   await a.keyboard.press("Shift+Tab");
   check(await a.evaluate(() => !!document.activeElement.closest("dialog")), "Tab stays inside the library");
 
@@ -196,7 +196,7 @@ async function worldChecks() {
   check(await a.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "the phone layout has no horizontal overflow");
   const bounds = await a.locator("#sound-palette").boundingBox();
   check(bounds.x >= 0 && bounds.y >= 0 && bounds.x + bounds.width <= 375 && bounds.y + bounds.height <= 812, "the library stays within the small phone viewport");
-  await a.locator(".library-close").click();
+  await a.locator("#sound-palette .library-close").click();
   await a.evaluate(() => scrollTo(0, 0));
   await shot(a, "mobile-world");
 

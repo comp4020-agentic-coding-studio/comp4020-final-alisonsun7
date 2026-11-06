@@ -1372,3 +1372,30 @@ actions, Cancel restoring source actions, and normal chat clear of Leave.
 Desktop and phone images were viewed; selected evidence is in
 `docs/screenshots/16-*`. Type, build and evidence-link checks passed. Both new
 browser suites are included in the e2e chain; the combined run is recorded next.
+
+## 50. Final integrated verification for replies and coastal art (2026-11-06)
+
+All nine Chrome suites passed on the final application build: world walking,
+meeting/talk, ordinary leaving/removing, sound discovery, look preferences,
+huts, busker audio, cooperative play (33 observations) and the ACK race (12).
+The sound-discovery run includes its five-observation library-context fixture.
+The initial chain stopped because an old global `.library-close` locator now
+matched both native dialogs. Those three existing checks now explicitly target
+`#sound-palette`; no assertion was dropped. With no application-code change,
+the remaining six suites were rerun and passed. The first three suites had
+already passed. No page errors were reported.
+
+This follows the 53/53 full spec run (six files), final type/build checks,
+negative controls and phone/visual checks recorded above. Docker, a physical
+phone, a screen reader and human collaborative listening were not run. Local
+verification used the existing direct Node executables, exact-lock verified
+Rolldown native and process-only optional-fsevents fallback; no global package,
+OS or account settings were changed.
+
+The scratch test database retained 178 historical sound rows with zero live
+sounds and zero live private-stay sounds after the final browser cleanup. Test
+services were stopped. The 18861 review service remains available with its
+previous review database preserved, including the additive reply tables. Its
+scene and new conversation module returned 200; the actual final review view
+was captured and viewed. Source and tests were committed in verified steps on
+`feat/sound-discovery-polish`. No push, merge or deployment was performed.
