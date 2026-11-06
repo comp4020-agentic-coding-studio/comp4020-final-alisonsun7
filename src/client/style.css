@@ -114,9 +114,20 @@ h3 {
 
 /* ---- landing ---------------------------------------------------------- */
 
+.landing {
+  --bg: #1b3036;
+  --ink: #f9f4e8;
+  --ink-soft: #e0e1d5;
+  --ink-faint: #c4cec3;
+  --amber: #ead7ad;
+  --line: #8c9c90;
+  --font: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
 .landing .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   align-items: end;
   overflow: hidden;
@@ -125,22 +136,23 @@ h3 {
 .hero-photo {
   position: absolute;
   inset: 0;
-  background: url("/scenes/chifley-bridge.webp") center 60% / cover no-repeat;
-  filter: saturate(0.85) brightness(0.62);
-  animation: dawn 14s ease-out both;
+  /* Original code-drawn coast: no photo, runtime asset or network request. */
+  background: #8ba6aa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000'%3E %3Cdefs%3E %3ClinearGradient id='sky' x2='0' y2='1'%3E%3Cstop stop-color='%23b9cacd'/%3E%3Cstop offset='.7' stop-color='%23e2dfcf'/%3E%3Cstop offset='1' stop-color='%23e9dec4'/%3E%3C/linearGradient%3E %3ClinearGradient id='sea' x2='.1' y2='1'%3E%3Cstop stop-color='%23b3c7c8'/%3E%3Cstop offset='.45' stop-color='%23719da6'/%3E%3Cstop offset='1' stop-color='%23456d7c'/%3E%3C/linearGradient%3E %3ClinearGradient id='timber' x2='.7' y2='1'%3E%3Cstop stop-color='%23b3aa8d'/%3E%3Cstop offset='1' stop-color='%23675f50'/%3E%3C/linearGradient%3E %3CradialGradient id='sun'%3E%3Cstop stop-color='%23fff3d0' stop-opacity='.75'/%3E%3Cstop offset='1' stop-color='%23fff3d0' stop-opacity='0'/%3E%3C/radialGradient%3E %3Cg id='pine' fill='%234d665b'%3E%3Cpath d='M0 0 5-75 10 0Z'/%3E%3Cpath d='m5-83-21 31h14l-25 31H1l-31 29H39L10-21h22L13-52h13Z'/%3E%3C/g%3E %3Cg id='needles' fill='none' stroke='%234a6050' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='m0 0 35-26m-25 20 3-24m4 19 22-3m-13-7 4-21m4 17 22-6m-6 2 9-17m-3 12 17-2m-21 15 18 12m-31-6 15 15m-33-9 13 18M0 0l-9-21m4 20-20-5'/%3E%3C/g%3E %3C/defs%3E %3Cpath fill='url(%23sky)' d='M0 0h1600v1000H0Z'/%3E %3Cellipse cx='1090' cy='230' rx='450' ry='330' fill='url(%23sun)'/%3E %3Cpath d='M0 432 125 400 228 414 345 357 429 374 530 316 604 338 703 300 790 337 881 308 1002 360 1119 359 1235 402 1361 414 1470 398 1600 432V604H0Z' fill='%23a6b8b0'/%3E %3Cpath d='M0 481 160 444 262 456 383 404 495 433 613 369 721 399 819 368 939 415 1058 428 1162 458 1304 444 1450 480 1600 463V612H0Z' fill='%23839e96'/%3E %3Cpath d='M0 489 166 485 353 489 526 481 725 490 922 484 1154 491 1400 486 1600 490V1000H0Z' fill='url(%23sea)'/%3E %3Cpath d='M1600 434c-245-7-355 45-475 82-152 45-292 50-432 120-84 43-186 87-318 139L0 925v75h1600Z' fill='%23d5ccb4'/%3E %3Cpath d='M1600 451c-183 8-312 48-425 87-176 61-273 66-423 143-109 56-167 76-298 133' fill='none' stroke='%23eceddc' stroke-width='9' opacity='.7'/%3E %3Cpath d='m1600 478-197-9-158 30-129 17-82 34 158 22 150-11 258-26Z' fill='%23526e5d'/%3E %3Cg opacity='.8'%3E%3Cuse href='%23pine' transform='translate(1181 502) scale(1.1)'/%3E%3Cuse href='%23pine' transform='translate(1239 494) scale(1.4)'/%3E%3Cuse href='%23pine' transform='translate(1307 497) scale(1.1)'/%3E%3Cuse href='%23pine' transform='translate(1380 488) scale(1.7)'/%3E%3Cuse href='%23pine' transform='translate(1486 486) scale(1.5)'/%3E%3Cuse href='%23pine' transform='translate(1566 498) scale(2)'/%3E%3C/g%3E %3Cpath d='M1109 516 1180 510 1600 1000H620Z' fill='url(%23timber)'/%3E %3Cg fill='none' stroke='%235c6254' stroke-width='3' opacity='.66'%3E%3Cpath d='m1091 537 114 3m-144 22 172 8m-211 26 247 11m-301 35 356 16m-426 42 493 30m-583 52 665 44m-779 64 999 76'/%3E%3Cpath d='m1118 520-366 480m388-482-126 482m146-481 183 481'/%3E%3C/g%3E %3Cg fill='none' stroke='%234c5547' stroke-linecap='round'%3E%3Cpath d='m1100 491-340 491' stroke-width='8'/%3E%3Cpath d='m1085 486 2 55m-46 6 6 61m-63 23 10 82m-89 37 16 109m-139 62 21 118' stroke-width='10'/%3E%3Cpath d='m1175 489 425 336' stroke-width='8'/%3E%3Cpath d='m1191 501-1 44m65 12 3 50m101 27 6 71m135 41 8 91' stroke-width='10'/%3E%3C/g%3E %3Cg fill='none' stroke='%23e4e9d7' stroke-linecap='round' opacity='.42'%3E%3Cpath d='M32 541h232m118 12h171m-428 44h224m-269 73h166m95-38h235m-298 100h141m-343 69h174'/%3E%3Cpath d='m782 504 92-1m-126 35 167-1m-259 38 109-2' stroke-width='3'/%3E%3C/g%3E %3Cpath d='M0 0h83c-21 83-38 152-83 251Z' fill='%236c6d56'/%3E %3Cpath d='M31 113c121-24 243-42 357-80M5 170c139-12 288-23 419-77' fill='none' stroke='%236b6950' stroke-width='17' stroke-linecap='round'/%3E %3Cg opacity='.95'%3E%3Cuse href='%23needles' transform='translate(84 125) rotate(-8) scale(1.5)'/%3E%3Cuse href='%23needles' transform='translate(154 104) rotate(-13) scale(1.6)'/%3E%3Cuse href='%23needles' transform='translate(241 79) rotate(-17) scale(1.8)'/%3E%3Cuse href='%23needles' transform='translate(326 57) rotate(-25) scale(1.5)'/%3E%3Cuse href='%23needles' transform='translate(74 174) rotate(8) scale(1.5)'/%3E%3Cuse href='%23needles' transform='translate(179 159) rotate(-9) scale(1.7)'/%3E%3Cuse href='%23needles' transform='translate(287 138) rotate(-12) scale(1.6)'/%3E%3Cuse href='%23needles' transform='translate(386 105) rotate(-20) scale(1.4)'/%3E%3C/g%3E %3C/svg%3E") center / cover no-repeat;
+  animation: dawn 2.4s ease-out both;
 }
 
 .hero-photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(21, 19, 15, 0.1) 30%, rgba(21, 19, 15, 0.92) 92%);
+  background: linear-gradient(90deg, #102d3766, #102d3724 65%, transparent),
+    linear-gradient(180deg, #22393c00 26%, #1b343d40 48%, #142e37c7 72%, #142e37fa 100%);
 }
 
 @keyframes dawn {
   from {
-    filter: saturate(0.5) brightness(0.25);
-    transform: scale(1.04);
+    opacity: 0.55;
+    transform: scale(1.025);
   }
 }
 
@@ -159,11 +171,20 @@ h3 {
 }
 
 .landing h1 {
-  font-size: clamp(42px, 8vw, 84px);
-  font-weight: 300;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: clamp(48px, 7vw, 84px);
+  font-weight: 400;
   letter-spacing: -0.03em;
-  line-height: 1;
+  line-height: 1.05;
 }
+
+.landing .lede { font-size: 16px; line-height: 1.65; max-width: 45ch; }
+.landing .btn { min-height: 44px; }
+.landing .btn.primary { background: #f2e8d3; border-color: #f2e8d3; color: #29454d; }
+.landing .btn.primary:hover { background: #fff7e5; border-color: #fff7e5; color: #203d45; }
+.landing .btn.ghost { background: #14303b66; color: #f8f2e5; border-color: #c2ccb9; }
+.landing .btn.ghost:hover { background: #264752cc; border-color: #f1ecdb; }
+.landing .site-footer { border-top-color: #5f756c; }
 
 .subtitle {
   font-size: clamp(18px, 2.4vw, 24px);

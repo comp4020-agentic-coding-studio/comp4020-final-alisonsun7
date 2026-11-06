@@ -1051,6 +1051,11 @@ export class WorldView {
       this.playBall(dt);
     }
     this.moveOthers(dt);
+    // Shared arrivals and passing walkers may occupy the camera's position.
+    // Keep their identity/talk/sound intact without drawing clipped body parts.
+    for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? []), ...this.others.values()]) {
+      p.sprite.visible = Math.hypot(p.sprite.position.x - this.x, p.sprite.position.z - this.z) > 0.65;
+    }
     if (this.rain?.visible && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
       const a = pos.array as Float32Array;

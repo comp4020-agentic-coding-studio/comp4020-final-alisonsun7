@@ -27,6 +27,19 @@ try {
   });
   await page.waitForFunction(()=>window.artWorld.scene3.environment&&!document.querySelector('.world-loading'));
   await page.waitForTimeout(200);
+  await page.evaluate(()=>{
+    const w=window.artWorld;
+    w.setOthers([{id:'close-arrival',name:'Near visitor',avatar:'dog',x:w.x,z:w.z,yaw:w.yaw}]);
+  });
+  await page.waitForTimeout(100);
+  check(await page.evaluate(()=>{const w=window.artWorld;return w.others.has('close-arrival')&&!w.others.get('close-arrival').sprite.visible;}),'overlapping arrivals keep their identity without drawing a body inside the camera');
+  await page.evaluate(()=>{
+    const w=window.artWorld;
+    w.setOthers([{id:'close-arrival',name:'Near visitor',avatar:'dog',x:w.x-Math.sin(w.yaw)*2,z:w.z-Math.cos(w.yaw)*2,yaw:w.yaw}]);
+  });
+  await page.waitForTimeout(300);
+  check(await page.evaluate(()=>window.artWorld.others.get('close-arrival').sprite.visible),'stepping apart restores the same three-dimensional visitor');
+  await page.evaluate(()=>window.artWorld.setOthers([]));
   const result=await page.evaluate(()=>{
     const w=window.artWorld,s=window.artSounds;
     const near=[...s.marks.values()].find(m=>m.label.classList.contains('in-reach'));

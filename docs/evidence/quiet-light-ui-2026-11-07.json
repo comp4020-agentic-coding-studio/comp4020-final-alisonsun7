@@ -1,0 +1,186 @@
+{
+  "errors": [],
+  "fits": {
+    "x": 31,
+    "y": 16,
+    "width": 750,
+    "height": 343,
+    "scroll": true
+  },
+  "metrics": {
+    "overflow": false,
+    "header": 114.046875,
+    "stage": {
+      "x": 9,
+      "y": 207.546875,
+      "width": 357,
+      "height": 600,
+      "top": 207.546875,
+      "right": 366,
+      "bottom": 807.546875,
+      "left": 9
+    },
+    "controls": [
+      {
+        "text": "Controls",
+        "h": 44
+      },
+      {
+        "text": "Sound on",
+        "h": 44
+      },
+      {
+        "text": "Weather & time",
+        "h": 44
+      },
+      {
+        "text": "Explore scenes",
+        "h": 44
+      },
+      {
+        "text": "All sounds",
+        "h": 44
+      },
+      {
+        "text": "Water and wind",
+        "h": 44
+      },
+      {
+        "text": "Animals",
+        "h": 44
+      },
+      {
+        "text": "People",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      },
+      {
+        "text": "Listen",
+        "h": 44
+      },
+      {
+        "text": "Leave it here",
+        "h": 44
+      }
+    ]
+  }
+}

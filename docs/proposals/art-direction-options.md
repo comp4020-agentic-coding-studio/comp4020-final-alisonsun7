@@ -153,15 +153,14 @@ weather and time. Atmosphere alone cannot compensate for weak geometry or
 inconsistent characters, and a still concept establishes neither runtime
 performance nor contrast under every condition.
 
-## Recommendation and selection boundary
+## Original recommendation and selected direction
 
 Prefer **B, Clay Harbor**, for its consistent 3D language and warmth between
 people. **D, Quiet Light**, is the second recommendation when immersion in the
 soundscape matters more than a playful tactile identity. A offers the strongest
-storybook treatment; C offers the clearest graphic identity. All four remain
-available for Wen to select.
+storybook treatment; C offers the clearest graphic identity. Wen selected D on 2026-11-07; its implementation follows ADR 019.
 
-Choose one primary direction before developing the world. Mixing the clay
+Implementation follows D as the primary direction. Mixing the clay
 figures of B, photographic ground and the cel shading of C would recreate the
 current inconsistency. A later refinement may borrow a restrained accent, but
 shape, materials, people, water and UI should follow the chosen direction.
@@ -174,5 +173,5 @@ No delivery-time estimate, benchmark or device-performance claim is made here.
 After a selection, an implemented sample should be reviewed in motion, in the
 forest and café as well as on the coast, and across daylight, night, rain and
 mist. Sound source readability, nearby actions, movement, reduced motion and
-phone layouts need checking in the running application. These are future
-acceptance observations, not completed tests.
+phone layouts need checking in the running application. The implemented observations and their limits are now recorded in
+[the evidence log](../evidence-log.md#62-integrate-the-quiet-light-world-and-protect-sound-actions-2026-11-07).

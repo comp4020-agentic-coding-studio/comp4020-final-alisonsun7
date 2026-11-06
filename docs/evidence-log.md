@@ -1787,3 +1787,31 @@ character-sheet helper loading the landing page exposed an unrelated legacy
 photo URL returning 404; landing art is fixed in the next step, and the helper
 now opens About before creating its isolated sheet. Failure logs were retained
 locally; no app audio or assertion was replaced to obtain a pass.
+
+
+## 63. Finish the entry page and close-camera review (2026-11-07)
+
+Removed the landing page's legacy `/scenes/chifley-bridge.webp` CSS request
+(the old photo files remain untouched). Replaced it with an original inline SVG
+coast and a dark reading gradient, coordinated with Quiet Light's type and
+colours. No downloaded image, external font, new resource route or concept
+bitmap is used. CSS parsing and SVG XML checks passed; desktop and 375px captures
+were viewed, and a browser response listener reported no failed resources.
+
+After the sound-label changes, sound discovery and cooperative-play were rerun
+and passed. The final native-dialog desktop/phone/short-landscape review had no
+page/resource errors or horizontal overflow. The phone canvas ends at 807.55px
+inside the 812px view, with 44px controls. Final metrics are saved with the UI
+evidence. The initial night capture also showed an overlapping arrival's head
+clipped inside the camera. Nearby bodies (within 0.65m) are now hidden locally
+without removing their participant, changing the server position, changing audio
+or disabling talk. Stepping apart restores the same body. The dedicated visual
+suite was observed failing before this fix, then passed its added identity and
+restore observations. NPC walkers use the same camera-clearance rule. No avatar
+transparency materials or collision rule was introduced.
+
+The art remains an original real-time interpretation of D, rather than importing
+the AI concept image. The final runtime images and measured limitations are the
+evidence of what was actually implemented. Docker, physical-phone tests, a
+screen reader and human listening were not run. Local output audio was measured
+by the real Chrome suite, not inferred from a playing badge.
