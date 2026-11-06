@@ -1650,3 +1650,25 @@ in HTML (it is imported by the scene module), so its assertion timed out. The
 corrected check fetched each actual route and passed; application code did not
 change to satisfy it. ADR 019 and the rollback guide distinguish app rollback
 from data restoration. No art implementation is claimed verified at this step.
+
+
+## 59. Give Quiet Light a consistent reading surface (2026-11-07)
+
+Replaced the mixed end-of-file theme with warm ivory panels, mineral-blue
+controls, sage selections and restrained amber reply states. Strong reading
+surfaces preserve the sound names and actions over bright/night scenes. Kept
+native dialogs, DOM hooks, keyboard behaviour and 44px primary targets. Removed
+the existing external font links; system sans and Georgia require no downloads.
+
+A single Chrome session reviewed arrival, world, controls, library, weather and
+scenes at desktop/375px phone/812px landscape on candidate 18874, with zero page
+errors or horizontal overflow. Fourteen captures and layout measurements are in
+ignored `.cache/quiet-light-ui/`. Contrast calculations: primary text 10.53:1,
+secondary 6.01:1, selected descriptions 4.92:1, focus 5.52:1. CSS parsed without
+errors and typecheck passed. The phone world extended 3.55px beyond the viewport;
+its height was then reduced by 8px. The primary-button rule had overridden the
+intended ivory contribution action; specificity was corrected. Input focus now
+uses the same blue outline. Those final small corrections await the integrated
+visual pass. A just-resized landscape capture showed a compositor artifact;
+DOM measurements showed one fitting, scrollable dialog. No test assertion or
+behaviour changed. The candidate's original 64 HTTP/local checks also passed.
