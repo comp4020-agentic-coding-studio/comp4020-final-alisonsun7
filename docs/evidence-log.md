@@ -1284,3 +1284,38 @@ removed-source refusal, both private boundaries, restart/tombstone recovery,
 The new test run with HEAD's former sessions implementation failed on missing
 replyTo; the implementation passed. Type check and compilation passed. These
 checks used isolated temporary databases; front-end and art verification follow.
+
+## 48. A more considered coastal scene (2026-11-06, ADR 017)
+
+**Done:** a warm paper frame and serif place title surround a larger view, with
+quieter navigation and a smaller empty nearby panel. Dark local controls retain
+readable contrast. The sky is drawn in coastal blue/cream with the existing
+HDR kept for environmental lighting. Afternoon sunlight, softer shadow filtering
+and haze join three distant headlands, green-blue water and gentler foam. Sand
+and trail normals are quieter. Instanced beach grasses and irregular pine
+crowns soften the outline; replacing eight cones with six icosahedral boughs
+cuts crown triangles by about 40%. The cafe gains limewashed walls, timber
+rhythm, a base, awning details and an original code-drawn pine-and-tide mark.
+
+**Iteration:** the first visual pass still had hard triangular skirts on trees,
+a blank cafe side wall and grey sky. Screenshots were viewed and those parts
+were refined, then the boughs flattened and offset to avoid a stack of balls.
+No collider, path, spawn or NPC audio position changed. No additional library,
+asset download or sound was introduced.
+
+UI/UX Pro Max supplied interaction, contrast and Three.js colour/shadow checks.
+Its initial whole-system query returned a marketing layout and unrelated rose
+palette; the narrower nature-game query had useful green/sun colours but still
+suggested a marketing layout. That layout was not adopted. The actual art
+composition and field-journal frame were designed for this existing world.
+Version-specific shader and shadow behaviour was checked in installed Three.js
+0.170 source, rather than copying the skill's newer-version API assumptions.
+
+**Checks:** type check and compilation passed; the existing world walk suite
+passed 9/9 (cafe, bridge, forest-to-boardwalk, kangaroo and return). Seven zone
+screenshots and phone views were viewed with no page errors. Mac GPU rendering
+was 60 fps at desktop and phone viewport sizes. A separate DPR2 touch renderer
+measured beach 60 fps and forest 59 fps; real CDP touch joystick movement worked.
+These are local desktop-GPU measurements, not a physical-phone claim. Metrics
+are in `docs/evidence/coastal-rendering-2026-11-06.json`, selected screenshots in
+`docs/screenshots/17-*`. The full HTTP/local suite also passed 53/53 in six files.

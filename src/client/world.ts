@@ -210,6 +210,8 @@ void main(){
   float s = max(dot(normalize(vDir), normalize(sunDir)), 0.0);
   c += sunColor * glow * (pow(s, 8.0) * 0.45 + pow(s, 600.0) * 1.6);
   gl_FragColor = vec4(c, 1.0);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
 }`;
 
 export class WorldView {
@@ -279,7 +281,7 @@ export class WorldView {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     const canvas = this.renderer.domElement;
     canvas.className = "world-canvas";
     canvas.tabIndex = 0;
@@ -333,6 +335,7 @@ export class WorldView {
     sc.far = 220;
     this.sun.shadow.bias = -0.0004;
     this.sun.shadow.normalBias = 0.03;
+    this.sun.shadow.radius = 2.4;
     this.sun.target.position.set(...this.kit.sunTarget);
     this.scene3.add(this.sun, this.sun.target, this.hemi);
     this.scene3.fog = new THREE.Fog(0xffffff, 20, 120);
@@ -441,19 +444,16 @@ export class WorldView {
 
   // ---- loading -----------------------------------------------------------
 
-  // A photographed sky: the background, and the light the models reflect.
+  // The CC0 sky lights the place; the drawn sky keeps its coastal palette.
   private async loadSky(): Promise<void> {
     const sky = this.kit.skies?.[this.mode];
     if (!sky) return;
     try {
       const tex = await new RGBELoader().loadAsync(sky.url);
       tex.mapping = THREE.EquirectangularReflectionMapping;
-      this.scene3.background = tex;
-      this.scene3.backgroundIntensity = sky.intensity;
       this.scene3.environment = tex;
-      this.scene3.environmentIntensity = sky.intensity * 0.8;
-      this.sky.visible = false;
-      this.hemiScale = 0.45;
+      this.scene3.environmentIntensity = sky.intensity * 0.55;
+      this.hemiScale = 0.72;
       this.applyLight(this.sunrise ? BEFORE_DAWN : this.light);
     } catch {
       // the drawn sky stays

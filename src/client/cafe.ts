@@ -49,7 +49,9 @@ export interface CafeRoom {
 export function buildCafeRoom(b: Builder): CafeRoom {
   const planks = surface("brown_planks_05", [6, 4]);
   const brick = surface("brick_wall_001", [5, 1.6]);
-  const brickOut = surface("brick_wall_001", [5, 1.6]);
+  const brickOut = surface("plastered_wall", [3.5, 1.4]);
+  brickOut.color.setHex(0xe8dfc8);
+  brickOut.normalScale.setScalar(0.45);
   const plaster = surface("plastered_wall", [3, 1]);
   const wood = std(0x6b4630, { roughness: 0.6 });
   const darkWood = std(0x3b281c, { roughness: 0.55 });
@@ -93,17 +95,22 @@ export function buildCafeRoom(b: Builder): CafeRoom {
     8,
     (g) => {
       for (let i = 0; i < 8; i++) {
-        g.fillStyle = i % 2 ? "#f1ebe0" : "#2f5d4a";
+        g.fillStyle = i % 2 ? "#e9dfc5" : "#43665b";
         g.fillRect(i * 8, 0, 8, 8);
       }
     },
-    [6, 1],
+    [2, 1],
   );
   const aw = new THREE.Mesh(new THREE.PlaneGeometry(14.4, 1.7), std(0xffffff, { map: awning, side: THREE.DoubleSide }));
   aw.position.set(7, H + 0.05, 10.75);
   aw.rotation.x = -Math.PI / 2 + 0.45;
   aw.castShadow = true;
   b.root.add(aw);
+  // A slim timber cornice and cloth valance finish the front without
+  // changing the doorway, the room or anything people can collide with.
+  const trim = std(0x38564c, { roughness: 0.85 });
+  b.box(trim, -0.2, 14.2, H + 0.35, H + 0.49, 10.05, 10.2, { shadow: false });
+  b.box(trim, -0.2, 14.2, 3.15, 3.30, 11.48, 11.52, { shadow: false });
 
   // the window bar inside the glass, both sides of the door
   for (const [x0, x1] of [

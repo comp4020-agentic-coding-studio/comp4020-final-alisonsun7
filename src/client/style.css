@@ -1719,3 +1719,93 @@ h3 {
 .scene-page .enter-card { position: fixed; z-index: 70; }
 .scene-page .enter-box { max-height: calc(100svh - 32px); }
 @media (max-width: 640px) { .world-actions { flex-direction: column; gap: 4px; } }
+
+/* A coastal field journal around an open, sunlit place. */
+.scene-page { background: #e9e9df; color: #29443b; color-scheme: light; }
+.scene-page .bar { --ink: #29443b; --ink-soft: #526d61; --ink-faint: #617b6d; --line: #b9c7b9; background: #f3f2eaf5; border-bottom-color: #c8d1c3; padding-block: 12px; }
+.scene-page .where { grid-template-columns: minmax(0, max-content) auto; justify-content: start; column-gap: 16px; }
+.scene-page .world-caption { grid-column: 1 / -1; color: #526e5b; font-size: 10px; letter-spacing: .17em; }
+.scene-page .where h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(18px, 2vw, 25px); letter-spacing: -.025em; }
+.scene-page .mode-name { color: #79572c; font-size: 11px; }
+.scene-page .mode-name::before { background: #b17b30; }
+.scene-page .person { background: #d9e2d3; color: #345441; }
+.scene-page .person.is-you { background: #e8dfc9; color: #624f33; }
+.scene-page .sound-switch[aria-pressed="true"] { background: #284d40; color: #f4f0df; border-color: #284d40; }
+.scene-page .scene-main { padding-top: 14px; }
+.scene-page .stage-frame { border-radius: 18px; border: 1px solid #c2ccbc; box-shadow: 0 14px 40px #20392a16; }
+.scene-page .stage { color: var(--ink); }
+.scene-page .stage.world-stage { height: max(450px, calc(100svh - 225px)); background: #c3d6cd; }
+.scene-page .goto { margin-top: 12px; gap: 5px; }
+.scene-page .goto-label { color: #546b5d; font-size: 11px; letter-spacing: .09em; text-transform: uppercase; margin-right: 6px; }
+.scene-page .goto a { min-height: 44px; border-color: transparent; background: transparent; color: #496451; padding-inline: 12px; font-size: 12px; border-radius: 8px; }
+.scene-page .goto a:hover { background: #dce1d3; color: #233f30; }
+.scene-page .goto a[aria-current="true"] { background: #2c5141; color: #f4f0e3; border-color: #2c5141; }
+.scene-page .evidence { color: #385747; font-size: 12px; margin-top: 7px; }
+.scene-page .evidence .label { color: #526b55; border-color: #adbfaa; }
+.scene-page .mode-note, .scene-page .not-affiliated { color: #536a58; font-size: 11px; line-height: 1.5; margin: 7px 0 0; }
+.scene-page .not-affiliated a { color: #53694c; }
+.scene-page .world-help { border: 1px solid #f0f4dd24; background: #173c2cc7; padding: 7px 12px; }
+.scene-page .listening-trail { width: min(290px, calc(100% - 32px)); background: #173b2deb; border-color: #c2d0ae5c; border-radius: 14px; box-shadow: 0 6px 22px #1437241f; }
+.scene-page .listening-trail.is-empty .trail-intro, .scene-page .listening-trail.is-empty .trail-note { display: none; }
+.scene-page .listening-trail.is-empty .trail-empty { margin-bottom: 0; font-size: 12px; }
+.scene-page .sound-label { max-width: min(330px, calc(100vw - 48px)); white-space: normal; text-align: center; background: #163a2eF5; border-color: #a3b99a; }
+.sound-answer { color: #d9dfc6; font-size: 11px; max-width: 260px; }
+.sound-answer[hidden], .sound-actions button[hidden] { display: none; }
+.sound-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 7px; }
+.sound-actions button { min-height: 44px; padding: 7px 11px; margin: 0; border: 1px solid #88a189; border-radius: 8px; font: 500 11px var(--font); cursor: pointer; background: transparent; color: #f1f1df; }
+.sound-actions .sound-reply { background: #f0c782; color: #2d2718; border-color: #f0c782; }
+.sound-actions .sound-remove { min-width: 60px; color: #d8e1cd; }
+.sound-label.far .sound-answer { display: none; }
+.reply-intent { position: absolute; bottom: 82px; left: 20px; z-index: 12; width: min(390px, calc(100% - 40px)); padding: 14px 16px; border: 1px solid #bfceaf77; border-left: 3px solid #f0c782; border-radius: 12px; background: #193b2ff2; color: #f3f0df; box-shadow: 0 8px 24px #15352426; }
+.reply-intent[hidden] { display: none; }
+.reply-intent p { margin: 0 0 6px; font-size: 13px; line-height: 1.5; }
+.reply-intent .reply-hint { color: #c2d1b9; font-size: 12px; }
+.reply-intent > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.reply-intent .btn { min-height: 44px; padding: 8px 12px; font-size: 12px; }
+.stage:has(.reply-intent:not([hidden])) .chat-bar { bottom: 270px; }
+.stage:has(.reply-intent:not([hidden])) .sound-label { visibility: hidden; pointer-events: none; }
+.library-reply { border: 1px solid #6d8768; border-left: 3px solid #f0c782; border-radius: 12px; padding: 14px; margin: 0 0 18px; background: #294535; }
+.library-reply[hidden] { display: none; }
+.library-reply strong { color: #f0dfb6; font-size: 13px; font-weight: 500; }
+.library-reply p { font-size: 12px; color: #cfddc6; line-height: 1.6; margin: 7px 0 10px; }
+.library-reply .link-btn { font-size: 12px; min-height: 44px; padding: 5px 0; }
+.library-reply .leave-without-reply { display: flex; min-height: 44px; margin-top: 10px; }
+.sound-conversation-panel { position: fixed; inset: 0; margin: auto; width: min(620px, calc(100% - 28px)); max-width: none; max-height: min(780px, calc(100svh - 32px)); overflow-y: auto; overscroll-behavior: contain; padding: 24px; background: #132e24; color: var(--ink); border: 1px solid #6c8b70; border-radius: 22px; box-shadow: 0 24px 100px #06100dcc; }
+.sound-conversation-panel[hidden] { display: none; }
+.sound-conversation-panel::backdrop { background: #112a2077; backdrop-filter: blur(6px); }
+.sound-conversation-panel .palette-head { background: #132e24; margin-bottom: 8px; }
+.sound-conversation-panel .palette-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(23px, 4vw, 30px); font-weight: 400; letter-spacing: -.02em; }
+.conversation-feedback, .conversation-empty { color: #c4d2bb; font-size: 13px; line-height: 1.7; margin: 12px 0 18px; }
+.conversation-content { display: grid; gap: 10px; }
+.conversation-sound { border: 1px solid #47654b; border-left: 3px solid var(--family); border-radius: 12px; padding: 15px 16px; background: #1b392c; }
+.conversation-sound.is-current { background: #304633; border-color: #81956c; border-left-color: var(--family); }
+.conversation-relation { color: #bdcea9; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; }
+.conversation-sound h3 { color: #f0ecd9; font-size: 17px; margin-top: 4px; }
+.conversation-sound p { font-size: 12px; color: #c6d3bd; margin: 4px 0 0; }
+.conversation-sound .conversation-removed { color: #dfcdb4; }
+.conversation-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+.conversation-actions:empty { display: none; }
+.conversation-actions .btn, .conversation-more { min-height: 44px; font-size: 12px; padding: 8px 12px; }
+.conversation-actions .btn.ghost { border-color: #809675; }
+@media (max-width: 760px) {
+  .scene-page .where { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .scene-page .where h1 { font-size: 18px; white-space: normal; line-height: 1.15; }
+  .scene-page .world-caption { font-size: 8px; letter-spacing: .08em; }
+  .scene-page .bar { padding-block: 9px; }
+  .scene-page .stage.world-stage { height: max(430px, calc(100svh - 235px)); }
+  .scene-page .scene-main { padding: 12px 10px; }
+  .scene-page .goto { gap: 2px; margin-top: 8px; }
+  .scene-page .goto a { padding-inline: 9px; font-size: 11px; }
+  .scene-page .goto-label { display: none; }
+  .scene-page .evidence { line-height: 1.6; }
+  .scene-page .listening-trail { top: 10px; right: 10px; }
+  .reply-intent { left: 12px; bottom: 80px; width: calc(100% - 24px); padding: 12px; }
+  .reply-intent p { font-size: 12px; }
+  .reply-intent .reply-hint { font-size: 11px; }
+  .reply-intent .btn { padding-inline: 10px; }
+  .sound-conversation-panel { width: calc(100% - 20px); max-height: calc(100svh - 20px); padding: 18px; border-radius: 16px; }
+  .sound-conversation-panel .palette-head { top: -18px; gap: 10px; }
+  .sound-conversation-panel .library-kicker { font-size: 9px; }
+  .sound-conversation-panel .palette-head h2 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .scene-page { transition: none; } }

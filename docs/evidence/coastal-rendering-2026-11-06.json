@@ -1,0 +1,50 @@
+{
+  "metrics": [
+    {
+      "label": "desktop-beach",
+      "fps": 60,
+      "drawsPerFrame": 671,
+      "canvas": [
+        1382,
+        775
+      ]
+    },
+    {
+      "label": "phone-viewport-beach",
+      "fps": 60,
+      "drawsPerFrame": 645,
+      "canvas": [
+        368,
+        608
+      ]
+    },
+    {
+      "label": "phone-viewport-forest",
+      "fps": 60,
+      "drawsPerFrame": 1645,
+      "canvas": [
+        368,
+        608
+      ]
+    },
+    {
+      "label": "touch-dpr2-beach",
+      "fps": 60,
+      "canvas": [
+        736,
+        1216
+      ],
+      "dpr": 2
+    },
+    {
+      "label": "touch-dpr2-forest",
+      "fps": 59,
+      "canvas": [
+        736,
+        1216
+      ],
+      "dpr": 2
+    }
+  ],
+  "errors": []
+}

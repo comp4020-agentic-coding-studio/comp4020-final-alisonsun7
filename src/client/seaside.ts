@@ -145,20 +145,23 @@ function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
   const trunkGeo = new THREE.CylinderGeometry(0.045, 0.22, 1, 9);
   trunkGeo.translate(0, 0.5, 0);
   const trunks = new THREE.InstancedMesh(trunkGeo, bark, trees.length);
-  // Scalloped, overlapping boughs instead of three solid cones. All crowns
-  // share geometry and one draw call; the original tree locations stay put.
-  const layers = 8;
-  const crown = new THREE.ConeGeometry(1, 1, 14, 3);
-  crown.translate(0, 0.5, 0);
+  // Overlapping needle masses give the pines a soft, irregular silhouette
+  // instead of stacked triangular skirts. Six shared 80-triangle boughs per
+  // tree cost less than the old eight cones; every tree stays where it was.
+  const layers = 6;
+  const crown = new THREE.IcosahedronGeometry(1, 1);
   const vertices = crown.attributes.position;
+  const normals = crown.attributes.normal;
   for (let i = 0; i < vertices.count; i++) {
     const x = vertices.getX(i), y = vertices.getY(i), z = vertices.getZ(i);
     const a = Math.atan2(z, x);
-    const edge = 1 + 0.16 * Math.sin(a * 7 + y * 3) + 0.08 * Math.cos(a * 5 - y * 6);
-    vertices.setXYZ(i, x * edge, y + (1 - y) * 0.065 * Math.sin(a * 7), z * edge);
+    const edge = 1 + 0.10 * Math.sin(a * 5 + y * 3) + 0.055 * Math.cos(a * 7 - y * 4);
+    vertices.setXYZ(i, x * edge, y * (0.94 + 0.06 * Math.sin(a * 3)), z * edge);
+    // This geometry is non-indexed. Preserve smooth radial normals instead
+    // of asking computeVertexNormals to flatten each individual triangle.
+    normals.setXYZ(i, x, y, z);
   }
-  crown.computeVertexNormals();
-  const needleMat = std(0xffffff, { roughness: 0.95 });
+  const needleMat = std(0xffffff, { roughness: 0.95, flatShading: false });
   // a 15 m crown's top moves about 20 cm in the wind
   sway(needleMat, 0.0009);
   const needles = new THREE.InstancedMesh(crown, needleMat, trees.length * layers);
@@ -170,16 +173,18 @@ function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
     q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t.turn);
     m.compose(new THREE.Vector3(t.x, 0, t.z), q, new THREE.Vector3(1.25, t.h * 0.94, 1.25));
     trunks.setMatrixAt(i, m);
-    const hue = 0.30 + r() * 0.055;
+    const hue = 0.27 + r() * 0.045;
     const width = 0.85 + r() * 0.3;
     for (let k = 0; k < layers; k++) {
       const progress = k / (layers - 1);
-      const w = t.h * (0.185 - progress * 0.145) * width * (0.9 + r() * 0.2);
+      const w = t.h * (0.175 - progress * 0.14) * width * (0.9 + r() * 0.2);
       q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t.turn + k * 2.4);
-      m.compose(new THREE.Vector3(t.x + (r() - 0.5) * 0.28, t.h * (0.28 + progress * 0.60), t.z + (r() - 0.5) * 0.28), q,
-        new THREE.Vector3(w, t.h * (0.19 - progress * 0.065), w * (0.85 + r() * 0.25)));
+      const branchAngle = t.turn + k * 2.4;
+      m.compose(new THREE.Vector3(t.x + Math.sin(branchAngle) * w * 0.17 + (r() - 0.5) * 0.08,
+        t.h * (0.35 + progress * 0.53), t.z + Math.cos(branchAngle) * w * 0.13 + (r() - 0.5) * 0.08), q,
+        new THREE.Vector3(w, t.h * (0.11 - progress * 0.05), w * (0.85 + r() * 0.25)));
       needles.setMatrixAt(i * layers + k, m);
-      c.setHSL(hue, 0.29 + r() * 0.15, 0.075 + progress * 0.045 + r() * 0.025);
+      c.setHSL(hue, 0.18 + r() * 0.13, 0.11 + progress * 0.05 + r() * 0.025);
       needles.setColorAt(i * layers + k, c);
     }
   });
@@ -198,13 +203,13 @@ function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
 function edgeGrass(b: Builder): void {
   const r = mulberry(88);
   const positions: number[] = [];
-  for (let blade = 0; blade < 7; blade++) {
+  for (let blade = 0; blade < 11; blade++) {
     const a = blade * 2.4;
     const x = Math.cos(a), z = Math.sin(a);
-    const h = 0.35 + r() * 0.5;
-    positions.push(x * 0.12 - z * 0.04, 0, z * 0.12 + x * 0.04,
-      x * 0.12 + z * 0.04, 0, z * 0.12 - x * 0.04,
-      x * 0.42, h, z * 0.42);
+    const h = 0.25 + r() * 0.45;
+    positions.push(x * 0.12 - z * 0.018, 0, z * 0.12 + x * 0.018,
+      x * 0.12 + z * 0.018, 0, z * 0.12 - x * 0.018,
+      x * 0.32, h, z * 0.32);
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -220,6 +225,14 @@ function edgeGrass(b: Builder): void {
     }
   }
   for (let i = 0; i < 180; i++) points.push({ x: (r() > 0.5 ? 1 : -1) * (39 + r() * 17), z: 5 + r() * 21, coastal: true });
+  // Small planted islands frame the open sand; the centre and every route
+  // remain clear. These soft tufts never add collision or individual draws.
+  for (const [x, z] of [[-25, 16], [-7, 26], [9, 29], [23, 24], [35, 12]]) {
+    for (let i = 0; i < 20; i++) {
+      const angle = r() * Math.PI * 2, radius = Math.sqrt(r());
+      points.push({ x: x + Math.cos(angle) * radius * 2.6, z: z + Math.sin(angle) * radius * 1.2, coastal: true });
+    }
+  }
   const grassMat = std(0xffffff, { side: THREE.DoubleSide, roughness: 1 });
   sway(grassMat, 0.12);
   const mesh = new THREE.InstancedMesh(g, grassMat, points.length);
@@ -231,7 +244,7 @@ function edgeGrass(b: Builder): void {
     dummy.scale.setScalar((p.coastal ? 0.65 : 0.45) + r() * 0.55);
     dummy.updateMatrix();
     mesh.setMatrixAt(i, dummy.matrix);
-    color.setHSL(p.coastal ? 0.17 : 0.23, 0.24 + r() * 0.12, 0.12 + r() * 0.10);
+    color.setHSL(p.coastal ? 0.20 : 0.25, 0.17 + r() * 0.10, 0.20 + r() * 0.10);
     mesh.setColorAt(i, color);
   });
   mesh.receiveShadow = true;
@@ -592,7 +605,7 @@ function water(colour: number, amp: number, scale: number, roughness: number, re
   ripple.colorSpace = THREE.NoColorSpace;
   mat.normalMap = ripple;
   rippleMaps.push(ripple);
-  mat.normalScale.set(0.32, 0.32);
+  mat.normalScale.set(ocean ? 0.20 : 0.28, ocean ? 0.20 : 0.28);
   mat.customProgramCacheKey = () => `coastal-water-${scale}-${amp}-${ocean}-${flow}-${rippleSize}`;
   const k = (n: number): string => (n * scale).toFixed(3);
   const f = (n: number): string => n.toFixed(4);
@@ -643,12 +656,40 @@ vec2 swellD(vec2 p) { return vec2(${slopeX}, ${slopeZ}); }`;
         float rippleLight = sin(vWaterWorld.x * 1.3 + vWaterWorld.z * 2.1 + uTime * 0.7)
           * sin(vWaterWorld.x * 0.8 - vWaterWorld.z * 1.5 - uTime * 0.5);
         ${ocean ? `float depth = smoothstep(${WATERLINE.toFixed(1)}, ${(WATERLINE + 95).toFixed(1)}, vWaterWorld.z);
-        vec3 shallow = vec3(0.025, 0.18, 0.19);
-        vec3 deep = vec3(0.009, 0.065, 0.13);
+        vec3 shallow = vec3(0.035, 0.23, 0.21);
+        vec3 deep = vec3(0.014, 0.080, 0.12);
         diffuseColor.rgb = mix(shallow, deep, depth);
         diffuseColor.rgb += (1.0 - depth) * pow(max(0.0, rippleLight), 8.0) * 0.065;` : "diffuseColor.rgb *= 1.0 + rippleLight * 0.09;"}`);
   };
   return mat;
+}
+
+// Low coastal headlands give the sea a far shore and an open middle. They
+// live beyond the walkable place: three tiny meshes, no shadows or collision.
+function headlands(b: Builder): void {
+  const mat = std(0xffffff, { vertexColors: true, roughness: 1, flatShading: false });
+  const coast = new THREE.Color(0xa7aa8e);
+  const ridge = new THREE.Color(0x5f8077);
+  for (const [x, z, width, depth, height, seed] of [
+    [-174, 213, 210, 74, 29, 1.2],
+    [166, 254, 168, 60, 23, 2.8],
+    [58, 291, 64, 30, 7, 4.2],
+  ]) {
+    const g = new THREE.PlaneGeometry(width, depth, 28, 10);
+    const p = g.attributes.position;
+    const colours: number[] = [];
+    for (let i = 0; i < p.count; i++) {
+      const u = p.getX(i) / (width / 2), v = p.getY(i) / (depth / 2);
+      const footprint = Math.max(0, 1 - u * u - v * v);
+      const h = Math.pow(footprint, 0.8) * height * (0.78 + 0.17 * Math.sin(u * 4 + seed) + 0.08 * Math.cos(v * 5 + seed));
+      p.setXYZ(i, x + p.getX(i), h - 0.8, z - p.getY(i));
+      const c = coast.clone().lerp(ridge, Math.min(1, h / height * 1.5));
+      colours.push(c.r, c.g, c.b);
+    }
+    g.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
+    g.computeVertexNormals();
+    b.root.add(new THREE.Mesh(g, mat));
+  }
 }
 
 // ---- the creek ---------------------------------------------------------------
@@ -749,6 +790,8 @@ function build(): Built {
   const forestFloor = surface("forest_leaves_02", [40, 40]);
   forestFloor.color.setHex(0xc0c8ad);
   const trailMat = surface("stony_dirt_path", [1, 60]);
+  trailMat.color.setHex(0xd8ccb0);
+  trailMat.normalScale.setScalar(0.5);
   const bark = surface("pine_bark", [1, 3]);
   const sand = surface("coast_sand_01", [30, 14]);
   const wetSand = surface("damp_beach_sand", [40, 3]);
@@ -813,9 +856,12 @@ function build(): Built {
   }
 
   // ---- the shore ----
-  sand.color.setHex(0xf1e3c6);
-  wetSand.color.setHex(0xd8c9af);
-  wetSand.roughness = 0.62;
+  sand.color.setHex(0xf0dfbe);
+  sand.normalScale.setScalar(0.45);
+  sand.roughness = 0.96;
+  wetSand.color.setHex(0xc8c1a7);
+  wetSand.normalScale.setScalar(0.35);
+  wetSand.roughness = 0.74;
   b.floor(sand, -62, 62, -17, WATERLINE - 0.9, 0);
   const shoreGeometry = new THREE.PlaneGeometry(124, 2.7, 124, 1);
   const shoreVertices = shoreGeometry.attributes.position;
@@ -827,7 +873,7 @@ function build(): Built {
   b.root.add(shoreline);
   b.floors.push(shoreline);
   // the sea, out to the horizon
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry(1600, 800, 240, 120), water(0xffffff, 0.34, 1, 0.25, 0.38, true));
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(1600, 800, 240, 120), water(0xffffff, 0.20, 1, 0.34, 0.30, true, [0.02, 0.013], 5.5));
   sea.rotation.x = -Math.PI / 2;
   sea.position.set(0, -0.12, WATERLINE + 400);
   const seaVertices = sea.geometry.attributes.position;
@@ -839,6 +885,7 @@ function build(): Built {
   }
   sea.receiveShadow = true;
   b.root.add(sea);
+  headlands(b);
   // foam where the waves run up the sand
   const foamTex = canvasTexture(
     512,
@@ -849,14 +896,15 @@ function build(): Built {
       for (let x = 0; x < 512; x++) {
         const edge = 57 + Math.sin(x / 512 * Math.PI * 8) * 12 + Math.sin(x / 512 * Math.PI * 18) * 5;
         for (let j = 0; j < 12; j++) {
-          g.fillStyle = `rgba(242,255,250,${(1 - j / 12) * (0.3 + r() * 0.45)})`;
+          const broken = 0.45 + 0.55 * Math.sin(x / 512 * Math.PI * 5) ** 2;
+          g.fillStyle = `rgba(225,240,230,${(1 - j / 12) * (0.3 + r() * 0.45) * broken})`;
           g.fillRect(x, edge + j * 2 + r() * 5, 1 + r() * 2, 1.5);
         }
       }
     },
     [8, 1],
   );
-  foamMaterial = std(0xffffff, { map: foamTex, transparent: true, opacity: 0.8, depthWrite: false, roughness: 0.6 });
+  foamMaterial = std(0xffffff, { map: foamTex, transparent: true, opacity: 0.6, depthWrite: false, roughness: 0.9 });
   const foamGeometry = new THREE.PlaneGeometry(124, 2.2, 124, 1);
   const foamVertices = foamGeometry.attributes.position;
   for (let i = 0; i < foamVertices.count; i++) foamVertices.setY(i, foamVertices.getY(i) - coastOffset(foamVertices.getX(i)));
@@ -885,7 +933,7 @@ function build(): Built {
     },
     [8, 1],
   );
-  swash = new THREE.Mesh(foamGeometry.clone(), std(0x8fe0d8, { alphaMap: swashAlpha, transparent: true, opacity: 0.5, depthWrite: false, roughness: 0.08, flatShading: false }));
+  swash = new THREE.Mesh(foamGeometry.clone(), std(0x83bfb1, { alphaMap: swashAlpha, transparent: true, opacity: 0.4, depthWrite: false, roughness: 0.18, flatShading: false }));
   swash.rotation.x = -Math.PI / 2;
   swash.scale.y = 1.3;
   swash.position.set(0, 0.012, WATERLINE);
@@ -934,11 +982,60 @@ function build(): Built {
   b.solids.push(...cb.solids.map(shift));
   cafeRoot = cb.root;
   // brick on the outside of its side and back walls
-  const brickSkin = surface("brick_wall_001", [5, 1.6]);
+  const brickSkin = surface("plastered_wall", [3.5, 1.4]);
+  brickSkin.color.setHex(0xe8dfc8);
+  brickSkin.normalScale.setScalar(0.45);
   const C = { x0: CAFE_AT.x, x1: CAFE_AT.x + 14, z0: CAFE_AT.z, z1: CAFE_AT.z + 10 };
   b.box(brickSkin, C.x0 - 0.45, C.x0 - 0.25, 0, 5.0, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
   b.box(brickSkin, C.x1 + 0.25, C.x1 + 0.45, 0, 5.0, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
   b.box(brickSkin, C.x0 - 0.45, C.x1 + 0.45, 0, 5.0, C.z0 - 0.45, C.z0 - 0.25, { occludes: true });
+  // Quiet timber rhythm, a stone-coloured base and a small painted plaque
+  // make the trail-facing wall a considered facade. Decoration adds no
+  // collision; the battens share one instanced draw.
+  const wallTimber = std(0xb5a88e, { roughness: 0.95 });
+  const battens = new THREE.InstancedMesh(new THREE.BoxGeometry(0.065, 4.15, 0.065), wallTimber, 13);
+  const battenMatrix = new THREE.Matrix4();
+  for (let i = 0; i < 13; i++) {
+    battenMatrix.makeTranslation(C.x1 + 0.48, 2.38, C.z0 + 0.55 + i * 0.74);
+    battens.setMatrixAt(i, battenMatrix);
+  }
+  battens.computeBoundingSphere();
+  b.root.add(battens);
+  b.box(std(0xa4a58f, { roughness: 1 }), C.x1 + 0.44, C.x1 + 0.52, 0, 0.32, C.z0 - 0.1, C.z1 + 0.1, { shadow: false });
+  const wallMark = canvasTexture(512, 512, (g) => {
+    g.fillStyle = "#e9e0ca";
+    g.fillRect(0, 0, 512, 512);
+    g.strokeStyle = "#37594b";
+    g.lineWidth = 5;
+    g.strokeRect(16, 16, 480, 480);
+    g.fillStyle = "#264b41";
+    g.textAlign = "center";
+    g.font = "24px Georgia, serif";
+    g.fillText("THE CORNER", 256, 85);
+    // An original, simple pine-and-tide emblem, painted into the texture.
+    g.lineWidth = 7;
+    g.beginPath();
+    g.arc(256, 220, 87, 0, Math.PI * 2);
+    g.stroke();
+    for (const [x, y, s] of [[239, 228, 1], [281, 243, 0.72]]) {
+      g.beginPath();
+      g.moveTo(x - 28 * s, y); g.lineTo(x, y - 68 * s); g.lineTo(x + 28 * s, y);
+      g.moveTo(x, y - 44 * s); g.lineTo(x, y + 18 * s);
+      g.stroke();
+    }
+    for (let i = 0; i < 3; i++) {
+      g.beginPath(); g.moveTo(205, 260 + i * 12);
+      g.bezierCurveTo(237, 247 + i * 12, 266, 273 + i * 12, 307, 260 + i * 12); g.stroke();
+    }
+    g.font = "66px Georgia, serif";
+    g.fillText("CAFÉ", 256, 390);
+    g.font = "20px Georgia, serif";
+    g.fillText("FOREST  ·  SEA", 256, 442);
+  }, [1, 1]);
+  const wallPlaque = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 2.2), std(0xffffff, { map: wallMark, roughness: 1 }));
+  wallPlaque.position.set(C.x1 + 0.54, 2.6, C.z0 + 5.2);
+  wallPlaque.rotation.y = Math.PI / 2;
+  b.root.add(wallPlaque);
   b.solids.push({ x0: C.x0 - 0.45, x1: C.x0, z0: C.z0 - 0.45, z1: C.z1 }, { x0: C.x1, x1: C.x1 + 0.45, z0: C.z0 - 0.45, z1: C.z1 }, { x0: C.x0 - 0.45, x1: C.x1 + 0.45, z0: C.z0 - 0.45, z1: C.z0 });
   // its sign
   const sign = canvasTexture(
@@ -968,7 +1065,7 @@ function build(): Built {
   b.box(kioskWood, K.x0, K.x1, 0, 3.1, K.z0, K.z0 + 0.15, { occludes: true });
   b.box(wood, K.x0, K.x1, 1.0, 1.06, K.z1 - 0.3, K.z1 + 0.25);
   b.box(darkWood, K.x0 - 0.2, K.x1 + 0.2, 3.1, 3.3, K.z0 - 0.2, K.z1 + 0.2, { occludes: true });
-  const kioskAwning = new THREE.Mesh(new THREE.PlaneGeometry(K.x1 - K.x0 + 0.4, 1.4), std(0xffffff, { map: stripes("#f4efe6", "#c4423a", 5), side: THREE.DoubleSide }));
+  const kioskAwning = new THREE.Mesh(new THREE.PlaneGeometry(K.x1 - K.x0 + 0.4, 1.4), std(0xffffff, { map: stripes("#e9dfc5", "#ac6c50", 5), side: THREE.DoubleSide }));
   kioskAwning.position.set((K.x0 + K.x1) / 2, 2.85, K.z1 + 0.6);
   kioskAwning.rotation.x = -Math.PI / 2 + 0.5;
   kioskAwning.castShadow = true;
@@ -981,7 +1078,7 @@ function build(): Built {
 
   // a lifeguard tower on the sand: four legs, a red hut, a ladder
   const T = T_LIFE;
-  const red = std(0xc8423a, { roughness: 0.7 });
+  const red = std(0xb56950, { roughness: 0.8 });
   for (const [dx, dz] of [
     [-1, -1],
     [1, -1],
@@ -1278,10 +1375,9 @@ export const seasideKit: PlaceKit = {
   },
   rainCount: 7000,
   sunTarget: [0, 0, -10],
-  // a high sun, a little south of east
-  sunDirs: { weekday: [0.45, 0.72, 0.35] },
-  // mist that still lets you see the sea and the end of the pier
-  light: { weekday: { fogNear: 85, fogFar: 650, sunColor: 0xffefd5, sunIntensity: 2.8, hemiGround: 0x718367, hemiIntensity: 1.5, exposure: 0.98 } },
+  // Sunny afternoon; long, soft shadows and sea haze separate the headlands.
+  sunDirs: { weekday: [0.62, 0.48, 0.58] },
+  light: { weekday: { fogNear: 75, fogFar: 440, exposure: 1.0 } },
   skies: { weekday: { url: "/assets/skies/qwantani_noon_puresky.hdr", intensity: 1 } },
   offTrail(x, z) {
     if (z > -18) return null;
@@ -1303,7 +1399,7 @@ export const seasideKit: PlaceKit = {
       front.position.z = WATERLINE + 7 * (1 - phase);
       front.position.x = Math.sin(t * 0.22 + i * 2) * 0.45;
       front.scale.y = 0.8 + phase * 1.1;
-      front.material.opacity = Math.sin(phase * Math.PI) ** 2 * 0.78;
+      front.material.opacity = Math.sin(phase * Math.PI) ** 2 * 0.52;
     });
     if (foamMaterial?.map) {
       // the wash running up the sand and back
@@ -1311,10 +1407,10 @@ export const seasideKit: PlaceKit = {
       if (shoreFoam) shoreFoam.position.z = WATERLINE - 0.4 + s * 0.65;
       if (swash) {
         swash.position.z = WATERLINE + 0.45 + s * 0.65;
-        swash.material.opacity = 0.3 + 0.3 * (0.5 + 0.5 * s);
+        swash.material.opacity = 0.22 + 0.22 * (0.5 + 0.5 * s);
       }
       foamMaterial.map.offset.set(t * 0.01, 0);
-      foamMaterial.opacity = 0.45 + 0.35 * (0.5 + 0.5 * s);
+      foamMaterial.opacity = 0.32 + 0.28 * (0.5 + 0.5 * s);
     }
   },
 };

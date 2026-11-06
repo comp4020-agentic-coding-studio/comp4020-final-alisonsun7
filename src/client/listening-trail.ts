@@ -60,6 +60,7 @@ export class ListeningTrail {
     this.count.textContent = nearby.length + " nearby";
     this.note.textContent = on ? "Closer sounds are louder. Every light is someone's contribution." : "Sound is off. Turn it on above to hear the place.";
     this.empty.hidden = nearby.length > 0;
+    this.element.classList.toggle("is-empty", nearby.length === 0);
     this.empty.textContent = this.sounds.size === 0
       ? "No shared sounds nearby yet. Leave a sound and give someone something to find."
       : "No sounds within earshot. Walk a little further and see what you find.";
