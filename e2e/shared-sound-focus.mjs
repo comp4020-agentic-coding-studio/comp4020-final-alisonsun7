@@ -19,6 +19,7 @@ const browser = await chromium.launch({ channel: "chrome", args: ["--use-angle=m
 const people = [];
 const made = [];
 const errors = [];
+let assertionFailed = false;
 const check = (value, message) => { assert.ok(value, message); console.log("ok  " + message); };
 const shot = async (page, name) => { if (out) await page.screenshot({ path: `${out}/${name}.png`, fullPage: true }); };
 const card = (page, id) => page.locator(`.shared-sound-card[data-id="${id}"]`);
@@ -86,7 +87,13 @@ async function openShared(page, keyboard = false) {
 
 async function closeShared(page) {
   if (await drawer(page).evaluate((dialog) => dialog.open)) await page.locator("#world-tools-close").click();
-  await page.waitForFunction(() => !document.getElementById("world-tools-panel").open);
+  // close() clears .open synchronously, but its queued native close event
+  // restores input and focus. Do not start a held movement key before that
+  // handler has released the modal and completed its key reset.
+  await page.waitForFunction(() => {
+    const dialog = document.getElementById("world-tools-panel");
+    return !dialog.open && dialog.hidden;
+  });
 }
 
 async function goTo(page, zone) {
@@ -340,6 +347,7 @@ try {
   await shot(b, "shared-sound-phone-return");
   check(errors.length === 0, "no browser page errors: " + errors.join(" | "));
 } catch (error) {
+  assertionFailed = true;
   for (const { page, name } of people) {
     if (page.isClosed()) continue;
     await shot(page, "failure-" + name.replaceAll(" ", "-")).catch(() => undefined);
@@ -356,21 +364,54 @@ try {
 } finally {
   // Stop movement reporters, then use normal server authority from beside
   // each test-created sound. Never delete rows, reset tables or touch 18861.
+  const cleanupErrors = [];
   await Promise.all(people.map(({ page }) => page.close().catch(() => undefined)));
-  await new Promise((resolve) => setTimeout(resolve, 1100));
   for (const { who, sound } of made) {
+    // The server can acknowledge a move inside its 90ms window without
+    // updating the position. Wait before EVERY iteration, including a
+    // private stay, so the next public DELETE is genuinely from beside it.
+    await new Promise((resolve) => setTimeout(resolve, 1100));
     try {
-      if (sound.whileIn) {
-        // Its authority is leaving the hut, not a public DELETE. Do not
-        // reclaim an empty hut during cleanup by moving back into it.
-        const hut = HUTS.find((candidate) => candidate.id === sound.whileIn);
-        await who.context.request.post(`${base}/api/sessions/${who.sessionId}/move`, { data: { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 1.5, yaw: 0 } });
-        continue;
-      }
-      await who.context.request.post(`${base}/api/sessions/${who.sessionId}/move`, { data: { x: sound.x, z: sound.z, yaw: 0 } });
-      await who.context.request.delete(`${base}/api/sessions/${who.sessionId}/sounds/${sound.id}`);
-      await new Promise((resolve) => setTimeout(resolve, 1100));
-    } catch { /* Preserve the original assertion if the scratch server stops. */ }
+      const hut = sound.whileIn ? HUTS.find((candidate) => candidate.id === sound.whileIn) : null;
+      assert.ok(!sound.whileIn || hut, `Unknown private hut for cleanup: ${sound.whileIn}`);
+      const position = hut ? { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 1.5, yaw: 0 }
+        : { x: sound.x, z: sound.z, yaw: 0 };
+      const moveResponse = await who.context.request.post(`${base}/api/sessions/${who.sessionId}/move`, { data: position });
+      const moveResult = await moveResponse.json();
+      assert.ok(moveResponse.ok() && moveResult.ok,
+        `Cleanup move for ${sound.id} failed (${moveResponse.status()}): ${JSON.stringify(moveResult)}`);
+      // A stay ends by leaving the hut. Re-entering it during cleanup would
+      // reclaim it, and private sounds must not use a public DELETE.
+      if (sound.whileIn) continue;
+      const removeResponse = await who.context.request.delete(`${base}/api/sessions/${who.sessionId}/sounds/${sound.id}`);
+      const removeResult = await removeResponse.json();
+      assert.ok((removeResponse.ok() && removeResult.ok) || removeResult.code === "gone",
+        `Cleanup removal for ${sound.id} failed (${removeResponse.status()}): ${JSON.stringify(removeResult)}`);
+    } catch (error) {
+      cleanupErrors.push(new Error(`Cleanup of ${sound.id}: ${error.message}`, { cause: error }));
+    }
+  }
+  // Read the actual server snapshot after cleanup. Other suites may have
+  // their own sounds: only the ordinary ids this suite made must be absent.
+  if (made.length) {
+    try {
+      const response = await made[0].who.context.request.get(base + "/scene/seaside?mode=weekday&zone=boardwalk");
+      assert.ok(response.ok(), `Cleanup snapshot failed (${response.status()})`);
+      const match = (await response.text()).match(/<script\b[^>]*\bid="boot"[^>]*>([\s\S]*?)<\/script>/i);
+      assert.ok(match, "Cleanup snapshot must contain the actual boot payload");
+      const snapshot = JSON.parse(match[1]).snapshot;
+      assert.ok(Array.isArray(snapshot.sounds), "Cleanup snapshot must expose real live sounds");
+      const ordinaryIds = new Set(made.filter(({ sound }) => !sound.whileIn).map(({ sound }) => sound.id));
+      const remaining = snapshot.sounds.filter((sound) => ordinaryIds.has(sound.id) && !sound.removedAt).map((sound) => sound.id);
+      assert.deepEqual(remaining, [], "Cleanup must leave none of this suite's ordinary sounds live");
+      check(true, "the final real snapshot confirms all test-created ordinary contributions were soft-removed");
+    } catch (error) {
+      cleanupErrors.push(new Error(`Cleanup verification: ${error.message}`, { cause: error }));
+    }
   }
   await browser.close();
+  for (const error of cleanupErrors) console.error(error.message);
+  // Keep a primary UI assertion intact, but never report success when a
+  // network failure or rejected cleanup has left the scratch place dirty.
+  if (cleanupErrors.length && !assertionFailed) throw new AggregateError(cleanupErrors, "Shared soundscape cleanup failed");
 }
