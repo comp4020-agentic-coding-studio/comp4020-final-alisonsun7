@@ -1896,3 +1896,37 @@ checks passed on the scratch candidate. New rig tests replace tube-specific
 geometry checks with continuous skinned-surface checks; the hero triangle budget
 increases deliberately for this higher-fidelity rebuild, while pose, grounding,
 facing and stability requirements remain. Visual acceptance is still pending.
+
+## 67. Correct visual and interaction failures before promotion (2026-11-07)
+
+The actual 1672x941 page now has the thin header and centred sound action.
+Continuous figure geometry passes seven checks, including outward closed
+surfaces, blended skeleton weights, distance levels and flat garment hems.
+The same new skeleton/LOD checks fail against the preserved first art module;
+node topology probes find one connected component and no open/nonmanifold edges
+in each shirt/trousers surface. Hero geometry stays below the new 35K budget.
+
+Ten original browser suites passed sequentially. The original walking suite
+caught the bottom action intercepting the kangaroo's return button. Reserving
+110px for that bubble fixed it; the complete walking suite then passed.
+The new real-page UI suite caught native Chrome Tab focus briefly leaving the
+Tools dialog for BODY, then an Escape/aria timing race. Explicit endpoint Tab
+wrapping and synchronous expanded-state updates fixed both. All 47 UI checks
+then passed, including 26 Tab/Shift+Tab actions, both modal handoffs, 375px and
+short landscape layouts, Sources scrolling, and the real kangaroo return click.
+Face sound adds no placement request or row; only the explicit Leave does.
+
+A separate review found a health-window bug that permanently stopped adaptive
+quality monitoring, and a missing fallback for devices without renderable
+floating-point color targets. Both focused checks were observed failing before
+the fix and passing afterwards. The complete spec suite now passes 73 checks.
+An eastern shore probe likewise exposed walkable submerged sand at (31,30.65),
+roughly 0.195m beyond the rendered coastline. Extending exclusion bounds along
+the whole shore turns all six western/eastern water probes green while keeping
+2916 route samples and five floor rays passing.
+
+The latest actual picture still exposed sparse twig-like pine crowns. Rejected
+that geometry despite its low draw count and started a solid layered crown
+rebuild; this checkpoint is not visual acceptance or preview promotion.
+The user's current four live contributions were read for reachability: all
+remain on unchanged dry land. No persistent position or environment was edited.

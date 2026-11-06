@@ -54,3 +54,14 @@ The local 18861 preview uses the updated build with its original current DB.
 The ignored `.cache/quiet-light-promotion.json` records the retained previous
 compiled directory and the exact table comparison. Both visual directions
 can use the same current schema and persistent contribution history.
+
+## D reference rebuild
+
+Wen rejected the first build's resemblance to D and chose a substantial rebuild
+that retains free 3D movement. `before-d-fidelity-2026-11-07` preserves that first
+build at `65c7a4f`; `.cache/d-fidelity-baseline/` holds its compiled fast path.
+The rebuild is developed on `codex/d-reference-fidelity`, with isolated output
+in `.cache/d-fidelity-build/` and a scratch review on port 18876. Use the same
+clean-checkout method above with this tag to recover the first art version.
+Keep the current database: western landscape changes do not migrate or move
+stored contribution rows.
