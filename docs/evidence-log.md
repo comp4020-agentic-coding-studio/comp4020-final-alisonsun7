@@ -1603,3 +1603,31 @@ without reseeding or resetting the environment; its existing contributions and
 users remain. `docs/local-development.md` records this lifecycle requirement.
 No application behaviour or dependency changed, so the earlier feature suites
 were not rerun for this process-only recovery.
+
+## 57. Compare four art directions before choosing (2026-11-06)
+
+Wen said the current art was still insufficient and asked for several designs
+to choose from. Reviewed the existing beach/boardwalk captures and ADRs 017/018.
+The main mismatch is photographic sand/timber beside simple geometry and thin
+animal figures; each direction therefore redesigns shapes, surfaces, people,
+water, sound markers and interface together. No direction has been selected.
+
+Used `ui-ux-pro-max` for a design pass and the built-in `image_gen` tool for four
+original concepts: A Painted Coast (watercolour/gouache), B Clay Harbor (tactile
+3D), C Graphic Tide (cel shading), D Quiet Light (atmospheric painterly 3D).
+All four use comparable first-person compositions with sea on the left, a cafe
+on the right, forest, animal visitors, a guitarist and family-coloured grounded
+contribution rings. Each complete output was viewed: style distinctions, main
+composition, labels and the shared soundscape motif were present. The first
+broad UI design-system query returned an unsuitable corporate style; a narrower
+organic/clay style query informed only relevant interface/shape guidance rather
+than imposing that unrelated system on the game.
+
+`docs/proposals/art-direction-options.md` explains the four directions and their
+tradeoffs; `art-direction-prompts.json` preserves the full prompts. Built-in
+originals remain in the generated-images directory; local review copies are in
+the session's visualization workspace, with paths recorded in ignored cache.
+These are explicitly AI-generated selection previews, not implemented runtime
+screenshots or CC0 assets. No app code, public asset, database, sound behaviour
+or running preview was changed. No runtime tests or performance measurements
+were warranted for this proposal-only step. JSON parsing and diff checks passed.
