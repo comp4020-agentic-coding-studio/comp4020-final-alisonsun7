@@ -1107,3 +1107,24 @@ the breeze includes birds and the boat includes background voices. Real-phone
 performance, a screen reader and the combined listening experience still need
 people trying them. No production database was used. Changes were made on
 `feat/sound-discovery-polish`; no merge, push or deployment was performed.
+
+## 42. Looking follows the pointer (2026-11-06)
+
+**Prompt (user, translated):** mouse/trackpad view control feels reversed:
+moving down should look down, moving left should look left. Commit improvements
+promptly.
+
+**Done:** reversed the horizontal and vertical drag deltas in `world.ts`,
+keeping the current sensitivity and pitch limits. Keyboard controls, walking
+and Face sound keep their existing behaviour. The contract is recorded in
+`CLAUDE.md`. A new browser check is included in `pnpm e2e`.
+
+**Regression and checks:** `e2e/look-controls.mjs` creates an isolated client
+view using the real WorldView and reads its public camera direction after
+actual pointer drags. Against the old build it failed at "dragging down must
+look down". Against the corrected build all six checks passed: down/up/left/
+right look in that direction, looking does not move the camera's position,
+and no page errors. It does not join a room or change shared data.
+`tsc --noEmit`, application compilation and `git diff --check` passed.
+The full HTTP and multiplayer suites from entry 41 were not rerun for this
+pointer-only change.

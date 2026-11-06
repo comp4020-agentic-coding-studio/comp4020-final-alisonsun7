@@ -843,8 +843,8 @@ export class WorldView {
     addEventListener("keyup", (e) => this.keys.delete(e.key.toLowerCase()));
     addEventListener("blur", () => this.keys.clear());
 
-    // Drag to look; a tap or click without dragging walks to that spot of
-    // floor.
+    // Look in the direction of the drag: down looks down, left looks left.
+    // A tap or click without dragging walks to that spot of floor.
     let look: { id: number; x: number; y: number; moved: number; at: number } | null = null;
     canvas.addEventListener("pointerdown", (e) => {
       if (look) return;
@@ -859,8 +859,8 @@ export class WorldView {
       look.x = e.clientX;
       look.y = e.clientY;
       if (look.moved < 5) return;
-      this.yaw += dx * 0.0042;
-      this.pitch = Math.max(-0.9, Math.min(0.75, this.pitch + dy * 0.0034));
+      this.yaw -= dx * 0.0042;
+      this.pitch = Math.max(-0.9, Math.min(0.75, this.pitch - dy * 0.0034));
     });
     const end = (e: PointerEvent): void => {
       if (!look || e.pointerId !== look.id) return;

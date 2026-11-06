@@ -106,7 +106,7 @@ if (rooCame) {
   const bubbleBox = await bubble.boundingBox();
   const inside = bubbleBox.x >= stageBox.x && bubbleBox.y >= stageBox.y && bubbleBox.x + bubbleBox.width <= stageBox.x + stageBox.width && bubbleBox.y + bubbleBox.height <= stageBox.y + stageBox.height;
   check(inside, `the kangaroo's words are all inside the view (top ${Math.round(bubbleBox.y - stageBox.y)} px from the view's top)`);
-  // look up close: its head is above the view, and the words still fit
+  // Look away vertically: the words still fit when its head leaves the view.
   await b.locator("canvas.world-canvas").focus();
   const box = await b.locator("canvas.world-canvas").boundingBox();
   await b.mouse.move(box.x + box.width / 2, box.y + box.height / 2);

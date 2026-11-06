@@ -86,6 +86,9 @@ send on the server (positions finite and bounded, words cleaned and cut to
 120, rate limits). Escape nicknames in HTML and in embedded JSON; set them
 with `textContent` in the client.
 
+Pointer dragging follows the direction of looking: dragging down looks down,
+dragging left looks left. Keep both axes consistent (`e2e/look-controls.mjs`).
+
 Every file the browser loads must be in `STATIC` in `src/server.ts`;
 `spec/pages.test.ts` follows every import from every page script.
 
