@@ -145,137 +145,6 @@ function plantTrees(): Tree[] {
   return trees;
 }
 
-// An original short-needle tuft, drawn at its actual small scale. Separate
-// radial sprays make an irregular cloud rather than a long fern-like frond.
-function pineNeedles(): THREE.CanvasTexture {
-  return canvasTexture(512, 512, (g) => {
-    const r = mulberry(47);
-    g.clearRect(0, 0, 512, 512);
-    g.lineCap = "round";
-    const colours = ["#7e8c62", "#97a175", "#72815c", "#a7ad82", "#87956b"];
-    for (let spray = 0; spray < 108; spray++) {
-      const angle = r() * Math.PI * 2;
-      const radius = Math.sqrt(r()) * (130 + 24 * Math.sin(angle * 5));
-      const x = 256 + Math.cos(angle) * radius;
-      const y = 265 + Math.sin(angle) * radius * 0.85;
-      // Short woody tips are mostly hidden inside a spray of needle pairs.
-      const direction = angle + (r() - 0.5) * 1.2;
-      g.strokeStyle = "#777c58"; g.lineWidth = 2.4;
-      g.beginPath(); g.moveTo(x - Math.cos(direction) * 17, y - Math.sin(direction) * 17);
-      g.lineTo(x + Math.cos(direction) * 24, y + Math.sin(direction) * 24); g.stroke();
-      for (let needle = 0; needle < 19; needle++) {
-        const turn = direction + (r() - 0.5) * 3.8;
-        const length = 22 + r() * 37;
-        const ox = x + (r() - 0.5) * 20, oy = y + (r() - 0.5) * 20;
-        g.strokeStyle = colours[Math.floor(r() * colours.length)];
-        g.lineWidth = 1.6 + r() * 1.6;
-        g.beginPath(); g.moveTo(ox, oy);
-        g.quadraticCurveTo(ox + Math.cos(turn) * length * 0.65,
-          oy + Math.sin(turn) * length * 0.65 - 3,
-          ox + Math.cos(turn + 0.1) * length, oy + Math.sin(turn + 0.1) * length); g.stroke();
-      }
-    }
-  }, [1, 1]);
-}
-
-function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
-  // Every original tree position and trunk collision remains unchanged.
-  const trunkGeo = new THREE.CylinderGeometry(0.045, 0.22, 1, 9, 5);
-  trunkGeo.translate(0, 0.5, 0);
-  const trunkPosition = trunkGeo.attributes.position;
-  for (let i = 0; i < trunkPosition.count; i++) {
-    const y = trunkPosition.getY(i);
-    trunkPosition.setX(i, trunkPosition.getX(i) + y * y * 0.075);
-  }
-  trunkGeo.computeVertexNormals();
-  const trunks = new THREE.InstancedMesh(trunkGeo, bark, trees.length);
-  const boughs = 7, spraysPerBough = 8, capSprays = 8;
-  const branchGeo = new THREE.CylinderGeometry(0.009, 0.065, 1, 6);
-  branchGeo.translate(0, 0.5, 0);
-  const branches = new THREE.InstancedMesh(branchGeo, bark, trees.length * boughs);
-  // Three cupped, intersecting little cards give each tuft volume. The card
-  // centres bow outward; their edges disappear into many individual needles.
-  // A 15 m tree now carries small 0.6–1.1 m tufts, never metre-long feathers.
-  const positions: number[] = [], uvs: number[] = [];
-  for (let card = 0; card < 3; card++) {
-    const turn = card * Math.PI / 3, tilt = card === 1 ? -0.58 : 0.42;
-    const point = (x: number, y: number): number[] => {
-      const z = 0.20 * (1 - x * x);
-      const yy = y * Math.cos(tilt) - z * Math.sin(tilt);
-      const zz = y * Math.sin(tilt) + z * Math.cos(tilt);
-      return [x * Math.cos(turn) + zz * Math.sin(turn), yy,
-        -x * Math.sin(turn) + zz * Math.cos(turn)];
-    };
-    for (let segment = 0; segment < 2; segment++) {
-      const x0 = -1 + segment, x1 = x0 + 1;
-      for (const [x, y] of [[x0, -0.65], [x1, -0.65], [x1, 0.65], [x0, -0.65], [x1, 0.65], [x0, 0.65]]) {
-        positions.push(...point(x, y));
-        uvs.push((x + 1) / 2, y / 1.3 + 0.5);
-      }
-    }
-  }
-  const crown = new THREE.BufferGeometry();
-  crown.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  crown.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-  crown.computeVertexNormals();
-  const needleMat = std(0xffffff, { map: pineNeedles(), alphaTest: 0.30, side: THREE.DoubleSide,
-    roughness: 1, flatShading: false });
-  sway(needleMat, 0.00045);
-  const perTree = boughs * spraysPerBough + capSprays;
-  const needles = new THREE.InstancedMesh(crown, needleMat, trees.length * perTree);
-  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), color = new THREE.Color();
-  const up = new THREE.Vector3(0, 1, 0), r = mulberry(5);
-  trees.forEach((t, i) => {
-    q.setFromAxisAngle(up, t.turn);
-    m.compose(new THREE.Vector3(t.x, 0, t.z), q, new THREE.Vector3(1.25, t.h, 1.25));
-    trunks.setMatrixAt(i, m);
-    const crownBase = 0.48 + r() * 0.10;
-    const crownWidth = 0.83 + r() * 0.30;
-    const putTuft = (at: number, centre: THREE.Vector3, size: number, light: number): void => {
-      q.setFromEuler(new THREE.Euler((r() - 0.5) * 1.1, r() * Math.PI * 2, (r() - 0.5) * 1.0));
-      m.compose(centre, q, new THREE.Vector3(size, size * (0.85 + r() * 0.25), size));
-      needles.setMatrixAt(i * perTree + at, m);
-      color.setHSL(0.19 + r() * 0.025, 0.10 + r() * 0.10, light + r() * 0.08);
-      needles.setColorAt(i * perTree + at, color);
-    };
-    for (let k = 0; k < boughs; k++) {
-      const progress = k / (boughs - 1);
-      const angle = t.turn + k * 2.399 + (r() - 0.5) * 1.05;
-      const length = t.h * (0.20 - progress * 0.10) * crownWidth * (0.80 + r() * 0.35);
-      const y = t.h * (crownBase + progress * (0.93 - crownBase) + (r() - 0.5) * 0.025);
-      const lean = 0.075 * (y / t.h) ** 2;
-      const base = new THREE.Vector3(t.x + Math.cos(t.turn) * lean, y, t.z - Math.sin(t.turn) * lean);
-      const direction = new THREE.Vector3(Math.cos(angle), 0.10 + r() * 0.20, Math.sin(angle)).normalize();
-      const side = new THREE.Vector3(-Math.sin(angle), 0, Math.cos(angle));
-      q.setFromUnitVectors(up, direction);
-      m.compose(base, q, new THREE.Vector3(1 - progress * 0.45, length, 1 - progress * 0.45));
-      branches.setMatrixAt(i * boughs + k, m);
-      for (let spray = 0; spray < spraysPerBough; spray++) {
-        const along = 0.28 + spray / spraysPerBough * 0.82 + r() * 0.13;
-        const centre = base.clone().addScaledVector(direction, length * along)
-          .addScaledVector(side, (r() - 0.5) * length * 0.60);
-        centre.y += (r() - 0.5) * 0.45;
-        const size = (0.31 + r() * 0.20) * (t.h / 12) * (1 - progress * 0.16);
-        putTuft(k * spraysPerBough + spray, centre, size, 0.63 + progress * 0.05);
-      }
-    }
-    // A loose cap clothes the trunk's tip and joins the irregular branch ends
-    // into a crown; the upper silhouette has no regularly spaced bare spires.
-    for (let cap = 0; cap < capSprays; cap++) {
-      const a = r() * Math.PI * 2, radius = r() * t.h * 0.047;
-      const centre = new THREE.Vector3(t.x + Math.cos(a) * radius,
-        t.h * (0.94 + r() * 0.065), t.z + Math.sin(a) * radius);
-      putTuft(boughs * spraysPerBough + cap, centre, (0.32 + r() * 0.17) * t.h / 12, 0.68);
-    }
-  });
-  for (const mesh of [trunks, branches, needles]) {
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.computeBoundingSphere();
-    b.root.add(mesh);
-  }
-}
-
 // ---- small shapes -----------------------------------------------------
 
 // Small native-looking tufts break up the hard path edge and frame the
@@ -932,7 +801,7 @@ function build(): Built {
   trailMat.color.setHex(0xc8b89b);
   trailMat.normalScale.setScalar(0.15);
   const bark = surface("pine_bark", [1, 3]);
-  bark.color.setHex(0xa2987c);
+  bark.color.setHex(0xebd2b2);
   bark.normalScale.setScalar(0.32);
   const sand = surface("coast_sand_01", [30, 14]);
   const wetSand = surface("damp_beach_sand", [40, 3]);
@@ -983,7 +852,7 @@ function build(): Built {
     b.floors.push(trail);
   }
   const trees = plantTrees();
-  buildTrees(b, trees, bark);
+  buildPineGrove(b.root, bark, trees, true);
   edgeGrass(b);
   buildHeroPines(b.root, bark);
   // The western promenade disappears into a wooded rock slope beyond the
@@ -1050,7 +919,7 @@ function build(): Built {
   b.root.add(beachFloor); b.floors.push(beachFloor);
   // Solid water bounds follow the physical cove. The pier corridor is kept
   // open, and eastern beach access never changes into invisible water walking.
-  for (let x = -62; x < -1; x += 0.5) {
+  for (let x = -62; x < 62; x += 0.5) {
     const x0 = x, x1 = x + 0.5;
     const z0 = Math.min(shoreAt(x0), shoreAt(x1)) - 0.35;
     if (z0 >= WATERLINE - 0.3) continue;
@@ -1150,7 +1019,16 @@ function build(): Built {
   b.floors.push(walk);
   // Real transverse boards give the promenade a readable walking scale.
   const boardCount = 416;
-  const deck = new THREE.InstancedMesh(new THREE.BoxGeometry(0.242, 0.035, 6.52), boards, boardCount);
+  const boardGeometry = new THREE.BoxGeometry(0.242, 0.035, 6.52);
+  const boardUv = boardGeometry.attributes.uv;
+  // The licensed texture contains nine horizontal planks. Sample the grain
+  // of one plank along each real board, instead of squeezing the entire
+  // nine-plank sheet across its 24cm width and stretching it along the walk.
+  for (let i = 0; i < boardUv.count; i++) {
+    const u = boardUv.getX(i), v = boardUv.getY(i);
+    boardUv.setXY(i, v * 2.4, 0.015 + u * 0.07);
+  }
+  const deck = new THREE.InstancedMesh(boardGeometry, boards, boardCount);
   const deckMatrix = new THREE.Matrix4(), boardColour = new THREE.Color();
   for (let i = 0; i < boardCount; i++) {
     deckMatrix.makeTranslation(-51.875 + i * 0.25, 0.055 + Math.sin(i * 7.1) * 0.002, -0.7);
