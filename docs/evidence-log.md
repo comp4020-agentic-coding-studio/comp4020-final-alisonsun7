@@ -1969,3 +1969,14 @@ foliage, character surfaces, water and indirect lighting still read as procedura
 3D rather than the concept's photographic detail. No similarity percentage is
 claimed. Current persisted weather/time is retained when promoting, so the
 reference lighting is selected explicitly with Clear and Afternoon in Tools.
+
+Retained actual captures: [reference-size boardwalk](screenshots/20-d-reference-boardwalk.png),
+[character sheet](screenshots/20-d-reference-characters.png),
+[forest](screenshots/20-d-reference-forest.png),
+[phone](screenshots/20-d-reference-phone.png),
+[Tools](screenshots/20-d-reference-tools.png) and
+[corrected night sky](screenshots/20-d-reference-night-sky.png).
+[Rendering evidence](evidence/d-reference-rendering-2026-11-07.json),
+[real-page interface evidence](evidence/d-reference-ui-2026-11-07.json) and
+[physical-route evidence](evidence/d-reference-physics-2026-11-07.json) retain the
+measurements separately from the visual assessment.

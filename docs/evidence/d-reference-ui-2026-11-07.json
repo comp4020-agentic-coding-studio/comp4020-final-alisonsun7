@@ -1,0 +1,484 @@
+{
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900,
+      "bar": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 52,
+        "top": 0,
+        "right": 1440,
+        "bottom": 52,
+        "left": 0
+      },
+      "stage": {
+        "x": 0,
+        "y": 52,
+        "width": 1440,
+        "height": 848,
+        "top": 52,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "canvas": {
+        "x": 0,
+        "y": 52,
+        "width": 1440,
+        "height": 848,
+        "top": 52,
+        "right": 1440,
+        "bottom": 900,
+        "left": 0
+      },
+      "pill": {
+        "x": 570,
+        "y": 816,
+        "width": 300,
+        "height": 58,
+        "top": 816,
+        "right": 870,
+        "bottom": 874,
+        "left": 570
+      },
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px"
+      ],
+      "radius": "0px",
+      "pageWidth": 1440,
+      "pageHeight": 900,
+      "controls": [
+        {
+          "id": "look-settings",
+          "width": 44,
+          "height": 44,
+          "label": "Controls"
+        },
+        {
+          "id": "sound-switch",
+          "width": 44,
+          "height": 44,
+          "label": "Sound off"
+        },
+        {
+          "id": "world-tools-toggle",
+          "width": 44,
+          "height": 44,
+          "label": "Tools"
+        }
+      ]
+    },
+    "phone": {
+      "width": 375,
+      "height": 812,
+      "bar": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 52,
+        "top": 0,
+        "right": 375,
+        "bottom": 52,
+        "left": 0
+      },
+      "stage": {
+        "x": 0,
+        "y": 52,
+        "width": 375,
+        "height": 760,
+        "top": 52,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "canvas": {
+        "x": 0,
+        "y": 52,
+        "width": 375,
+        "height": 760,
+        "top": 52,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "pill": {
+        "x": 61.5,
+        "y": 738,
+        "width": 252,
+        "height": 52,
+        "top": 738,
+        "right": 313.5,
+        "bottom": 790,
+        "left": 61.5
+      },
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px"
+      ],
+      "radius": "0px",
+      "pageWidth": 375,
+      "pageHeight": 812,
+      "controls": [
+        {
+          "id": "look-settings",
+          "width": 44,
+          "height": 44,
+          "label": "Controls"
+        },
+        {
+          "id": "sound-switch",
+          "width": 44,
+          "height": 44,
+          "label": "Sound on"
+        },
+        {
+          "id": "world-tools-toggle",
+          "width": 44,
+          "height": 44,
+          "label": "Tools"
+        }
+      ]
+    },
+    "phone-drawer": {
+      "x": 8,
+      "y": 60,
+      "width": 359,
+      "height": 744,
+      "scrollWidth": 357,
+      "clientWidth": 357,
+      "scrollHeight": 794,
+      "clientHeight": 742,
+      "viewportWidth": 375,
+      "viewportHeight": 812
+    },
+    "landscape": {
+      "width": 812,
+      "height": 375,
+      "bar": {
+        "x": 0,
+        "y": 0,
+        "width": 812,
+        "height": 52,
+        "top": 0,
+        "right": 812,
+        "bottom": 52,
+        "left": 0
+      },
+      "stage": {
+        "x": 0,
+        "y": 52,
+        "width": 812,
+        "height": 323,
+        "top": 52,
+        "right": 812,
+        "bottom": 375,
+        "left": 0
+      },
+      "canvas": {
+        "x": 0,
+        "y": 52,
+        "width": 812,
+        "height": 323,
+        "top": 52,
+        "right": 812,
+        "bottom": 375,
+        "left": 0
+      },
+      "pill": {
+        "x": 256,
+        "y": 291,
+        "width": 300,
+        "height": 58,
+        "top": 291,
+        "right": 556,
+        "bottom": 349,
+        "left": 256
+      },
+      "border": [
+        "0px",
+        "0px",
+        "0px",
+        "0px"
+      ],
+      "radius": "0px",
+      "pageWidth": 812,
+      "pageHeight": 375,
+      "controls": [
+        {
+          "id": "look-settings",
+          "width": 44,
+          "height": 44,
+          "label": "Controls"
+        },
+        {
+          "id": "sound-switch",
+          "width": 44,
+          "height": 44,
+          "label": "Sound on"
+        },
+        {
+          "id": "world-tools-toggle",
+          "width": 44,
+          "height": 44,
+          "label": "Tools"
+        }
+      ]
+    },
+    "landscape-drawer": {
+      "x": 440,
+      "y": 60,
+      "width": 360,
+      "height": 303,
+      "scrollWidth": 358,
+      "clientWidth": 358,
+      "scrollHeight": 803,
+      "clientHeight": 301,
+      "viewportWidth": 812,
+      "viewportHeight": 375
+    }
+  },
+  "checks": [
+    "desktop: the title strip is 52px high",
+    "desktop: the world fills all space below the title strip",
+    "desktop: the real canvas fills its stage",
+    "desktop: the world has no inset border or rounded frame",
+    "desktop: the page has no hidden extra margin or scroll overflow",
+    "desktop: the 48\u201360px sound pill is centred inside the canvas",
+    "desktop: visible Sound, Controls and Tools have named 44px targets",
+    "Tools and the nearby guide are collapsed on arrival",
+    "Tools uses a real native modal focus scope",
+    "the Tools entry exposes its expanded state",
+    "Tab and Shift+Tab keep keyboard focus inside Tools",
+    "W in Tools never moves the visitor",
+    "Escape closes Tools and returns focus to its visible entry",
+    "Weather opens its own native dialog after the drawer closes",
+    "W remains paused when Tools hands focus to Weather & time",
+    "opening Weather and typing W does not apply a shared change",
+    "the reference afternoon is applied only by its explicit button",
+    "Go to closes Tools, changes the destination URL and restores canvas focus",
+    "walking resumes after Go to and the library close",
+    "Face sound closes Tools and turns without changing the visitor's position",
+    "Face sound sends no placement request and adds no contribution row",
+    "phone: the title strip is 52px high",
+    "phone: the world fills all space below the title strip",
+    "phone: the real canvas fills its stage",
+    "phone: the world has no inset border or rounded frame",
+    "phone: the page has no hidden extra margin or scroll overflow",
+    "phone: the 48\u201360px sound pill is centred inside the canvas",
+    "phone: visible Sound, Controls and Tools have named 44px targets",
+    "phone: the narrow native drawer stays within the viewport",
+    "phone: the drawer scrolls vertically without horizontal overflow",
+    "phone: Sources remains reachable by scrolling the drawer",
+    "phone: the sticky Close control remains visible",
+    "phone-roo-visible: the kangaroo's real return target and words stay clear of the bottom sound pill",
+    "phone-roo-looked-away: the kangaroo's real return target and words stay clear of the bottom sound pill",
+    "the unobstructed kangaroo return button really takes the visitor back to the trail",
+    "landscape: the title strip is 52px high",
+    "landscape: the world fills all space below the title strip",
+    "landscape: the real canvas fills its stage",
+    "landscape: the world has no inset border or rounded frame",
+    "landscape: the page has no hidden extra margin or scroll overflow",
+    "landscape: the 48\u201360px sound pill is centred inside the canvas",
+    "landscape: visible Sound, Controls and Tools have named 44px targets",
+    "landscape: the narrow native drawer stays within the viewport",
+    "landscape: the drawer scrolls vertically without horizontal overflow",
+    "landscape: Sources remains reachable by scrolling the drawer",
+    "landscape: the sticky Close control remains visible",
+    "the real page reports no browser errors: "
+  ],
+  "focusTrace": [
+    {
+      "key": "Tab",
+      "tag": "BUTTON",
+      "id": "environment-settings",
+      "text": "Weather & time",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "BUTTON",
+      "id": "scene-settings",
+      "text": "Explore scenes",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "SUMMARY",
+      "id": "",
+      "text": "Listen around you0 nearby",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Forest trail",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Creek and footbridge",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Edge of the forest",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Boardwalk",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Caf\u00e9 counter",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Caf\u00e9 tables",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Caf\u00e9 window",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Beach",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Pier",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Sources",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "BUTTON",
+      "id": "world-tools-close",
+      "text": "Close",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "BUTTON",
+      "id": "environment-settings",
+      "text": "Weather & time",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "BUTTON",
+      "id": "scene-settings",
+      "text": "Explore scenes",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "SUMMARY",
+      "id": "",
+      "text": "Listen around you0 nearby",
+      "inside": true
+    },
+    {
+      "key": "Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Forest trail",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "SUMMARY",
+      "id": "",
+      "text": "Listen around you0 nearby",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "BUTTON",
+      "id": "scene-settings",
+      "text": "Explore scenes",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "BUTTON",
+      "id": "environment-settings",
+      "text": "Weather & time",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "BUTTON",
+      "id": "world-tools-close",
+      "text": "Close",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Sources",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Pier",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Beach",
+      "inside": true
+    },
+    {
+      "key": "Shift+Tab",
+      "tag": "A",
+      "id": "",
+      "text": "Caf\u00e9 window",
+      "inside": true
+    }
+  ],
+  "errors": [],
+  "soundPosts": 1,
+  "environmentPosts": 1,
+  "notes": "Actual page; 47 checks and 26 key-focus events; only the explicit Leave sends a sound POST."
+}

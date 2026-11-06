@@ -1,0 +1,127 @@
+{
+  "floorRays": [
+    {
+      "x": -15,
+      "z": 5,
+      "hit": true,
+      "height": 0
+    },
+    {
+      "x": -30,
+      "z": 6,
+      "hit": true,
+      "height": 0
+    },
+    {
+      "x": -22.25,
+      "z": 7.5,
+      "hit": true,
+      "height": -0.065
+    },
+    {
+      "x": -8,
+      "z": 6,
+      "hit": true,
+      "height": 0
+    },
+    {
+      "x": 4,
+      "z": 19,
+      "hit": true,
+      "height": 0
+    }
+  ],
+  "status": "PASS",
+  "routes": {
+    "promenade": {
+      "samples": 818,
+      "failures": [],
+      "blockedCount": 0
+    },
+    "cafeDoor": {
+      "samples": 68,
+      "failures": [],
+      "blockedCount": 0
+    },
+    "pier": {
+      "samples": 595,
+      "failures": [],
+      "blockedCount": 0
+    },
+    "westernBeachOpening": {
+      "samples": 61,
+      "failures": [],
+      "blockedCount": 0
+    },
+    "eastBeach": {
+      "samples": 210,
+      "failures": [],
+      "blockedCount": 0
+    },
+    "forestTrail": {
+      "samples": 1164,
+      "failures": [],
+      "blockedCount": 0
+    }
+  },
+  "waterBlocked": [
+    {
+      "x": -20,
+      "z": 15,
+      "blocked": true
+    },
+    {
+      "x": -40,
+      "z": 28,
+      "blocked": true
+    },
+    {
+      "x": -10,
+      "z": 18,
+      "blocked": true
+    },
+    {
+      "x": 30,
+      "z": 30.65,
+      "blocked": true
+    },
+    {
+      "x": 31,
+      "z": 30.65,
+      "blocked": true
+    },
+    {
+      "x": 32,
+      "z": 30.65,
+      "blocked": true
+    }
+  ],
+  "hero": [
+    {
+      "x": -15.3,
+      "z": -0.8,
+      "pose": "stand",
+      "facing": 1.5707963267948966,
+      "avatar": "cat",
+      "seed": "quiet-coastal-cat"
+    },
+    {
+      "x": -16.2,
+      "z": -2,
+      "pose": "guitar",
+      "facing": 0.45,
+      "avatar": "dog",
+      "seed": "mateo-coastal-guitar"
+    }
+  ],
+  "counts": {
+    "solids": 367,
+    "walkable": 5,
+    "circles": 520
+  },
+  "checks": {
+    "cafeInside": true,
+    "boardwalkOutside": true,
+    "pierInsideWorld": true
+  }
+}
