@@ -12,7 +12,7 @@
     "start": "node dist/server.js",
     "dev": "pnpm build && node dist/server.js",
     "scenes": "node scripts/build-scenes.mjs",
-    "e2e": "node e2e/world-two-browsers.mjs && node e2e/meet-and-talk.mjs && node e2e/leave-a-sound.mjs && node e2e/sound-discovery.mjs && node e2e/look-controls.mjs && node e2e/huts.mjs && node e2e/busker-sound.mjs && node e2e/cooperative-play.mjs && node e2e/cooperative-ack-race.mjs",
+    "e2e": "node e2e/world-two-browsers.mjs && node e2e/meet-and-talk.mjs && node e2e/leave-a-sound.mjs && node e2e/sound-discovery.mjs && node e2e/look-controls.mjs && node e2e/huts.mjs && node e2e/busker-sound.mjs && node e2e/cooperative-play.mjs && node e2e/cooperative-ack-race.mjs && node e2e/environment.mjs",
     "sounds": "node scripts/fetch-sounds.mjs"
   },
   "devDependencies": {

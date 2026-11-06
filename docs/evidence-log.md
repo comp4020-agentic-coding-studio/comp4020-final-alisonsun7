@@ -1502,3 +1502,40 @@ preceding an older success. Removing the panel guard in a copied source made
 the delayed-ACK assertion fail (14:08 became 14:00). A direct renderer fixture
 also verified a fresh same-revision sample catches up and an old one cannot
 rewind. Full typecheck and build passed. Browser interaction checks follow.
+
+## 54. Choose the shared sky and explore connected scenes (2026-11-06)
+
+The new compact toolbar opens a native Weather & time / Scenes dialog. Weather
+cards, time presets, a slider and a pauseable clock keep a private draft until
+Apply for everyone. Visitors can browse and travel; shared editing requires
+joining and a connection. Conflicting settings require explicit Use latest,
+and interrupted requests retain choices without an automatic resend. The
+live clock summary is not an assertive per-second screen-reader announcement.
+Nine original vector postcards describe the existing zones; Go here moves only
+the choosing visitor. Old direct zone links remain. The visible label is now
+Shared world while its canonical route and historical room name stay the same.
+
+The UI used `ui-ux-pro-max` guidance for Three.js colour management, labelled
+controls, visible focus and native-dialog keyboard behaviour. No bitmap asset
+or runtime dependency was added. The original broad progressive-disclosure
+search returned an unrelated typography result; a narrower modal-focus query
+returned relevant guidance and was used instead.
+
+The new `e2e/environment.mjs` failed against the previous scratch build because
+the weather control did not exist, before joining or writing any sound. On the
+new scratch build it passed all 25 observations: two cookie identities in the
+same room; no writes while choosing and no walking through a modal; real SSE
+for applied rain/night; private-draft conflict review; clock advance and pause;
+nine destinations with persistent contributions; one aborted request with no
+automatic retry; runtime rain reduced-motion hide/restore; a held real HTTP
+commit followed by a newer edit; and the old acknowledgement leaving both HUD
+and draft current. The first two worlds close before the late phone visitor,
+also proving a contribution remains after its author disconnects. At 375px and
+in 812-by-375 landscape, the panel scrolls without horizontal overflow; tabs,
+Escape, canvas focus, 44px scene controls and guest travel passed. There were
+zero page errors. Isolated DOM interaction checks also passed for Apply,
+pending deduplication, guest access, conflict review and retained drafts.
+
+Desktop and phone panel/scene screenshots were viewed and selected captures
+are in `docs/screenshots/18-*`. The new browser suite is included in the e2e
+script. The nine existing browser suites are being checked together next.

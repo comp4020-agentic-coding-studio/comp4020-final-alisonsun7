@@ -11,7 +11,8 @@ sound out; 011 is Wen's new sound design; 012 keeps only the sunny day;
 while they're in; 014 adds the searchable sound library and nearby listening
   guide; 015 records configurable look, authoritative hut admission and the
   explicitly requested local guitarist; 016 adds durable sound replies and
-  017 records the coastal art direction (003, 008 and 009 are history).
+  017 records the coastal art direction; 018 adds shared weather, a clock and
+  scenic destinations (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -25,7 +26,7 @@ with a café, fish and chip kiosk and beach huts, the beach and a pier. Built fr
 the people in it, who see each other and can talk when they meet, and
 leave sounds where they stand for everyone to hear (ADR 011).
 
-The place (`seaside`, three.js, Sunny Day only: ADR 012) is the only one. Its
+The place (`seaside`, three.js, shared weather and clock: ADR 018) is the only one. Its
 `PlaceKit` is in `client/seaside.ts` (the café's room in `client/cafe.ts`);
 the toolkit in `client/world-build.ts`; the view in `client/world.ts`; the
 sounds people leave in `client/soundscape.ts`, with the sounds on offer and
@@ -72,9 +73,16 @@ reuse its operation key on explicit retry. Observed removals outrank late ACKs.
 - **Published images are processed derivatives only.** `public/scenes/`
   (Wen's photos, blurred, no metadata) is unused now but stays. The
   originals are gitignored and must never be committed: this repo is public.
-- **One place, one room (ADR 007, 012).** Only Sunny Day; the room keeps
-  its database name `morning` (`Scene.room`), so never change it. Retired
-  modes redirect to the sunny day.
+- **One place, one room (ADR 007, 012, 018).** Weather and time are shared,
+  persisted visual state; the room keeps its database name `morning`
+  (`Scene.room`), so never change it. The canonical route remains `weekday`;
+  retired modes redirect there. Scenic destinations move only the visitor who
+  chooses Go here. They do not split people or sound history into new rooms.
+- **The shared sky (ADR 018).** `shared/environment.ts` defines four weathers
+  and the server-anchored 24-minute clock. Apply is explicit and revision-checked;
+  dirty drafts survive interruptions without automatic retries. Same-revision
+  acknowledgements never rewind running clocks. No weather audio starts by
+  itself. `client/environment-panel.ts` controls it and offers scene destinations.
 - **People see each other and talk when they meet (ADR 007).** Positions and
   words live in memory only; words go only to people within 12 m, appear
   over the speaker for 5 s or until replaced, and low in each listener's
@@ -134,6 +142,10 @@ without Wen's go-ahead.
   intent, explicit retry, late arrival, removed-source recovery and phone HUD
   layout. `e2e/cooperative-ack-race.mjs` checks visitor reads and delayed ACKs,
   including a genuinely missed removal recovered through a new SSE snapshot.
+- `e2e/environment.mjs` checks shared weather and clock SSE, explicit Apply,
+  dirty/conflicting drafts, interrupted requests without automatic retries,
+  late acknowledgements, same-room scene travel with lasting contributions,
+  reduced motion and phone/landscape keyboard layout. It is part of `pnpm e2e`.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

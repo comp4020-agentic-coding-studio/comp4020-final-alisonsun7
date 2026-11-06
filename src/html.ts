@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { marked } from "marked";
 import { SCENES, findZone, type Mode, type Scene } from "./shared/catalog.js";
 import type { Snapshot } from "./shared/protocol.js";
+import { WEATHER_LABELS, formatTime, minuteAt } from "./shared/environment.js";
 import type { User } from "./users.js";
 
 const readmeSource = readFileSync(new URL("../README.md", import.meta.url), "utf8");
@@ -141,17 +142,24 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
     .map((m) => `<a href="/scene/${scene.id}?mode=${m.id}"${m.id === mode.id ? ' aria-current="page"' : ""}>${m.label}</a>`)
     .join("")}</nav>`;
   return page(
-    `${scene.title} · ${mode.label} — Sound of a City`,
+    `${scene.title} — Sound of a City`,
     `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
   <a class="back" href="/explore"><span aria-hidden="true">←</span> Places</a>
-  <div class="where"><span class="world-caption">One place · made by all of us</span><h1>${scene.title}</h1><span class="mode-name">${mode.label}</span></div>
+  <div class="where"><span class="world-caption">One place · made by all of us</span><h1>${scene.title}</h1><span class="mode-name">A shared, changing world</span></div>
   <div class="people" id="people" aria-live="polite"></div>
   <div class="world-actions"><button type="button" class="btn ghost controls-switch" id="look-settings">Controls</button><button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false">Sound off</button></div>
 </header>
 ${modeNav}
 <main class="scene-main world-only">
   <section class="stage-area" aria-label="The place">
+    <div class="world-tools" aria-label="World settings">
+      <div class="world-conditions"><span class="world-conditions-label">The shared sky</span><span id="world-conditions">${escapeHtml(WEATHER_LABELS[snap.environment.weather])} · ${formatTime(minuteAt(snap.environment, Date.parse(snap.serverNow)))}</span><span id="world-clock-mode">${snap.environment.clockRunning ? "24-minute day" : "Time paused"}</span></div>
+      <div class="world-tool-actions">
+        <button type="button" class="world-tool" id="environment-settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Weather &amp; time</button>
+        <button type="button" class="world-tool" id="scene-settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="3"/><circle cx="16" cy="8" r="2"/><path d="m3 17 6-7 5 6 3-3 5 6"/></svg>Explore scenes</button>
+      </div>
+    </div>
     <div class="stage-frame world-frame" id="stage-frame">
       <div class="stage world-stage" id="stage">
         <p class="world-help" aria-hidden="true"><span class="keys">Drag to look · W A S D or arrows to walk · click the floor to walk there</span><span class="touch">Drag to look · stick to walk · tap the floor to walk there</span></p>

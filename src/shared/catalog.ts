@@ -47,9 +47,9 @@ const SEASIDE: Scene = {
   title: "From the Forest to the Sea",
   summary: "Start on a trail through a pine forest, cross the creek, and come out by the sea: a boardwalk with a café, a fish and chip kiosk and beach huts, the sand, and a pier.",
   about: "An imagined place, not a real one. Ground, sand, timber, furniture, plants and skies are free CC0 assets from Poly Haven; the trees and buildings are drawn from simple shapes. The sounds are CC0 or public-domain recordings from Wikimedia Commons.",
-  // Only the sunny day since ADR 012; early morning and rainy dusk were
-  // retired.
-  modes: [{ id: "weekday", label: "Sunny Day" }],
+  // One canonical route; the shared environment now controls its weather
+  // and light (ADR 018). Retired routes still lead to this same room.
+  modes: [{ id: "weekday", label: "Shared world" }],
   retiredModes: ["morning", "rainy-dusk"],
   room: "morning",
   zones: [

@@ -10,6 +10,8 @@ import { SoundLibrary } from "./sound-library.js";
 import { ListeningTrail } from "./listening-trail.js";
 import { LookSettings } from "./look-settings.js";
 import { SoundConversations } from "./sound-conversations.js";
+import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
+import { WEATHER_LABELS, formatTime, minuteAt, type Environment } from "../shared/environment.js";
 import { HUTS } from "../shared/huts.js";
 import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
@@ -74,6 +76,61 @@ const lookSettings = new LookSettings({
 stage.append(lookSettings.element);
 $("look-settings").onclick = () => lookSettings.open();
 
+// One durable sky for everyone; scene destinations only change your own path.
+let environment = snapshot.environment;
+let environmentSample = { server: Date.parse(snapshot.serverNow), received: performance.now() };
+const environmentPanel = new EnvironmentPanel({
+  scene,
+  apply: async (draft, revision): Promise<ApplyEnvironmentResult> => {
+    if (!connected) return { ok: false, code: "offline" };
+    if (!boot.joined) return { ok: false, code: "no_session" };
+    try {
+      const response = await fetch(`/api/sessions/${snapshot.sessionId}/environment`, {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...draft, revision }), signal: AbortSignal.timeout(8000),
+      });
+      const result = await response.json() as ApplyEnvironmentResult;
+      if (result.environment && result.serverNow) receiveEnvironment(result.environment, result.serverNow);
+      return result;
+    } catch {
+      return { ok: false, code: "offline" };
+    }
+  },
+  goTo: (zone) => world.goTo(zone),
+  open: () => world.setInputPaused(true),
+  close: () => restoreWorldInput(),
+});
+stage.append(environmentPanel.element);
+$("environment-settings").onclick = () => environmentPanel.open("environment");
+$("scene-settings").onclick = () => environmentPanel.open("scenes");
+
+function receiveEnvironment(next: Environment, serverNow: string): void {
+  // SSE may already have delivered a newer edit before an older POST ACK.
+  const server = Date.parse(serverNow);
+  if (next.revision < environment.revision || !Number.isFinite(server)) return;
+  const received = performance.now();
+  // A duplicate acknowledgement cannot rewind a running clock. A fresh
+  // snapshot can still catch up after the computer has been asleep.
+  const effectiveServer = next.revision === environment.revision
+    ? Math.max(server, environmentSample.server + Math.max(0, received - environmentSample.received)) : server;
+  environment = next;
+  snapshot.environment = next;
+  environmentSample = { server: effectiveServer, received };
+  const sample = new Date(effectiveServer).toISOString();
+  world.setEnvironment(next, sample);
+  environmentPanel.setEnvironment(next, sample);
+  renderEnvironment();
+}
+
+function renderEnvironment(): void {
+  const now = environmentSample.server + performance.now() - environmentSample.received;
+  $("world-conditions").textContent = `${WEATHER_LABELS[environment.weather]} · ${formatTime(minuteAt(environment, now))}`;
+  $("world-clock-mode").textContent = environment.clockRunning ? "24-minute day" : "Time paused";
+}
+receiveEnvironment(environment, snapshot.serverNow);
+environmentPanel.setZone(zoneId);
+setInterval(renderEnvironment, 1000);
+
 // cards for someone new: a short tour, then what each part of the place offers
 const guide = new Guide(stage, zoneId, { joined: () => boot.joined, goTo: (zone) => world.goTo(zone), refocus: () => world.focusCanvas() });
 
@@ -106,6 +163,7 @@ function connect(): void {
     const msg = JSON.parse(e.data as string) as ServerMessage;
     if (msg.type === "snapshot") {
       snapshot = msg;
+      receiveEnvironment(msg.environment, msg.serverNow);
       renderPeople();
       const live = new Set(msg.sounds.map((s) => s.id));
       for (const id of contributions.keys()) if (!live.has(id)) removedSounds.add(id);
@@ -130,6 +188,12 @@ function connect(): void {
     }
     else if (msg.type === "sound-left") soundLeft(msg.sound);
     else if (msg.type === "sound-removed") soundRemoved(msg);
+    else if (msg.type === "environment") {
+      if (msg.environment.revision >= environment.revision) {
+        receiveEnvironment(msg.environment, msg.serverNow);
+        if (msg.byId !== me()?.id) say(`${msg.by} changed the shared weather and time.`);
+      }
+    }
     if (!connected) {
       connected = true;
       renderStatus();
@@ -541,6 +605,7 @@ function say(text: string): void {
 function renderStatus(): void {
   status.className = `status${connected ? "" : " offline"}`;
   status.textContent = connected ? "" : "Connection lost. Trying again…";
+  environmentPanel.setAvailability({ joined: boot.joined, connected });
   renderReply();
 }
 
@@ -561,6 +626,7 @@ function renderPeople(): void {
 }
 
 function renderZone(): void {
+  environmentPanel.setZone(zoneId);
   $("zone-text").textContent = findZone(scene, zoneId)?.description ?? "";
   for (const a of document.querySelectorAll<HTMLAnchorElement>("#zones a")) {
     if (a.dataset.zone === zoneId) a.setAttribute("aria-current", "true");
