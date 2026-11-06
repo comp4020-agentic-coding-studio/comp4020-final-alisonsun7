@@ -84,3 +84,18 @@ COREPACK_ENABLE_AUTO_PIN=0 corepack pnpm@11.9.0 start
 Use mise for `dev` and `check`, whose scripts invoke bare `pnpm` internally;
 with Corepack, run `build`/`start` and `typecheck`/`test` individually instead.
 No `corepack enable`, global pnpm activation or dependency upgrade is needed.
+
+## Keep a tool-started preview running
+
+A foreground development command depends on its terminal or tool session. A
+preview that must survive that session should launch Node directly in a detached
+process, with stdin ignored and stdout/stderr appended to `.cache/preview.log`.
+For a Node launcher, use `spawn` with `detached: true`, those independent stdio
+handles, and `child.unref()` ([Node documentation](https://nodejs.org/download/release/v24.21.0/docs/api/child_process.html#optionsdetached)).
+
+Keep the same working directory, explicit `PORT` and existing `DB_PATH`; do not
+fall back to a new empty database when restoring a preview. Record its PID,
+port, database and log path in ignored `.cache/preview.json`. After the launcher
+exits, independently check the listening port and an HTTP response. Verify that
+the recorded PID still owns the expected listener before stopping it; PIDs can
+be reused. This is a local preview, not an operating-system startup service.

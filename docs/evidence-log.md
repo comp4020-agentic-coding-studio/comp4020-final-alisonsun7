@@ -1584,3 +1584,22 @@ against its preserved database. No push, deployment or production-data change
 was performed. Docker, physical devices, a screen reader and human listening
 were not run. Work was committed in separate persistence, rendering, interface
 and final-verification steps.
+
+## 56. Restore an unavailable local preview (2026-11-06)
+
+Wen reported that the page was no longer accessible. Port 18861 had no listener
+and a separate curl request returned connection refused. The compiled app and
+existing review database were intact; Git was clean. The previous foreground
+process had disappeared. Its exact exit reason was not recorded, so tool-session
+cleanup is a possibility rather than a confirmed application failure.
+
+Restarted Node directly in an independent session with stdin disconnected and
+stdout/stderr appended to ignored `.cache/preview.log`. The ignored
+`.cache/preview.json` records the new process, original database and port. A
+subsequent independent tool call confirmed HTTP 200 for the scene and its client
+module after the launcher exited. The process was reparented to PID 1, had its
+own process group and no terminal. The original review database was reused,
+without reseeding or resetting the environment; its existing contributions and
+users remain. `docs/local-development.md` records this lifecycle requirement.
+No application behaviour or dependency changed, so the earlier feature suites
+were not rerun for this process-only recovery.
