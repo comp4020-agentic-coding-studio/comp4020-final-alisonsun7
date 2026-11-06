@@ -12,6 +12,7 @@ import type { PlacedSound } from "../shared/protocol.js";
 import { FAMILIES, HEAR, REACH, VOICES, findSound, soundUrl } from "../shared/sounds.js";
 import type { Listener, WorldView } from "./world.js";
 import { BUSKER_SOUND } from "./seaside.js";
+import { SoundConnections } from "./sound-connections.js";
 
 const reduced = (): boolean => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const LIGHT_Y = 1.15;
@@ -112,6 +113,8 @@ export interface SoundscapeOptions {
 
 export class Soundscape {
   private marks = new Map<string, Mark>();
+  private connections: SoundConnections;
+  private updatingAll = false;
   private ctx: AudioContext | null = null;
   private place: GainNode | null = null;
   private preview: GainNode | null = null;
@@ -125,29 +128,43 @@ export class Soundscape {
   private previewRequest = 0;
   on = false;
 
+  private visibilityChanged = (): void => {
+    if (!this.ctx) return;
+    if (document.hidden) {
+      this.stopPreview();
+      void this.ctx.suspend();
+      this.reportBusker();
+    } else if (this.on) void this.ctx.resume();
+  };
+
   constructor(
     private world: WorldView,
     private host: HTMLElement,
     private opts: SoundscapeOptions,
   ) {
     this.host.dataset.buskerVoice = "0";
+    this.host.dataset.soundConnections = "0";
+    this.connections = new SoundConnections(this.world.root, (x, z) => this.world.surfaceHeight(x, z));
     // a hidden tab goes quiet, and comes back as it was
-    document.addEventListener("visibilitychange", () => {
-      if (!this.ctx) return;
-      if (document.hidden) {
-        this.stopPreview();
-        void this.ctx.suspend();
-        this.reportBusker();
-      } else if (this.on) void this.ctx.resume();
-    });
+    document.addEventListener("visibilitychange", this.visibilityChanged);
   }
 
   // ---- the list ------------------------------------------------------------
 
   setAll(sounds: PlacedSound[]): void {
-    const keep = new Set(sounds.map((s) => s.id));
-    for (const id of [...this.marks.keys()]) if (!keep.has(id)) this.remove(id);
-    for (const s of sounds) this.add(s);
+    this.updatingAll = true;
+    try {
+      const keep = new Set(sounds.map((s) => s.id));
+      for (const id of [...this.marks.keys()]) if (!keep.has(id)) this.remove(id);
+      for (const s of sounds) this.add(s);
+    } finally {
+      this.updatingAll = false;
+      this.updateConnections();
+    }
+  }
+
+  private updateConnections(): void {
+    if (!this.updatingAll) this.connections.setAll([...this.marks.values()].map((mark) => mark.sound));
   }
 
   add(sound: PlacedSound): void {
@@ -159,6 +176,7 @@ export class Soundscape {
       const relation = existing.label.querySelector<HTMLElement>(".sound-answer")!;
       relation.textContent = this.replyDescription(sound);
       relation.hidden = !sound.replyTo;
+      this.updateConnections();
       return;
     }
     const colour = FAMILIES[kind.family].colour;
@@ -225,6 +243,7 @@ export class Soundscape {
     this.marks.set(sound.id, { sound, glow: glowS, core, beam: column, anchor, wave, label, phase: Math.random() * Math.PI * 2 });
     this.choseAt = 0;
     this.host.dataset.marks = String(this.marks.size);
+    this.updateConnections();
   }
 
   remove(id: string): void {
@@ -240,6 +259,18 @@ export class Soundscape {
     this.marks.delete(id);
     this.stopVoice(id);
     this.host.dataset.marks = String(this.marks.size);
+    this.updateConnections();
+  }
+
+  dispose(): void {
+    document.removeEventListener("visibilitychange", this.visibilityChanged);
+    this.stopPreview();
+    this.on = false;
+    this.stopBusker();
+    for (const id of [...this.marks.keys()]) this.remove(id);
+    this.connections.dispose();
+    this.host.dataset.soundConnections = "0";
+    void this.ctx?.close();
   }
 
   has(id: string): boolean {
@@ -547,6 +578,8 @@ export class Soundscape {
       }
     }
     this.drawMarks(l, now);
+    const playing = new Set([...this.voices].filter(([, voice]) => voice.src.buffer).map(([id]) => id));
+    this.host.dataset.soundConnections = String(this.connections.frame(l, this.on && !document.hidden && this.ctx?.state === "running", playing, now));
     this.reportBusker();
   }
 
