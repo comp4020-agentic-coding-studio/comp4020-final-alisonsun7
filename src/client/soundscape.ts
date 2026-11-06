@@ -105,6 +105,8 @@ export interface SoundscapeOptions {
   // you've joined, so you may remove a sound
   canChange: () => boolean;
   onRemove: (sound: PlacedSound) => void;
+  onReply: (sound: PlacedSound) => void;
+  onConversation: (sound: PlacedSound) => void;
 }
 
 export class Soundscape {
@@ -144,12 +146,20 @@ export class Soundscape {
   setAll(sounds: PlacedSound[]): void {
     const keep = new Set(sounds.map((s) => s.id));
     for (const id of [...this.marks.keys()]) if (!keep.has(id)) this.remove(id);
-    for (const s of sounds) if (!this.marks.has(s.id)) this.add(s);
+    for (const s of sounds) this.add(s);
   }
 
   add(sound: PlacedSound): void {
     const kind = findSound(sound.soundId);
-    if (!kind || this.marks.has(sound.id)) return;
+    if (!kind || sound.removedAt) return;
+    const existing = this.marks.get(sound.id);
+    if (existing) {
+      existing.sound = sound;
+      const relation = existing.label.querySelector<HTMLElement>(".sound-answer")!;
+      relation.textContent = this.replyDescription(sound);
+      relation.hidden = !sound.replyTo;
+      return;
+    }
     const colour = FAMILIES[kind.family].colour;
     const glowS = lightSprite(colour, 2.4, 0.7, true);
     const core = lightSprite(colour, 0.6, 1, false);
@@ -171,6 +181,7 @@ export class Soundscape {
     }
     const label = document.createElement("div");
     label.className = "sound-label";
+    label.dataset.id = sound.id;
     label.hidden = true;
     label.style.setProperty("--family", colour);
     const name = document.createElement("strong");
@@ -178,13 +189,36 @@ export class Soundscape {
     const by = document.createElement("span");
     by.className = "sound-by";
     by.textContent = `left by ${sound.by} · ${shortDate(sound.at)}`;
+    const relation = document.createElement("span");
+    relation.className = "sound-answer";
+    relation.textContent = this.replyDescription(sound);
+    relation.hidden = !sound.replyTo;
+    const actions = document.createElement("div");
+    actions.className = "sound-actions";
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "sound-remove";
     remove.textContent = "Remove";
     remove.hidden = true;
     remove.onclick = () => this.opts.onRemove(sound);
-    label.append(name, by, remove);
+    if (!sound.whileIn) {
+      const reply = document.createElement("button");
+      reply.type = "button";
+      reply.className = "sound-reply";
+      reply.textContent = "Reply with a sound";
+      reply.hidden = true;
+      reply.onclick = () => this.opts.onReply(this.marks.get(sound.id)!.sound);
+      const conversation = document.createElement("button");
+      conversation.type = "button";
+      conversation.className = "sound-conversation";
+      conversation.textContent = "Conversation";
+      conversation.setAttribute("aria-label", "View conversation for " + kind.label);
+      conversation.hidden = true;
+      conversation.onclick = () => this.opts.onConversation(this.marks.get(sound.id)!.sound);
+      actions.append(reply, conversation);
+    }
+    actions.append(remove);
+    label.append(name, by, relation, actions);
     this.world.labels.append(label);
     this.marks.set(sound.id, { sound, glow: glowS, core, beam: column, anchor, wave, label, phase: Math.random() * Math.PI * 2 });
     this.choseAt = 0;
@@ -208,6 +242,11 @@ export class Soundscape {
 
   has(id: string): boolean {
     return this.marks.has(id);
+  }
+
+  private replyDescription(sound: PlacedSound): string {
+    return sound.replyTo ? "Answering " + sound.replyTo.by + "'s " + (findSound(sound.replyTo.soundId)?.label ?? "sound")
+      + (sound.replyTo.removedAt ? " · source removed" : "") : "";
   }
 
   // ---- turning sound on and off ---------------------------------------------
@@ -557,24 +596,25 @@ export class Soundscape {
     }
     // Standing on a sound (just after leaving it, say), its light is under
     // you: its label sits low in the view instead, so it can still be removed.
-    if (nearest && nearest.label.hidden && this.opts.canChange()) {
+    if (nearest && nearest.label.hidden && (this.opts.canChange() || !nearest.sound.whileIn)) {
       nearest.label.hidden = false;
       nearest.label.classList.add("pinned");
       nearest.label.classList.remove("far");
       nearest.label.style.transform = `translate(${w / 2}px, ${Math.round(h * 0.56)}px) translate(-50%, -100%)`;
     }
-    const id = this.opts.canChange() ? (nearest?.sound.id ?? null) : null;
+    const id = nearest?.sound.id ?? null;
     if (id !== this.reachable) {
       if (this.reachable) {
         const old = this.marks.get(this.reachable);
-        if (old) old.label.querySelector<HTMLButtonElement>(".sound-remove")!.hidden = true;
+        if (old) for (const button of old.label.querySelectorAll<HTMLButtonElement>(".sound-actions button")) button.hidden = true;
         old?.label.classList.remove("in-reach");
       }
       this.reachable = id;
-      if (nearest && id) {
-        nearest.label.querySelector<HTMLButtonElement>(".sound-remove")!.hidden = false;
-        nearest.label.classList.add("in-reach");
-      }
+    }
+    if (nearest && id) {
+      for (const button of nearest.label.querySelectorAll<HTMLButtonElement>(".sound-actions button"))
+        button.hidden = !this.opts.canChange() && !button.classList.contains("sound-conversation");
+      nearest.label.classList.add("in-reach");
     }
   }
 }

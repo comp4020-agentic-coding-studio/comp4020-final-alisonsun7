@@ -15,7 +15,83 @@ const errors = [];
 const check = (condition, message) => { assert.ok(condition, message); console.log("ok  " + message); };
 const shot = async (page, name) => { if (out) await page.screenshot({ path: out + "/" + name + ".png" }); };
 
-try {
+// The real library class, dialog and buttons, without another Three.js world.
+// Only the service result is deferred. This is also runnable on its own with
+// LIBRARY_CONTEXT_ONLY=1; LIBRARY_CONTEXT_NO_GUARD=1 is a response-only negative
+// control and must fail the stale-feedback assertion without editing dist/.
+async function libraryContextRegression() {
+  const context = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+  const page = await context.newPage();
+  page.setDefaultTimeout(6000);
+  page.on("pageerror", (error) => errors.push("Library context: " + error.message));
+  try {
+    if (process.env.LIBRARY_CONTEXT_NO_GUARD === "1") {
+      await page.route("**/client/sound-library.js", async (route) => {
+        const response = await route.fetch();
+        const source = await response.text();
+        const changed = source.replace("error && context === this.context", "error");
+        assert.notEqual(changed, source, "the negative control must remove the actual context guard");
+        await route.fulfill({ response, body: changed });
+      });
+    }
+    await page.goto(base + "/about");
+    await page.evaluate(async () => {
+      const { SoundLibrary } = await import("/client/sound-library.js");
+      const a = { id: "fixture-a", soundId: "trickle", x: 0, z: 0, by: "Fixture A", byId: "person-a", at: "2026-11-06T00:00:00.000Z" };
+      const b = { id: "fixture-b", soundId: "beach-waves", x: 1, z: 0, by: "Fixture B", byId: "person-b", at: "2026-11-06T00:00:00.000Z" };
+      let target = a;
+      let resolveA;
+      const calls = [];
+      const library = new SoundLibrary({
+        zone: () => ({ id: "boardwalk", title: "Boardwalk" }),
+        listen: async () => true,
+        stop: () => {},
+        leave: (id) => {
+          calls.push({ target: target.id, soundId: id });
+          return target.id === a.id
+            ? new Promise((resolve) => { resolveA = resolve; })
+            : Promise.resolve("B current error: this reply needs a different sound.");
+        },
+        cancelReply: () => library.setReply(null),
+        close: () => {},
+      });
+      document.body.append(library.element);
+      library.setReply(a);
+      library.open();
+      window.__libraryContextFixture = {
+        calls,
+        chooseB: () => { target = b; library.setReply(b); library.open(); },
+        finishA: () => resolveA("A stale error: the original target disappeared."),
+      };
+    });
+    await page.locator('[data-sound="evening-forest"]').click();
+    await page.waitForFunction(() => window.__libraryContextFixture.calls.length === 1, null, { timeout: 3000 });
+    check(await page.locator('[data-sound="evening-forest"]').isDisabled(), "a real library Leave click remains pending while its service result is deferred");
+    await page.locator(".library-close").click();
+    await page.locator("#sound-palette").waitFor({ state: "hidden" });
+    // Native close makes the dialog visually hidden before its queued close
+    // event runs; wait for that real handler before preparing the next target.
+    await page.waitForFunction(() => document.getElementById("sound-palette").hidden, null, { timeout: 3000 });
+    await page.evaluate(() => window.__libraryContextFixture.chooseB());
+    check(await page.locator("#sound-palette").evaluate((dialog) => dialog.matches(":modal"))
+      && (await page.locator("#sound-library-reply").textContent()).includes("Fixture B"), "closing A and selecting B opens the real dialog with B as its reply target");
+    await page.evaluate(() => window.__libraryContextFixture.finishA());
+    await page.waitForFunction(() => !document.querySelector('[data-sound="evening-forest"]').disabled, null, { timeout: 3000 });
+    check(!(await page.locator(".library-feedback").textContent()).includes("A stale error")
+      && (await page.locator("#sound-library-reply").textContent()).includes("Fixture B")
+      && await page.locator("#sound-palette").evaluate((dialog) => dialog.matches(":modal")), "a late A error cannot pollute B's feedback, reply target or open dialog");
+    await page.locator('[data-sound="espresso"]').click();
+    await page.waitForFunction(() => document.querySelector(".library-feedback").textContent.includes("B current error"), null, { timeout: 3000 });
+    check((await page.locator("#sound-library-reply").textContent()).includes("Fixture B")
+      && await page.evaluate(() => window.__libraryContextFixture.calls.length === 2 && window.__libraryContextFixture.calls[1].target === "fixture-b"), "B's own real Leave click still shows its current error for B");
+    await shot(page, "library-context-switch");
+    await page.locator(".library-close").click();
+  } finally {
+    await context.close();
+  }
+}
+
+async function worldChecks() {
   async function person(name, zone) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     await context.addInitScript(() => {
@@ -130,6 +206,12 @@ try {
   await a.waitForFunction(() => document.querySelector(".trail-count").textContent.startsWith("0 "));
   check((await a.locator(".trail-count").textContent()).includes("0"), "removing the contribution updates the other person's discovery list");
   check(errors.length === 0, "no page errors: " + errors.join(" | "));
+}
+
+try {
+  if (process.env.LIBRARY_CONTEXT_ONLY !== "1") await worldChecks();
+  await libraryContextRegression();
+  check(errors.length === 0, "no library-context page errors: " + errors.join(" | "));
 } finally {
   await browser.close();
 }

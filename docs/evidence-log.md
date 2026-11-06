@@ -1319,3 +1319,56 @@ measured beach 60 fps and forest 59 fps; real CDP touch joystick movement worked
 These are local desktop-GPU measurements, not a physical-phone claim. Metrics
 are in `docs/evidence/coastal-rendering-2026-11-06.json`, selected screenshots in
 `docs/screenshots/17-*`. The full HTTP/local suite also passed 53/53 in six files.
+
+## 49. Compose by answering another person's sound (2026-11-06, ADR 016)
+
+**Front-end step:** nearby ordinary sound labels offer Reply with a sound and
+Conversation. The existing library names the source; closing keeps a cancellable
+intent so a person can walk before choosing the answer. A confirmed placement
+announces who answered whom; the conversation view shows a parent and paged
+answers with attribution. Face only turns; removed nodes remain readable and
+cannot play. Visitors can read without joining. Source removal before a reply
+asks for an explicit Leave without a reply instead of silently changing intent.
+Connection failures retain the key and target for explicit retry, never an
+automatic reconnect submission. Private-stay sounds have neither reply action.
+
+**Review corrections:** a successful but delayed original HTTP acknowledgement
+could arrive after another person's removal and restart the removed sound.
+The page now remembers observed removals, also inferred from a new snapshot,
+and refuses that resurrection. Another review found a pending target A's error
+could appear under a newly selected target B. Feedback now belongs to its
+original library context; a current B error still appears normally. Modal
+switching checks the current native dialog before resuming world movement.
+
+**Targeted verification:** the two-contributor main flow passed its original
+28 observations: ordinary placement, contextual reply, cancel, walking, aborted
+POST, explicit retry with the same operation id, correct standing position,
+both sides' attribution, reload, phone late arrival, public removal, removed
+source recovery and explicit unlinked placement. The initial fixed 700 ms
+movement check was too early under rendering load, so it now waits for actual
+movement with a four-second bound. The first test tried to operate a non-nearest
+label; it now uses the actual parent-to-answer conversation navigation. Three
+simultaneous automated visible worlds overloaded actionability on this Mac;
+the flow closes the original author's page before the late visitor arrives,
+also checking that their contribution outlasts their connection. Assertions
+and the third identity remain.
+
+The separate ACK-race suite passed 12 observations using real HTTP, SSE and
+removal, including a cut stream that really misses a removal and a reopened
+stream delivering a fresh server snapshot. A response-only mutation removing
+the tombstone guard failed exactly when the old ACK revived the sound. The
+real SoundLibrary/native-dialog fixture passed five observations for A-to-B
+context switching; removing only its feedback guard in the served response
+made the stale-error assertion fail. No product file was changed for either
+mutation.
+
+**Phone iterations:** screenshots exposed chat over the duplicate source action
+card, then a toast over pending buttons. During a pending reply, the contextual
+card replaces duplicate floating labels and the exploration panel. Toasts are
+now readable, non-interactive messages at the top of the view. Chat, heard words
+and placement controls have distinct vertical space. The final phone-only run
+passed 8/8, with a real nearby participant: no overflow, safe pending/chat/toast
+actions, Cancel restoring source actions, and normal chat clear of Leave.
+Desktop and phone images were viewed; selected evidence is in
+`docs/screenshots/16-*`. Type, build and evidence-link checks passed. Both new
+browser suites are included in the e2e chain; the combined run is recorded next.

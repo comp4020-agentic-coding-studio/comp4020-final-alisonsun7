@@ -1,12 +1,14 @@
 // A small library for shaping the shared place: find, privately audition,
 // then leave a sound at your feet. Nothing is placed by browsing or listening.
 import { FAMILIES, SOUNDS, type Family, type SoundKind } from "../shared/sounds.js";
+import type { SoundReference } from "../shared/protocol.js";
 
 interface Options {
   zone: () => { id: string; title: string };
   listen: (id: string) => Promise<boolean>;
   stop: () => void;
   leave: (id: string) => Promise<string | null>;
+  cancelReply: () => void;
   close: () => void;
 }
 
@@ -23,6 +25,11 @@ export class SoundLibrary {
   private preview: string | null = null;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private pending = false;
+  private reply: SoundReference | null = null;
+  private replyCard = document.createElement("div");
+  private title = document.createElement("h2");
+  private chosen: string | null = null;
+  private context = 0;
 
   constructor(private opts: Options) {
     const dialog = this.element;
@@ -37,7 +44,7 @@ export class SoundLibrary {
     const kicker = document.createElement("p");
     kicker.className = "library-kicker";
     kicker.textContent = "Make this place sound like life";
-    const title = document.createElement("h2");
+    const title = this.title;
     title.id = "sound-library-title";
     title.textContent = "Leave a little sound";
     heading.append(kicker, title);
@@ -47,6 +54,9 @@ export class SoundLibrary {
     close.textContent = "Close";
     close.onclick = () => this.close();
     head.append(heading, close);
+    this.replyCard.id = "sound-library-reply";
+    this.replyCard.className = "library-reply";
+    this.replyCard.hidden = true;
 
     const label = document.createElement("label");
     label.className = "library-search";
@@ -82,7 +92,7 @@ export class SoundLibrary {
     note.className = "palette-note";
     note.id = "sound-library-note";
     note.textContent = "Listen is just for you. Leave it here shares a sound at your feet, until someone beside it removes it.";
-    dialog.append(head, label, this.filters, this.result, this.list, this.feedback, note);
+    dialog.append(head, this.replyCard, label, this.filters, this.result, this.list, this.feedback, note);
     dialog.addEventListener("cancel", (event) => {
       event.preventDefault();
       this.close();
@@ -95,6 +105,7 @@ export class SoundLibrary {
   }
 
   open(): void {
+    this.context++;
     this.zone = this.opts.zone();
     this.feedback.textContent = "";
     this.search.value = "";
@@ -109,6 +120,64 @@ export class SoundLibrary {
   close(): void {
     this.stopPreview();
     this.element.close();
+  }
+
+  setReply(sound: SoundReference | null): void {
+    if (this.reply?.id !== sound?.id) { this.chosen = null; this.context++; }
+    this.reply = sound;
+    this.renderReply();
+  }
+
+  private renderReply(): void {
+    this.title.textContent = this.reply ? "Reply with a sound" : "Leave a little sound";
+    this.replyCard.hidden = !this.reply;
+    this.replyCard.replaceChildren();
+    if (!this.reply) return;
+    const target = document.createElement("strong");
+    target.textContent = "Replying to " + (SOUNDS.find((s) => s.id === this.reply!.soundId)?.label ?? "a sound") + " · left by " + this.reply.by;
+    const note = document.createElement("p");
+    note.textContent = this.reply.removedAt
+      ? "That sound has been removed. Leave without a reply, or choose another sound to answer."
+      : "Your answer will be left where you stand. Close this library to walk somewhere else; your reply will stay ready.";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "link-btn";
+    cancel.textContent = "Cancel reply";
+    cancel.disabled = this.pending;
+    cancel.onclick = () => this.opts.cancelReply();
+    this.replyCard.append(target, note, cancel);
+    if (this.reply.removedAt && this.chosen) {
+      const leave = document.createElement("button");
+      leave.type = "button";
+      leave.className = "btn primary leave-without-reply";
+      leave.textContent = "Leave without a reply";
+      leave.disabled = this.pending;
+      const chosen = this.chosen;
+      leave.onclick = async () => {
+        this.opts.cancelReply();
+        await this.place(chosen, leave);
+      };
+      this.replyCard.append(leave);
+    }
+  }
+
+  private async place(id: string, button: HTMLButtonElement): Promise<void> {
+    if (this.pending) return;
+    this.pending = true;
+    const context = this.context;
+    this.chosen = id;
+    for (const b of this.list.querySelectorAll<HTMLButtonElement>("[data-sound]")) b.disabled = true;
+    button.textContent = "Leaving…";
+    this.renderReply();
+    try {
+      const error = await this.opts.leave(id);
+      if (error && context === this.context) this.feedback.textContent = error;
+    } finally {
+      this.pending = false;
+      for (const b of this.list.querySelectorAll<HTMLButtonElement>("[data-sound]")) b.disabled = false;
+      button.textContent = "Leave it here";
+      this.renderReply();
+    }
   }
 
   private stopPreview(): void {
@@ -192,20 +261,7 @@ export class SoundLibrary {
       leave.textContent = "Leave it here";
       leave.disabled = this.pending;
       leave.setAttribute("aria-label", "Leave " + kind.label + " here");
-      leave.onclick = async () => {
-        if (this.pending) return;
-        this.pending = true;
-        for (const b of this.list.querySelectorAll<HTMLButtonElement>("[data-sound]")) b.disabled = true;
-        leave.textContent = "Leaving…";
-        try {
-          const error = await this.opts.leave(kind.id);
-          if (error) this.feedback.textContent = error;
-        } finally {
-          this.pending = false;
-          for (const b of this.list.querySelectorAll<HTMLButtonElement>("[data-sound]")) b.disabled = false;
-          leave.textContent = "Leave it here";
-        }
-      };
+      leave.onclick = () => void this.place(kind.id, leave);
       li.append(text, listen, leave);
       this.list.append(li);
     }

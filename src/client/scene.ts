@@ -1,14 +1,15 @@
 // The live place: the walkable world, who's in it, talking to whoever is
 // near, and the sounds people leave where they stand (ADR 011).
 import { findScene, findZone, type Scene } from "../shared/catalog.js";
-import type { MoveResult, Person, PlacedSound, ServerMessage, Snapshot, SoundRemoved } from "../shared/protocol.js";
-import { findSound } from "../shared/sounds.js";
+import type { MoveResult, Person, PlacedSound, ServerMessage, Snapshot, SoundReference, SoundRemoved, SoundReplies } from "../shared/protocol.js";
+import { REACH, findSound } from "../shared/sounds.js";
 import { figureSvg } from "./figures.js";
 import { Soundscape } from "./soundscape.js";
 import { Guide } from "./guide.js";
 import { SoundLibrary } from "./sound-library.js";
 import { ListeningTrail } from "./listening-trail.js";
 import { LookSettings } from "./look-settings.js";
+import { SoundConversations } from "./sound-conversations.js";
 import { HUTS } from "../shared/huts.js";
 import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
@@ -29,10 +30,18 @@ const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) 
 const stage = $("stage");
 const status = $("status");
 const toast = $("toast");
+stage.append(toast);
 
 let snapshot = boot.snapshot;
 let zoneId = boot.zoneId;
 let connected = false;
+const contributions = new Map(snapshot.sounds.map((s) => [s.id, s]));
+// A delayed placement acknowledgement must not revive a contribution whose
+// removal this page has already observed, including across SSE reconnects.
+const removedSounds = new Set<string>();
+let replyTarget: SoundReference | null = null;
+let replyRevision = 0;
+let operation: { key: string; id: string } | null = null;
 const me = (): Person | null => snapshot.you;
 
 const world = new WorldView(stage, scene, mode.id, {
@@ -60,7 +69,7 @@ let here = { x: 0, z: 0 };
 const lookSettings = new LookSettings({
   change: (mode) => world.setLookMode(mode),
   open: () => world.setInputPaused(true),
-  close: () => { world.setInputPaused(false); world.focusCanvas(); },
+  close: () => restoreWorldInput(),
 });
 stage.append(lookSettings.element);
 $("look-settings").onclick = () => lookSettings.open();
@@ -71,6 +80,8 @@ const guide = new Guide(stage, zoneId, { joined: () => boot.joined, goTo: (zone)
 const soundscape = new Soundscape(world, stage, {
   canChange: () => boot.joined,
   onRemove: (sound) => void removeSound(sound),
+  onReply: (sound) => startReply(sound),
+  onConversation: (sound) => conversations.open(sound.id),
 });
 soundscape.setAll(snapshot.sounds);
 const trail = new ListeningTrail((sound) => {
@@ -96,8 +107,18 @@ function connect(): void {
     if (msg.type === "snapshot") {
       snapshot = msg;
       renderPeople();
+      const live = new Set(msg.sounds.map((s) => s.id));
+      for (const id of contributions.keys()) if (!live.has(id)) removedSounds.add(id);
       soundscape.setAll(msg.sounds);
       trail.setAll(msg.sounds);
+      contributions.clear();
+      for (const sound of msg.sounds) contributions.set(sound.id, sound);
+      if (replyTarget) {
+        const current = contributions.get(replyTarget.id);
+        replyTarget = current ?? { ...replyTarget, removedAt: replyTarget.removedAt ?? msg.serverNow };
+        renderReply();
+      }
+      conversations.changed();
     } else if (msg.sessionId !== snapshot.sessionId) return;
     else if (msg.type === "presence") {
       snapshot = { ...snapshot, online: msg.online };
@@ -235,17 +256,35 @@ const zoneTitle = (x: number, z: number): string => findZone(scene, world.zoneAt
 // Your own changes are told when the server answers; others' as they
 // arrive, whichever comes first.
 function soundLeft(sound: PlacedSound): void {
+  if (sound.removedAt) removedSounds.add(sound.id);
+  if (removedSounds.has(sound.id)) return;
   if (soundscape.has(sound.id)) return;
+  contributions.set(sound.id, sound);
   soundscape.add(sound);
   trail.add(sound);
+  conversations.changed(sound.id, sound.replyTo?.id);
   // a stay in the toilets or showers isn't news
-  if (sound.byId !== me()?.id && !sound.whileIn) say(`${sound.by} left ${soundName(sound.soundId)} at ${zoneTitle(sound.x, sound.z)}.`);
+  if (sound.byId !== me()?.id && !sound.whileIn) say(sound.replyTo
+    ? `${sound.by} answered ${sound.replyTo.by}'s ${soundName(sound.replyTo.soundId)} with ${soundName(sound.soundId)}.`
+    : `${sound.by} left ${soundName(sound.soundId)} at ${zoneTitle(sound.x, sound.z)}.`);
 }
 
 function soundRemoved(msg: SoundRemoved): void {
+  removedSounds.add(msg.id);
+  contributions.delete(msg.id);
+  const removedAt = msg.removedAt ?? new Date().toISOString();
+  for (const [id, sound] of contributions) {
+    if (sound.replyTo?.id === msg.id) contributions.set(id, { ...sound, replyTo: { ...sound.replyTo, removedAt } });
+  }
+  if (replyTarget?.id === msg.id) {
+    replyTarget = { ...replyTarget, removedAt };
+    renderReply();
+  }
+  conversations.changed(msg.id);
   if (!soundscape.has(msg.id)) return;
   soundscape.remove(msg.id);
   trail.remove(msg.id);
+  soundscape.setAll([...contributions.values()]);
   // a sound left for a stay in the toilets or showers ends quietly as its
   // person comes out; only they are told
   if (msg.left) {
@@ -314,6 +353,9 @@ const REFUSED: Record<string, string> = {
   bad_request: "The place doesn't know that sound yet: it may have just been updated. Reload the page and try again.",
   not_inside: "You've already come out, so that sound wasn't left.",
   already: "You've already left a sound for while you're in here.",
+  reply_gone: "That sound has been removed. Leave without a reply, or choose another sound to answer.",
+  reply_private: "Sounds tied to a toilet or shower stay outside public conversations.",
+  operation_conflict: "That choice has changed. Choose a sound again before leaving it.",
 };
 const refused = (code?: string): string => (code && REFUSED[code]) || "That didn't work. Check your connection and try again.";
 
@@ -322,31 +364,49 @@ async function post(path: string, method: string, body?: unknown): Promise<{ ok:
     method,
     headers: { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal: AbortSignal.timeout(8000),
   }).catch(() => null);
   return res ? ((await res.json().catch(() => null)) as { ok: boolean; code?: string; sound?: PlacedSound } | null) : null;
 }
 
 async function leaveSound(soundId: string, whileInside = false): Promise<string | null> {
+  if (!connected) return "Connection lost. Your sound wasn't sent. Reconnect, then try again from where you stand.";
+  const target = whileInside ? null : replyTarget;
+  const revision = replyRevision;
+  if (target?.removedAt) return REFUSED.reply_gone!;
+  const key = JSON.stringify([soundId, target?.id ?? null, whileInside]);
+  if (operation?.key !== key) operation = { key, id: crypto.randomUUID() };
+  const request = operation;
   // leaving a sound is a click, so it can turn sound on
   if (!soundscape.on) setSound(true);
-  const result = await post("sounds", "POST", whileInside ? { soundId, whileInside } : { soundId });
+  const result = await post("sounds", "POST", { soundId, operationId: request.id, ...(whileInside ? { whileInside: true } : {}), ...(target ? { replyToId: target.id } : {}) });
   if (!result?.ok || !result.sound) {
+    if (result && operation === request) operation = null;
+    if (result?.code === "reply_gone" && replyTarget?.id === target?.id) {
+      replyTarget = { ...target!, removedAt: new Date().toISOString() };
+      renderReply();
+    }
     const error = refused(result?.code);
     if (!library.element.open) say(error);
     return error;
   }
-  soundscape.add(result.sound);
-  trail.add(result.sound);
-  library.close();
-  say(whileInside ? `${soundName(soundId)} is playing. It stops when you come out.` : `You left ${soundName(soundId)} here. Everyone in the place can hear it now.`);
+  if (operation === request) operation = null;
+  soundLeft(result.sound);
+  if (revision === replyRevision) {
+    if (!whileInside) cancelReply();
+    if (library.element.open) library.close();
+  }
+  say(result.sound.removedAt || removedSounds.has(result.sound.id) ? "That sound was already left, then removed. It wasn't placed again."
+    : whileInside ? `${soundName(soundId)} is playing. It stops when you come out.`
+    : target ? `You answered ${target.by}'s ${soundName(target.soundId)} with ${soundName(soundId)}.`
+    : `You left ${soundName(soundId)} here. Everyone in the place can hear it now.`);
   return null;
 }
 
 async function removeSound(sound: PlacedSound): Promise<void> {
   const result = await post(`sounds/${sound.id}`, "DELETE");
   if (!result?.ok) return say(refused(result?.code));
-  soundscape.remove(sound.id);
-  trail.remove(sound.id);
+  soundRemoved({ type: "sound-removed", sessionId: snapshot.sessionId, id: sound.id, soundId: sound.soundId, by: me()!.name, byId: me()!.id, removedAt: new Date().toISOString() });
   say(`You removed ${soundName(sound.soundId)}.`);
 }
 
@@ -383,11 +443,87 @@ const library = new SoundLibrary({
   listen: (id) => soundscape.listen(id),
   stop: () => soundscape.stopPreview(),
   leave: (id) => leaveSound(id),
-  close: () => { world.setInputPaused(false); leaveBtn.hidden = false; world.focusCanvas(); },
+  cancelReply: () => cancelReply(),
+  close: () => { restoreWorldInput(); leaveBtn.hidden = false; },
 });
 const palette = library.element;
 if (boot.joined) stage.append(leaveBtn, palette);
-leaveBtn.onclick = () => { world.setInputPaused(true); library.open(); leaveBtn.hidden = true; };
+leaveBtn.onclick = () => openLibrary();
+
+function restoreWorldInput(): void {
+  const paused = !!document.querySelector("dialog:modal");
+  world.setInputPaused(paused);
+  if (!paused) world.focusCanvas();
+}
+
+function openLibrary(): void {
+  world.setInputPaused(true);
+  library.open();
+  leaveBtn.hidden = true;
+}
+
+const replyIntent = document.createElement("aside");
+replyIntent.id = "reply-intent";
+replyIntent.className = "reply-intent";
+replyIntent.hidden = true;
+const replyDescription = document.createElement("p");
+replyDescription.setAttribute("role", "status");
+const replyHint = document.createElement("p");
+replyHint.className = "reply-hint";
+const replyActions = document.createElement("div");
+const choose = document.createElement("button");
+choose.type = "button";
+choose.className = "btn primary";
+choose.textContent = "Choose a sound";
+choose.onclick = () => openLibrary();
+const cancel = document.createElement("button");
+cancel.type = "button";
+cancel.className = "btn ghost";
+cancel.textContent = "Cancel reply";
+cancel.onclick = () => { cancelReply(); world.focusCanvas(); };
+replyActions.append(choose, cancel);
+replyIntent.append(replyDescription, replyHint, replyActions);
+stage.append(replyIntent);
+
+function startReply(sound: SoundReference): void {
+  if (!boot.joined) return say("Enter with a name first to reply with a sound.");
+  replyTarget = { ...sound };
+  replyRevision++;
+  operation = null;
+  renderReply();
+  openLibrary();
+}
+
+function cancelReply(): void {
+  replyTarget = null;
+  replyRevision++;
+  operation = null;
+  renderReply();
+}
+
+function renderReply(): void {
+  replyIntent.hidden = !replyTarget;
+  library.setReply(replyTarget);
+  if (!replyTarget) return;
+  replyDescription.textContent = "Replying to " + replyTarget.by + "'s " + soundName(replyTarget.soundId);
+  replyHint.textContent = !connected ? "Connection lost. Reconnect before leaving your answer."
+    : replyTarget.removedAt ? "That contribution was removed. Choose a sound for the available options."
+    : "Walk to a place, then choose a sound. Your answer will stay for the next visitor.";
+}
+
+const conversations = new SoundConversations({
+  load: async (id, after) => {
+    const response = await fetch(`/api/sessions/${snapshot.sessionId}/sounds/${encodeURIComponent(id)}/replies${after ? "?after=" + encodeURIComponent(after) : ""}`, { signal: AbortSignal.timeout(8000) });
+    return response.ok ? await response.json() as SoundReplies : null;
+  },
+  face: (sound) => { world.faceSound(sound.x, sound.z); say("Facing " + soundName(sound.soundId) + ". Walk closer to hear it clearly."); },
+  reply: (sound) => startReply(sound),
+  canReply: (sound) => boot.joined && !sound.removedAt && Math.hypot(sound.x - here.x, sound.z - here.z) <= REACH,
+  joined: () => boot.joined,
+  open: () => world.setInputPaused(true),
+  close: () => restoreWorldInput(),
+});
+stage.append(conversations.element);
 
 // ---- the page around the world --------------------------------------------
 
@@ -405,6 +541,7 @@ function say(text: string): void {
 function renderStatus(): void {
   status.className = `status${connected ? "" : " offline"}`;
   status.textContent = connected ? "" : "Connection lost. Trying again…";
+  renderReply();
 }
 
 function renderPeople(): void {

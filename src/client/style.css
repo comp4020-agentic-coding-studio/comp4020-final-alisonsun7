@@ -1745,6 +1745,11 @@ h3 {
 .scene-page .mode-note, .scene-page .not-affiliated { color: #536a58; font-size: 11px; line-height: 1.5; margin: 7px 0 0; }
 .scene-page .not-affiliated a { color: #53694c; }
 .scene-page .world-help { border: 1px solid #f0f4dd24; background: #173c2cc7; padding: 7px 12px; }
+.scene-page .toast { position: absolute; top: 16px; bottom: auto; left: 16px; right: auto; max-width: min(360px, calc(100% - 32px)); color: #f4f1e8; pointer-events: none; }
+.scene-page .toast.show { pointer-events: none; }
+.scene-page .status { color: #f4f1e8; }
+.scene-page .chat-bar { bottom: 90px; }
+.scene-page .heard-log { bottom: 190px; }
 .scene-page .listening-trail { width: min(290px, calc(100% - 32px)); background: #173b2deb; border-color: #c2d0ae5c; border-radius: 14px; box-shadow: 0 6px 22px #1437241f; }
 .scene-page .listening-trail.is-empty .trail-intro, .scene-page .listening-trail.is-empty .trail-note { display: none; }
 .scene-page .listening-trail.is-empty .trail-empty { margin-bottom: 0; font-size: 12px; }
@@ -1763,7 +1768,9 @@ h3 {
 .reply-intent > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .reply-intent .btn { min-height: 44px; padding: 8px 12px; font-size: 12px; }
 .stage:has(.reply-intent:not([hidden])) .chat-bar { bottom: 270px; }
+.stage:has(.reply-intent:not([hidden])) .heard-log { bottom: 370px; }
 .stage:has(.reply-intent:not([hidden])) .sound-label { visibility: hidden; pointer-events: none; }
+.stage:has(.reply-intent:not([hidden])) .listening-trail { visibility: hidden; }
 .library-reply { border: 1px solid #6d8768; border-left: 3px solid #f0c782; border-radius: 12px; padding: 14px; margin: 0 0 18px; background: #294535; }
 .library-reply[hidden] { display: none; }
 .library-reply strong { color: #f0dfb6; font-size: 13px; font-weight: 500; }

@@ -1,8 +1,9 @@
 # Cooperative play in Sound of a City
 
-Status: **Proposed / Not implemented**. Written 2026-11-06 for discussion.
-No gameplay, schema, API or acceptance decision below is implemented or approved
-by the existence of this document.
+Status: **Option A accepted for V0; Options B and C remain proposed**.
+Wen approved development on 2026-11-06. Sound replies are recorded in
+[ADR 016](../decisions/016-sounds-answering-sounds.md). This document preserves
+the alternatives; it does not imply that walks or invitations are implemented.
 
 ## Intent and existing contracts
 
@@ -192,9 +193,9 @@ a small, understandable public trace for the next visitor. Option B can later
 curate these contributions into walks; Option C can later help strangers begin
 the encounter. Do not implement all three at once.
 
-The one product choice to make first is: **Should the first cooperative feature
-help people make the soundscape together (A), or curate a walk through what
-people already left (B)?** A is recommended for the smallest useful V0.
+Wen accepted this recommendation: the first cooperative feature helps people
+make the soundscape together (A). Walk curation and nearby invitations remain
+possible later steps.
 
 ## What would establish that V0 works
 

@@ -10,7 +10,8 @@ sound out; 011 is Wen's new sound design; 012 keeps only the sunny day;
 013 makes the toilets and showers one person at a time, with a sound for
 while they're in; 014 adds the searchable sound library and nearby listening
   guide; 015 records configurable look, authoritative hut admission and the
-  explicitly requested local guitarist (003, 008 and 009 are history).
+  explicitly requested local guitarist; 016 adds durable sound replies and
+  017 records the coastal art direction (003, 008 and 009 are history).
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -32,6 +33,13 @@ their rules in `shared/sounds.ts`. The library is in
 `client/sound-library.ts`, and the optional nearby guide in
 `client/listening-trail.ts`; browsing and turning towards a sound never
 place it or move the person.
+
+Sound replies (ADR 016) connect new ordinary contributions, with a contextual
+library, a cancellable walking intent and `client/sound-conversations.ts`.
+Relationships and operation keys persist in additive tables; removing a sound
+keeps its relation metadata and never revives either endpoint. Private-stay
+sounds cannot join public conversations. Never automatically resend a draft;
+reuse its operation key on explicit retry. Observed removals outrank late ACKs.
 
 ## Product invariants
 
@@ -122,6 +130,10 @@ without Wen's go-ahead.
   locked doors, delayed rejection recovery, flush/shower playback and release.
   `e2e/busker-sound.mjs` checks actual NPC audio output and its lifecycle.
   All three run in `pnpm e2e`; use a scratch database for browser tests.
+- `e2e/cooperative-play.mjs` exercises two contributors, walking with a reply
+  intent, explicit retry, late arrival, removed-source recovery and phone HUD
+  layout. `e2e/cooperative-ack-race.mjs` checks visitor reads and delayed ACKs,
+  including a genuinely missed removal recovered through a new SSE snapshot.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get
