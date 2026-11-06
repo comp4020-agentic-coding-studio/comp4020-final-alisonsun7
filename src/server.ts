@@ -14,6 +14,7 @@ const js = (path: string): { file: URL; type: string } => ({ file: new URL(`.${p
 export const STATIC: Record<string, { file: URL; type: string; cache?: string }> = {
   "/client/scene.js": js("/client/scene.js"),
   "/client/figures.js": js("/client/figures.js"),
+  "/client/characters.js": js("/client/characters.js"),
   "/client/world.js": js("/client/world.js"),
   "/client/world-build.js": js("/client/world-build.js"),
   "/client/sky.js": js("/client/sky.js"),

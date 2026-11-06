@@ -1672,3 +1672,31 @@ uses the same blue outline. Those final small corrections await the integrated
 visual pass. A just-resized landscape capture showed a compositor artifact;
 DOM measurements showed one fitting, scrollable dialog. No test assertion or
 behaviour changed. The candidate's original 64 HTTP/local checks also passed.
+
+
+## 60. Original three-dimensional animal people (2026-11-07)
+
+Built a shared-geometry cat/dog rig with adult proportions, actual depth, cloth
+shapes and grounded feet. It includes distance-driven walking, gestures, seated
+poses, a shaped acoustic guitar and an olive umbrella; it never creates a sound.
++Z is the figure's front, independent of the camera. Labels can follow a real
+head anchor. Shared opaque materials avoid per-person resource duplication;
+opacity clones are disposed without invalidating the next person.
+
+The first in-world review showed hard shoulders and stick-like sleeves. A
+second pass rounded shoulders, widened sleeves/trousers and added shared collar,
+placket, pocket, button and cuff geometry. A three-person GPU close-up was
+viewed in `/tmp/quiet-light-characters.png`; knee openings visible in a seated
+pose were then closed. The final module has 26–33 visible meshes and at most
+4,656 triangles per person. World integration receives a separate visual pass.
+
+All five `spec/characters.test.ts` checks passed in an isolated Vitest config,
+then were independently rerun by the main agent: all poses have finite transforms
+and grounded shoes, 32 stride phases remain planted, repeated phases do not
+accumulate motion, body yaw survives pose changes, seated/guitar visibility and
+shared resources remain correct, and garment normals face outward. Two in-memory
+mutations demonstrate sensitivity: removing the planted-foot solution produced
+a 0.010482695-unit error (current source zero); skipping profile normalisation
+produced 102 inward upper-sleeve normals (current source zero). Source was never
+modified to run those mutations. Typecheck passed. The browser route for the new
+module is explicitly registered; no runtime dependency or bitmap asset was added.
