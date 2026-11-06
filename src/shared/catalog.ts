@@ -56,7 +56,7 @@ const SEASIDE: Scene = {
     zone("forest", "Forest trail", "Where the trail starts, among tall pines, ferns and fallen needles.", false, { x: 0, z: -130, yaw: Math.PI }),
     zone("creek", "Creek and footbridge", "A creek about twelve metres wide across the trail, crossed on a long timber footbridge.", false, { x: -1.7, z: -82, yaw: Math.PI }),
     zone("forest-edge", "Edge of the forest", "The trees thin out and the ground turns to sand and grass.", false, { x: 1, z: -38, yaw: Math.PI }),
-    zone("boardwalk", "Boardwalk", "A timber boardwalk along the shore: the café, a fish and chip kiosk, toilets, showers and a souvenir shop, lamps and benches.", false, { x: -3, z: 1.6, yaw: 0.95 }),
+    zone("boardwalk", "Boardwalk", "A timber boardwalk along the shore: the café, a fish and chip kiosk, toilets, showers and a souvenir shop, lamps and benches.", false, { x: -11, z: 0, yaw: Math.PI / 2 }),
     zone("counter", "Café counter", "Inside the café: the espresso cart, the counter with pastries and the till.", true, { x: -15.8, z: -9.4, yaw: 0.45 }),
     zone("tables", "Café tables", "Round tables with wooden chairs under hanging lamps.", true, { x: -17, z: -6.2, yaw: 0.6 }),
     zone("window", "Café window", "A bar along the café's glass front, looking out over the boardwalk to the sea.", true, { x: -17, z: -5.4, yaw: Math.PI }),

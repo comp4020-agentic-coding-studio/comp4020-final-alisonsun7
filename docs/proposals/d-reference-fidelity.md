@@ -1,6 +1,6 @@
 # Correcting the gap from the selected D reference
 
-Status: user rejected the first implementation's visual fidelity, 2026-11-07.
+Status: user chose to retain freely walkable 3D and rebuild toward D, 2026-11-07.
 The reference is the previously generated D / Quiet Light image. It is an AI
 concept, not a supplied 3D asset pack or a screenshot of this application.
 The first build is preserved by `before-d-fidelity-2026-11-07` at `65c7a4f`;
@@ -22,8 +22,8 @@ Calling the first version a completed D implementation was not justified.
 A fixed image can reuse the exact pixels, but is not a freely walkable 3D place.
 A true 3D rebuild needs new geometry, material detail and composition; a single
 generated view does not define every hidden surface or allow a promise of
-pixel identity at arbitrary angles. The user has been asked which requirement
-has priority. Do not silently replace the working 3D product with a flat image
+pixel identity at arbitrary angles. The user explicitly chose the freely
+walkable 3D rebuild. Do not replace the working 3D product with a flat image
 or describe a further approximate implementation as an exact reproduction.
 
 For the 3D option, first compare a locked hero camera to D at the same aspect:

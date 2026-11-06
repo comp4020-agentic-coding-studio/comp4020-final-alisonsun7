@@ -1875,3 +1875,24 @@ files API refused all four metadata requests with HTTP403; no download or
 attempt to bypass that refusal was made. Existing licensed assets and original
 geometry remain available. No source or public runtime asset has changed at
 this checkpoint. Documentation diff checks passed.
+
+## 66. Rebuild the freely walkable D composition (2026-11-07)
+
+Wen chose the freely walkable 3D rebuild. An isolated compiled candidate on
+18876 uses its own scratch database; 18861 and the current contribution history
+remain untouched. The arrival camera now looks along the western promenade.
+Added a linear-light contact-shadow render pass with one final ACES/sRGB output
+and a device-quality fallback; no blur, static scene image or new dependency.
+The first GPU capture at 1672x941 ran at 60.5fps with no browser errors. That
+initial counter reported only the last postprocessing draw; renderer statistics
+now accumulate the complete frame instead of implying a one-draw scene.
+
+The first actual capture exposed broken jacket/inner-shirt intersections and
+back-facing shore geometry, and still used unfinished HUD styles. These are
+recorded failures being corrected, not accepted fidelity. The shoreline physical
+probe passes promenade, cafe door, pier, western beach access and forest/bridge
+routes; it also blocks newly submerged western sand. The existing 70 spec
+checks passed on the scratch candidate. New rig tests replace tube-specific
+geometry checks with continuous skinned-surface checks; the hero triangle budget
+increases deliberately for this higher-fidelity rebuild, while pose, grounding,
+facing and stability requirements remain. Visual acceptance is still pending.

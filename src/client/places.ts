@@ -16,6 +16,8 @@ export interface Room {
 }
 
 export interface Regular {
+  avatar?: "cat" | "dog";
+  seed?: string;
   x: number;
   z: number;
   pose: Pose;

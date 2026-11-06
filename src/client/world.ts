@@ -7,6 +7,7 @@ import type { Scene } from "../shared/catalog.js";
 import type { Person } from "../shared/protocol.js";
 import { kangarooSvg, passerAvatar, type Pose } from "./figures.js";
 import { AnimalFigure } from "./characters.js";
+import { CoastalRenderer } from "./coastal-renderer.js";
 import { beachBallTexture } from "./huts.js";
 import { environmentLight, mixLight, type Light } from "./sky.js";
 import { minuteAt, timePhase, type Environment } from "../shared/environment.js";
@@ -143,7 +144,7 @@ float noise(vec2 p){
   vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + 1.0), f.x), f.y);
 }
-float cloudsAt(vec2 p){ return noise(p) * 0.58 + noise(p * 2.03 + 7.0) * 0.28 + noise(p * 4.07) * 0.14; }
+float cloudsAt(vec2 p){ return noise(p) * 0.52 + noise(p * 2.03 + 7.0) * 0.27 + noise(p * 4.07) * 0.14 + noise(p * 8.1 + 3.0) * 0.07; }
 void main(){
   vec3 direction = normalize(vDir);
   float h = direction.y;
@@ -153,10 +154,11 @@ void main(){
   // Broad, softly modelled cloud banks, made in the sky's one draw call.
   vec2 cloudUV = direction.xz / max(0.12, h + 0.24) * 3.2 + vec2(cloudTime * 0.003, cloudTime * 0.001);
   float cloudShape = cloudsAt(cloudUV);
-  float cloudMask = smoothstep(0.61 - cloudCover * 0.21, 0.81 - cloudCover * 0.19, cloudShape);
+  float cloudMask = smoothstep(0.54 - cloudCover * 0.18, 0.69 - cloudCover * 0.13, cloudShape);
   cloudMask *= smoothstep(0.015, 0.20, h) * (1.0 - smoothstep(0.66, 1.0, h));
-  vec3 cloudColour = mix(horizon * 0.84, horizon * 1.04 + sunColor * 0.035, smoothstep(0.48, 0.80, cloudShape));
-  c = mix(c, cloudColour, cloudMask * (0.4 + cloudCover * 0.5));
+  float lightEdge = cloudsAt(cloudUV + normalize(sunDir.xz) * 0.15) - cloudShape;
+  vec3 cloudColour = mix(horizon * 0.78, vec3(1.0, 0.97, 0.90) * 1.22, smoothstep(-0.06, 0.07, lightEdge));
+  c = mix(c, cloudColour, cloudMask * (0.70 + cloudCover * 0.25));
   // A fixed celestial sky: no textures, extra draw calls or flickering.
   vec2 starUV = vec2(atan(direction.z, direction.x), asin(clamp(h, -1.0, 1.0))) * vec2(96.0, 76.0);
   vec2 cell = floor(starUV);
@@ -171,6 +173,7 @@ void main(){
 
 export class WorldView {
   private renderer: THREE.WebGLRenderer;
+  private picture: CoastalRenderer;
   private scene3 = new THREE.Scene();
   private camera: THREE.PerspectiveCamera;
   private built: Built;
@@ -236,6 +239,7 @@ export class WorldView {
     private opts: Options,
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    this.renderer.info.autoReset = false;
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -257,6 +261,7 @@ export class WorldView {
 
     this.camera = new THREE.PerspectiveCamera(68, 1, 0.08, 600);
     this.camera.rotation.order = "YXZ";
+    this.picture = new CoastalRenderer(this.renderer, this.scene3, this.camera);
 
     this.kit = KITS[scene.id] ?? seasideKit;
     this.built = this.kit.build();
@@ -289,10 +294,10 @@ export class WorldView {
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
     const sc = this.sun.shadow.camera;
-    sc.left = -42;
-    sc.right = 42;
-    sc.top = 42;
-    sc.bottom = -42;
+    sc.left = -26;
+    sc.right = 26;
+    sc.top = 26;
+    sc.bottom = -26;
     sc.near = 1;
     sc.far = 220;
     this.sun.shadow.bias = -0.0004;
@@ -559,8 +564,8 @@ export class WorldView {
   // who's really here.
   private buildRegulars(): void {
     for (const [i, r] of (this.kit.regulars?.[this.mode] ?? []).entries()) {
-      const seed = `regular-${i}`;
-      const avatar = i % 3 === 1 ? "dog" : "cat";
+      const seed = r.seed ?? `regular-${i}`;
+      const avatar = r.avatar ?? (i % 3 === 1 ? "dog" : "cat");
       const sprite = new AnimalFigure({ avatar, seed, pose: r.pose });
       // +Z faces the boardwalk; people at the glass bar face out to sea.
       const facing = r.facing ?? (r.pose === "back" ? Math.PI : 0);
@@ -1020,6 +1025,7 @@ export class WorldView {
     this.camera.aspect = w / h;
     this.camera.fov = w / h < 0.8 ? 78 : 68;
     this.camera.updateProjectionMatrix();
+    this.picture.resize(w, h);
   }
 
   private frame(): void {
@@ -1071,7 +1077,8 @@ export class WorldView {
       wind.value = now / 1000;
       this.sky.material.uniforms.cloudTime.value = now / 1000;
     }
-    this.renderer.render(this.scene3, this.camera);
+    this.renderer.info.reset();
+    this.picture.render();
     // where you are, for the end-to-end checks, a few times a second
     if (now - this.reportedAt > 160) {
       this.reportedAt = now;
@@ -1441,6 +1448,7 @@ export class WorldView {
       return;
     }
     p.lowered++;
+    this.picture.setQuality(false);
     if (p.lowered === 1) this.renderer.setPixelRatio(1);
     else {
       this.renderer.setPixelRatio(0.5);
