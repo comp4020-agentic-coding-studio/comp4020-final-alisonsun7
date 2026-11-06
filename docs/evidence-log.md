@@ -1849,3 +1849,29 @@ All 69 local/HTTP/rig checks, typecheck, candidate build, collision comparison,
 evidence-link and diff checks passed. No assertion was weakened, no production
 DB was used, and no push, merge or deployment was performed. The two version
 tags and rollback guide retain the path back without losing later sound data.
+
+
+## 65. Correct the rejected reference fidelity (2026-11-07)
+
+Wen explicitly rejected the first art implementation because it differs too much
+from D and requested an exact match. Reopened both the actual runtime capture
+and original concept; the spatial, asset and lighting mismatch is substantial.
+The earlier green tests establish behaviour, not visual equivalence. Preserved
+that build with `before-d-fidelity-2026-11-07`, copied its compiled output and
+started `codex/d-reference-fidelity`. The existing 18861 preview and current data
+remain untouched during this clarification and composition audit.
+
+Three independent reviews identify the same dominant gaps: shoreline spacing,
+hero camera, close glass facade, spreading pine shapes, continuous character
+anatomy/clothing, and excessive HUD. The new proposal records concrete reference
+landmarks and distinguishes a fixed exact image from a freely walkable rebuild.
+The user is asked which requirement takes priority; no further exactness claim
+or silent switch to a static image is made.
+
+Read the UI/UX skill and the image-generation skill; the latter is not used to
+manufacture another concept as if it were an implemented result. Official Poly
+Haven model pages were consulted for actual asset availability. The official
+files API refused all four metadata requests with HTTP403; no download or
+attempt to bypass that refusal was made. Existing licensed assets and original
+geometry remain available. No source or public runtime asset has changed at
+this checkpoint. Documentation diff checks passed.
