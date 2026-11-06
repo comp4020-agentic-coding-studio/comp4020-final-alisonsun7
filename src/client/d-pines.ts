@@ -1,95 +1,101 @@
-// Original coastal pines: curved woody forks and volumetric needle boughs.
-// Each crown consists of overlapping, irregular flattened branch pads with
-// individual short needles over their surface. There are no image cards.
+// Curved original coastal pine limbs carry small CC0 needle-bearing twigs.
+// Cutout branches are bent and distributed in 3D, never camera-facing trees.
 import * as THREE from "three";
 import { std } from "./world-build.js";
 
 export const HERO_PINES = [
-  { x: -12.4, z: 3.7, radius: 0.48 },
+  { x: -8.6, z: 2.1, radius: 0.48 },
   { x: -27.8, z: -6.0, radius: 0.43 },
   { x: -35.8, z: -5.8, radius: 0.38 },
   { x: -45.5, z: -4.5, radius: 0.42 },
 ] as const;
 
 interface CanopyPad { position: THREE.Vector3; width: number; depth: number; turn: number; tilt: number }
-let sharedCanopy: { body: THREE.BufferGeometry; needles: THREE.BufferGeometry } | undefined;
 
-function canopyGeometry(): { body: THREE.BufferGeometry; needles: THREE.BufferGeometry } {
-  if (sharedCanopy) return sharedCanopy;
-  let seed = 4821;
-  const random = (): number => { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 4294967296; };
-  const outline = (a: number): number => 1 + 0.105 * Math.sin(a * 5 + 0.7)
-    + 0.055 * Math.sin(a * 11 - 1.1) + 0.027 * Math.sin(a * 23);
-  const top = (r: number, a: number): number => 0.12 + 0.27 * (1 - r * r)
-    + r * (0.045 * Math.sin(a * 7) + 0.025 * Math.cos(a * 13));
-  const segments = 28;
-  // Radial rings describe an irregular shallow umbrella, with a scalloped
-  // perimeter and a narrow underside. This is neither a sphere nor a cone.
-  const rings = [
-    { r: 0, underside: false }, { r: 0.46, underside: false },
-    { r: 0.80, underside: false }, { r: 1, underside: false },
-    { r: 0.96, underside: true }, { r: 0.55, underside: true }, { r: 0, underside: true },
-  ];
-  const positions: number[] = [], colours: number[] = [], normals: number[] = [];
-  const colour = new THREE.Color();
-  const vertex = (ring: number, step: number): void => {
-    const { r, underside } = rings[ring], a = step / segments * Math.PI * 2;
-    const radius = r * outline(a);
-    const y = underside ? -0.14 - 0.07 * (1 - r) + Math.sin(a * 9) * r * 0.025 : top(r, a);
-    positions.push(Math.cos(a) * radius, y, Math.sin(a) * radius);
-    const normal = new THREE.Vector3(Math.cos(a) * r * 0.70, underside ? -0.9 : 1.0, Math.sin(a) * r * 0.70).normalize();
-    normals.push(normal.x, normal.y, normal.z);
-    const noise = Math.sin(a * 17 + r * 31) * Math.sin(a * 9 - r * 27);
-    colour.setHSL(0.245 + noise * 0.012, 0.25 + r * 0.035, (underside ? 0.205 : 0.295) + noise * 0.035 + r * 0.020);
-    colours.push(colour.r, colour.g, colour.b);
-  };
-  for (let ring = 0; ring < rings.length - 1; ring++) for (let step = 0; step < segments; step++) {
-    vertex(ring, step); vertex(ring, step + 1); vertex(ring + 1, step);
-    vertex(ring + 1, step); vertex(ring, step + 1); vertex(ring + 1, step + 1);
+// Nobiax / Yughues, Branches Textures Pack 02, #28, CC0 1.0.
+// A small real needle-bearing twig is bent in three dimensions. Many twigs
+// grow around each woody limb; no card represents a complete tree or crown.
+let sharedBranchGeometry: THREE.BufferGeometry | undefined;
+let sharedFoliage: THREE.MeshStandardMaterial | undefined;
+function branchGeometry(): THREE.BufferGeometry {
+  if (sharedBranchGeometry) return sharedBranchGeometry;
+  const geometry = new THREE.PlaneGeometry(1, 1, 2, 3);
+  const p = geometry.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), along = p.getY(i) + 0.5;
+    p.setXYZ(i, x * (0.78 + 0.22 * along), along,
+      0.23 * Math.sin(along * Math.PI) + x * x * 0.38);
   }
-  const body = new THREE.BufferGeometry();
-  body.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  body.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
-  body.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
-  // Fine geometry breaks the pad's surface and its outer contour. Its real
-  // needle scale is 8–18 cm, while the body supplies continuous crown cover.
-  const needlePositions: number[] = [], needleColours: number[] = [];
-  for (let i = 0; i < 128; i++) {
-    const a = random() * Math.PI * 2, r = Math.sqrt(random()) * 1.04;
-    const origin = new THREE.Vector3(Math.cos(a) * r * outline(a), top(Math.min(r, 1), a), Math.sin(a) * r * outline(a));
-    const direction = new THREE.Vector3(Math.cos(a + (random() - 0.5)), 0.12 + random() * 0.8,
-      Math.sin(a + (random() - 0.5))).normalize();
-    const end = origin.clone().addScaledVector(direction, 0.08 + random() * 0.10);
-    const side = new THREE.Vector3(-direction.z, 0, direction.x).normalize().multiplyScalar(0.004 + random() * 0.003);
-    const other = new THREE.Vector3().crossVectors(direction, side).normalize().multiplyScalar(0.004);
-    colour.setHSL(0.225 + random() * 0.035, 0.23 + random() * 0.11, 0.27 + random() * 0.12);
-    for (const p of [origin.clone().sub(side), origin.clone().add(side), end,
-      origin.clone().sub(other), origin.clone().add(other), end]) {
-      needlePositions.push(p.x, p.y, p.z); needleColours.push(colour.r, colour.g, colour.b);
-    }
-  }
-  const needles = new THREE.BufferGeometry();
-  needles.setAttribute("position", new THREE.Float32BufferAttribute(needlePositions, 3));
-  needles.setAttribute("color", new THREE.Float32BufferAttribute(needleColours, 3)); needles.computeVertexNormals();
-  sharedCanopy = { body, needles }; return sharedCanopy;
+  geometry.computeVertexNormals();
+  sharedBranchGeometry = geometry; return geometry;
 }
-
+function foliageMaterial(): THREE.MeshStandardMaterial {
+  if (sharedFoliage) return sharedFoliage;
+  const loader = new THREE.TextureLoader();
+  const map = loader.load("/assets/textures/coastal_pine_28/diffuse.png");
+  map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8;
+  const normalMap = loader.load("/assets/textures/coastal_pine_28/normal.png");
+  normalMap.anisotropy = 8;
+  sharedFoliage = std(0xffffff, { map, normalMap,
+    normalScale: new THREE.Vector2(0.22, -0.22), alphaTest: 0.45,
+    transparent: false, side: THREE.DoubleSide, roughness: 0.94,
+    emissiveMap: map, emissive: 0xffffff, emissiveIntensity: 0.12,
+    flatShading: false });
+  // Thin needles transmit some skylight and direct light through their
+  // underside. Use scene lights so this also dims with shared night/weather.
+  sharedFoliage.onBeforeCompile = (shader) => {
+    // This older atlas contains dark photographic lighting. Normalize its
+    // albedo in linear light before the scene lights shade the fine needles.
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <map_fragment>", "#include <map_fragment>\n diffuseColor.rgb *= 3.2;")
+      .replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
+      #if NUM_HEMI_LIGHTS > 0
+        reflectedLight.indirectDiffuse += diffuseColor.rgb * hemisphereLights[0].skyColor * 0.48;
+      #endif
+      #if NUM_DIR_LIGHTS > 0
+        float needleTransmission = pow(max(0.0, dot(-normal, directionalLights[0].direction)), 1.3);
+        reflectedLight.directDiffuse += diffuseColor.rgb * directionalLights[0].color * needleTransmission * 0.28;
+      #endif`);
+  };
+  sharedFoliage.customProgramCacheKey = () => "coastal-needle-transmission-v2";
+  return sharedFoliage;
+}
 function addCanopies(root: THREE.Object3D, pads: CanopyPad[], shadows: boolean): void {
   if (!pads.length) return;
-  const geometry = canopyGeometry();
-  const material = std(0xffffff, { vertexColors: true, side: THREE.DoubleSide, roughness: 1, flatShading: false });
-  const body = new THREE.InstancedMesh(geometry.body, material, pads.length);
-  const needles = new THREE.InstancedMesh(geometry.needles, material, pads.length);
+  const material = foliageMaterial(), branchesPerPad = 9;
+  const leaves = new THREE.InstancedMesh(branchGeometry(), material, pads.length * branchesPerPad);
   const dummy = new THREE.Object3D(), colour = new THREE.Color();
+  const up = new THREE.Vector3(0, 1, 0), direction = new THREE.Vector3();
+  let seed = 8149;
+  const random = (): number => { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 4294967296; };
   pads.forEach((p, i) => {
-    dummy.position.copy(p.position); dummy.rotation.set(p.tilt, p.turn, p.tilt * 0.45);
-    dummy.scale.set(p.width, p.width * 1.65, p.depth); dummy.updateMatrix();
-    body.setMatrixAt(i, dummy.matrix); needles.setMatrixAt(i, dummy.matrix);
-    colour.setHSL(0.24 + Math.sin(i * 3.7) * 0.015, 0.06, 0.70 + (i % 7) * 0.022);
-    body.setColorAt(i, colour); needles.setColorAt(i, colour);
+    for (let branch = 0; branch < branchesPerPad; branch++) {
+      // Three staggered depth levels and different local rolls maintain a
+      // fine, porous silhouette from above, below and along the promenade.
+      const angle = p.turn + branch * 2.399 + (random() - 0.5) * 0.6;
+      const radius = Math.sqrt(random()) * 0.68;
+      dummy.position.set(p.position.x + Math.cos(angle) * p.width * radius,
+        p.position.y + (branch % 3 - 1) * p.width * 0.18,
+        p.position.z + Math.sin(angle) * p.depth * radius);
+      direction.set(Math.cos(angle), 0.18 + random() * 0.75, Math.sin(angle)).normalize();
+      dummy.quaternion.setFromUnitVectors(up, direction);
+      dummy.rotateY((random() - 0.5) * Math.PI * 1.6);
+      const length = p.width * (0.90 + random() * 0.62);
+      dummy.scale.set(length * (0.66 + random() * 0.15), length, length);
+      dummy.updateMatrix(); const index = i * branchesPerPad + branch;
+      leaves.setMatrixAt(index, dummy.matrix);
+      colour.setHSL(0.23 + random() * 0.025, 0.06 + random() * 0.04, 0.76 + random() * 0.18);
+      leaves.setColorAt(index, colour);
+    }
   });
-  body.name = "solid-pine-branch-pads"; needles.name = "short-pine-surface-needles";
-  for (const mesh of [body, needles]) { mesh.castShadow = shadows; mesh.receiveShadow = true; mesh.computeBoundingSphere(); root.add(mesh); }
+  leaves.name = "cc0-curved-needle-bearing-twigs";
+  leaves.castShadow = shadows; leaves.receiveShadow = true;
+  leaves.userData.skipContactAO = true;
+  leaves.customDepthMaterial = new THREE.MeshDepthMaterial({ map: material.map,
+    alphaTest: 0.45, depthPacking: THREE.RGBADepthPacking, side: THREE.DoubleSide });
+  leaves.customDistanceMaterial = new THREE.MeshDistanceMaterial({ map: material.map,
+    alphaTest: 0.45, side: THREE.DoubleSide });
+  leaves.computeBoundingSphere(); root.add(leaves);
 }
 
 export function buildHeroPines(root: THREE.Object3D, bark: THREE.Material): void {
@@ -115,6 +121,24 @@ export function buildHeroPines(root: THREE.Object3D, bark: THREE.Material): void
     const bend = foreground ? -4.6 : -0.8 - random() * 1.5;
     const trunk = limb([new THREE.Vector3(tree.x, 0, tree.z), new THREE.Vector3(tree.x - 0.45, height * 0.28, tree.z - 0.1),
       new THREE.Vector3(tree.x + bend * 0.60, height * 0.65, tree.z - 0.55), new THREE.Vector3(tree.x + bend, height, tree.z - 0.85)], tree.radius, 0.15);
+    if (foreground) {
+      // The root is behind the arrival camera. A long, tapering wind-grown
+      // limb reaches forward above it; only its upper-left crown enters view.
+      const framing = limb([trunk.getPointAt(0.56),
+        new THREE.Vector3(-14.0, 6.0, 3.3), new THREE.Vector3(-19.3, 6.6, 3.8),
+        new THREE.Vector3(-25.5, 7.3, 3.0)], 0.17, 0.10);
+      for (let twig = 0; twig < 9; twig++) {
+        const at = framing.getPointAt(0.35 + twig * 0.07);
+        const side = twig % 2 ? -1 : 1;
+        const tip = at.clone().add(new THREE.Vector3(-0.7 - random() * 0.8,
+          0.18 + random() * 0.4, side * (0.55 + random() * 0.8)));
+        limb([at, at.clone().lerp(tip, 0.55), tip], 0.035, 0.10);
+        for (let cluster = 0; cluster < 2; cluster++) pads.push({
+          position: tip.clone().add(new THREE.Vector3(-cluster * 0.45, cluster * 0.15, side * cluster * 0.3)),
+          width: 0.75 + random() * 0.26, depth: 0.7 + random() * 0.2,
+          turn: Math.PI + side * 0.6, tilt: 0.08 });
+      }
+    }
     for (let branch = 0; branch < 9; branch++) {
       const start = trunk.getPointAt(0.38 + branch * 0.066), angle = foreground ? Math.PI + (random() - 0.5) * 2 : branch * 2.399 + random() * 0.8;
       const length = (foreground ? 3.2 : 3.5) + random() * 2;
@@ -139,8 +163,8 @@ export function buildHeroPines(root: THREE.Object3D, bark: THREE.Material): void
 
 export interface GrovePine { x: number; z: number; y?: number; h: number; turn?: number }
 
-// Twenty overlapping branch pads form each crown, rather than disconnected
-// tiny sprays. At 28 radial segments + short needles this is ~12K tris/tree.
+// Twenty woody bough clusters, each with nine bent textured twigs, give a
+// full but porous 4–7 m crown at approximately 2.2K foliage triangles/tree.
 export function buildPineGrove(root: THREE.Object3D, bark: THREE.Material, trees: GrovePine[], castShadows = false, spatialBatch = true): void {
   if (!trees.length) return;
   // Instanced bounds are per 24 m cell, so a close forest view does not submit
