@@ -19,6 +19,8 @@ export interface Regular {
   x: number;
   z: number;
   pose: Pose;
+  // Body yaw in radians, with +Z as the figure's front. Independent of the visitor.
+  facing?: number;
   // a pose they turn to now and then, like a barista to the machine
   alt?: Pose;
   // somewhere else they walk to now and then, and back (staff at work)

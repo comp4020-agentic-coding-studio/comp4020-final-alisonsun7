@@ -27,13 +27,56 @@ export function surface(id: string, repeat: [number, number], more: THREE.MeshSt
     return t;
   };
   const arm = load("arm");
-  return new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshStandardMaterial({
     map: load("diffuse", true),
     normalMap: load("nor_gl"),
     aoMap: arm,
     roughnessMap: arm,
     metalnessMap: arm,
+    normalScale: new THREE.Vector2(0.2, 0.2),
+    roughness: 0.94,
     ...more,
+  });
+  // The licensed scans supply quiet grain and wear. A broad pigment colour
+  // keeps sand, timber, plaster and bark in the same restrained art language.
+  material.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", `#include <map_fragment>
+      float surfaceValue = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+      diffuseColor.rgb = mix(vec3(surfaceValue), diffuseColor.rgb, 0.70);
+      diffuseColor.rgb = mix(diffuseColor.rgb, diffuse * 0.60, 0.30);`);
+  };
+  material.customProgramCacheKey = () => "quiet-light-surface-v1";
+  return material;
+}
+
+// The CC0 lamps use physical transmission for tiny glass pieces (one lantern
+// even tags its brass shell as transmissive). That requests a second complete
+// opaque-scene render. Keep the metal's colour/maps/metalness, and give only
+// named glass pieces a quiet, single-pass alpha surface instead.
+export function prepareLampMaterials(model: THREE.Object3D): void {
+  const copies = new Map<THREE.Material, THREE.Material>();
+  const prepare = (original: THREE.Material): THREE.Material => {
+    const physical = original as THREE.MeshPhysicalMaterial;
+    const glass = original.name.endsWith("_glass");
+    if (!glass && !(physical.transmission > 0)) return original;
+    const existing = copies.get(original);
+    if (existing) return existing;
+    const material = original.clone() as THREE.MeshPhysicalMaterial;
+    if (material.isMeshPhysicalMaterial) material.transmission = 0;
+    if (glass) {
+      material.transparent = true;
+      material.opacity = 0.20;
+      material.depthWrite = false;
+      material.forceSinglePass = true;
+      material.roughness = Math.max(0.2, material.roughness);
+    }
+    copies.set(original, material);
+    return material;
+  };
+  model.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    mesh.material = Array.isArray(mesh.material) ? mesh.material.map(prepare) : prepare(mesh.material);
   });
 }
 
@@ -53,11 +96,12 @@ export function buildCafeRoom(b: Builder): CafeRoom {
   brickOut.color.setHex(0xe8dfc8);
   brickOut.normalScale.setScalar(0.45);
   const plaster = surface("plastered_wall", [3, 1]);
-  const wood = std(0x6b4630, { roughness: 0.6 });
-  const darkWood = std(0x3b281c, { roughness: 0.55 });
+  const wood = std(0x8c7150, { roughness: 0.88 });
+  const darkWood = std(0x554a38, { roughness: 0.9 });
   const blackMetal = std(0x1d1e20, { metalness: 0.6, roughness: 0.4 });
-  const ceiling = std(0x2a2826);
-  const glass = new THREE.MeshStandardMaterial({ color: 0xbfd2dc, transparent: true, opacity: 0.16, roughness: 0.05, metalness: 0.1, depthWrite: false });
+  const ceiling = std(0x575347);
+  const joinery = std(0x9c8460, { roughness: 0.92 });
+  const glass = new THREE.MeshStandardMaterial({ color: 0xb7c9bd, transparent: true, opacity: 0.12, roughness: 0.16, metalness: 0.02, depthWrite: false });
   const bulbs = std(0xfff1dc, { emissive: 0xffc98a, emissiveIntensity: 0.4 });
 
   // ---- inside --------------------------------------------------------------
@@ -81,36 +125,51 @@ export function buildCafeRoom(b: Builder): CafeRoom {
     [DOOR.x1, 14],
   ]) {
     b.box(brickOut, x0, x1, 0, 0.55, 9.85, 10.15, { solid: true });
+    b.box(joinery, x0, x1, 0.50, 0.59, 9.77, 10.26);
     b.box(glass, x0, x1, 0.55, 3.1, 9.97, 10.03, { shadow: false });
-    for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 3) b.box(blackMetal, x - 0.04, x + 0.04, 0.55, 3.1, 9.95, 10.05);
+    for (let x = x0; x <= x1 + 0.01; x += (x1 - x0) / 3) b.box(joinery, x - 0.075, x + 0.075, 0.55, 3.25, 9.78, 10.23);
     b.solids.push({ x0, x1, z0: 9.8, z1: 10.2 });
   }
-  b.box(blackMetal, 0, 14, 3.1, 3.2, 9.94, 10.06);
-  b.box(brickOut, 0, 14, 3.2, H + 0.6, 9.85, 10.15, { occludes: true });
-  b.box(blackMetal, DOOR.x0 - 0.06, DOOR.x0, 0, 3.1, 9.9, 10.1);
-  b.box(blackMetal, DOOR.x1, DOOR.x1 + 0.06, 0, 3.1, 9.9, 10.1);
-  // a striped awning over the front
-  const awning = canvasTexture(
-    64,
-    8,
-    (g) => {
-      for (let i = 0; i < 8; i++) {
-        g.fillStyle = i % 2 ? "#e9dfc5" : "#43665b";
-        g.fillRect(i * 8, 0, 8, 8);
-      }
-    },
-    [2, 1],
-  );
-  const aw = new THREE.Mesh(new THREE.PlaneGeometry(14.4, 1.7), std(0xffffff, { map: awning, side: THREE.DoubleSide }));
-  aw.position.set(7, H + 0.05, 10.75);
-  aw.rotation.x = -Math.PI / 2 + 0.45;
-  aw.castShadow = true;
+  b.box(darkWood, -0.15, 14.15, 3.08, 3.29, 9.76, 10.28);
+  b.box(joinery, -0.15, 14.15, 3.29, 3.40, 9.76, 10.24);
+  b.box(brickOut, 0, 14, 3.4, H + 0.35, 9.85, 10.15, { occludes: true });
+  b.box(joinery, DOOR.x0 - 0.10, DOOR.x0, 0, 3.29, 9.76, 10.25);
+  b.box(joinery, DOOR.x1, DOOR.x1 + 0.10, 0, 3.29, 9.76, 10.25);
+  // Low olive canvas has a little sag and stitched hems. The doorway and
+  // floor are unchanged; all new supports sit above people's heads.
+  const awning = canvasTexture(256, 128, (g) => {
+    g.fillStyle = "#747b5d"; g.fillRect(0, 0, 256, 128);
+    const r = (n: number): number => Math.sin(n * 13.7) * 0.5 + 0.5;
+    for (let i = 0; i < 1800; i++) {
+      g.fillStyle = `rgba(224,219,179,${0.02 + r(i) * 0.035})`;
+      g.fillRect(r(i + 1) * 256, r(i + 3) * 128, 1, 1);
+    }
+    g.strokeStyle = "#aaa88a"; g.lineWidth = 1;
+    for (const y of [6, 120]) { g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); }
+  }, [4, 1]);
+  const cloth = std(0xffffff, { map: awning, side: THREE.DoubleSide, roughness: 1 });
+  const awGeometry = new THREE.PlaneGeometry(14.7, 1.92, 28, 4);
+  const ap = awGeometry.attributes.position;
+  for (let i = 0; i < ap.count; i++) {
+    ap.setZ(i, -0.055 * Math.sin((ap.getY(i) / 1.92 + 0.5) * Math.PI)
+      - 0.025 * Math.sin(ap.getX(i) * 2.3));
+  }
+  awGeometry.computeVertexNormals();
+  const aw = new THREE.Mesh(awGeometry, cloth);
+  aw.position.set(7, 3.48, 10.88);
+  aw.rotation.x = -Math.PI / 2 + 0.31;
+  aw.castShadow = aw.receiveShadow = true;
   b.root.add(aw);
-  // A slim timber cornice and cloth valance finish the front without
-  // changing the doorway, the room or anything people can collide with.
-  const trim = std(0x38564c, { roughness: 0.85 });
-  b.box(trim, -0.2, 14.2, H + 0.35, H + 0.49, 10.05, 10.2, { shadow: false });
-  b.box(trim, -0.2, 14.2, 3.15, 3.30, 11.48, 11.52, { shadow: false });
+  const valance = new THREE.Mesh(new THREE.PlaneGeometry(14.7, 0.23), cloth);
+  valance.position.set(7, 3.08, 11.79);
+  valance.castShadow = true;
+  b.root.add(valance);
+  b.box(darkWood, -0.36, 14.36, 3.88, 4.07, 10.04, 10.48);
+  for (const x of [0.12, 4.25, 9.75, 13.88]) {
+    const bracket = b.box(darkWood, x - 0.035, x + 0.035, 3.05, 3.75, 10.17, 11.44, { shadow: false });
+    // A shallow diagonal, tucked beneath the cloth, reads as visible joinery.
+    bracket.rotation.x = -0.18;
+  }
 
   // the window bar inside the glass, both sides of the door
   for (const [x0, x1] of [
@@ -175,9 +234,26 @@ export function buildCafeRoom(b: Builder): CafeRoom {
     ceilingLights.push(l);
   }
 
-  // the café's own front, above and around the glass, in brick
-  b.box(brickOut, -0.25, 14.25, H + 0.6, H + 1.4, 9.85, 10.15, { occludes: true });
-  b.box(std(0x2a2826), -0.25, 14.25, H + 0.02, H + 0.3, -0.25, 9.85, { occludes: true });
+  // A shallow pitched roof, deep eaves and exposed rafter ends replace the
+  // old tall parapet. The interior ceiling and every room footprint stay put.
+  const roofMat = std(0x596356, { roughness: 0.98, side: THREE.DoubleSide });
+  const roof = new THREE.BufferGeometry();
+  roof.setAttribute("position", new THREE.Float32BufferAttribute([
+    -0.72, 4.02, -0.62, 14.72, 4.02, -0.62, 14.72, 5.10, 4.7,
+    -0.72, 4.02, -0.62, 14.72, 5.10, 4.7, -0.72, 5.10, 4.7,
+    -0.72, 5.10, 4.7, 14.72, 5.10, 4.7, 14.72, 4.02, 10.62,
+    -0.72, 5.10, 4.7, 14.72, 4.02, 10.62, -0.72, 4.02, 10.62,
+  ], 3));
+  roof.computeVertexNormals();
+  const roofMesh = new THREE.Mesh(roof, roofMat);
+  roofMesh.castShadow = roofMesh.receiveShadow = true;
+  b.root.add(roofMesh);
+  b.occluders.push(roofMesh);
+  for (const z of [-0.54, 10.48]) b.box(darkWood, -0.72, 14.72, 3.90, 4.06, z, z + 0.12);
+  for (let x = 0.25; x < 14.5; x += 1.2) {
+    b.box(joinery, x - 0.06, x + 0.06, 3.80, 4.00, 9.88, 10.6, { shadow: false });
+  }
+  b.box(std(0x3f453c), -0.25, 14.25, H + 0.02, H + 0.3, -0.25, 9.85, { occludes: true });
 
   return {
     glass,
@@ -241,6 +317,7 @@ export async function furnishCafe(parent: THREE.Object3D, solids: Rect[], progre
     ids.map(async (id) => {
       const gltf = await loader.loadAsync(`/assets/models/${id}/${id}.gltf`);
       const model = gltf.scene;
+      if (id === "hanging_industrial_lamp") prepareLampMaterials(model);
       model.traverse((o) => {
         if ((o as THREE.Mesh).isMesh) o.castShadow = o.receiveShadow = true;
       });
@@ -249,7 +326,24 @@ export async function furnishCafe(parent: THREE.Object3D, solids: Rect[], progre
     }),
   );
   // plant pots, drawn
-  const pot = std(0xa8583a, { roughness: 0.8 });
+  const potTexture = canvasTexture(256, 128, (g) => {
+    g.fillStyle = "#c0b39a"; g.fillRect(0, 0, 256, 128);
+    g.fillStyle = "#bab09b";
+    for (let i = 0; i < 90; i++) g.fillRect((i * 73) % 256, (i * 37) % 128, 2, 1);
+    g.strokeStyle = "#818c70"; g.lineWidth = 3;
+    for (let x = 16; x < 256; x += 32) {
+      g.beginPath(); g.moveTo(x, 100); g.quadraticCurveTo(x + 9, 82, x + 2, 61); g.stroke();
+      for (let y = 68; y < 98; y += 12) {
+        g.beginPath(); g.ellipse(x + 2, y, 7, 2, -0.55, 0, Math.PI * 2); g.stroke();
+      }
+    }
+  }, [1, 1]);
+  const pot = std(0xffffff, { map: potTexture, roughness: 1, flatShading: false });
+  const profile = [[0, 0], [0.17, 0], [0.20, 0.04], [0.27, 0.27], [0.26, 0.40],
+    [0.28, 0.42], [0.28, 0.46], [0.245, 0.46], [0.24, 0.41]]
+    .map(([x, y]) => new THREE.Vector2(x, y));
+  const potGeometry = new THREE.LatheGeometry(profile, 18);
+  const soil = std(0x4e4c3b, { roughness: 1 });
   for (const p of PROPS) {
     const src = models.get(p.id);
     if (!src) continue;
@@ -267,10 +361,13 @@ export async function furnishCafe(parent: THREE.Object3D, solids: Rect[], progre
     parent.add(holder);
     parent.updateMatrixWorld(true);
     if (p.id === "shrub_04") {
-      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.19, 0.42, 16), pot);
-      c.position.set(p.at[0], 0.21, p.at[1]);
+      const c = new THREE.Mesh(potGeometry, pot);
+      c.position.set(p.at[0], 0, p.at[1]);
       c.castShadow = c.receiveShadow = true;
       parent.add(c);
+      const earth = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.235, 0.018, 18), soil);
+      earth.position.set(p.at[0], 0.42, p.at[1]);
+      parent.add(earth);
       const at = parent.localToWorld(new THREE.Vector3(p.at[0], 0, p.at[1]));
       solids.push({ x0: at.x - 0.3, x1: at.x + 0.3, z0: at.z - 0.3, z1: at.z + 0.3 });
     }

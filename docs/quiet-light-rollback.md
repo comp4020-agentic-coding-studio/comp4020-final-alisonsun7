@@ -3,7 +3,7 @@
 The pre-art application is preserved by annotated tag
 `before-quiet-light-2026-11-07`, pointing to
 `0becc46dd87348fd7226783a09eea7621b966ec1`. The new work is on
-`feat/quiet-light-art`; `feat/sound-discovery-polish` stays at the old version.
+`codex/quiet-light-art`; `feat/sound-discovery-polish` stays at the old version.
 No push or deployment is part of this change.
 
 ## Recover source in a separate checkout

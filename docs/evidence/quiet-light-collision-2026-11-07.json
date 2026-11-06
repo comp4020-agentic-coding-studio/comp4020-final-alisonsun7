@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "compared": [
+    "quiet-light-baseline",
+    "quiet-light-source"
+  ],
+  "counts": {
+    "walkable": 5,
+    "buildSolids": 102,
+    "furnishedSolids": 154,
+    "circles": 520,
+    "zoneRoomTrailProbes": 110805,
+    "actualGeometryModels": 20
+  },
+  "sceneMeshCounts": {
+    "quiet-light-baseline": {
+      "build": {
+        "meshes": 698,
+        "castsShadow": 509,
+        "instancedMeshes": 4,
+        "doubleTransparent": 0,
+        "transmissiveMaterials": 0
+      },
+      "furnished": {
+        "meshes": 796,
+        "castsShadow": 602,
+        "instancedMeshes": 37,
+        "doubleTransparent": 0,
+        "transmissiveMaterials": 7
+      }
+    },
+    "quiet-light-source": {
+      "build": {
+        "meshes": 797,
+        "castsShadow": 565,
+        "instancedMeshes": 5,
+        "doubleTransparent": 0,
+        "transmissiveMaterials": 0
+      },
+      "furnished": {
+        "meshes": 898,
+        "castsShadow": 658,
+        "instancedMeshes": 38,
+        "doubleTransparent": 0,
+        "transmissiveMaterials": 0
+      }
+    }
+  },
+  "hashes": {
+    "initial": "89f7040d65bb2711b9917d351cf4f6c8a94a77b535a5b82a8c77f4bb4d0918fa",
+    "furnished": "513b6f21db724b96ff9d86fb0897df1c23eb442a618273680baf89589d20804a",
+    "probes": "61a0603ebea4073c7554c62aeb0da4e8417070239349f9d677b83707a73aabb4",
+    "destinations": "2f5f86255ba7d2faabb5f1129e8cb2a9deb8e1342909963bb2af1240c932fe40"
+  },
+  "method": "Canvas and textures mocked; actual local glTF POSITION buffers and node transforms decoded for all furniture bounds. No WebGL, Chrome or network."
+}

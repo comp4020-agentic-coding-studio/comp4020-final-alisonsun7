@@ -11,7 +11,7 @@
 // Haven's scanned trees are 20 MB to 950 MB each.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { buildCafeRoom, furnishCafe, surface } from "./cafe.js";
+import { buildCafeRoom, furnishCafe, prepareLampMaterials, surface } from "./cafe.js";
 import type { Pose } from "./figures.js";
 import { buildHuts, inHut, SHOPKEEPER, swingDoors, TILL, type Door } from "./huts.js";
 import { hutAt, isPrivate, privateSound } from "../shared/huts.js";
@@ -141,54 +141,130 @@ function plantTrees(): Tree[] {
   return trees;
 }
 
+// An original short-needle tuft, drawn at its actual small scale. Separate
+// radial sprays make an irregular cloud rather than a long fern-like frond.
+function pineNeedles(): THREE.CanvasTexture {
+  return canvasTexture(512, 512, (g) => {
+    const r = mulberry(47);
+    g.clearRect(0, 0, 512, 512);
+    g.lineCap = "round";
+    const colours = ["#7e8c62", "#97a175", "#72815c", "#a7ad82", "#87956b"];
+    for (let spray = 0; spray < 108; spray++) {
+      const angle = r() * Math.PI * 2;
+      const radius = Math.sqrt(r()) * (130 + 24 * Math.sin(angle * 5));
+      const x = 256 + Math.cos(angle) * radius;
+      const y = 265 + Math.sin(angle) * radius * 0.85;
+      // Short woody tips are mostly hidden inside a spray of needle pairs.
+      const direction = angle + (r() - 0.5) * 1.2;
+      g.strokeStyle = "#777c58"; g.lineWidth = 2.4;
+      g.beginPath(); g.moveTo(x - Math.cos(direction) * 17, y - Math.sin(direction) * 17);
+      g.lineTo(x + Math.cos(direction) * 24, y + Math.sin(direction) * 24); g.stroke();
+      for (let needle = 0; needle < 19; needle++) {
+        const turn = direction + (r() - 0.5) * 3.8;
+        const length = 22 + r() * 37;
+        const ox = x + (r() - 0.5) * 20, oy = y + (r() - 0.5) * 20;
+        g.strokeStyle = colours[Math.floor(r() * colours.length)];
+        g.lineWidth = 1.6 + r() * 1.6;
+        g.beginPath(); g.moveTo(ox, oy);
+        g.quadraticCurveTo(ox + Math.cos(turn) * length * 0.65,
+          oy + Math.sin(turn) * length * 0.65 - 3,
+          ox + Math.cos(turn + 0.1) * length, oy + Math.sin(turn + 0.1) * length); g.stroke();
+      }
+    }
+  }, [1, 1]);
+}
+
 function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
-  const trunkGeo = new THREE.CylinderGeometry(0.045, 0.22, 1, 9);
+  // Every original tree position and trunk collision remains unchanged.
+  const trunkGeo = new THREE.CylinderGeometry(0.045, 0.22, 1, 9, 5);
   trunkGeo.translate(0, 0.5, 0);
-  const trunks = new THREE.InstancedMesh(trunkGeo, bark, trees.length);
-  // Overlapping needle masses give the pines a soft, irregular silhouette
-  // instead of stacked triangular skirts. Six shared 80-triangle boughs per
-  // tree cost less than the old eight cones; every tree stays where it was.
-  const layers = 6;
-  const crown = new THREE.IcosahedronGeometry(1, 1);
-  const vertices = crown.attributes.position;
-  const normals = crown.attributes.normal;
-  for (let i = 0; i < vertices.count; i++) {
-    const x = vertices.getX(i), y = vertices.getY(i), z = vertices.getZ(i);
-    const a = Math.atan2(z, x);
-    const edge = 1 + 0.10 * Math.sin(a * 5 + y * 3) + 0.055 * Math.cos(a * 7 - y * 4);
-    vertices.setXYZ(i, x * edge, y * (0.94 + 0.06 * Math.sin(a * 3)), z * edge);
-    // This geometry is non-indexed. Preserve smooth radial normals instead
-    // of asking computeVertexNormals to flatten each individual triangle.
-    normals.setXYZ(i, x, y, z);
+  const trunkPosition = trunkGeo.attributes.position;
+  for (let i = 0; i < trunkPosition.count; i++) {
+    const y = trunkPosition.getY(i);
+    trunkPosition.setX(i, trunkPosition.getX(i) + y * y * 0.075);
   }
-  const needleMat = std(0xffffff, { roughness: 0.95, flatShading: false });
-  // a 15 m crown's top moves about 20 cm in the wind
-  sway(needleMat, 0.0009);
-  const needles = new THREE.InstancedMesh(crown, needleMat, trees.length * layers);
-  const m = new THREE.Matrix4();
-  const q = new THREE.Quaternion();
-  const c = new THREE.Color();
-  const r = mulberry(5);
+  trunkGeo.computeVertexNormals();
+  const trunks = new THREE.InstancedMesh(trunkGeo, bark, trees.length);
+  const boughs = 7, spraysPerBough = 8, capSprays = 8;
+  const branchGeo = new THREE.CylinderGeometry(0.009, 0.065, 1, 6);
+  branchGeo.translate(0, 0.5, 0);
+  const branches = new THREE.InstancedMesh(branchGeo, bark, trees.length * boughs);
+  // Three cupped, intersecting little cards give each tuft volume. The card
+  // centres bow outward; their edges disappear into many individual needles.
+  // A 15 m tree now carries small 0.6–1.1 m tufts, never metre-long feathers.
+  const positions: number[] = [], uvs: number[] = [];
+  for (let card = 0; card < 3; card++) {
+    const turn = card * Math.PI / 3, tilt = card === 1 ? -0.58 : 0.42;
+    const point = (x: number, y: number): number[] => {
+      const z = 0.20 * (1 - x * x);
+      const yy = y * Math.cos(tilt) - z * Math.sin(tilt);
+      const zz = y * Math.sin(tilt) + z * Math.cos(tilt);
+      return [x * Math.cos(turn) + zz * Math.sin(turn), yy,
+        -x * Math.sin(turn) + zz * Math.cos(turn)];
+    };
+    for (let segment = 0; segment < 2; segment++) {
+      const x0 = -1 + segment, x1 = x0 + 1;
+      for (const [x, y] of [[x0, -0.65], [x1, -0.65], [x1, 0.65], [x0, -0.65], [x1, 0.65], [x0, 0.65]]) {
+        positions.push(...point(x, y));
+        uvs.push((x + 1) / 2, y / 1.3 + 0.5);
+      }
+    }
+  }
+  const crown = new THREE.BufferGeometry();
+  crown.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  crown.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  crown.computeVertexNormals();
+  const needleMat = std(0xffffff, { map: pineNeedles(), alphaTest: 0.30, side: THREE.DoubleSide,
+    roughness: 1, flatShading: false });
+  sway(needleMat, 0.00045);
+  const perTree = boughs * spraysPerBough + capSprays;
+  const needles = new THREE.InstancedMesh(crown, needleMat, trees.length * perTree);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), color = new THREE.Color();
+  const up = new THREE.Vector3(0, 1, 0), r = mulberry(5);
   trees.forEach((t, i) => {
-    q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t.turn);
-    m.compose(new THREE.Vector3(t.x, 0, t.z), q, new THREE.Vector3(1.25, t.h * 0.94, 1.25));
+    q.setFromAxisAngle(up, t.turn);
+    m.compose(new THREE.Vector3(t.x, 0, t.z), q, new THREE.Vector3(1.25, t.h, 1.25));
     trunks.setMatrixAt(i, m);
-    const hue = 0.27 + r() * 0.045;
-    const width = 0.85 + r() * 0.3;
-    for (let k = 0; k < layers; k++) {
-      const progress = k / (layers - 1);
-      const w = t.h * (0.175 - progress * 0.14) * width * (0.9 + r() * 0.2);
-      q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), t.turn + k * 2.4);
-      const branchAngle = t.turn + k * 2.4;
-      m.compose(new THREE.Vector3(t.x + Math.sin(branchAngle) * w * 0.17 + (r() - 0.5) * 0.08,
-        t.h * (0.35 + progress * 0.53), t.z + Math.cos(branchAngle) * w * 0.13 + (r() - 0.5) * 0.08), q,
-        new THREE.Vector3(w, t.h * (0.11 - progress * 0.05), w * (0.85 + r() * 0.25)));
-      needles.setMatrixAt(i * layers + k, m);
-      c.setHSL(hue, 0.18 + r() * 0.13, 0.11 + progress * 0.05 + r() * 0.025);
-      needles.setColorAt(i * layers + k, c);
+    const crownBase = 0.48 + r() * 0.10;
+    const crownWidth = 0.83 + r() * 0.30;
+    const putTuft = (at: number, centre: THREE.Vector3, size: number, light: number): void => {
+      q.setFromEuler(new THREE.Euler((r() - 0.5) * 1.1, r() * Math.PI * 2, (r() - 0.5) * 1.0));
+      m.compose(centre, q, new THREE.Vector3(size, size * (0.85 + r() * 0.25), size));
+      needles.setMatrixAt(i * perTree + at, m);
+      color.setHSL(0.19 + r() * 0.025, 0.10 + r() * 0.10, light + r() * 0.08);
+      needles.setColorAt(i * perTree + at, color);
+    };
+    for (let k = 0; k < boughs; k++) {
+      const progress = k / (boughs - 1);
+      const angle = t.turn + k * 2.399 + (r() - 0.5) * 1.05;
+      const length = t.h * (0.20 - progress * 0.10) * crownWidth * (0.80 + r() * 0.35);
+      const y = t.h * (crownBase + progress * (0.93 - crownBase) + (r() - 0.5) * 0.025);
+      const lean = 0.075 * (y / t.h) ** 2;
+      const base = new THREE.Vector3(t.x + Math.cos(t.turn) * lean, y, t.z - Math.sin(t.turn) * lean);
+      const direction = new THREE.Vector3(Math.cos(angle), 0.10 + r() * 0.20, Math.sin(angle)).normalize();
+      const side = new THREE.Vector3(-Math.sin(angle), 0, Math.cos(angle));
+      q.setFromUnitVectors(up, direction);
+      m.compose(base, q, new THREE.Vector3(1 - progress * 0.45, length, 1 - progress * 0.45));
+      branches.setMatrixAt(i * boughs + k, m);
+      for (let spray = 0; spray < spraysPerBough; spray++) {
+        const along = 0.28 + spray / spraysPerBough * 0.82 + r() * 0.13;
+        const centre = base.clone().addScaledVector(direction, length * along)
+          .addScaledVector(side, (r() - 0.5) * length * 0.60);
+        centre.y += (r() - 0.5) * 0.45;
+        const size = (0.31 + r() * 0.20) * (t.h / 12) * (1 - progress * 0.16);
+        putTuft(k * spraysPerBough + spray, centre, size, 0.63 + progress * 0.05);
+      }
+    }
+    // A loose cap clothes the trunk's tip and joins the irregular branch ends
+    // into a crown; the upper silhouette has no regularly spaced bare spires.
+    for (let cap = 0; cap < capSprays; cap++) {
+      const a = r() * Math.PI * 2, radius = r() * t.h * 0.047;
+      const centre = new THREE.Vector3(t.x + Math.cos(a) * radius,
+        t.h * (0.94 + r() * 0.065), t.z + Math.sin(a) * radius);
+      putTuft(boughs * spraysPerBough + cap, centre, (0.32 + r() * 0.17) * t.h / 12, 0.68);
     }
   });
-  for (const mesh of [trunks, needles]) {
+  for (const mesh of [trunks, branches, needles]) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     mesh.computeBoundingSphere();
@@ -203,16 +279,25 @@ function buildTrees(b: Builder, trees: Tree[], bark: THREE.Material): void {
 function edgeGrass(b: Builder): void {
   const r = mulberry(88);
   const positions: number[] = [];
-  for (let blade = 0; blade < 11; blade++) {
+  // Bent, tapering ribbons catch light as soft leaves rather than hard
+  // triangular spikes. One shared tuft replaces hundreds of scanned blades.
+  for (let blade = 0; blade < 9; blade++) {
     const a = blade * 2.4;
     const x = Math.cos(a), z = Math.sin(a);
-    const h = 0.25 + r() * 0.45;
-    positions.push(x * 0.12 - z * 0.018, 0, z * 0.12 + x * 0.018,
-      x * 0.12 + z * 0.018, 0, z * 0.12 - x * 0.018,
-      x * 0.32, h, z * 0.32);
+    const h = 0.30 + r() * 0.54, bend = 0.12 + r() * 0.18;
+    const at = (t: number, side: number): number[] => {
+      const w = 0.019 * (1 - t) + 0.001;
+      return [x * (0.07 + t * t * bend) - z * w * side, h * t,
+        z * (0.07 + t * t * bend) + x * w * side];
+    };
+    for (let segment = 0; segment < 3; segment++) {
+      const t = segment / 3, next = (segment + 1) / 3;
+      positions.push(...at(t, -1), ...at(t, 1), ...at(next, 1),
+        ...at(t, -1), ...at(next, 1), ...at(next, -1));
+    }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   g.computeVertexNormals();
   const points: { x: number; z: number; coastal: boolean }[] = [];
   for (let i = 0; i < trailPoints.length - 1; i++) {
@@ -244,7 +329,7 @@ function edgeGrass(b: Builder): void {
     dummy.scale.setScalar((p.coastal ? 0.65 : 0.45) + r() * 0.55);
     dummy.updateMatrix();
     mesh.setMatrixAt(i, dummy.matrix);
-    color.setHSL(p.coastal ? 0.20 : 0.25, 0.17 + r() * 0.10, 0.20 + r() * 0.10);
+    color.setHSL(p.coastal ? 0.18 : 0.22, 0.12 + r() * 0.10, 0.26 + r() * 0.12);
     mesh.setColorAt(i, color);
   });
   mesh.receiveShadow = true;
@@ -547,8 +632,11 @@ function buskerPitch(b: Builder, wood: THREE.Material, x: number, z: number): vo
 }
 
 function bench(b: Builder, wood: THREE.Material, metal: THREE.Material, x: number, z: number): void {
-  b.box(wood, x - 0.9, x + 0.9, 0.42, 0.47, z - 0.22, z + 0.22);
-  b.box(wood, x - 0.9, x + 0.9, 0.55, 0.85, z + 0.18, z + 0.24);
+  for (let slat = 0; slat < 3; slat++) {
+    const zz = z - 0.21 + slat * 0.145;
+    b.box(wood, x - 0.9, x + 0.9, 0.42, 0.47, zz, zz + 0.125);
+  }
+  for (const y of [0.57, 0.74]) b.box(wood, x - 0.9, x + 0.9, y, y + 0.125, z + 0.18, z + 0.24);
   for (const dx of [-0.75, 0.75]) b.box(metal, x + dx - 0.03, x + dx + 0.03, 0, 0.42, z - 0.2, z + 0.2);
   b.solids.push({ x0: x - 0.9, x1: x + 0.9, z0: z - 0.25, z1: z + 0.25 });
 }
@@ -605,7 +693,7 @@ function water(colour: number, amp: number, scale: number, roughness: number, re
   ripple.colorSpace = THREE.NoColorSpace;
   mat.normalMap = ripple;
   rippleMaps.push(ripple);
-  mat.normalScale.set(ocean ? 0.20 : 0.28, ocean ? 0.20 : 0.28);
+  mat.normalScale.set(ocean ? 0.24 : 0.22, ocean ? 0.24 : 0.22);
   mat.customProgramCacheKey = () => `coastal-water-${scale}-${amp}-${ocean}-${flow}-${rippleSize}`;
   const k = (n: number): string => (n * scale).toFixed(3);
   const f = (n: number): string => n.toFixed(4);
@@ -656,10 +744,10 @@ vec2 swellD(vec2 p) { return vec2(${slopeX}, ${slopeZ}); }`;
         float rippleLight = sin(vWaterWorld.x * 1.3 + vWaterWorld.z * 2.1 + uTime * 0.7)
           * sin(vWaterWorld.x * 0.8 - vWaterWorld.z * 1.5 - uTime * 0.5);
         ${ocean ? `float depth = smoothstep(${WATERLINE.toFixed(1)}, ${(WATERLINE + 95).toFixed(1)}, vWaterWorld.z);
-        vec3 shallow = vec3(0.035, 0.23, 0.21);
-        vec3 deep = vec3(0.014, 0.080, 0.12);
+        vec3 shallow = vec3(0.075, 0.245, 0.235);
+        vec3 deep = vec3(0.038, 0.115, 0.155);
         diffuseColor.rgb = mix(shallow, deep, depth);
-        diffuseColor.rgb += (1.0 - depth) * pow(max(0.0, rippleLight), 8.0) * 0.065;` : "diffuseColor.rgb *= 1.0 + rippleLight * 0.09;"}`);
+        diffuseColor.rgb += (1.0 - depth) * pow(max(0.0, rippleLight), 8.0) * 0.022;` : "diffuseColor.rgb *= 1.0 + rippleLight * 0.09;"}`);
   };
   return mat;
 }
@@ -668,22 +756,31 @@ vec2 swellD(vec2 p) { return vec2(${slopeX}, ${slopeZ}); }`;
 // live beyond the walkable place: three tiny meshes, no shadows or collision.
 function headlands(b: Builder): void {
   const mat = std(0xffffff, { vertexColors: true, roughness: 1, flatShading: false });
-  const coast = new THREE.Color(0xa7aa8e);
-  const ridge = new THREE.Color(0x5f8077);
-  for (const [x, z, width, depth, height, seed] of [
-    [-174, 213, 210, 74, 29, 1.2],
-    [166, 254, 168, 60, 23, 2.8],
-    [58, 291, 64, 30, 7, 4.2],
+  const coast = new THREE.Color(0xb2af98);
+  // Nested ridges at each end frame an open middle distance. The uneven
+  // contour, quiet patch colours and cooler far ridges suggest a coast,
+  // instead of the three smooth hemispheres of the previous art pass.
+  for (const [x, z, width, depth, height, seed, distance] of [
+    [-205, 310, 258, 66, 37, 1.2, 0.55],
+    [225, 345, 260, 78, 39, 2.8, 0.70],
+    [-176, 213, 218, 70, 28, 1.7, 0.05],
+    [175, 263, 183, 62, 27, 3.1, 0.25],
+    [58, 325, 77, 30, 8, 4.2, 0.75],
   ]) {
-    const g = new THREE.PlaneGeometry(width, depth, 28, 10);
+    const ridge = new THREE.Color(0x617e70).lerp(new THREE.Color(0x9baeb0), distance);
+    const g = new THREE.PlaneGeometry(width, depth, 48, 18);
     const p = g.attributes.position;
     const colours: number[] = [];
     for (let i = 0; i < p.count; i++) {
       const u = p.getX(i) / (width / 2), v = p.getY(i) / (depth / 2);
-      const footprint = Math.max(0, 1 - u * u - v * v);
-      const h = Math.pow(footprint, 0.8) * height * (0.78 + 0.17 * Math.sin(u * 4 + seed) + 0.08 * Math.cos(v * 5 + seed));
-      p.setXYZ(i, x + p.getX(i), h - 0.8, z - p.getY(i));
-      const c = coast.clone().lerp(ridge, Math.min(1, h / height * 1.5));
+      const footprint = Math.max(0, 1 - u * u) * Math.max(0, 1 - v * v);
+      const contour = 0.65 + 0.18 * Math.sin(u * 7 + seed)
+        + 0.10 * Math.sin(u * 15 - seed * 2) + 0.045 * Math.sin(u * 31 + v * 4);
+      const h = Math.pow(footprint, 0.65) * height * contour;
+      p.setXYZ(i, x + p.getX(i), h - 0.65, z - p.getY(i));
+      const patch = Math.sin(u * 33 + v * 11 + seed) * Math.sin(u * 17 - v * 19);
+      const c = coast.clone().lerp(ridge, Math.min(1, h / height * 2.1));
+      c.multiplyScalar(0.97 + patch * 0.035);
       colours.push(c.r, c.g, c.b);
     }
     g.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
@@ -776,7 +873,7 @@ function creekStones(): Scatter[] {
   return [
     { id: "boulder_01", height: 0.7, at: atCreek(22, 0, 1.1, [0.5, 1.3], 0.15) },
     { id: "rock_07", height: 0.18, at: atCreek(110, 0.8, 1.3, [0.6, 1.8]) },
-    { id: "grass_medium_02", height: 0.5, sway: 0.25, at: atCreek(140, 1.2, 1.9, [0.7, 1.4]) },
+    { id: "grass_medium_02", height: 0.5, sway: 0.25, at: atCreek(76, 1.2, 1.9, [0.7, 1.4]) },
   ];
 }
 
@@ -788,15 +885,22 @@ function build(): Built {
   rippleMaps.length = 0;
   const b = new Builder();
   const forestFloor = surface("forest_leaves_02", [40, 40]);
-  forestFloor.color.setHex(0xc0c8ad);
+  forestFloor.color.setHex(0xb7b69b);
+  forestFloor.normalScale.setScalar(0.18);
   const trailMat = surface("stony_dirt_path", [1, 60]);
-  trailMat.color.setHex(0xd8ccb0);
-  trailMat.normalScale.setScalar(0.5);
+  trailMat.color.setHex(0xc8b89b);
+  trailMat.normalScale.setScalar(0.15);
   const bark = surface("pine_bark", [1, 3]);
+  bark.color.setHex(0xa2987c);
+  bark.normalScale.setScalar(0.32);
   const sand = surface("coast_sand_01", [30, 14]);
   const wetSand = surface("damp_beach_sand", [40, 3]);
   const boards = surface("weathered_planks", [30, 2]);
+  boards.color.setHex(0xc0aa88);
+  boards.normalScale.setScalar(0.20);
   const pierBoards = surface("weathered_planks", [1, 20]);
+  pierBoards.color.setHex(0xbba789);
+  pierBoards.normalScale.setScalar(0.2);
   const kioskWood = surface("white_planks_clean", [2, 1]);
   const wood = std(0x7a5a3e, { roughness: 0.7 });
   const darkWood = std(0x4a3526, { roughness: 0.7 });
@@ -856,11 +960,11 @@ function build(): Built {
   }
 
   // ---- the shore ----
-  sand.color.setHex(0xf0dfbe);
-  sand.normalScale.setScalar(0.45);
+  sand.color.setHex(0xe2d4b7);
+  sand.normalScale.setScalar(0.14);
   sand.roughness = 0.96;
   wetSand.color.setHex(0xc8c1a7);
-  wetSand.normalScale.setScalar(0.35);
+  wetSand.normalScale.setScalar(0.12);
   wetSand.roughness = 0.74;
   b.floor(sand, -62, 62, -17, WATERLINE - 0.9, 0);
   const shoreGeometry = new THREE.PlaneGeometry(124, 2.7, 124, 1);
@@ -873,7 +977,7 @@ function build(): Built {
   b.root.add(shoreline);
   b.floors.push(shoreline);
   // the sea, out to the horizon
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry(1600, 800, 240, 120), water(0xffffff, 0.20, 1, 0.34, 0.30, true, [0.02, 0.013], 5.5));
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(1600, 800, 240, 120), water(0xffffff, 0.16, 1, 0.28, 0.32, true, [0.02, 0.013], 5.5));
   sea.rotation.x = -Math.PI / 2;
   sea.position.set(0, -0.12, WATERLINE + 400);
   const seaVertices = sea.geometry.attributes.position;
@@ -955,8 +1059,14 @@ function build(): Built {
   b.box(darkWood, -52, 52, -0.2, 0.08, 2.6, 2.75, { shadow: false });
   const lamps: THREE.PointLight[] = [];
   for (let x = -40; x <= 40; x += 13) {
-    b.cylinder(metal, x, 2.25, 0.06, 0, 4.2, 8);
-    b.box(lampHead, x - 0.22, x + 0.22, 4.1, 4.3, 2.03, 2.47);
+    // The same slender pole footprint, now a timber post with a small
+    // suspended lantern: warm, human scale furniture along the shore.
+    b.cylinder(darkWood, x, 2.25, 0.07, 0, 4.2, 8);
+    b.box(wood, x - 0.13, x + 0.53, 3.98, 4.08, 2.18, 2.32);
+    b.cylinder(metal, x + 0.36, 2.25, 0.014, 3.82, 4.01, 6);
+    b.box(lampHead, x + 0.24, x + 0.48, 3.42, 3.82, 2.13, 2.37, { shadow: false });
+    for (const y of [3.40, 3.81]) b.box(metal, x + 0.21, x + 0.51, y, y + 0.055, 2.10, 2.40);
+    for (const dx of [0.225, 0.48]) b.box(metal, x + dx, x + dx + 0.02, 3.43, 3.82, 2.12, 2.14, { shadow: false });
     b.solids.push({ x0: x - 0.12, x1: x + 0.12, z0: 2.13, z1: 2.37 });
     if (Math.abs(x - 12) < 7 || Math.abs(x + 14) < 7) {
       const l = new THREE.PointLight(0xffcf8a, 0, 16, 1.6);
@@ -987,22 +1097,48 @@ function build(): Built {
   brickSkin.color.setHex(0xe8dfc8);
   brickSkin.normalScale.setScalar(0.45);
   const C = { x0: CAFE_AT.x, x1: CAFE_AT.x + 14, z0: CAFE_AT.z, z1: CAFE_AT.z + 10 };
-  b.box(brickSkin, C.x0 - 0.45, C.x0 - 0.25, 0, 5.0, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
-  b.box(brickSkin, C.x1 + 0.25, C.x1 + 0.45, 0, 5.0, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
-  b.box(brickSkin, C.x0 - 0.45, C.x1 + 0.45, 0, 5.0, C.z0 - 0.45, C.z0 - 0.25, { occludes: true });
-  // Quiet timber rhythm, a stone-coloured base and a small painted plaque
-  // make the trail-facing wall a considered facade. Decoration adds no
-  // collision; the battens share one instanced draw.
-  const wallTimber = std(0xb5a88e, { roughness: 0.95 });
-  const battens = new THREE.InstancedMesh(new THREE.BoxGeometry(0.065, 4.15, 0.065), wallTimber, 13);
+  b.box(brickSkin, C.x0 - 0.45, C.x0 - 0.25, 0, 4.04, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
+  b.box(brickSkin, C.x1 + 0.25, C.x1 + 0.45, 0, 4.04, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
+  b.box(brickSkin, C.x0 - 0.45, C.x1 + 0.45, 0, 4.04, C.z0 - 0.45, C.z0 - 0.25, { occludes: true });
+  // Timber cladding, a sheltered gable and deep window surrounds give the
+  // trail-facing side the same scale and joinery as the glazed front.
+  const wallTimber = std(0xa69473, { roughness: 0.96 });
+  const sideTimber = std(0x8c927a, { roughness: 0.98 });
+  const battens = new THREE.InstancedMesh(new THREE.BoxGeometry(0.085, 0.22, 10.52), sideTimber, 16);
   const battenMatrix = new THREE.Matrix4();
-  for (let i = 0; i < 13; i++) {
-    battenMatrix.makeTranslation(C.x1 + 0.48, 2.38, C.z0 + 0.55 + i * 0.74);
+  for (let i = 0; i < 16; i++) {
+    battenMatrix.makeTranslation(C.x1 + 0.48, 0.42 + i * 0.22, (C.z0 + C.z1) / 2 - 0.15);
     battens.setMatrixAt(i, battenMatrix);
   }
+  battens.receiveShadow = true;
   battens.computeBoundingSphere();
   b.root.add(battens);
-  b.box(std(0xa4a58f, { roughness: 1 }), C.x1 + 0.44, C.x1 + 0.52, 0, 0.32, C.z0 - 0.1, C.z1 + 0.1, { shadow: false });
+  for (const z of [C.z0 - 0.2, C.z0 + 3.0, C.z0 + 7.1, C.z1 + 0.1]) {
+    b.box(wallTimber, C.x1 + 0.43, C.x1 + 0.60, 0.16, 4.03, z - 0.075, z + 0.075);
+  }
+  for (const y of [0.20, 3.87]) b.box(wallTimber, C.x1 + 0.43, C.x1 + 0.63, y, y + 0.14, C.z0 - 0.45, C.z1 + 0.28);
+  const sideGable = new THREE.BufferGeometry();
+  sideGable.setAttribute("position", new THREE.Float32BufferAttribute([
+    C.x1 + 0.45, 4.0, C.z0 - 0.25, C.x1 + 0.45, 4.0, C.z1 + 0.15,
+    C.x1 + 0.45, 5.05, C.z0 + 4.7,
+    C.x0 - 0.45, 4.0, C.z0 - 0.25, C.x0 - 0.45, 5.05, C.z0 + 4.7,
+    C.x0 - 0.45, 4.0, C.z1 + 0.15,
+  ], 3));
+  sideGable.computeVertexNormals();
+  const gableWall = new THREE.Mesh(sideGable, std(0xc1b89f, { side: THREE.DoubleSide, roughness: 1 }));
+  gableWall.castShadow = gableWall.receiveShadow = true;
+  b.root.add(gableWall);
+  // Closed side lights sit on the original opaque wall; their deep dark
+  // reveals and fine muntins read as joinery, without changing the room.
+  const sideGlass = std(0x425953, { roughness: 0.28, metalness: 0.08 });
+  for (const z of [C.z0 + 1.45, C.z0 + 8.65]) {
+    b.box(std(0x3c443b), C.x1 + 0.50, C.x1 + 0.57, 1.38, 3.12, z - 0.72, z + 0.72, { shadow: false });
+    b.box(sideGlass, C.x1 + 0.58, C.x1 + 0.60, 1.48, 3.01, z - 0.61, z + 0.61, { shadow: false });
+    for (const zz of [z - 0.73, z + 0.73]) b.box(wallTimber, C.x1 + 0.53, C.x1 + 0.75, 1.30, 3.20, zz - 0.06, zz + 0.06);
+    for (const y of [1.33, 3.14]) b.box(wallTimber, C.x1 + 0.53, C.x1 + 0.77, y, y + 0.10, z - 0.78, z + 0.78);
+    b.box(wallTimber, C.x1 + 0.61, C.x1 + 0.66, 1.45, 3.08, z - 0.025, z + 0.025, { shadow: false });
+  }
+  b.box(std(0xa7a18b, { roughness: 1 }), C.x1 + 0.44, C.x1 + 0.56, 0, 0.32, C.z0 - 0.1, C.z1 + 0.1, { shadow: false });
   const wallMark = canvasTexture(512, 512, (g) => {
     g.fillStyle = "#e9e0ca";
     g.fillRect(0, 0, 512, 512);
@@ -1033,8 +1169,8 @@ function build(): Built {
     g.font = "20px Georgia, serif";
     g.fillText("FOREST  ·  SEA", 256, 442);
   }, [1, 1]);
-  const wallPlaque = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 2.2), std(0xffffff, { map: wallMark, roughness: 1 }));
-  wallPlaque.position.set(C.x1 + 0.54, 2.6, C.z0 + 5.2);
+  const wallPlaque = new THREE.Mesh(new THREE.PlaneGeometry(1.48, 1.72), std(0xffffff, { map: wallMark, roughness: 1 }));
+  wallPlaque.position.set(C.x1 + 0.64, 2.28, C.z0 + 5.0);
   wallPlaque.rotation.y = Math.PI / 2;
   b.root.add(wallPlaque);
   b.solids.push({ x0: C.x0 - 0.45, x1: C.x0, z0: C.z0 - 0.45, z1: C.z1 }, { x0: C.x1, x1: C.x1 + 0.45, z0: C.z0 - 0.45, z1: C.z1 }, { x0: C.x0 - 0.45, x1: C.x1 + 0.45, z0: C.z0 - 0.45, z1: C.z0 });
@@ -1052,8 +1188,8 @@ function build(): Built {
     },
     [1, 1],
   );
-  const signBoard = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 0.8), std(0xffffff, { map: sign }));
-  signBoard.position.set(CAFE_AT.x + 7, 4.55, CAFE_AT.z + 10.17);
+  const signBoard = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 0.48), std(0xffffff, { map: sign }));
+  signBoard.position.set(CAFE_AT.x + 7, 3.30, CAFE_AT.z + 10.31);
   b.root.add(signBoard);
 
   // the fish and chip kiosk: white boards, a serving window, a red and
@@ -1159,8 +1295,8 @@ const inForest = (x: number, z: number): boolean => distanceToTrail(x, z) > 2.2 
 
 const SCATTER: Scatter[] = [
   ...creekStones(),
-  { id: "fern_02", height: 0.5, sway: 0.2, at: scatterPoints(21, 260, (r) => [-46 + r() * 92, -134 + r() * 112], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
-  { id: "grass_medium_02", height: 0.45, sway: 0.25, at: scatterPoints(22, 220, (r) => [-48 + r() * 96, -44 + r() * 40], [0.8, 1.8]).filter((p) => distanceToTrail(p.x, p.z) > 1.6 && !inCafe(p.x, p.z) && (p.z < -14 || p.x < -30)) },
+  { id: "fern_02", height: 0.5, sway: 0.2, at: scatterPoints(21, 90, (r) => [-46 + r() * 92, -134 + r() * 112], [0.7, 1.6]).filter((p) => inForest(p.x, p.z)) },
+  { id: "grass_medium_02", height: 0.45, sway: 0.25, at: scatterPoints(22, 110, (r) => [-48 + r() * 96, -44 + r() * 40], [0.8, 1.8]).filter((p) => distanceToTrail(p.x, p.z) > 1.6 && !inCafe(p.x, p.z) && (p.z < -14 || p.x < -30)) },
   { id: "shrub_02", height: 1.2, sway: 0.04, at: scatterPoints(23, 40, (r) => [-46 + r() * 92, -133 + r() * 111], [0.6, 1.2]).filter((p) => distanceToTrail(p.x, p.z) > 3.5 && Math.abs(p.z - CREEK_Z) > CREEK_HALF + 1.4), solid: 0.6 },
   { id: "rock_07", height: 0.2, at: scatterPoints(24, 60, (r) => [-46 + r() * 92, -134 + r() * 164], [0.8, 2.5]).filter((p) => distanceToTrail(p.x, p.z) > 1.8 && !inCafe(p.x, p.z) && (p.z < -16 || p.z > 4)) },
   {
@@ -1233,6 +1369,7 @@ async function furnish(built: Built, progress: (done: number) => void): Promise<
       await Promise.all(
         SCATTER.map(async (s) => {
           const gltf = await loader.loadAsync(`/assets/models/${s.id}/${s.id}.gltf`);
+          if (s.id === "Lantern_01") prepareLampMaterials(gltf.scene);
           placeInstanced(built.root, gltf.scene, s, built.solids);
           outDone = ++n / SCATTER.length;
           report();
@@ -1300,10 +1437,15 @@ const BUSKER_BENCH = -20.5;
 export const BUSKER_SOUND = { soundId: "guitar", x: BUSKER_BENCH, y: 0.9, z: 1.8, hear: 18 };
 // on the seat, facing the boardwalk: the world draws sitters a little
 // towards you, so the bench is behind him, not through him
-const BUSKER: Regular = { x: BUSKER_SOUND.x, z: BUSKER_SOUND.z, pose: "guitar" };
+const BUSKER: Regular = { x: BUSKER_SOUND.x, z: BUSKER_SOUND.z, pose: "guitar", facing: Math.PI };
 
 const regularsOf = (...groups: [string, number[]][]): Regular[] =>
-  groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose, alt]) => ({ x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose, alt })));
+  groups.flatMap(([g, which]) => which.map((i) => CAFE_PEOPLE[g][i]).map(([x, z, pose, alt]) => ({
+    x: x + CAFE_AT.x, z: z + CAFE_AT.z, pose, alt,
+    ...(g === "tables" ? { facing: z > 6.2 ? Math.PI : 0 }
+      : g === "bar" ? { facing: 0 }
+      : g === "door" ? { facing: x > 5 ? Math.atan2(-0.7, 0.3) : Math.atan2(0.7, -0.3) } : {}),
+  })));
 
 export const seasideKit: PlaceKit = {
   build,

@@ -1636,8 +1636,9 @@ were warranted for this proposal-only step. JSON parsing and diff checks passed.
 ## 58. Preserve the version before Quiet Light (2026-11-07)
 
 Wen selected D and asked for a recoverable version. Git was clean at `0becc46`.
-Created annotated tag `before-quiet-light-2026-11-07` and branch
-`feat/quiet-light-art`; the former branch remains at its original commit. A
+Created annotated tag `before-quiet-light-2026-11-07` and an isolated art
+branch (subsequently named `codex/quiet-light-art` to follow the workspace
+branch convention); the former branch remains at its original commit. A
 read-only SQLite backup captured the existing review database in ignored cache.
 Copied the existing compiled bundle before any candidate build, and prepared a
 separate candidate output root. The 18861 preview continues using its old bundle
@@ -1700,3 +1701,39 @@ a 0.010482695-unit error (current source zero); skipping profile normalisation
 produced 102 inward upper-sleeve normals (current source zero). Source was never
 modified to run those mutations. Typecheck passed. The browser route for the new
 module is explicitly registered; no runtime dependency or bitmap asset was added.
+
+
+## 61. Rebuild coastal shapes and remove a wasted render pass (2026-11-07)
+
+The forest now uses tapered trunks, real branch instances and original procedural
+needle cards, with irregular crowns instead of stacked spheres. The first cards
+were visibly stretched into giant feathers; after looking at the actual forest
+and boardwalk, replaced them with many smaller folded needle tufts and a loose
+cap. Trees still use three instanced draws. Rebuilt the cafe with a shallow
+pitched roof, deep timber reveals, exposed joinery and an olive cloth awning;
+the intersecting sign was moved below it. Curved grass, layered distant ridges,
+wooden lamps, slatted benches and ceramic pots support the same palette. Muted
+scan surfaces and calmer water keep existing CC0 provenance; no asset was added.
+Explicit body facing leaves seated people facing their tables and the guitarist
+facing the boardwalk without camera-dependent shifts.
+
+The first GPU pass exposed 3,411 forest draws and 16.5M triangles. Investigation
+of the exact installed Three 0.170 source found the full-scene transmission pass
+triggered by two small existing lamp models. Their seven transmissive material
+references now become zero: tiny glass uses ordinary alpha transparency, while
+metal retains its maps/colour/metalness. One source asset had transmission on
+brass, which was cleared without making the metal transparent. Loaded materials
+are cloned before changes. The subsequent actual forest capture reported 1,790
+draws and 9.87M triangles; boardwalk 767 and 9.67M. This is more draw work than
+the old sprite scene but about half its triangle work; final timing is recorded
+with the integrated rendering evidence, not inferred from these counts.
+
+A geometry-only comparison used actual local glTF POSITION buffers and node
+transforms for all furniture (canvas/image drawing mocked). All five walkable
+rectangles, 102 build solids, 154 furnished solids, 520 collision circles and
+110,805 zone/room/trail samples match the tagged baseline. NPC/ball/path positions
+match after excluding the intentional new facing field. Source was transpiled
+in memory so the running browser checks never saw a half-written bundle.
+`docs/evidence/quiet-light-collision-2026-11-07.json` records counts and hashes.
+Complete typecheck and the final 69-test suite passed. Final integrated visual
+checks include the revised trees and zero-transmission actual WebGL materials.

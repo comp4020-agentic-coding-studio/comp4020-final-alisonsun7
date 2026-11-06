@@ -30,7 +30,7 @@ Reduced motion and adaptive quality remain available.
 
 The annotated tag `before-quiet-light-2026-11-07` records the exact previous
 application commit, `0becc46dd87348fd7226783a09eea7621b966ec1`. Development
-uses `feat/quiet-light-art`, leaving the old branch intact. Each verified step
+uses `codex/quiet-light-art`, leaving the old branch intact. Each verified step
 is committed separately. The old compiled bundle and a consistent SQLite backup
 are held in ignored local cache, while candidate builds use a separate output
 root and scratch database. The running review is replaced only after checks.
