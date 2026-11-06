@@ -7,6 +7,23 @@ import { SSAOPass } from "three/addons/postprocessing/SSAOPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 
+// r170's normal override does not sample a mesh's alpha cutout. Hide only
+// foliage during this auxiliary pass, then restore its previous visibility;
+// the beauty pass and alpha-tested sun shadows still draw every needle.
+class ContactPass extends SSAOPass {
+  override renderOverride(renderer: THREE.WebGLRenderer, material: THREE.Material,
+    target: THREE.WebGLRenderTarget, clearColor?: THREE.ColorRepresentation, clearAlpha?: number): void {
+    const hidden: THREE.Object3D[] = [];
+    this.scene.traverse(object => {
+      if (object.visible && object.userData.skipContactAO === true) {
+        hidden.push(object); object.visible = false;
+      }
+    });
+    try { super.renderOverride(renderer, material, target, clearColor, clearAlpha); }
+    finally { for (const object of hidden) object.visible = true; }
+  }
+}
+
 export class CoastalRenderer {
   private composer?: EffectComposer;
   private contacts?: SSAOPass;
@@ -18,7 +35,7 @@ export class CoastalRenderer {
     if (!renderer.extensions.has("EXT_color_buffer_float") && !renderer.extensions.has("EXT_color_buffer_half_float")) return;
     this.composer = new EffectComposer(renderer);
     this.composer.addPass(new RenderPass(scene, camera));
-    this.contacts = new SSAOPass(scene, camera, 1, 1, 12);
+    this.contacts = new ContactPass(scene, camera, 1, 1, 12);
     this.contacts.kernelRadius = 0.38;
     this.contacts.minDistance = 0.00008;
     this.contacts.maxDistance = 0.009;

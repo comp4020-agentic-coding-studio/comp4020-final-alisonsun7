@@ -148,7 +148,7 @@ float cloudsAt(vec2 p){ return noise(p) * 0.52 + noise(p * 2.03 + 7.0) * 0.27 + 
 void main(){
   vec3 direction = normalize(vDir);
   float h = direction.y;
-  vec3 c = h > 0.0 ? mix(horizon, top, pow(min(h * 1.6, 1.0), 0.7)) : mix(horizon, bottom, min(-h * 4.0, 1.0));
+  vec3 c = h > 0.0 ? mix(horizon, top, pow(min(h * 2.2, 1.0), 0.45)) : mix(horizon, bottom, min(-h * 4.0, 1.0));
   float s = max(dot(direction, normalize(sunDir)), 0.0);
   c += sunColor * glow * (pow(s, 8.0) * 0.45 + pow(s, 600.0) * 1.6);
   // Broad, softly modelled cloud banks, made in the sky's one draw call.
@@ -157,8 +157,10 @@ void main(){
   float cloudMask = smoothstep(0.54 - cloudCover * 0.18, 0.69 - cloudCover * 0.13, cloudShape);
   cloudMask *= smoothstep(0.015, 0.20, h) * (1.0 - smoothstep(0.66, 1.0, h));
   float lightEdge = cloudsAt(cloudUV + normalize(sunDir.xz) * 0.15) - cloudShape;
-  vec3 cloudColour = mix(horizon * 0.78, horizon * (vec3(1.10) + sunColor * 0.035), smoothstep(-0.06, 0.07, lightEdge));
-  c = mix(c, cloudColour, cloudMask * (0.70 + cloudCover * 0.25));
+  float skyBrightness = dot(horizon, vec3(0.2126, 0.7152, 0.0722));
+  vec3 cloudLit = vec3(1.12, 1.08, 0.98) * skyBrightness * 1.65;
+  vec3 cloudColour = mix(horizon * 0.72, cloudLit, smoothstep(-0.06, 0.07, lightEdge));
+  c = mix(c, cloudColour, cloudMask * (0.82 + cloudCover * 0.15));
   // A fixed celestial sky: no textures, extra draw calls or flickering.
   vec2 starUV = vec2(atan(direction.z, direction.x), asin(clamp(h, -1.0, 1.0))) * vec2(96.0, 76.0);
   vec2 cell = floor(starUV);
@@ -259,7 +261,7 @@ export class WorldView {
     this.overlay.className = "world-overlay";
     host.append(this.overlay);
 
-    this.camera = new THREE.PerspectiveCamera(68, 1, 0.08, 600);
+    this.camera = new THREE.PerspectiveCamera(62, 1, 0.08, 600);
     this.camera.rotation.order = "YXZ";
     this.picture = new CoastalRenderer(this.renderer, this.scene3, this.camera);
 
@@ -303,6 +305,7 @@ export class WorldView {
     this.sun.shadow.bias = -0.0004;
     this.sun.shadow.normalBias = 0.03;
     this.sun.shadow.radius = 2.4;
+    this.sun.shadow.intensity = 0.78;
     this.sun.target.position.set(...this.kit.sunTarget);
     this.scene3.add(this.sun, this.sun.target, this.hemi);
     this.scene3.fog = new THREE.Fog(0xffffff, 20, 120);
@@ -502,8 +505,10 @@ export class WorldView {
     b.ceilingStrips.emissiveIntensity = 0.3 + l.ceilingIntensity;
     for (const c of b.ceilingLights) {
       const outdoors = c.userData.outdoorLamp === true;
-      c.color.setHex(outdoors ? l.lamp || 0xffffff : l.ceiling);
-      c.intensity = outdoors ? l.lampIntensity : l.ceilingIntensity * 9;
+      const accent = c.userData.cafeAccent === true;
+      c.color.setHex(accent ? 0xffd3a0 : outdoors ? l.lamp || 0xffffff : l.ceiling);
+      c.intensity = accent ? Number(c.userData.cafeAccentIntensity) * (0.7 + l.windowGlow * 0.3)
+        : outdoors ? l.lampIntensity : l.ceilingIntensity * 9;
     }
     b.lamp.color.setHex(l.lamp || 0xffffff);
     b.lamp.intensity = l.lampIntensity;
@@ -555,7 +560,7 @@ export class WorldView {
       this.built.root.add(sprite);
       // each at their own pace, a little either side of 1.35 m/s
       const speed = (this.mode === "weekday" ? 1.2 : 0.9) + (i % 3) * 0.12 + Math.random() * 0.1;
-      this.passers.push({ sprite, path, t: (i * 0.37) % 1, speed, gait: umbrella ? null : newGait(), wait: 0 });
+      this.passers.push({ sprite, path, t: (i * 0.37 + 0.17) % 1, speed, gait: umbrella ? null : newGait(), wait: 0 });
     }
   }
 
@@ -1023,7 +1028,7 @@ export class WorldView {
     if (!w || !h) return;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    this.camera.fov = w / h < 0.8 ? 78 : 68;
+    this.camera.fov = w / h < 0.8 ? 78 : 62;
     this.camera.updateProjectionMatrix();
     this.picture.resize(w, h);
   }
