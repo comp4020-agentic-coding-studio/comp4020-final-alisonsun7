@@ -109,3 +109,19 @@ The ignored `.cache/sound-focus-promotion.json` records the old compiled
 directory. Use the separate-checkout method above with the new rollback tag
 and the current DB; never restore a historical DB to change interface styles.
 There is no schema change, push or deployment.
+
+## A living world shaped through sound
+
+`before-living-sound-world-2026-11-07` preserves `2486e70`, before the painted
+character/material pass, optional new recordings and sound-driven residents.
+Work is on `codex/living-sound-world`. The isolated candidate is
+`.cache/living-world-build/dist` on port18880 with its own scratch database;
+`.cache/living-world-baseline/dist` retains the former compiled application.
+
+Use the separate-checkout method above with this rollback tag and the current
+database. No schema change is required. The older catalogue cannot offer the
+two new sound types, but their contribution rows must remain in the database;
+never delete them or restore an older database to roll the art back.
+The [production walkthrough](living-sound-world.md) records the new direction,
+process references and reproducible briefs. Preview promotion is recorded
+separately in the evidence log and ignored `.cache/living-world-promotion.json`.

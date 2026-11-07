@@ -180,6 +180,11 @@ without Wen's go-ahead.
   exclusion, visit-scoped activity, removal/reconnect and phone/focus handoffs.
   Its cleanup verifies the actual snapshot contains none of its live ordinary
   sounds. It is part of `pnpm e2e`; never run it on the working 18861 preview.
+- `e2e/living-sound-world.mjs` checks the eighteen individual sound choices,
+  decoded private previews, actual two-person resident reactions, late arrival,
+  removal, mixed corners, Sound off, phone controls and private-stay exclusion.
+  It soft-removes its ordinary contributions and confirms the final snapshot.
+  Use an isolated scratch database; it runs in `pnpm e2e`.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

@@ -1,0 +1,136 @@
+{
+  "oldRecordingsByteIdentical": true,
+  "oldRecordingCount": 16,
+  "encoder": {
+    "package": "@ffmpeg-installer/darwin-arm64",
+    "version": "4.1.5",
+    "source": "https://registry.npmjs.org/@ffmpeg-installer/darwin-arm64/-/darwin-arm64-4.1.5.tgz",
+    "integrity": "sha512-hYqTiP63mXz7wSQfuqfFwfLOfwwFChUedeCVKkBtl/cliaTM7/ePI9bVzfZ2c+dWu3TqCwLDRWNSJ5pqZl8otA==",
+    "tarballBytes": 15712439,
+    "binarySha256": "a2ad6f0fc42a3c8f5183ef1d53e906d6bb35478d14a6b67175c30ce6c17e9214",
+    "extracted": [
+      ".cache/tooling/ffmpeg-darwin-arm64-4.1.5/bin/ffmpeg",
+      ".cache/tooling/ffmpeg-darwin-arm64-4.1.5/package.json",
+      ".cache/tooling/ffmpeg-darwin-arm64-4.1.5/README.md"
+    ],
+    "npmScriptsExecuted": false,
+    "location": "task-local ignored cache; no project dependency or system change",
+    "encoderVersion": "ffmpeg version 4.4 Copyright (c) 2000-2021 the FFmpeg developers",
+    "versionCheckExitCode": 0
+  },
+  "checks": [
+    {
+      "id": "rainstick",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Rainstick_%281%29.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourceSha1": "e94c8fd169c3276b3b0ec30a71bb197ca1900da2",
+      "file": "public/assets/sounds/rainstick.mp3",
+      "outputSha256": "dad3fcce14270ac8459d67792588f5055f09262ef56a7d80228386f7b1fe4dd3",
+      "bytes": 240789,
+      "format": "MP3",
+      "channels": 1,
+      "sampleRate": 44100,
+      "decodedSamples": 882268,
+      "decodedDurationSeconds": 20.00607709750567,
+      "expectedDurationSeconds": 20,
+      "allDecodedSamplesFinite": true,
+      "samplePeakDbFS": -2.152490835099855,
+      "integratedLufs": -20.58,
+      "loudnessTargetLufs": -20,
+      "peakLimitedQuieterFallback": false,
+      "truePeakDbTP": -2.03,
+      "dcOffset": -6e-06,
+      "sourceFilters": [
+        "highpass=f=35"
+      ],
+      "transientCompressionApplied": false,
+      "loopCrossfadeSeconds": 2,
+      "loopBoundarySampleDifference": 0.01917712762951851,
+      "largestInternalAdjacentSampleDifference": 0.9034950733184814,
+      "loudnorm": {
+        "input_i": "-20.58",
+        "input_tp": "-2.03",
+        "input_lra": "7.60",
+        "input_thresh": "-30.75",
+        "output_i": "-20.24",
+        "output_tp": "-2.00",
+        "output_lra": "5.80",
+        "output_thresh": "-30.36",
+        "normalization_type": "dynamic",
+        "target_offset": "0.24"
+      },
+      "decodeExitCode": 0,
+      "encoding": {
+        "firstPassFilter": "[0:a]aformat=channel_layouts=mono,highpass=f=35,atrim=1:23,asetpts=PTS-STARTPTS,asplit=3[h][m][t];[h]atrim=0:2,asetpts=PTS-STARTPTS,afade=t=in:d=2[hf];[t]atrim=20:22,asetpts=PTS-STARTPTS,afade=t=out:d=2[tf];[hf][tf]amix=inputs=2:normalize=0[x];[m]atrim=2:20,asetpts=PTS-STARTPTS[mid];[x][mid]concat=n=2:v=0:a=1,loudnorm=I=-20:TP=-2:print_format=json",
+        "finalFilter": "[0:a]aformat=channel_layouts=mono,highpass=f=35,atrim=1:23,asetpts=PTS-STARTPTS,asplit=3[h][m][t];[h]atrim=0:2,asetpts=PTS-STARTPTS,afade=t=in:d=2[hf];[t]atrim=20:22,asetpts=PTS-STARTPTS,afade=t=out:d=2[tf];[hf][tf]amix=inputs=2:normalize=0[x];[m]atrim=2:20,asetpts=PTS-STARTPTS[mid];[x][mid]concat=n=2:v=0:a=1,loudnorm=I=-20:TP=-2:linear=true:measured_I=-41.15:measured_TP=-17.86:measured_LRA=8.00:measured_thresh=-51.29:offset=-0.64,aresample=44100",
+        "outputOptions": [
+          "-ac",
+          "1",
+          "-c:a",
+          "libmp3lame",
+          "-b:a",
+          "96k",
+          "-map_metadata",
+          "-1"
+        ],
+        "note": "linear=true requests uniform gain; FFmpeg can apply dynamic fallback when the peak ceiling or loudness range constrains that target. The independent final measurements above are the acceptance evidence."
+      }
+    },
+    {
+      "id": "hand-claps",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Palmas_sevillanas_%28flamenco_clapping%29%2C_160_BPM.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourceSha1": "bb5b061c43dd2fd6aa17e3e7caeccbd4a14107c3",
+      "file": "public/assets/sounds/hand-claps.mp3",
+      "outputSha256": "00c1ef933d92cb40c35c3c150b6658fe8fd29b0663b623618e77724b47e7cff9",
+      "bytes": 144867,
+      "format": "MP3",
+      "channels": 1,
+      "sampleRate": 44100,
+      "decodedSamples": 529200,
+      "decodedDurationSeconds": 12.0,
+      "expectedDurationSeconds": 12,
+      "allDecodedSamplesFinite": true,
+      "samplePeakDbFS": -2.1742382439534937,
+      "integratedLufs": -24.04,
+      "loudnessTargetLufs": -20,
+      "peakLimitedQuieterFallback": true,
+      "truePeakDbTP": -2.16,
+      "dcOffset": -1.3e-05,
+      "sourceFilters": [],
+      "transientCompressionApplied": false,
+      "loopCrossfadeSeconds": 2,
+      "loopBoundarySampleDifference": 0.03668958880007267,
+      "largestInternalAdjacentSampleDifference": 0.37835805118083954,
+      "loudnorm": {
+        "input_i": "-24.04",
+        "input_tp": "-2.16",
+        "input_lra": "0.60",
+        "input_thresh": "-34.07",
+        "output_i": "-23.46",
+        "output_tp": "-2.00",
+        "output_lra": "0.70",
+        "output_thresh": "-33.50",
+        "normalization_type": "dynamic",
+        "target_offset": "3.46"
+      },
+      "decodeExitCode": 0,
+      "encoding": {
+        "firstPassFilter": "[0:a]aformat=channel_layouts=mono,atrim=12:26,asetpts=PTS-STARTPTS,asplit=3[h][m][t];[h]atrim=0:2,asetpts=PTS-STARTPTS,afade=t=in:d=2[hf];[t]atrim=12:14,asetpts=PTS-STARTPTS,afade=t=out:d=2[tf];[hf][tf]amix=inputs=2:normalize=0[x];[m]atrim=2:12,asetpts=PTS-STARTPTS[mid];[x][mid]concat=n=2:v=0:a=1,loudnorm=I=-20:TP=-2:print_format=json",
+        "finalFilter": "[0:a]aformat=channel_layouts=mono,atrim=12:26,asetpts=PTS-STARTPTS,asplit=3[h][m][t];[h]atrim=0:2,asetpts=PTS-STARTPTS,afade=t=in:d=2[hf];[t]atrim=12:14,asetpts=PTS-STARTPTS,afade=t=out:d=2[tf];[hf][tf]amix=inputs=2:normalize=0[x];[m]atrim=2:12,asetpts=PTS-STARTPTS[mid];[x][mid]concat=n=2:v=0:a=1,loudnorm=I=-20:TP=-2:linear=true:measured_I=-28.68:measured_TP=1.76:measured_LRA=1.40:measured_thresh=-38.76:offset=4.80,aresample=44100",
+        "outputOptions": [
+          "-ac",
+          "1",
+          "-c:a",
+          "libmp3lame",
+          "-b:a",
+          "96k",
+          "-map_metadata",
+          "-1"
+        ],
+        "note": "linear=true requests uniform gain; FFmpeg can apply dynamic fallback when the peak ceiling or loudness range constrains that target. The independent final measurements above are the acceptance evidence."
+      }
+    }
+  ],
+  "listeningAssessment": "Not auditioned; technical verification only.",
+  "oldSoundMetadataUnchanged": true,
+  "oldSoundMetadataCount": 16
+}

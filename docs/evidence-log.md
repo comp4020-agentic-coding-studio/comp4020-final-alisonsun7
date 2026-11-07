@@ -2133,3 +2133,82 @@ byte for byte. The preview is detached with parent 1 and no controlling TTY.
 Prior compiled output is retained, and `shared-sound-focus-2026-11-07` marks
 this verified version. A rollback keeps the current DB. No push or deployment
 occurred, and user visual acceptance has not been claimed.
+
+# 2026-11-07 — Friends shape a living world through sound
+
+Prompt: learn the staged work in Little Ritual, Tidegarden and Stillwater, then
+improve this project autonomously. Friends should shape cozy or lively places
+with several suitable sounds, and different recordings should invite different
+NPC behaviour. ADR 023 records the priority and permission for new ingredients.
+Preserved `before-living-sound-world-2026-11-07` at `2486e70`; implementation
+uses `codex/living-sound-world` and isolated build/database on port 18880.
+
+The [walkthrough](living-sound-world.md) links the primary process references,
+explains their different evidence limits and records our ordered implementation
+briefs. Our models remain procedural Three.js; we did not copy showcase assets
+or claim to reproduce their Blender work. Original rounded cat/dog figures,
+matte coordinated clothing, volumetric pine crowns, restrained licensed surface
+grain, sage joinery, honey timber and canvas stripes share one painted language.
+An original generated café mural is an actual lit wall surface; its full
+[prompt and provenance](assets/sound-world-mural.md) are retained.
+
+Four authored residents now choose from actual live public sources near their
+homes. Six reactions use real rig gestures: listen, watch, sway, join in, play
+and wave. Selection, settling and phase use shared contribution/server time;
+a late visitor and an existing visitor select the same source independently
+of their own sound switch. Small bounded approaches check the real floor,
+solids and private areas. Reduced motion stays static. No NPC chat, people,
+contributions or database rows are fabricated; the guitarist retains his role.
+
+The individual sound library offers cozy, lively and wild intentions with
+honest per-sound response hints, while retaining search, family filters and
+explicit preview/placement. The nearby corner summary derives its ingredients,
+authors and actual NPC responses from current shared state. Cozy and rhythmic
+corners coexist; no global mood setting or automatic preset overwrites friends.
+Private stays, removed contributions and library previews do not drive public
+responses or enter this public summary.
+
+The catalogue contains 18 sounds, adding an optional rainstick and hand claps
+from verified Commons PD/CC0 sources. All 16 former recordings and their asset
+records remain unchanged. Independent decoded checks found finite mono 44.1 kHz
+samples, -20.58 LUFS/-2.03 dBTP rainstick and -24.04 LUFS/-2.16 dBTP claps. The clap
+target is not reported as its achieved loudness. Rainstick required source-only
+35 Hz DC cleanup. Wind chimes were dropped after HTTP 429; a broken global FFmpeg was
+left alone, using a checksum-verified task-local binary without install scripts
+or dependency changes. [Audio evidence](evidence/living-world-audio-2026-11-07.json)
+is technical verification, not an artistic listening verdict.
+
+TypeScript check/build, all 88 tests in 13 spec files, all 13 existing browser
+suites and the new 20-check real two-person suite passed. The new suite covers
+actual decoded previews, private listening, shared reactions, late reload,
+normal removal, a two-author mixed corner, private stays, phone controls and
+confirmed final soft cleanup. It failed against the prior isolated interface
+before publication. A private-filter mutant failed the unchanged exclusion
+assertion; the old character module failed 3 current silhouette/material tests.
+No invariant was weakened. Docker is absent and was not run.
+
+Actual rendering exposed flattened crowns, a weather update overwriting the
+new deck colour, and a wave crossing the face. These were corrected from the
+running geometry. The dry/rain/dry check verifies exact base colour restoration.
+A 16-case weather/time matrix produced 35 captures with no browser errors;
+desktop forest/rain and narrow rain measured about 60 fps on the local M5 Pro/Metal
+GPU. This predates the final dry-colour/tint refinements, which were checked
+separately. The final outward wave was rebuilt and rechecked with 8 response
+tests, the full new 20-check shared interaction and an actual eight-cell,
+two-frame gesture review. Phone views emulate viewports, not physical devices.
+
+Two initial test assumptions were corrected: explicit Leave retains the former
+author Sound-on behaviour; a never-created audio context has no data-voices
+attribute. The other visitor is now checked for Sound off, zero AudioContexts,
+zero started recordings and absent-or-zero voice count. A visual fixture also
+needed distinct immutable IDs for different sound types. The read-only source
+review caught misleading idle-NPC marker copy; it now gives actual locations.
+
+[Verification](evidence/living-sound-world-2026-11-07.json) distinguishes full
+regression from the focused final pose checks. Viewed final actual
+[desktop](screenshots/23-living-boardwalk.png),
+[phone](screenshots/23-living-boardwalk-phone.png),
+[sound ideas](screenshots/23-living-ideas-phone.png) and
+[real shared mix](screenshots/23-living-shared-mix.png) captures. The
+[gesture study](screenshots/23-living-responses-fixture.png) is explicitly a
+silent synthetic fixture of real geometry/controller, not a populated session.

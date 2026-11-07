@@ -1,0 +1,408 @@
+{
+  "date": "2026-11-07",
+  "productDirection": "Friends shape cozy, lively and mixed corners through chosen sounds; public contributions drive original authored NPCs. ADR023.",
+  "fullRegressionFeatureCommit": "f8fc0ef",
+  "finalPoseCommit": "33acf7e",
+  "browserTestCommit": "6971ac3",
+  "typecheckPassed": true,
+  "buildPassed": true,
+  "spec": {
+    "files": 13,
+    "tests": 88,
+    "passed": true
+  },
+  "finalPoseVerification": {
+    "responseSpecTests": 8,
+    "passed": true,
+    "gestureFixture": "living-world-gestures-2026-11-07.json",
+    "realSharedInteractionRepeated": true
+  },
+  "endToEnd": [
+    {
+      "suite": "world-two-browsers",
+      "exitCode": 0,
+      "seconds": 40.96
+    },
+    {
+      "suite": "meet-and-talk",
+      "exitCode": 0,
+      "seconds": 31.59
+    },
+    {
+      "suite": "leave-a-sound",
+      "exitCode": 0,
+      "seconds": 11.57
+    },
+    {
+      "suite": "sound-discovery",
+      "exitCode": 0,
+      "seconds": 10.93
+    },
+    {
+      "suite": "look-controls",
+      "exitCode": 0,
+      "seconds": 9.27
+    },
+    {
+      "suite": "huts",
+      "exitCode": 0,
+      "seconds": 31.53
+    },
+    {
+      "suite": "busker-sound",
+      "exitCode": 0,
+      "seconds": 9.0
+    },
+    {
+      "suite": "cooperative-play",
+      "exitCode": 0,
+      "seconds": 26.05
+    },
+    {
+      "suite": "cooperative-ack-race",
+      "exitCode": 0,
+      "seconds": 16.88
+    },
+    {
+      "suite": "environment",
+      "exitCode": 0,
+      "seconds": 21.33
+    },
+    {
+      "suite": "quiet-light",
+      "exitCode": 0,
+      "seconds": 5.81
+    },
+    {
+      "suite": "d-reference-ui",
+      "exitCode": 0,
+      "seconds": 15.32
+    },
+    {
+      "suite": "shared-sound-focus",
+      "exitCode": 0,
+      "seconds": 41.66
+    },
+    {
+      "suite": "living-sound-world",
+      "exitCode": 0,
+      "checks": 20,
+      "repeatedAfterFinalPoseChange": true,
+      "cleanupConfirmedFromActualFinalSnapshot": true
+    }
+  ],
+  "negativeControls": [
+    {
+      "check": "intention entry",
+      "target": "earlier isolated18879 interface",
+      "result": "new browser suite failed on missing cozy intention before publication"
+    },
+    {
+      "check": "private stays",
+      "target": "isolated private-filter mutant",
+      "result": "unchanged assertion rejected the mutant while production returns null"
+    },
+    {
+      "check": "character silhouette and matte materials",
+      "target": "copied pre-pass character module",
+      "result": "3 of8 current character tests failed on former proportions and glossy mapped guitar"
+    },
+    {
+      "check": "painted floor colour",
+      "target": "initial new material with legacy weather tint",
+      "result": "real dry-floor assertion failed ffffff vs c39b64; final clear/rain/clear passed"
+    }
+  ],
+  "failuresAndCorrections": [
+    {
+      "failure": "First pine crown lobes looked flattened in the real scene.",
+      "correction": "Increased their vertical depth and inspected actual volumetric crowns in the full zone matrix."
+    },
+    {
+      "failure": "Legacy weather updates overwrote the painted timber base with white, producing a gray deck.",
+      "correction": "Preserve dryColour and apply only wet darkening. Clear c39b64, rain a88555, clear exactly restored."
+    },
+    {
+      "failure": "The new browser test initially expected explicit Leave to leave the author silent and expected data-voices=0 before an audio context existed.",
+      "correction": "Retain existing explicit placement turning the author Sound on. For the other visitor assert Sound off, no AudioContext, no started recording node and absent-or-zero voice count; final20 checks passed."
+    },
+    {
+      "failure": "A visual-only fixture reused the same contribution id for different recordings.",
+      "correction": "Give each synthetic sound its own immutable id, matching the real server; the complete matrix passed."
+    },
+    {
+      "failure": "Initial normalized rainstick retained substantial source DC offset.",
+      "correction": "Source-only35Hz highpass; independently re-decoded final DC -0.000006 and no clipping. Existing16 recordings unchanged."
+    },
+    {
+      "failure": "Wind-chime candidate CDN returned429; global Homebrew FFmpeg failed dyld.",
+      "correction": "Dropped the unavailable candidate and used a verified task-local FFmpeg binary without install scripts or dependency/system changes."
+    },
+    {
+      "failure": "Read-only review found a false promise that idle NPCs were marked in the world.",
+      "correction": "Use accurate cafe/beach/forest-edge directions; actual responding NPCs are identified in the drawer."
+    },
+    {
+      "failure": "Rendered wave crossed the face.",
+      "correction": "Move play/wave arms outward; repeat actual geometry two-frame review,8 response tests and20 real interaction checks."
+    }
+  ],
+  "visualReview": {
+    "base": "http://localhost:18880",
+    "matrix": {
+      "weatherTimeCases": 16,
+      "capturedViews": 35,
+      "zones": [
+        "forest",
+        "creek",
+        "forest-edge",
+        "boardwalk",
+        "beach",
+        "pier",
+        "counter",
+        "tables",
+        "window"
+      ],
+      "checks": {
+        "groundedSoundMarks": [
+          {
+            "weather": "clear",
+            "minute": 840,
+            "zone": "boardwalk",
+            "anchors": [
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593033,
+                "anchor": 0.07499999910593033,
+                "core": 0.15999999910593032
+              }
+            ]
+          },
+          {
+            "weather": "clear",
+            "minute": 840,
+            "zone": "beach",
+            "anchors": [
+              {
+                "ground": 0,
+                "anchor": 0.035,
+                "core": 0.12
+              },
+              {
+                "ground": 0,
+                "anchor": 0.035,
+                "core": 0.12
+              },
+              {
+                "ground": -0.04789280688791919,
+                "anchor": -0.01289280688791919,
+                "core": 0.0721071931120808
+              }
+            ]
+          },
+          {
+            "weather": "clear",
+            "minute": 1320,
+            "zone": "boardwalk",
+            "anchors": [
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593033,
+                "anchor": 0.07499999910593033,
+                "core": 0.15999999910593032
+              }
+            ]
+          },
+          {
+            "weather": "rain",
+            "minute": 840,
+            "zone": "boardwalk",
+            "anchors": [
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593033,
+                "anchor": 0.07499999910593033,
+                "core": 0.15999999910593032
+              }
+            ]
+          },
+          {
+            "weather": "mist",
+            "minute": 840,
+            "zone": "boardwalk",
+            "anchors": [
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593122,
+                "anchor": 0.07499999910593122,
+                "core": 0.1599999991059312
+              },
+              {
+                "ground": 0.03999999910593033,
+                "anchor": 0.07499999910593033,
+                "core": 0.15999999910593032
+              }
+            ]
+          }
+        ],
+        "runtimeReducedMotionHidesRain": true,
+        "runtimeMotionRestoresRain": true,
+        "environmentCannotRestoreDisabledShadows": true,
+        "sunFollowsWithoutDirectionDrift": true,
+        "sameRevisionCatchUp": {
+          "caughtUp": 960.2,
+          "afterOldAck": 960.4,
+          "passed": true
+        }
+      },
+      "errors": [],
+      "performance": {
+        "desktopRain": {
+          "frames": 181,
+          "elapsedMs": 3010.799999988085,
+          "fps": 60.11691244875658,
+          "medianFrameMs": 16.69999999999709,
+          "p95FrameMs": 16.70000000001164,
+          "render": {
+            "frame": 17847,
+            "calls": 630,
+            "triangles": 7122500,
+            "points": 0,
+            "lines": 2880
+          },
+          "pixelRatio": 1,
+          "shadows": true
+        },
+        "desktopForest": {
+          "frames": 181,
+          "elapsedMs": 3007.7000000238477,
+          "fps": 60.17887422235092,
+          "medianFrameMs": 16.69999999999709,
+          "p95FrameMs": 16.80000000000291,
+          "render": {
+            "frame": 18389,
+            "calls": 2171,
+            "triangles": 17042579,
+            "points": 0,
+            "lines": 1440
+          },
+          "pixelRatio": 1,
+          "shadows": true
+        },
+        "narrowRain": {
+          "frames": 181,
+          "elapsedMs": 3004.599999964237,
+          "fps": 60.24096385613871,
+          "medianFrameMs": 16.699999999999818,
+          "p95FrameMs": 16.799999999999272,
+          "render": {
+            "frame": 2489,
+            "calls": 837,
+            "triangles": 7401513,
+            "points": 0,
+            "lines": 900
+          },
+          "pixelRatio": 1,
+          "shadows": true
+        }
+      },
+      "stage": "complete matrix after painted character/vegetation changes; dry-colour/tint refinements then checked separately"
+    },
+    "floorColour": {
+      "dry": "c39b64",
+      "wet": {
+        "colour": "a88555",
+        "roughness": 0.22000000000000008
+      },
+      "restored": true,
+      "errors": []
+    },
+    "finalPages": {
+      "base": "http://localhost:18880",
+      "weather": "clear",
+      "minute": 840,
+      "paused": true,
+      "errors": []
+    },
+    "gestureReview": {
+      "cells": 8,
+      "behaviors": 6,
+      "frames": 2,
+      "deltaMs": 400,
+      "silent": true,
+      "synthetic": true,
+      "noDatabaseWrites": true,
+      "actualCompiledGeometryAndController": true
+    },
+    "realInteractionCaptures": [
+      "23-living-ideas-phone.png",
+      "23-living-calm-corner.png",
+      "23-living-shared-mix.png"
+    ],
+    "actualSceneCaptures": [
+      "23-living-boardwalk.png",
+      "23-living-boardwalk-phone.png",
+      "23-living-arrival-phone.png"
+    ],
+    "muralCapture": "23-living-mural.png"
+  },
+  "assets": {
+    "catalogueSize": 18,
+    "newOptionalSounds": [
+      "rainstick",
+      "hand-claps"
+    ],
+    "oldRecordingCount": 16,
+    "oldAudioBytesAndManifestRecordsUnchanged": true,
+    "technicalAudioVerification": "living-world-audio-2026-11-07.json",
+    "originalGeneratedMural": "../assets/sound-world-mural.md"
+  },
+  "review": {
+    "readOnlySourceAuditCompleted": true,
+    "actionableCopyIssueCorrected": true,
+    "browserGpuVerificationSeparate": true
+  },
+  "rollbackTag": "before-living-sound-world-2026-11-07",
+  "limits": [
+    "Chrome/Metal on Apple M5 Pro; phone layouts are viewport emulations, not physical phone benchmarks.",
+    "The gesture gallery and matrix sound-reaction frames are explicitly synthetic silent fixtures; actual two-person source selection/reactions are checked separately.",
+    "Full regression predates the final two wave-angle constants. Final pose source was rebuilt, response specs, rendered bone motion and shared browser interaction were repeated.",
+    "Technical decoded audio checks and browser decoding do not constitute by-ear artistic approval.",
+    "No claim of final user visual acceptance or visual parity with the process references."
+  ],
+  "notRun": [
+    "Docker, not installed"
+  ],
+  "preview": null
+}
