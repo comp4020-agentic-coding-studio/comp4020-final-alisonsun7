@@ -1,0 +1,104 @@
+{
+  "kind": "read-only-promoted-3d-inspection",
+  "base": "http://localhost:18861",
+  "errors": [],
+  "writes": [],
+  "passed": true,
+  "actual": {
+    "presentation": "3d",
+    "joined": false,
+    "soundOn": "false",
+    "sourceCount": 9,
+    "cafeResidents": [
+      {
+        "id": "coffee-barista",
+        "workId": null,
+        "variant": null,
+        "npc": true,
+        "x": -9.229713905700269,
+        "z": -9.123423315800348,
+        "yaw": 0.6430009529573583,
+        "avatar": "cat",
+        "outfit": 5
+      },
+      {
+        "id": "coffee-server",
+        "workId": null,
+        "variant": null,
+        "npc": true,
+        "x": -8.757931828191536,
+        "z": -5.74686489940187,
+        "yaw": 0.7637342412781563,
+        "avatar": "dog",
+        "outfit": 9
+      },
+      {
+        "id": "coffee-reader",
+        "workId": null,
+        "variant": null,
+        "npc": true,
+        "x": -11.023777240951274,
+        "z": -5.8371555066322385,
+        "yaw": 0.8662059630203319,
+        "avatar": "dog",
+        "outfit": 7
+      },
+      {
+        "id": "coffee-company",
+        "workId": null,
+        "variant": null,
+        "npc": true,
+        "x": -6.503781110645991,
+        "z": -5.780745699941915,
+        "yaw": 0.628530017026436,
+        "avatar": "cat",
+        "outfit": 1
+      },
+      {
+        "id": "coffee-visitor",
+        "workId": null,
+        "variant": null,
+        "npc": true,
+        "x": -13.569884883629316,
+        "z": -4.201715077560191,
+        "yaw": 0.17831296627764814,
+        "avatar": "cat",
+        "outfit": 1
+      },
+      {
+        "id": "coffee-listener",
+        "workId": "snd_b524461ba6881d03",
+        "variant": "habitat",
+        "npc": true,
+        "x": -4.191500603731053,
+        "z": -4.243948230052068,
+        "yaw": 0.7883870682916961,
+        "avatar": "dog",
+        "outfit": 5
+      }
+    ],
+    "fixtures": {
+      "toilet": [
+        "restroom-fixtures",
+        "washroom-tiled-floor",
+        "restroom-toilet",
+        "restroom-toilet-seat",
+        "restroom-bowl-water",
+        "restroom-cistern",
+        "restroom-washbasin",
+        "restroom-mirror"
+      ],
+      "shower": [
+        "shower-fixtures",
+        "washroom-tiled-floor",
+        "shower-tray",
+        "shower-drain",
+        "shower-head",
+        "shower-changing-bench",
+        "shower-towel"
+      ]
+    },
+    "renderScale": 1.25,
+    "testButtons": 0
+  }
+}

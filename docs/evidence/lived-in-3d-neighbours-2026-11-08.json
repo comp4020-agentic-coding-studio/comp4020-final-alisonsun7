@@ -1,0 +1,83 @@
+{
+  "kind": "automated-developer-browser-test",
+  "base": "http://localhost:18898",
+  "checks": [
+    "Two actual independent browser identities use the same world",
+    "Explicit Enable listening restores a zero work volume and starts the actual local audio context",
+    "A real friend's reply preserves keyboard focus and the expanded What changed explanation",
+    "The main work panel minimises to one reopen action without revealing another large sound card",
+    "An actual friend's SSE contribution does not reopen a minimised work panel",
+    "The work can be explicitly reopened after a shared update",
+    "390×844 expanded work actions fit and are touch reachable",
+    "The phone's collapsed work clears both large cards and leaves its real player and explicit reopen visible",
+    "Café's curated coffee and conversation choices activate shared steam and company for both browsers",
+    "Outside the three core areas, nearby sound controls can be dismissed",
+    "Both browsers derive identical café effects from the three real authored contributions",
+    "A friend's later SSE addition does not force a dismissed nearby panel open",
+    "The dismissed nearby panel has an explicit reachable reopen",
+    "Selecting a real source pin reopens actions for that exact contribution",
+    "Phone café navigation and Talk remain reachable with the real player enabled",
+    "Phone Share a sound stays reachable above movement controls",
+    "Phone café library opens on useful coffee choices with reachable audition and contribution actions",
+    "Rooms keep natural resident routines without asking players to invite a lock test",
+    "Phone restroom arrival hides the body when its roof shortens the third-person camera",
+    "Leaving the restroom restores the actual third-person figure",
+    "Phone shower arrival hides the cramped body and keeps room actions visible",
+    "Leaving the shower restores its third-person figure",
+    "No browser page errors",
+    "Only own test contributions were soft-removed; original live sources remain exact"
+  ],
+  "failed": false,
+  "errors": [],
+  "hitRects": [
+    {
+      "target": "planet-place",
+      "rect": {
+        "x": 12,
+        "y": 172,
+        "width": 174,
+        "height": 54
+      },
+      "interceptor": "planet-place"
+    }
+  ],
+  "created": [
+    {
+      "id": "snd_55e1a92aa6f8a16b",
+      "byId": "par_95706828281f127f",
+      "soundId": "chorus-chords",
+      "x": 1.8,
+      "z": 2.2
+    },
+    {
+      "id": "snd_30ea2e2eea118f75",
+      "byId": "par_64493afb1628ee39",
+      "soundId": "chorus-pulse",
+      "x": 1.8,
+      "z": 2.2
+    },
+    {
+      "id": "snd_ea0fc51860b4c089",
+      "byId": "par_64493afb1628ee39",
+      "soundId": "espresso",
+      "x": -10.63,
+      "z": -3.99
+    },
+    {
+      "id": "snd_92ac71096767d95f",
+      "byId": "par_95706828281f127f",
+      "soundId": "cafe-chatter",
+      "x": -12.09,
+      "z": -3.96
+    },
+    {
+      "id": "snd_12b3c5e00fa20969",
+      "byId": "par_95706828281f127f",
+      "soundId": "cafe-music",
+      "x": -12.09,
+      "z": -3.96
+    }
+  ],
+  "physicalPhone": false,
+  "humanListening": false
+}

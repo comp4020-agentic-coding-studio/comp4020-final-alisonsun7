@@ -1,0 +1,134 @@
+{
+  "kind": "agent-operated-local-verification-index",
+  "date": "2026-11-08",
+  "applicationCommit": "37e055b4a568337a2507ecd92eb7173a1f146ee8",
+  "branch": "codex/chorus-lived-in-3d",
+  "rollbackBoundary": "before-chorus-lived-in-3d-2026-11-08",
+  "commits": [
+    "280d7fc",
+    "307cdf7",
+    "37e055b"
+  ],
+  "url": "http://localhost:18861/planet",
+  "specifications": {
+    "files": 37,
+    "passed": 245,
+    "port": 18897,
+    "finalSource": true,
+    "log": ".cache/lived-in/spec-final.log"
+  },
+  "browser": {
+    "scene": {
+      "passed": 21,
+      "finalSource": true,
+      "report": "docs/evidence/lived-in-3d-scene-2026-11-08.json"
+    },
+    "private": {
+      "passed": 31,
+      "report": "docs/evidence/lived-in-3d-private-2026-11-08.json",
+      "scope": "307cdf7 before subsequent sign-camera avoidance and header-label fixes; gate, APIs and audio unchanged. Final-source scene run also walks both rooms."
+    },
+    "neighbours": {
+      "passed": 24,
+      "report": "docs/evidence/lived-in-3d-neighbours-2026-11-08.json",
+      "scope": "307cdf7 before subsequent sign-camera avoidance and header-label fixes; shared controller semantics, APIs and audio unchanged."
+    },
+    "errors": 0,
+    "scratchPort": 18898,
+    "cleanup": "Own ordinary fixtures soft-removed through public API; private stays ended; prior planet/coastal public snapshots preserved."
+  },
+  "negativeEvidence": {
+    "geometry": "All three new fixture/planter/cafe checks fail against frozen preceding geometry. .cache/lived-in/geometry-before.log",
+    "invitation": "New no-invitation check failed with the actual previous Invite Rowan button.",
+    "visualFailure": "First scene run passed its mechanical checks but showed an obstructed indoor café view. That is recorded as a visual failure; the sign was moved and added to camera solids, then the same walked view was inspected again.",
+    "harnessFailure": "Second scene run read the V label before the next render frame. The final assertion waits two actual frames, not the old 700ms status interval.",
+    "comparisonLimit": "Frozen baseline contains nine existing public sources; fresh candidate starts empty. Viewpoint, clear weather and 840-minute lighting match, but this is not a pixel-identical whole-state comparison."
+  },
+  "performance": {
+    "scope": "40-frame cadence samples in current Mac Chrome with Metal and responsive emulation; no physical phone or broad hardware benchmark.",
+    "sampling": "MSAA already existed; final renderer adds bounded supersampling with six-million-pixel ceiling.",
+    "report": "docs/evidence/lived-in-3d-scene-2026-11-08.json"
+  },
+  "promotion": {
+    "allRowsPreserved": true,
+    "tables": {
+      "memories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "participants": {
+        "rows": 25,
+        "sha256": "ad142a47a3e3ccbe9374eeb030ea6eca054756dc87ab038a110bde201a792a02"
+      },
+      "placed_sounds": {
+        "rows": 31,
+        "sha256": "10d40b0653ecb734710efdb8adb52e2af1eda554bd4c5db0fde5eb7b981d73d0"
+      },
+      "placements": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scenes": {
+        "rows": 2,
+        "sha256": "840269eb592f274c692d94a12e0bba4bd86086e5a8cb5e742bdbb2a65ca68658"
+      },
+      "session_environments": {
+        "rows": 2,
+        "sha256": "f051254a97e25f3adf91778929d3ff310da6e92af7af619de02b4832d7340920"
+      },
+      "session_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sessions": {
+        "rows": 2,
+        "sha256": "5f1e05ba49b15fc80216defef830b83b9a004744b49b3ac92e5db949b168c73f"
+      },
+      "sound_assets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sound_operations": {
+        "rows": 15,
+        "sha256": "501c7c8fab5608f89b0b403fea708c1eec10b32e91bd38fab345cb810e41d6be"
+      },
+      "sound_replies": {
+        "rows": 5,
+        "sha256": "499fbd733340960a40451593f85de474433d70d6844079a695c50d57ced45d9c"
+      },
+      "users": {
+        "rows": 26,
+        "sha256": "f5c496e3345a411a2fd0e2dbf6bc4f00183482544ba9d0cadef55e33d67062ed"
+      }
+    },
+    "servedModulesAndStyles": 52,
+    "previousCommit": "bdb59c6",
+    "rollbackCommand": "python3 scripts/local-preview.py --rollback",
+    "keepsCurrentDatabase": true,
+    "readOnlyObserver": "docs/evidence/lived-in-3d-promoted-2026-11-08.json",
+    "observerWrites": 0
+  },
+  "screenshots": {
+    "29-cafe-desktop.png": "docs/screenshots/29-cafe-desktop.png",
+    "29-cafe-interior-desktop.png": "docs/screenshots/29-cafe-interior-desktop.png",
+    "29-cafe-phone.png": "docs/screenshots/29-cafe-phone.png",
+    "29-restroom-interior-desktop.png": "docs/screenshots/29-restroom-interior-desktop.png",
+    "29-shower-interior-desktop.png": "docs/screenshots/29-shower-interior-desktop.png",
+    "29-shower-interior-phone.png": "docs/screenshots/29-shower-interior-phone.png",
+    "29-conservatory-soil-after-1.png": "docs/screenshots/29-conservatory-soil-after-1.png",
+    "29-conservatory-soil-after-2.png": "docs/screenshots/29-conservatory-soil-after-2.png",
+    "29-conservatory-soil-before.png": "docs/screenshots/29-conservatory-soil-before.png",
+    "29-cafe-obstructed-before-correction.png": "docs/screenshots/29-cafe-obstructed-before-correction.png",
+    "29-promoted-cafe-desktop.png": "docs/screenshots/29-promoted-cafe-desktop.png",
+    "29-promoted-cafe-phone.png": "docs/screenshots/29-promoted-cafe-phone.png"
+  },
+  "limits": [
+    "Agent-operated screenshot inspection is not unfamiliar-player evidence.",
+    "No hardware/headphone artistic listening verdict.",
+    "No physical-phone browser/performance test.",
+    "No claim of removing all aliasing, shadows or flicker on every GPU/camera path.",
+    "No actual next-day return in this release.",
+    "No main push, public deployment or access change."
+  ],
+  "gradeReview": "docs/final-quality-review-2026-11-08.md"
+}

@@ -1,6 +1,6 @@
 # ADR 029 — A lived-in 3D world with ordinary private rooms
 
-Date: 2026-11-08. Status: candidate implementation; browser verification follows.
+Date: 2026-11-08. Status: locally verified and playable as application `37e055b`.
 
 ## Request and priority
 
@@ -61,3 +61,28 @@ establish that the shared sound experience is worth returning to.
 Local promotion must retain all current rows. Code rollback uses the preceding
 compiled application with the current database, never a restored old DB. No
 public deployment, main push, permission change or schema migration is included.
+
+## Actual outcome and correction
+
+The first scene run passed its mechanical checks but screenshot inspection
+found a real visual failure: the old low café name board filled the camera
+after walking inside. It was moved to the front gable and included in camera
+avoidance. The same walked position now shows people, tables, cups and counter.
+This failure is retained rather than represented as a clean first attempt.
+Keyboard V now synchronises the header on the next rendered frame without
+rewriting unchanged DOM each frame.
+
+Final-source checks: 245 specifications across 37 files, then 21 actual scene
+browser checks and inspected captures. Earlier checks on the furnished candidate
+passed 31 private-room and 24 shared-neighbour behaviours; these precede only
+the sign/camera/header corrections. Raw records distinguish these build scopes.
+The final scene path also walks both furnished private rooms. It compares the
+same soil angles before/after a strafe; the preceding coplanar triangles are
+visible in the frozen baseline and absent in those candidate captures. That is
+a bounded observation, not a universal no-flicker claim.
+
+The local promotion preserved every row in all twelve current tables, including
+29 source rows, and verified 52 served module/style byte hashes. An unjoined
+observer subsequently loaded the actual promoted 3D page, found the nine prior
+public sources, six explicitly marked café NPCs and both fixture sets, with no
+write request or page error. See `docs/evidence/lived-in-3d-2026-11-08.json`.

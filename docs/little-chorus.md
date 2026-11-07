@@ -163,9 +163,9 @@ adds a contributor, creates a sound or impersonates a friend's participation.
 
 **Places & friends** is the Tools drawer: destinations, nearby people/chat,
 visit-scoped activity, shared weather/light, local listening, invitation replay,
-overview and advanced controls. **Restrooms & doors → Test with a resident**
-lets Rowan demonstrate the authoritative occupied-door/flush sequence. Human
-and NPC occupancy use the same gate; running or jumping cannot bypass it.
+overview and advanced controls. **Restrooms & doors** reports natural visits
+and the occupied-door state. Human and NPC occupancy use the same gate;
+running or jumping cannot bypass it.
 Those exploration features support the world without replacing its core work.
 
 ## Run, verify and roll back
@@ -253,9 +253,10 @@ speaker and in the accessible log, then disappear; they are not stored.
 
 At **Restrooms**, use **Walk into restroom**, **Flush**, then **Walk outside**.
 The lamp turns red and the door locks during the visit. **Go to shower** reaches
-the other doorway, where **Run shower** continues until exit. **Invite Rowan to
-try the lock** demonstrates an actual NPC reservation and flush; the NPC never
-counts as a player. These controls can be dismissed and reopened.
+the other doorway, where **Run shower** continues until exit. Residents now make
+their own visits; there is no player-facing lock-test invitation. Their actual
+reservations use the same gate and never count as players. These controls can
+be dismissed and reopened.
 
 **Tide & Coffee** is the original tea destination at its original coordinates.
 Its open-front counter, patio and regulars offer a social setting for ordinary
@@ -327,3 +328,40 @@ opened all three promoted views against the player's current history. These
 checks do not establish aesthetic preference, speaker/headphone sound quality,
 physical-phone performance or unfamiliar-player onboarding. Source pins and
 paper-tree occlusion still have room for refinement after choosing a direction.
+
+## Current choice: a lived-in 3D world (ADR 029)
+
+Wen chose to continue the 3D planet after comparing the view studies. Open
+`http://localhost:18861/planet` and refresh an already open page. The two flat
+routes remain as historical comparison candidates; current art refinement
+focuses on the 3D experience.
+
+Tide & Coffee now has a wider shell and raised terrace, six tables and six
+explicit café NPCs. Cups, furniture and people keep their scale. Their idle
+breathing, glances and service gestures yield to actual shared sound responses.
+Choose espresso, conversation or music to change the existing café response;
+its centre and all prior source coordinates remain unchanged.
+
+Restroom and shower visits keep the same authoritative one-person gate. Walk
+inside, use Flush / Run shower and Walk outside. Residents visit naturally;
+there is no Invite/Test lock action. The restroom has its toilet, basin and
+mirror; the shower has a tray, head/taps, drain, towel and changing bench.
+First person and looking down make those small interiors easier to inspect.
+
+The conservatory's planter soil is genuinely below its open rim. The former
+overlapping full lid is gone. MSAA is retained, with bounded additional render
+sampling rather than unlimited pixel density. The same controller still owns
+quiet preference, source replies, chat, run/jump and privacy.
+
+The current local app is `37e055b`; `python3 scripts/local-preview.py --rollback`
+returns to the preceding `bdb59c6` app while retaining **all current data**.
+`before-chorus-lived-in-3d-2026-11-08` marks the Git source boundary. The latest
+release changes the immediate rollback target described in the earlier view
+study section; that earlier record remains historical.
+
+See `docs/evidence/lived-in-3d-2026-11-08.json` for actual checks, screenshots,
+the initially obstructed café view and its correction. Final-source full specs
+pass; the scene checks and earlier private/social regressions have explicit
+build scopes. The course-readiness audit in
+`docs/final-quality-review-2026-11-08.md` still calls for author review, real human
+listening and unfamiliar-pair evidence, and an authorised course deployment.
