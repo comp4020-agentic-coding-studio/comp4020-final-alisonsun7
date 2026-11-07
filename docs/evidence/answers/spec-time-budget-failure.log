@@ -1,0 +1,41 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/world.test.ts (17 tests | 1 failed) 54220ms
+   ❯ sounds people leave (ADR 011) (5)
+     × leaves a sound where you stand, shows it to everyone at once, keeps it, and lets someone beside it remove it 5003ms
+(node:58109) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58276) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58349) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58376) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58462) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/world.test.ts > sounds people leave (ADR 011) > leaves a sound where you stand, shows it to everyone at once, keeps it, and lets someone beside it remove it
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ spec/world.test.ts:158:3
+    156|   });
+    157|
+    158|   it("leaves a sound where you stand, shows it to everyone at once, ke…
+       |   ^
+    159|     const ari = await join(baseUrl, "Ari");
+    160|     const ben = await join(baseUrl, "Ben");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 42 passed (43)
+      Tests  1 failed | 274 passed (275)
+   Start at  05:03:04
+   Duration  105.41s (tests 79%, import 19%, transform 2%)
+
+    Isolate  43 workers spawned · ~229ms startup each (spawn + environment, per file)
+             at least ~9.62s faster with isolate: false — reuses workers across files instead of one per file
+

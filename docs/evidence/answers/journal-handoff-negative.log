@@ -1,0 +1,40 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/chorus-studio.test.ts (12 tests | 1 failed) 1292ms
+   ❯ studio dialog handoffs and interrupted choices (12)
+     × waits for the journal's close before opening a new creation, and updates forecasts without stealing focus 55ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/chorus-studio.test.ts > studio dialog handoffs and interrupted choices > waits for the journal's close before opening a new creation, and updates forecasts without stealing focus
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array []
+
+
+Number of calls: 1
+
+ ❯ spec/chorus-studio.test.ts:197:29
+    195|     opts.create=vi.fn(()=>{studio.open(null);});
+    196|     document.getElementById("chorus-new-work")!.click();
+    197|     expect(opts.create).not.toHaveBeenCalled();
+       |                             ^
+    198|     await vi.advanceTimersByTimeAsync(0);
+    199|     expect(opts.create).toHaveBeenCalledTimes(1);expect(studio.element…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 15 passed (16)
+   Start at  04:43:52
+   Duration  7.45s (import 61%, tests 22%, transform 16%, worker 1%)
+
+    Isolate  2 workers spawned · ~510ms startup each (spawn + environment, per file)
+             at least ~510ms faster with isolate: false — reuses workers across files instead of one per file
+

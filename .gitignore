@@ -38,3 +38,6 @@ design/sound-of-a-city/references/**/*.HEIC
 
 # originals the sounds are cut from (scripts/fetch-sounds.mjs)
 .cache/
+
+# Curated validation transcripts are submission evidence, not runtime logs.
+!docs/evidence/answers/*.log

@@ -1,0 +1,53 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/chorus-placement-controller.test.ts (2 tests | 1 failed | 1 skipped) 705ms
+   ❯ actual placement controller handoffs (2)
+     × keeps an already-available Stage choice open after travel, even when the previous animation sample is still in Green 682ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/chorus-placement-controller.test.ts > actual placement controller handoffs > keeps an already-available Stage choice open after travel, even when the previous animation sample is still in Green
+AssertionError: an already-valid spot must not close its current chooser: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      <dialog
+        id="studio"
+        open=""
+      >
+        <p
+          class="chorus-feedback"
+        />
+        <button
+          data-leave="chorus-chords"
+          disabled=""
+        >
+          Leave it here
+        </button>
+      </dialog>,
+      [Function anonymous],
+    ]
+
+
+Number of calls: 1
+
+ ❯ spec/chorus-placement-controller.test.ts:79:105
+     77|     try {
+     78|       harness.makeRoom();const after=harness.read();
+     79|       expect(adapters.afterDialogClose, "an already-valid spot must no…
+       |                                                                                                         ^
+     80|       expect(adapters.walkToward).not.toHaveBeenCalled();expect(adapte…
+     81|       expect(after.at).toEqual(stage);expect(after.open).toBe(true);ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 skipped (2)
+   Start at  05:11:17
+   Duration  7.10s (import 81%, tests 11%, transform 8%)
+
