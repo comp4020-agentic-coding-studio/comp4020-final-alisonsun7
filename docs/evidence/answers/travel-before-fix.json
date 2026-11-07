@@ -1,0 +1,57 @@
+{
+  "kind": "automated-developer-placement-flow",
+  "base": "http://localhost:18899",
+  "failed": true,
+  "failure": {
+    "message": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#chorus-studio') to be visible\u001b[22m\n\u001b[2m    43 × locator resolved to hidden <dialog id=\"chorus-studio\" class=\"chorus-dialog chorus-studio\" aria-labelledby=\"chorus-studio-title\">…</dialog>\u001b[22m\n",
+    "stack": "locator.waitFor: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#chorus-studio') to be visible\u001b[22m\n\u001b[2m    43 × locator resolved to hidden <dialog id=\"chorus-studio\" class=\"chorus-dialog chorus-studio\" aria-labelledby=\"chorus-studio-title\">…</dialog>\u001b[22m\n\n    at /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/chorus-placement-flow.mjs:98:105"
+  },
+  "checks": [
+    {
+      "label": "The fixture starts with nine historical public sources, including a busy Green",
+      "elapsedMs": 3842,
+      "detail": {
+        "publicSources": 9,
+        "greenSources": 5,
+        "stageSources": []
+      }
+    },
+    {
+      "label": "Quiet entry does not enable world listening",
+      "elapsedMs": 3885
+    },
+    {
+      "label": "Selecting Nick's actual live chord in the record names that historical parent",
+      "elapsedMs": 4202
+    },
+    {
+      "label": "The crowded historical corner explains its blocked Leave before a failed publication",
+      "elapsedMs": 4215
+    },
+    {
+      "label": "A blocked ingredient still has a real decoded private audition, without publishing",
+      "elapsedMs": 5037
+    },
+    {
+      "label": "A genuinely full old work gives an honest no-space explanation without moving, publishing or unmuting",
+      "elapsedMs": 5250
+    },
+    {
+      "label": "The explicit next-place action opens a fresh Stage work without retaining Nick's parent or publishing",
+      "elapsedMs": 5750
+    },
+    {
+      "label": "Cleanup preserves all nine historical planet sources and every pre-existing coastal source exactly",
+      "elapsedMs": 26641
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "cleanupErrors": [],
+  "made": [],
+  "realUnfamiliarPairs": false,
+  "humanListening": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "remotePeerUsesAuthenticatedHttp": true
+}

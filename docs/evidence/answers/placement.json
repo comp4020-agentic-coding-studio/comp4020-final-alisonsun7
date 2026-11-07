@@ -1,0 +1,136 @@
+{
+  "kind": "automated-developer-placement-flow",
+  "base": "http://localhost:18899",
+  "failed": false,
+  "checks": [
+    {
+      "label": "The fixture starts with nine historical public sources, including a busy Green",
+      "elapsedMs": 5212,
+      "detail": {
+        "publicSources": 9,
+        "greenSources": 5,
+        "stageSources": []
+      }
+    },
+    {
+      "label": "Quiet entry does not enable world listening",
+      "elapsedMs": 5317
+    },
+    {
+      "label": "Selecting Nick's actual live chord in the record names that historical parent",
+      "elapsedMs": 5752
+    },
+    {
+      "label": "The crowded historical corner explains its blocked Leave before a failed publication",
+      "elapsedMs": 5770
+    },
+    {
+      "label": "A blocked ingredient still has a real decoded private audition, without publishing",
+      "elapsedMs": 6731
+    },
+    {
+      "label": "A genuinely full old work gives an honest no-space explanation without moving, publishing or unmuting",
+      "elapsedMs": 7195
+    },
+    {
+      "label": "The explicit next-place action opens a fresh Stage work without retaining Nick's parent or publishing",
+      "elapsedMs": 8014
+    },
+    {
+      "label": "The explicit Stage contribution begins this identity's actual new work",
+      "elapsedMs": 8211
+    },
+    {
+      "label": "A second same-sound layer at the same position is correctly blocked",
+      "elapsedMs": 8731
+    },
+    {
+      "label": "Cancelling the placement walk does not reopen a chooser or steal subsequent chat typing",
+      "elapsedMs": 11924
+    },
+    {
+      "label": "Cancel and typing neither move the player, publish a sound nor change local mute",
+      "elapsedMs": 12128
+    },
+    {
+      "label": "An explicit safe walk reaches a position where the same sound can legally be left",
+      "elapsedMs": 14580,
+      "detail": {
+        "distanceFromOriginal": 4.479706252977947
+      }
+    },
+    {
+      "label": "Arrival only reopens the choice; it never automatically leaves or unmutes a sound",
+      "elapsedMs": 14614
+    },
+    {
+      "label": "The remote availability change comes from a separate real cookie identity",
+      "elapsedMs": 15495
+    },
+    {
+      "label": "A remote nearby addition disables the existing chooser's matching choice without closing or replacing it",
+      "elapsedMs": 15771,
+      "detail": {
+        "afterAckMs": 56
+      }
+    },
+    {
+      "label": "Remote withdrawal enables the same still-open choice automatically",
+      "elapsedMs": 17118,
+      "detail": {
+        "afterAckMs": 45
+      }
+    },
+    {
+      "label": "Neither friend's action publishes this draft or overrides the quiet listener",
+      "elapsedMs": 17247
+    },
+    {
+      "label": "The second work appears only after a further explicit Leave at the safe position",
+      "elapsedMs": 17473
+    },
+    {
+      "label": "The placement, cancellation and remote-availability path has no browser page errors",
+      "elapsedMs": 17516,
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": []
+      }
+    },
+    {
+      "label": "Cleanup preserves all nine historical planet sources and every pre-existing coastal source exactly",
+      "elapsedMs": 21325
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "cleanupErrors": [],
+  "made": [
+    {
+      "id": "snd_69e95303bb01c283",
+      "byId": "par_c13bef68c9e1ae65",
+      "soundId": "chorus-chords",
+      "x": 10,
+      "z": -5
+    },
+    {
+      "id": "snd_8fef4242a3e26d6a",
+      "byId": "par_8684f42032c51dfd",
+      "soundId": "chorus-pulse",
+      "x": 8.14,
+      "z": -9.12
+    },
+    {
+      "id": "snd_c054676d243ae480",
+      "byId": "par_c13bef68c9e1ae65",
+      "soundId": "chorus-chords",
+      "x": 8.14,
+      "z": -9.12
+    }
+  ],
+  "realUnfamiliarPairs": false,
+  "humanListening": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "remotePeerUsesAuthenticatedHttp": true
+}

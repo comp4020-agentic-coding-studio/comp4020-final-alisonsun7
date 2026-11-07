@@ -14,6 +14,12 @@ coordinates. The original coast at `/scene/seaside?mode=weekday` retains its
 own room and history. Camera, travel and listening preferences never create a
 new room or reinterpret a contribution's position.
 
+The 2026-11-08 answer-focused revision follows
+[ADR030](decisions/030-a-place-that-remembers-your-answer.md). The local
+candidate at `http://localhost:18861/planet` retains the existing world;
+refresh an already-open page to load the new interface. Its exact executed
+checks and limits are in [the release index](evidence/answers-2026-11-08.json).
+
 ## First visit: make a beginning
 
 1. Open `/planet`, join with a nickname and animal, then choose **Enter with
@@ -40,6 +46,15 @@ This path is an instruction for trying the product, not evidence that a new
 player discovers it in sixty seconds. The [URL-only two-pair protocol](submission/human-playtest.md)
 measures that separately.
 
+An existing world may offer **Answer [name]** first. The chooser names the
+actual person and ingredient, and previews the consequence of adding to the
+whole live work. When a choice cannot fit, Listen still works privately.
+**Find a nearby spot** requests a safe, cancellable walk; arriving never
+publishes. If there is no safe space beside that parent, the explicit
+**Begin a new work at Pocket jam stage** action starts a new context there.
+It does not move or erase the old sounds. The same sound needs four metres
+of room, and a corner holds at most six nearby contributions.
+
 ## Two friends: hear and see the answer
 
 Use separate browser profiles, an incognito profile or separate devices.
@@ -56,6 +71,21 @@ the pulse, both browsers receive the same ensemble work: its source petals
 open, the kinetic form changes, nearby residents adopt a shared-work gesture,
 and the sounding browser gains a low harmony on the next bar. A quiet visitor
 sees the change without being unmuted. **Our works** explains who answered whom.
+
+Use **Invite a friend** to copy the real work link. A new visitor chooses their
+own name and listening preference, then sees that work's actual record.
+**Visit** returns to its place; **Answer [name]** continues its live ingredient.
+On this local candidate, open the link in a different profile on the same
+computer. Separate devices need the authorized deployed origin; another
+computer's `localhost` is not this computer. The work link never supplies
+another person's identity or starts audio by itself.
+
+Each author keeps the same colour and shape in their record and source leaf.
+A real live answer sends light from the parent's leaf to the answering leaf.
+Withdraw a source to remove its live effect, then answer a remaining sound
+with a different ingredient to try another result. Both the original and the
+withdrawal remain readable in the record. This gives the same work a history
+rather than treating it as a completed task.
 
 There is no single required recipe:
 
@@ -168,7 +198,11 @@ and the occupied-door state. Human and NPC occupancy use the same gate;
 running or jumping cannot bypass it.
 Those exploration features support the world without replacing its core work.
 
-## Run, verify and roll back
+## Historical first-garden run and verification (2026-11-07)
+
+This section records the first garden release. Its build identifiers, totals
+and rollback targets are historical. The current candidate is described at
+the top of this document and in the current local-release section below.
 
 The candidate is reviewed on isolated port 18885, with separate data for HTTP
 restart checks and other tests. The working preview at
@@ -244,7 +278,7 @@ performance or a real next-day return. Those remaining judgements and the
 [author-review writing packet](submission/README.md) stay explicit.
 
 
-## Neighbours within reach (ADR 027)
+## Historical neighbours release (ADR 027)
 
 The current revision restores scene-level actions that were previously buried
 in Places & friends. **Talk nearby** is available in the world (keyboard **T**);
@@ -282,7 +316,7 @@ See `docs/evidence/neighbours-2026-11-08.json` for the final verified scope.
 Automated output measurement does not replace hardware listening, and the
 unfamiliar-pair study remains a separate human activity.
 
-## Try the same world in 2D and 2.5D (ADR 028)
+## Historical 2D and 2.5D comparison (ADR 028)
 
 Three local presentations share the same identity, source history, responses,
 clock and private-room admission:
@@ -329,7 +363,7 @@ checks do not establish aesthetic preference, speaker/headphone sound quality,
 physical-phone performance or unfamiliar-player onboarding. Source pins and
 paper-tree occlusion still have room for refinement after choosing a direction.
 
-## Current choice: a lived-in 3D world (ADR 029)
+## Preceding 3D refinement (ADR 029)
 
 Wen chose to continue the 3D planet after comparing the view studies. Open
 `http://localhost:18861/planet` and refresh an already open page. The two flat
@@ -353,8 +387,8 @@ overlapping full lid is gone. MSAA is retained, with bounded additional render
 sampling rather than unlimited pixel density. The same controller still owns
 quiet preference, source replies, chat, run/jump and privacy.
 
-The current local app is `37e055b`; `python3 scripts/local-preview.py --rollback`
-returns to the preceding `bdb59c6` app while retaining **all current data**.
+At that preceding 3D checkpoint the app was `37e055b`, with `bdb59c6` as
+its retained rollback target. These are historical application identifiers.
 `before-chorus-lived-in-3d-2026-11-08` marks the Git source boundary. The latest
 release changes the immediate rollback target described in the earlier view
 study section; that earlier record remains historical.
@@ -365,3 +399,28 @@ pass; the scene checks and earlier private/social regressions have explicit
 build scopes. The course-readiness audit in
 `docs/final-quality-review-2026-11-08.md` still calls for author review, real human
 listening and unfamiliar-pair evidence, and an authorised course deployment.
+
+
+## Current local release: recognisable answers (2026-11-08)
+
+The application is now `5f1fc28`, on branch `codex/chorus-answers`.
+From the project directory, `python3 scripts/local-preview.py` starts the
+retained local build if needed. Open `http://localhost:18861/planet`; refresh
+an old tab to load the current interface. The source boundary is
+`before-chorus-answers-2026-11-08` at `2c0a9cc`.
+
+`python3 scripts/local-preview.py --rollback` returns to the retained
+`37e055b` application **with the current database**. It does not restore an
+old DB, erase new work or move existing sources. At this promotion all rows
+in twelve tables, including 31 sound rows, were preserved; 56 served module
+and style files matched the reviewed build. No public deployment occurred.
+
+The [current release index](evidence/answers-2026-11-08.json) separates the
+final 33-check browser answer path, 20-check historical placement path,
+277-source-check run, earlier three-area regression and process-restart
+observations. It also preserves the actual failed immediate-travel screenshot
+and its correction. These are developer checks. Human listening, two
+unfamiliar pairs, a real next-day return, physical-phone evaluation and author
+approval of the submission arguments remain open. Use the
+[author checklist](submission/final-author-checklist.md) and
+[two-pair protocol](submission/human-playtest.md) to complete those judgements.

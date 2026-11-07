@@ -1,0 +1,37 @@
+{
+  "kind": "developer HTTP/SSE and process-restart check",
+  "base": "http://127.0.0.1:18901",
+  "independentCookieJars": 2,
+  "browserUI": false,
+  "audioAudition": false,
+  "pids": [
+    54295,
+    54318,
+    54322
+  ],
+  "updateLatenciesMs": [
+    7.18,
+    7.32,
+    23.66,
+    26.82
+  ],
+  "checks": [
+    "two cookie jars identify two people; a shared-cookie stream remains the same person",
+    "one person's own answer changes an instrument without pretending to be a duet",
+    "a real friend's answer opens one identical three-source work in both streams within one second",
+    "simultaneous duplicate HTTP delivery creates one source and one event per observer",
+    "a disconnected friend returns to the current work and their original participant",
+    "actual SIGTERM and a new server process preserve the room and both cookie identities",
+    "every durable table is byte-equivalent by row after startup; source authors, positions, timestamps and links are unchanged",
+    "a committed retry after process restart reads its original acknowledgement without needing a new position",
+    "removing the parent closes the duet, keeps the work identity and history, and changes both observers' live result",
+    "a second real restart preserves the removed parent's attribution and tombstone without reviving its sound",
+    "a fresh late reply cannot recreate a removed source or silently become an ordinary contribution",
+    "the historical conversation retains the real friend's source and removed parent after restart",
+    "verification used three separate server PIDs and one continuously preserved scratch database"
+  ],
+  "beforeRestartTableHash": "d47fcd03c82d6fc7fe285ddc2d1667d54da9e4db8f0549f81223ac3e75b38746",
+  "afterRemovalTableHash": "596f2154f4e09a08743a6e687f5128c301308dbc142d2d3c01bfb02bb9f664bb",
+  "maxUpdateLatencyMs": 26.82,
+  "passed": true
+}

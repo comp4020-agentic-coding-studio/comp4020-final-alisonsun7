@@ -1,0 +1,12 @@
+{
+  "kind": "negative-control-on-previous-compiled-readme",
+  "applicationCommit": "37e055b",
+  "source": "dist/html.js",
+  "checks": {
+    "currentOriginPlanet": false,
+    "allFourCanonicalNotes": false,
+    "canonicalManifest": false
+  },
+  "noDatabaseImported": true,
+  "note": "The preceding renderer leaves localhost and repository-relative links unchanged. All three new canonical-entry checks fail before the fix."
+}

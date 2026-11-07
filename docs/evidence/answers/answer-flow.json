@@ -1,0 +1,421 @@
+{
+  "kind": "automated-developer-browser-test",
+  "base": "http://localhost:18898",
+  "failed": false,
+  "checks": [
+    {
+      "label": "An explicit Enter with sound enables the first visitor's local listening",
+      "elapsedMs": 5678
+    },
+    {
+      "label": "Answer Ada can privately audition a decoded trickle without publishing",
+      "elapsedMs": 6195,
+      "detail": [
+        {
+          "loop": false,
+          "duration": 15.92,
+          "at": 0.005333333333333333,
+          "args": [
+            0,
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "label": "The first real contribution has the author's mark and a complete solo form, without claiming a duet",
+      "elapsedMs": 6635,
+      "detail": {
+        "workId": "snd_b8856ed7ddccfa94",
+        "variant": "lantern",
+        "duet": false,
+        "sourceIds": [
+          "snd_b8856ed7ddccfa94"
+        ],
+        "signature": "02s6ize",
+        "marks": [
+          {
+            "sourceId": "snd_b8856ed7ddccfa94",
+            "authorId": "par_bcdd919d27509780",
+            "color": "#74c65d",
+            "shape": "petal"
+          }
+        ],
+        "answers": [],
+        "open": 0
+      }
+    },
+    {
+      "label": "The explicitly sounding visitor starts a real decoded spatial world voice",
+      "elapsedMs": 6685
+    },
+    {
+      "label": "Invite a friend provides an actual URL to this lasting work without needing clipboard permission",
+      "elapsedMs": 6927,
+      "detail": {
+        "path": "/planet",
+        "work": "snd_b8856ed7ddccfa94"
+      }
+    },
+    {
+      "label": "The two browsers represent different real cookie identities",
+      "elapsedMs": 15981
+    },
+    {
+      "label": "A new friend's join preserves the invitation and opens the real work record",
+      "elapsedMs": 16083
+    },
+    {
+      "label": "Explore quietly remains silent while the friend visits the existing work",
+      "elapsedMs": 16636
+    },
+    {
+      "label": "The invited friend can take a real nearby position before answering",
+      "elapsedMs": 17403
+    },
+    {
+      "label": "The answer chooser names the actual friend, original sound and possible shared result",
+      "elapsedMs": 17779
+    },
+    {
+      "label": "Answer Bo can privately audition a decoded evening-forest without publishing",
+      "elapsedMs": 18178,
+      "detail": [
+        {
+          "loop": false,
+          "duration": 39.92,
+          "at": 0.005333333333333333,
+          "args": [
+            0,
+            0,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "label": "The accepted answer automatically reaches both actual renderers within 1.5 seconds in this run",
+      "elapsedMs": 18879,
+      "detail": {
+        "answerVisibilityMs": 337
+      }
+    },
+    {
+      "label": "A real cross-person answer opens the same two-author canopy and actual parent-to-answer light in both worlds",
+      "elapsedMs": 18881,
+      "detail": {
+        "workId": "snd_b8856ed7ddccfa94",
+        "variant": "habitat",
+        "duet": true,
+        "sourceIds": [
+          "snd_b8856ed7ddccfa94",
+          "snd_9eddd4a6a42c1cde"
+        ],
+        "signature": "0i7k4i2",
+        "marks": [
+          {
+            "sourceId": "snd_b8856ed7ddccfa94",
+            "authorId": "par_bcdd919d27509780",
+            "color": "#74c65d",
+            "shape": "petal"
+          },
+          {
+            "sourceId": "snd_9eddd4a6a42c1cde",
+            "authorId": "par_0ce53f54e9c35b0f",
+            "color": "#5d5ec6",
+            "shape": "round"
+          }
+        ],
+        "answers": [
+          {
+            "sourceId": "snd_9eddd4a6a42c1cde",
+            "parentId": "snd_b8856ed7ddccfa94",
+            "fromAuthorId": "par_bcdd919d27509780",
+            "toAuthorId": "par_0ce53f54e9c35b0f"
+          }
+        ],
+        "open": 1
+      }
+    },
+    {
+      "label": "A private audition and the friend's transformation never unmute the quiet visitor's world",
+      "elapsedMs": 19010
+    },
+    {
+      "label": "The lasting record identifies who answered whom and which real sounds remain live",
+      "elapsedMs": 20291
+    },
+    {
+      "label": "An additional shared-cookie tab is the same participant and never a third co-author",
+      "elapsedMs": 34659
+    },
+    {
+      "label": "Withdrawing the parent really removes its leaf and answering light from both worlds, retaining the child's solo sound",
+      "elapsedMs": 36088
+    },
+    {
+      "label": "At 390×844 #chorus-primary remains uncovered and at least 44 pixels",
+      "elapsedMs": 36452
+    },
+    {
+      "label": "At 390×844 #chorus-our-works remains uncovered and at least 44 pixels",
+      "elapsedMs": 36501
+    },
+    {
+      "label": "At 390×844 #planet-sound remains uncovered and at least 44 pixels",
+      "elapsedMs": 36560
+    },
+    {
+      "label": "At 390×844 #planet-run remains uncovered and at least 44 pixels",
+      "elapsedMs": 36573
+    },
+    {
+      "label": "At 390×844 #planet-jump remains uncovered and at least 44 pixels",
+      "elapsedMs": 36607
+    },
+    {
+      "label": "The phone chooser's first Listen or Leave is visible, enabled and finger-sized",
+      "elapsedMs": 37232
+    },
+    {
+      "label": "The phone chooser's first Listen or Leave is visible, enabled and finger-sized",
+      "elapsedMs": 37283
+    },
+    {
+      "label": "Keyboard Cancel restores world focus without publishing or unmuting",
+      "elapsedMs": 37620
+    },
+    {
+      "label": "Answer Ada can privately audition a decoded chorus-bells without publishing",
+      "elapsedMs": 38175,
+      "detail": [
+        {
+          "loop": false,
+          "duration": 3.3333333333333335,
+          "at": 0.005333333333333333,
+          "args": [
+            0,
+            0,
+            3.3333333333333335
+          ]
+        }
+      ]
+    },
+    {
+      "label": "A different real answer grows a shared lantern from the remaining bird, giving the same work a new visible result",
+      "elapsedMs": 38884,
+      "detail": {
+        "workId": "snd_b8856ed7ddccfa94",
+        "variant": "lantern",
+        "duet": true,
+        "sourceIds": [
+          "snd_9eddd4a6a42c1cde",
+          "snd_6719004f3945199f"
+        ],
+        "signature": "0010ag9",
+        "marks": [
+          {
+            "sourceId": "snd_9eddd4a6a42c1cde",
+            "authorId": "par_0ce53f54e9c35b0f",
+            "color": "#5d5ec6",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_6719004f3945199f",
+            "authorId": "par_bcdd919d27509780",
+            "color": "#74c65d",
+            "shape": "petal"
+          }
+        ],
+        "answers": [
+          {
+            "sourceId": "snd_6719004f3945199f",
+            "parentId": "snd_9eddd4a6a42c1cde",
+            "fromAuthorId": "par_0ce53f54e9c35b0f",
+            "toAuthorId": "par_bcdd919d27509780"
+          }
+        ],
+        "open": 1
+      }
+    },
+    {
+      "label": "Ada's mark remains recognisable when her contribution and the shared result change",
+      "elapsedMs": 38884
+    },
+    {
+      "label": "The second shared result still cannot change Bo's quiet preference",
+      "elapsedMs": 38970
+    },
+    {
+      "label": "Reload preserves the real participant and full source/withdrawal/reply record while requiring new explicit listening",
+      "elapsedMs": 43829
+    },
+    {
+      "label": "The returned phone work fits the viewport without horizontal overflow",
+      "elapsedMs": 44212
+    },
+    {
+      "label": "The complete invitation, response, revision and return path has no browser page errors",
+      "elapsedMs": 44287,
+      "detail": []
+    },
+    {
+      "label": "Public API cleanup removes only this run's sounds, retaining their archive and every pre-existing source",
+      "elapsedMs": 47917
+    }
+  ],
+  "timings": [
+    {
+      "label": "Answer Ada: opened /planet",
+      "elapsedMs": 572,
+      "at": "2026-11-07T21:11:06.590Z"
+    },
+    {
+      "label": "Answer Ada: completed welcome",
+      "elapsedMs": 5556,
+      "at": "2026-11-07T21:11:11.574Z"
+    },
+    {
+      "label": "Answer Ada: left trickle",
+      "elapsedMs": 6404,
+      "at": "2026-11-07T21:11:12.422Z"
+    },
+    {
+      "label": "Answer Bo: opened /planet",
+      "elapsedMs": 8159,
+      "at": "2026-11-07T21:11:14.177Z"
+    },
+    {
+      "label": "Answer Bo: completed welcome",
+      "elapsedMs": 15977,
+      "at": "2026-11-07T21:11:21.995Z"
+    },
+    {
+      "label": "Answer Bo: left evening-forest",
+      "elapsedMs": 18542,
+      "at": "2026-11-07T21:11:24.560Z"
+    },
+    {
+      "label": "Answer Ada: left chorus-bells",
+      "elapsedMs": 38556,
+      "at": "2026-11-07T21:11:44.574Z"
+    },
+    {
+      "label": "completed developer-operated path",
+      "elapsedMs": 44288,
+      "at": "2026-11-07T21:11:50.306Z"
+    }
+  ],
+  "metrics": [
+    {
+      "context": "phone world",
+      "id": "chorus-primary",
+      "x": 26,
+      "y": 601,
+      "width": 125.65625,
+      "height": 44,
+      "disabled": false,
+      "interceptor": "chorus-primary",
+      "usable": true
+    },
+    {
+      "context": "phone world",
+      "id": "chorus-our-works",
+      "x": 157.65625,
+      "y": 601,
+      "width": 83.046875,
+      "height": 44,
+      "disabled": false,
+      "interceptor": "chorus-our-works",
+      "usable": true
+    },
+    {
+      "context": "phone world",
+      "id": "planet-sound",
+      "x": 284,
+      "y": 5.5,
+      "width": 44,
+      "height": 44,
+      "disabled": false,
+      "interceptor": "planet-sound",
+      "usable": true
+    },
+    {
+      "context": "phone world",
+      "id": "planet-run",
+      "x": 215,
+      "y": 778,
+      "width": 78,
+      "height": 44,
+      "disabled": false,
+      "interceptor": "planet-run",
+      "usable": true
+    },
+    {
+      "context": "phone world",
+      "id": "planet-jump",
+      "x": 300,
+      "y": 778,
+      "width": 78,
+      "height": 44,
+      "disabled": false,
+      "interceptor": "planet-jump",
+      "usable": true
+    },
+    {
+      "context": "phone first choice",
+      "id": "Listen to Trickling stream",
+      "x": 107,
+      "y": 391.25,
+      "width": 110,
+      "height": 44,
+      "disabled": false,
+      "interceptor": "",
+      "usable": true
+    },
+    {
+      "context": "phone first choice",
+      "id": "Leave Trickling stream here",
+      "x": 229,
+      "y": 391.25,
+      "width": 110,
+      "height": 54,
+      "disabled": false,
+      "interceptor": "",
+      "usable": true
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": [],
+  "made": [
+    {
+      "id": "snd_b8856ed7ddccfa94",
+      "soundId": "trickle",
+      "byId": "par_bcdd919d27509780",
+      "x": 1.8,
+      "z": 2.2
+    },
+    {
+      "id": "snd_9eddd4a6a42c1cde",
+      "soundId": "evening-forest",
+      "byId": "par_0ce53f54e9c35b0f",
+      "replyToId": "snd_b8856ed7ddccfa94",
+      "x": 2.66,
+      "z": 2.2
+    },
+    {
+      "id": "snd_6719004f3945199f",
+      "soundId": "chorus-bells",
+      "byId": "par_bcdd919d27509780",
+      "replyToId": "snd_9eddd4a6a42c1cde",
+      "x": 1.8,
+      "z": 2.2
+    }
+  ],
+  "realUnfamiliarPairs": false,
+  "physicalPhone": false,
+  "humanListening": false,
+  "nextDayReturn": false,
+  "timingScope": "Elapsed times describe this scripted developer path, not unprompted-user acceptance targets."
+}

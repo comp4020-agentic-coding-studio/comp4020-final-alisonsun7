@@ -1,0 +1,12 @@
+{
+  "kind": "cache-only-frozen-code-negative-control",
+  "commit": "2c0a9cca0c59c71db8d5e918af6d5e10dbd9b1b4",
+  "studioSha256": "faabcbcf1037f99ac419849ef616298b31e9156c655312a581f53edd4a0e0ecf",
+  "sourcePath": "src/client/chorus-studio.ts",
+  "selectedTests": [
+    "explains a choice",
+    "offers an own-source",
+    "records withdrawn ancestry"
+  ],
+  "candidateFilesOverwritten": false
+}

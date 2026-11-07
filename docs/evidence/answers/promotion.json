@@ -1,0 +1,118 @@
+{
+  "applicationCommit": "5f1fc28",
+  "pid": 65835,
+  "port": 18861,
+  "previousCommit": "37e055b",
+  "database": "/private/tmp/soac-polish-review/review-final.db",
+  "allRowsPreserved": true,
+  "tables": {
+    "memories": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "participants": {
+      "rows": 25,
+      "sha256": "ad142a47a3e3ccbe9374eeb030ea6eca054756dc87ab038a110bde201a792a02"
+    },
+    "placed_sounds": {
+      "rows": 31,
+      "sha256": "10d40b0653ecb734710efdb8adb52e2af1eda554bd4c5db0fde5eb7b981d73d0"
+    },
+    "placements": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scenes": {
+      "rows": 2,
+      "sha256": "840269eb592f274c692d94a12e0bba4bd86086e5a8cb5e742bdbb2a65ca68658"
+    },
+    "session_environments": {
+      "rows": 2,
+      "sha256": "f051254a97e25f3adf91778929d3ff310da6e92af7af619de02b4832d7340920"
+    },
+    "session_events": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sessions": {
+      "rows": 2,
+      "sha256": "5f1e05ba49b15fc80216defef830b83b9a004744b49b3ac92e5db949b168c73f"
+    },
+    "sound_assets": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sound_operations": {
+      "rows": 15,
+      "sha256": "501c7c8fab5608f89b0b403fea708c1eec10b32e91bd38fab345cb810e41d6be"
+    },
+    "sound_replies": {
+      "rows": 5,
+      "sha256": "499fbd733340960a40451593f85de474433d70d6844079a695c50d57ced45d9c"
+    },
+    "users": {
+      "rows": 26,
+      "sha256": "f5c496e3345a411a2fd0e2dbf6bc4f00183482544ba9d0cadef55e33d67062ed"
+    }
+  },
+  "served": {
+    "/client/scene.js": "b0aa0da4413ffcca0bfe15901efd51d084f2179809f908e25b9adc468ea064c1",
+    "/client/figures.js": "a672f99ce98d3d543ac69096c600c06cc916afe436b1f274225acfb7e5d28386",
+    "/client/characters.js": "8cbe158b4d32fe1f1b26a90f7b6d22ed205fbc27b0a1fc1c08c89306f5c42ca8",
+    "/client/coastal-renderer.js": "5d48223777f6d20b488293450366e75097ed82a9fa0fe312fdda21846ffea826",
+    "/client/d-pines.js": "2a98aa3718d57e21f61ff9f0c654352278e5bb7323c20c7e405a6f1c82a70b79",
+    "/client/world.js": "429397ff7aed0ed7d3d47d07d688ab01c7d83741fd0b7bb98240bc8e0955297f",
+    "/client/world-build.js": "6cab2fb6ee376d48f49b4e1f6a150f002acc9ae65667cac54ba4a796762b007e",
+    "/client/sky.js": "ec8e1f446b908b1300cbc175d6a2b6c06546cd697e6669872f6da5f83d35723c",
+    "/client/cafe.js": "ea9b61e4158c46f5c80cf47809b2d2e095df28cb8d5d47e0f92e634191f0b8ad",
+    "/client/seaside.js": "011b7acc4b39e77cc4b1b549c0f027e86781d26b09f38188a8ad2de270150dfb",
+    "/client/huts.js": "5b0d254a528d9dc69239edfa0c04508210c6fb2d6b291f6fa933191af7b0390a",
+    "/client/guide.js": "bbe34ba005b02a32a8e634296d6aca887cf9af8a778a5a26980c908a6b066a2e",
+    "/client/sound-library.js": "2bd7ac7ea502c02d797d35142e1484f90acaf59ecda6b15272214c019b54ea28",
+    "/client/listening-trail.js": "d113c9e2f59346d2a095e5941ac128782144765679e9fd606ce736508106f5f8",
+    "/client/look-settings.js": "74a8d2ffa87882b15f0ede080aaaa81650e1c4048f2e64a454f29d0d1b2b5741",
+    "/client/sound-conversations.js": "e9d448773e0880608cf60043eccd5f36f99fe71e1e924a97a216dc8e3e582ff3",
+    "/client/shared-sound-place.js": "7cb84965ed7e9b7f92258e0d4882d2e10aea952be619689d62d744ab70207e77",
+    "/client/sound-connections.js": "b7d38890612d7d43d450fd2a8c9251a2c3c57d4cfdb19df409315b1335b85d9b",
+    "/client/sound-residents.js": "ca291a1a1eca189fe3734fafb834a74c318ee15fed08ee5124b35df37043aee1",
+    "/client/view-mode.js": "6a10a1089aa9d1b261eedef321bc7018394d0dbed287fb42cb4a9a1ad8661eca",
+    "/client/flat-world.js": "28fd385025ddaf71295344ea0eeb292c74370d5ab6b769380ce2fed5877c8fef",
+    "/client/flat-art.js": "a6174ed3d327bff7eaf1dec39eb364250f8c50668811cdc16a6a45cb9b1818fd",
+    "/client/presentation-handoff.js": "08baacb1ba333a91513f2517a0960c1f7065f734f154b40b9174d96116301a3a",
+    "/shared/presentation.js": "558b3236ef2d286d944199c2270311b3b7297ae025e00400507770d33379744c",
+    "/client/planet.js": "0ad94efe08bab8467cbbda914d6344904d46ecf1b8986923049ce818c186c17b",
+    "/client/chorus-studio.js": "c177f44e9d3384da6eb03d1463b89faadb5f2d27391f7d7d3f7aed23b67752ca",
+    "/client/chorus-garden.js": "defa89cb5ba87b683353f26df38caa9d961f50701d6e1421b2657022e5ab4ba6",
+    "/client/chorus-instrument.js": "231ffa5d5c52a3619127ebb726d037a48c530427dec2007b72bd57a36f505592",
+    "/client/planet-world.js": "5ab11d93e4a2a2e98d6d8d7d368c548d79ae0aec29df85275787aec2232a16dc",
+    "/client/planet-build.js": "3af40d553d474c5fbe0948ed96a0a56f49f5e12fcd99f6f2d6a565af2a3d066b",
+    "/client/planet-audio.js": "e9ac12e707ad6a57e17c7e899069cedc53a657a26ac6cbaf6a18684c103bf901",
+    "/client/planet-connections.js": "61f5071df1ccce7487081ec21f376a510c5622f63d117fbb2b61dda1a8af579a",
+    "/client/planet-social.js": "377cbfd2271015defe50aefa677ce50bb03eaa6178db0d01206d5f83f8a622b5",
+    "/client/planet-sound-interactions.js": "c8a3c77a947fc25f575270df6baf1bd6c085d8c04658d85405e8ce17efeebbc2",
+    "/client/planet-locomotion.js": "13ff26f442148d54f28a125358efffb98a8c20015f565b2a8962170f7134adfd",
+    "/client/planet-wildlife.js": "73015278406491ee3d16742797b7af36f9966ea03396296274cee03a500f22cf",
+    "/client/planet-coast.js": "f928e6bbccb55886346584e31d5f92e3ab3673ec7015bc53abf9db85efa4a10a",
+    "/client/routine-audio.js": "5611411c45cee1438a3ab9d2b4504e983155e92534cc74bf16c663344ce7579b",
+    "/client/environment-panel.js": "450aa0887817c23770ffe161c0c69dac5ba51a862ff9a760d11ff193b9de6683",
+    "/client/places.js": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+    "/shared/catalog.js": "b62d042e25e3c25f3b913247ae548241501e811f2c35be9ea99c9c8e7e433fd2",
+    "/shared/protocol.js": "764ca473e2976086396b4233fd06bfe5a37ccc3d7ed74b8af784d3501587e0b3",
+    "/shared/sounds.js": "2c7f6fa9606569099e2f172ed7fc9924d6ce04d67c73b1278b3a6671890c8d32",
+    "/shared/sound-response.js": "659159d03f2d4c5df50e714f8118973324b4f487d21504df2f336aa14c3b8d34",
+    "/shared/planet.js": "3541df5cdf6cf3d3d3d278dcdba1029f59158c407a97278d13ce6996fb27adcc",
+    "/shared/chorus.js": "bc74806055231a8834e8a4d111abd79a2c83770a6803838b338267ff527bfde1",
+    "/shared/chorus-guidance.js": "6c1e92e044194a8043c57a1279c593294ef06a2bfae3aba35fc98e6b4a0ce405",
+    "/shared/chorus-signature.js": "381c3ffea35bb7b8320246fd98b566ebfb505319867d7826f5af1fec6fe84a4d",
+    "/shared/chorus-placement.js": "a9341057b3d740e729ece12facd821decf4e135c04d403c51b919f400574dfc1",
+    "/shared/chorus-invitation.js": "0c3506179b6a2f9f37e58863d3f0623af675ed6d868d5c3a06a027fe64118d04",
+    "/shared/npc-routines.js": "8447f8d27b55c48567c1971c15d4608033050e1a193b91ba7da48f64036ca1e2",
+    "/shared/huts.js": "7f0a0dee675ef17173e317e8cba4b5dd46828d17569115d75ae31b4905b5a33d",
+    "/shared/environment.js": "074e77e3fb5af1c186f1608163f68faa8965676d0f60caffb9707b4040b2d3cb",
+    "/shared/landscapes.js": "0b81ba04a0d402a71d1fdc80d31cb3441956b293c482063784c4a619a63488cc",
+    "/client/soundscape.js": "e61cf00908766b420a8e3b95dbef910e2e61e287f268c46aaf146100802d0f0a",
+    "/client/style.css": "e4658c4d8cd0a8620a0d42ce0bb6ca30839ecfa63272f739d47c2e14bb7b6eda"
+  },
+  "previousDist": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/preview-switch-8vt6jk2c/old-dist",
+  "backupIsNotForVisualRollback": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/preview-switch-8vt6jk2c/before.db"
+}

@@ -1,6 +1,7 @@
 # 030 — A place that remembers your answer
 
-Date: 2026-11-08. Status: local candidate, pending browser validation and author review.
+Date: 2026-11-08. Status: locally validated and promoted; human play/listening,
+author review and public release remain separate open gates.
 
 ## Decision
 
@@ -58,7 +59,10 @@ real answer; the record retains every source.
 ## Validation boundary
 
 See `docs/evidence/answers-2026-11-08.json` for actual candidate checks, failures
-and screenshots after execution. Browser automation is developer verification.
+and screenshots. Final application `5f1fc28` passes the independent-browser
+answer path and historical populated-corner path. The source suite passes
+277 checks/44 files; the separate three-area and process-restart runs retain
+their earlier exact build scopes. Browser automation is developer verification.
 Pleasantness, unprompted two-pair play and genuine next-day return remain
 separate human judgements until they actually occur. No production deployment
 or personal research position is implied by this local candidate.

@@ -1,0 +1,132 @@
+{
+  "kind": "read-only-promoted-browser-inspection",
+  "base": "http://localhost:18861",
+  "viewports": [
+    {
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "writes": [],
+  "errors": [],
+  "passed": true,
+  "actual": {
+    "joined": false,
+    "presentation": "3d",
+    "soundOn": "false",
+    "sourceCount": 9,
+    "forms": [
+      {
+        "placeId": "green",
+        "workId": "snd_b524461ba6881d03",
+        "variant": "habitat",
+        "duet": true,
+        "sourceIds": [
+          "snd_b524461ba6881d03",
+          "snd_b3d911c87c60f488",
+          "snd_dabc7267711ab428"
+        ],
+        "contributors": [
+          "par_547363be62e467e6",
+          "par_c474dbe30a929ad3"
+        ],
+        "open": 1,
+        "phase": 3.333240032196045,
+        "focused": false,
+        "signature": "081vpdg",
+        "marks": [
+          {
+            "sourceId": "snd_b524461ba6881d03",
+            "authorId": "par_547363be62e467e6",
+            "color": "#93c65d",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_b3d911c87c60f488",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_dabc7267711ab428",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          }
+        ],
+        "answers": [
+          {
+            "sourceId": "snd_b3d911c87c60f488",
+            "parentId": "snd_b524461ba6881d03",
+            "fromAuthorId": "par_547363be62e467e6",
+            "toAuthorId": "par_c474dbe30a929ad3"
+          },
+          {
+            "sourceId": "snd_dabc7267711ab428",
+            "parentId": "snd_b524461ba6881d03",
+            "fromAuthorId": "par_547363be62e467e6",
+            "toAuthorId": "par_c474dbe30a929ad3"
+          }
+        ]
+      },
+      {
+        "placeId": "stage",
+        "workId": null,
+        "variant": null,
+        "duet": false,
+        "sourceIds": [],
+        "contributors": [],
+        "open": 0,
+        "phase": 3.333240032196045,
+        "focused": false,
+        "signature": null,
+        "marks": [],
+        "answers": []
+      },
+      {
+        "placeId": "reading",
+        "workId": "snd_2dce186004f3623c",
+        "variant": "lantern",
+        "duet": false,
+        "sourceIds": [
+          "snd_2dce186004f3623c",
+          "snd_d4a9827e8738988f"
+        ],
+        "contributors": [
+          "par_c474dbe30a929ad3"
+        ],
+        "open": 0,
+        "phase": 3.333240032196045,
+        "focused": false,
+        "signature": "05tvj9y",
+        "marks": [
+          {
+            "sourceId": "snd_2dce186004f3623c",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_d4a9827e8738988f",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          }
+        ],
+        "answers": []
+      }
+    ],
+    "brand": "Little Chorus — The little world"
+  },
+  "authorMarks": 11,
+  "notes": [
+    "/project-notes/chorus-audio",
+    "/project-notes/promise-evidence-map",
+    "/project-notes/human-playtest",
+    "/project-notes/little-chorus"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "cache-only-frozen-controller-negative-control",
+  "commit": "a68a642bf077936c30e5bbd1ffc233a31852553b",
+  "controllerSha256": "912e17f0f45d404e6c82ce9521773b1346bfe3004fd15313d674b1e0319360ed",
+  "selectedTest": "keeps an already-available Stage choice open",
+  "exitCode": 1,
+  "candidateSourceOverwritten": false
+}

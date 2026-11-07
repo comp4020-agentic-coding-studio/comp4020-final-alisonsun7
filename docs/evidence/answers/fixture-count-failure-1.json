@@ -1,0 +1,24 @@
+{
+  "kind": "automated-developer-placement-flow",
+  "base": "http://localhost:18899",
+  "failed": true,
+  "failure": {
+    "message": "The designated fixture really starts with nine historical Green sources",
+    "stack": "AssertionError [ERR_ASSERTION]: The designated fixture really starts with nine historical Green sources\n    at check (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/chorus-placement-flow.mjs:21:47)\n    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/chorus-placement-flow.mjs:77:3"
+  },
+  "checks": [
+    {
+      "label": "Cleanup preserves all nine historical Green sources and every pre-existing coastal source exactly",
+      "elapsedMs": 8069
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "cleanupErrors": [],
+  "made": [],
+  "realUnfamiliarPairs": false,
+  "humanListening": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "remotePeerUsesAuthenticatedHttp": true
+}

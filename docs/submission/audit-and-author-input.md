@@ -4,6 +4,13 @@ Initial snapshot: `7d40be6`, 2026-11-07, before the present Listening Green
 work. The first table preserves that audit. The current-status section below
 records what has since changed; neither is a novice or artistic verdict.
 
+**Later audit, 2026-11-08:** the garden-era “current” paragraphs below are
+historical. For the retained 3D baseline and next candidate, use the
+[updated promise map](promise-evidence-map.md),
+[five final author questions](final-author-checklist.md) and
+[precise editing/deployment notes](author-editing-notes.md). No old result is
+silently relabelled as a new source run.
+
 ## Initial gaps that mattered
 
 | Material | Actual contents at this snapshot | Required correction |

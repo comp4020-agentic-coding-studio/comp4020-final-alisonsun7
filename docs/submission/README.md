@@ -12,13 +12,18 @@ deployment remain separate. Adoption is not author sign-off.
 
 ## Start here
 
-1. [Material audit and author questions](audit-and-author-input.md).
-2. [Product promises, agent rules and evidence](promise-evidence-map.md).
-3. [Real two-pair playtest protocol](human-playtest.md), including an empty
-   observation form. It is not a completed study.
-4. [README working draft](readme-working-draft.md), approximately 500 words.
-5. [PROCESS working draft](process-working-draft.md), approximately 1,000 words.
-6. [Research note working argument](research-note-working-draft.md),
+1. [Five final author questions](final-author-checklist.md), with concrete
+   commit/failure candidates and no invented personal answers.
+2. [Exact author edits and deployment readiness](author-editing-notes.md),
+   audited 2026-11-08 against the retained 3D release. The original
+   [material audit](audit-and-author-input.md) remains historical context.
+3. [Product promises, agent rules and evidence](promise-evidence-map.md),
+   including exact release scopes and open human/deployment gates.
+4. [Real two-pair, ten-minute protocol](human-playtest.md), including separate
+   empty observation forms. It is not a completed study.
+5. [README working draft](readme-working-draft.md), approximately 500 words.
+6. [PROCESS working draft](process-working-draft.md), approximately 1,000 words.
+7. [Research note working argument](research-note-working-draft.md),
    637 words plus source notes. The author chose both proposed research
    directions: technical checks versus human judgement, and verification debt
    from agent throughput. The draft synthesizes them into one claim, meets
@@ -33,6 +38,14 @@ three working bodies sit between `---` separators. Root versions have now been
 adopted with their own root-relative links; the packet copies use links
 relative to this directory. Keep the upfront author-review notices until the
 author signs off.
+
+The draft-copy estimates above are historical. The newer root-body count and
+its explicit counting boundary are in the editing notes; root files are the
+submission, not these packet copies. The current reviewed 3D baseline is
+application `37e055b`, documented in the
+[lived-in release index](../evidence/lived-in-3d-2026-11-08.json).
+The new answer-focused candidate requires its own final integration record;
+this packet does not treat its implementation as verified in advance.
 
 ## What can be adopted and what must be supplied
 

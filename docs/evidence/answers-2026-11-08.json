@@ -1,0 +1,253 @@
+{
+  "kind": "agent-operated-local-verification-index",
+  "date": "2026-11-08",
+  "applicationCommit": "5f1fc281788f4576457074d1b151b77fc79c11c1",
+  "controllerCheckCommit": "686a048457c8ab206b1b1492ef6e973db9584304",
+  "branch": "codex/chorus-answers",
+  "url": "http://localhost:18861/planet",
+  "releaseTag": "chorus-answers-2026-11-08",
+  "position": "Friends without musical training can answer one another to make a recognisable place that remembers its real contributors. This iteration concentrates on completion, cause and authorship rather than more destinations.",
+  "decision": "docs/decisions/030-a-place-that-remembers-your-answer.md",
+  "commits": [
+    "0566fa398086ca938f42acbaaaa5eccc866ff2a0",
+    "2ca764f1137210a61886d00a7b7a57930656a466",
+    "f557ade3cc6a255616ff63b1053c271510c57b3c",
+    "a68a642bf077936c30e5bbd1ffc233a31852553b",
+    "5f1fc281788f4576457074d1b151b77fc79c11c1",
+    "686a048457c8ab206b1b1492ef6e973db9584304"
+  ],
+  "implementation": {
+    "presentation": "Retained playable 3D; original planet/coastal room and coordinates unchanged. No new engine, schema, dependency or external asset.",
+    "authorship": "Stable real-author colour and shape shared by source leaves and record. Only live cross-author answers add directed light; same-cookie tabs and NPCs cannot qualify. Six visible slots prioritise real answers; the record retains all sources.",
+    "consequences": "Choice forecasts use all live ingredients, not just a guessed recipe. Removed endpoints retain provenance without live effects.",
+    "invitation": "A public work reference survives joining and reopening. It grants no identity, permission, sound preference or automatic contribution.",
+    "placement": "Private preview remains available when public placement is blocked. Safe great-circle path planning uses actual collision/privacy rules, explicit cancellation, current controller position and a separate Leave action. Full corners offer an explicit new-place action. No historical source is moved.",
+    "scopeTradeoff": "The shared compositions and persistent source engine are refined; cafe, chat, private rooms, locomotion and old coast remain. Wider asset replacement and new minigames are deferred."
+  },
+  "verification": {
+    "sourceSuite": {
+      "passed": 277,
+      "files": 44,
+      "seconds": 99.6,
+      "port": 18897,
+      "database": "new independent scratch DB",
+      "runtime": "Final tested compiled build matching application 5f1fc28; current source includes the two added actual-controller checks.",
+      "raw": {
+        "path": "docs/evidence/answers/spec-277.log",
+        "sha256": "9b2b72ab5968646c6395625ea4d34b4ad36658122cebce672a43319827c3d49a"
+      }
+    },
+    "answerFlow": {
+      "passed": 33,
+      "applicationCommit": "5f1fc281788f4576457074d1b151b77fc79c11c1",
+      "port": 18898,
+      "independentBrowserIdentities": 2,
+      "sharedCookieControl": true,
+      "autoplayBypass": false,
+      "uiAnswerVisibilityMs": 337,
+      "raw": {
+        "path": "docs/evidence/answers/answer-flow.json",
+        "sha256": "fe8c67450f02ed30c51c980d10595c8404596ce746a99fa4765c33a6bab9e68b"
+      },
+      "scope": "Actual invitation URL through new joining; private decoded audition; same two-author canopy; withdrawal; different lantern answer; mute, phone touch, keyboard cancellation, identity and authored record after reload. Local scripted developer path, not an unprompted user study."
+    },
+    "historicalPlacement": {
+      "passed": 20,
+      "applicationCommit": "5f1fc281788f4576457074d1b151b77fc79c11c1",
+      "port": 18899,
+      "historicalPublicPlanetSources": 9,
+      "historicalGreenSources": 5,
+      "remotePeer": "Separate authenticated cookie identity through HTTP; browser observer receives real SSE. Main answer flow separately covers two renderers.",
+      "sameOpenButtonUpdatesAfterAckMs": [
+        56,
+        45
+      ],
+      "safeDistanceMetres": 4.479706252977947,
+      "raw": {
+        "path": "docs/evidence/answers/placement.json",
+        "sha256": "57e86ee37537cae0c85cd1a9e194cf6e12b93013afa3aa7531bb7c07f2e7bb40"
+      },
+      "scope": "Actual historical parent selection, blocked private audition, honest no-space feedback, explicit Stage start, cancelled safe walk, chat focus, arrival without publishing, remote add/remove availability and explicit Leave. Cleanup retains every original planet/coastal source."
+    },
+    "fullCreationRegression": {
+      "passed": 43,
+      "applicationCommit": "f557ade3cc6a255616ff63b1053c271510c57b3c",
+      "raw": {
+        "path": "docs/evidence/answers/lifecycle.json",
+        "sha256": "50e92138df0e88b8c309a6c8794004f3c84fe46ea544701bc2e3fb658f300767"
+      },
+      "scope": "Before the final immediate-travel correction. Three real areas, musical entry, running/jumping, two identities/shared-cookie control, phone resizing, held ACK after missed SSE plus actual reconnect, withdrawal, late loading and original source preservation. Final immediate-travel and invitation paths have separate final-build checks."
+    },
+    "processPersistence": {
+      "passed": 13,
+      "applicationCommit": "f557ade3cc6a255616ff63b1053c271510c57b3c",
+      "pids": 3,
+      "realRestarts": 2,
+      "maxLocalHttpSseLatencyMs": 26.82,
+      "browserUi": false,
+      "raw": {
+        "path": "docs/evidence/answers/persistence.json",
+        "sha256": "f1852223060d8411aba6e7bf7a4241c73bf94e74048892651e7e6fc99e79b168"
+      },
+      "scope": "Independent cookie jars; duplicate delivery creates one source/event; reconnect, actual process replacement, all durable row equivalence, committed retry, removed-parent attribution, late reply rejection. Not a genuine next-day session."
+    },
+    "typecheck": "tsc --noEmit passed; release tsc build passed.",
+    "evidenceReferences": "check-evidence passed: three historical reflections and eleven resolving PROCESS commit references. Does not validate personal beliefs or research interpretation.",
+    "releaseBuild": "Fresh release is byte-identical to all 63 files of the final browser-tested compilation.",
+    "promotedObserver": {
+      "passed": true,
+      "viewports": [
+        {
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "writes": 0,
+      "pageErrors": 0,
+      "raw": {
+        "path": "docs/evidence/answers/promoted-observer.json",
+        "sha256": "0249434c2dfea7e6c2004ece08288d806b8795aad8b125110c418e51546af0a2"
+      },
+      "scope": "Fresh unjoined actual 18861 observer, Sound off, nine existing live public sources and real author marks; all four whitelisted notes 200, unknown note 404, phone page and note table stay within viewport. Browser blocks every non-GET/HEAD request."
+    }
+  },
+  "failuresAndNegativeControls": {
+    "initialExperience": "A real in-app-browser visit on a frozen historical backup privately listened to Soft pulse while answering nick, then received real too_close from Leave. The original preview was never a write-test target.",
+    "studio": {
+      "baseline": "2c0a9cc",
+      "threeNewTargetsFailed": true,
+      "metadata": {
+        "path": "docs/evidence/answers/studio-negative-source.json",
+        "sha256": "774e28f7762f8f96ebca9602f2eeb9dd24a712e7a2783c712a58af70d19ae4c1"
+      },
+      "log": {
+        "path": "docs/evidence/answers/studio-negative.log",
+        "sha256": "39d37244d7f64c40798ca78841b47bdc6b0adad5c34309d2f37db55c7606bbc0"
+      },
+      "nativeJournalCloseBefore": {
+        "path": "docs/evidence/answers/journal-handoff-negative.log",
+        "sha256": "510c6d8cbbc860db5e7c171a62e30cb863d512a25ba795f1fb67798900f5bd29",
+        "result": "One actual native-close handoff target failed before correction; fifteen other checks passed in that separate run."
+      }
+    },
+    "garden": {
+      "newRiskTargetsFailedBefore": 3,
+      "afterPureChecksPassed": 11,
+      "before": {
+        "path": "docs/evidence/answers/garden-negative.log",
+        "sha256": "31680653df2233d6a70cbf062164f205a84f2f273895b7a735f97f8ac15a3ab3"
+      },
+      "after": {
+        "path": "docs/evidence/answers/garden-after.log",
+        "sha256": "c3ee42cdd636745119e0be21d395dd867d6f87f22ca0b85f62a5d604eba654eb"
+      }
+    },
+    "readme": {
+      "previousCompiledApplication": "37e055b",
+      "allThreeNewEntryTargetsFail": true,
+      "raw": {
+        "path": "docs/evidence/answers/readme-negative.json",
+        "sha256": "e1bc5cf720699af66340001f93b3b926b7b1e2b2ae71a14dcf66ca97889fed32"
+      }
+    },
+    "fixtureAssumptions": {
+      "description": "Three failed attempts confused nine public planet sources with Green membership or assumed a new identity would choose the same parent as Alison. Counts and actual record selection were corrected; no data was reset to satisfy the fixture.",
+      "raw": [
+        {
+          "path": "docs/evidence/answers/fixture-count-failure-1.json",
+          "sha256": "f0f0dd7dab63f732277b67f293371c1281fbf01e355d34eb533b9f54f1663c38"
+        },
+        {
+          "path": "docs/evidence/answers/fixture-count-failure-2.json",
+          "sha256": "c1e992312c88d809a89fe979d500af7ccaa54ef3b52a0d50b3d32a205fd03a41"
+        },
+        {
+          "path": "docs/evidence/answers/fixture-selection-failure.json",
+          "sha256": "4a3e4316a460f7f5a7936310f5fb4ec273c3ba472cbf8dffb967cc13a6731f7d"
+        }
+      ]
+    },
+    "realTravelFailure": {
+      "applicationCommit": "a68a642bf077936c30e5bbd1ffc233a31852553b",
+      "description": "Immediate travel used the old animation position and disabled available choices. Finding the already-valid current point started a zero-length walk which closed without reopening. Real screenshot and failure retained; 5f1fc28 uses world.at and refreshes the existing choice without a walk.",
+      "raw": {
+        "path": "docs/evidence/answers/travel-before-fix.json",
+        "sha256": "a89028531758a9342637017ea72c32cfc918e8b507f8df29cb7be44d8f23abca"
+      },
+      "screenshot": "docs/screenshots/30-travel-failure-before.png",
+      "frozenNegative": {
+        "path": "docs/evidence/answers/controller-negative.log",
+        "sha256": "85c98dae5696cbf0353151d74a1b1bd1e363d3922e3a9af6695e68fe5492f877"
+      },
+      "negativeSource": {
+        "path": "docs/evidence/answers/controller-negative-source.json",
+        "sha256": "1d81b7f5057e59b30fdb1bbd229aff7a1f8c771569d01b94cdd75ef4c58a42cb"
+      },
+      "twoActualControllerChecksPassed": {
+        "path": "docs/evidence/answers/controller-after.log",
+        "sha256": "4085e89b8b154771af282a9a38d870f57731ad0aa3b4a8b1f99bef881befbec3"
+      }
+    },
+    "legacyTestBudget": {
+      "description": "One full repeated run reached a legacy workflow overall 5-second timeout, after that workflow deliberately spent 4.56 seconds in rate/move waits before HTTP overhead. Overall budget became 10 seconds; every one-second SSE assertion stayed unchanged. Clean 275 and final 277 runs passed.",
+      "failed": {
+        "path": "docs/evidence/answers/spec-time-budget-failure.log",
+        "sha256": "0117fdc2f6b8c09651101054ba9cd7bbe3c7f3bb48dfe7e73f4a75459864502c"
+      },
+      "cleanAfterBudget": {
+        "path": "docs/evidence/answers/spec-275-after-budget.log",
+        "sha256": "b402ced3fff28ba68f80f7586c0d82c0ef69cc593bfd4c532b3ff85d5992a7b6"
+      }
+    }
+  },
+  "promotion": {
+    "applicationCommit": "5f1fc281788f4576457074d1b151b77fc79c11c1",
+    "previousApplicationCommit": "37e055b4a568337a2507ecd92eb7173a1f146ee8",
+    "allRowsPreserved": true,
+    "tables": 12,
+    "soundRows": 31,
+    "livePublicSourcesAfter": 9,
+    "servedModulesAndStyleByteVerified": 56,
+    "raw": {
+      "path": "docs/evidence/answers/promotion.json",
+      "sha256": "6fa8b38e56e0df99328bf3ecbc915a39995a4a01d0a85315111cad61d8c612d7"
+    },
+    "note": "29 sound rows were observed at task start; the actual stable promotion snapshot contains 31. Every row in that current snapshot, not an older backup, was retained."
+  },
+  "rollback": {
+    "command": "python3 scripts/local-preview.py --rollback",
+    "beforeCodeTag": "before-chorus-answers-2026-11-08",
+    "beforeCodeCommit": "2c0a9cca0c59c71db8d5e918af6d5e10dbd9b1b4",
+    "retainedPreviousApplication": "37e055b",
+    "keepsCurrentDatabase": true,
+    "rule": "Use retained compiled application files with the current DB. Do not restore the earlier database for visual rollback."
+  },
+  "screenshots": {
+    "30-canopy-desktop.png": "docs/screenshots/30-canopy-desktop.png",
+    "30-chooser-phone.png": "docs/screenshots/30-chooser-phone.png",
+    "30-lantern-phone.png": "docs/screenshots/30-lantern-phone.png",
+    "30-travel-failure-before.png": "docs/screenshots/30-travel-failure-before.png",
+    "30-safe-placement-after.png": "docs/screenshots/30-safe-placement-after.png",
+    "30-old-work-full.png": "docs/screenshots/30-old-work-full.png",
+    "30-promoted-green-desktop.png": "docs/screenshots/30-promoted-green-desktop.png",
+    "30-promoted-green-phone.png": "docs/screenshots/30-promoted-green-phone.png",
+    "30-promoted-record-desktop.png": "docs/screenshots/30-promoted-record-desktop.png"
+  },
+  "developerVisualReview": "Inspected unmodified actual desktop shared-canopy and phone choice captures. Source labels no longer stack over the two characters while the work panel is open; selected-source and record alternatives remain. First phone Listen/Leave fit and have at least 44-pixel targets. This is developer visual review, not an aesthetic preference or novice result.",
+  "notVerified": [
+    "Human headphone/speaker listening quality and six-part balance",
+    "Two unfamiliar URL-only pairs and their voluntary second combination",
+    "A genuine next-day return",
+    "Physical phone, software keyboard and low-end-device performance",
+    "Final Docker daemon/image and authorized public Fly deployment",
+    "Author approval of personal README, PROCESS and research-note claims"
+  ],
+  "submissionAuthorChecklist": "docs/submission/final-author-checklist.md",
+  "humanProtocol": "docs/submission/human-playtest.md",
+  "noPublicDeployment": true,
+  "noMainPush": true
+}

@@ -2824,3 +2824,86 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
 - After the correction, the final full run again passes 245 specifications/37 files (`.cache/lived-in/spec-final.log`). The final scene run passes 21 real-page checks with zero page errors; its actual walked café now shows NPCs, tables, cups and counter. Its directed conservatory captures show the soil/rim in both movement positions, with the old overlap visible in the frozen baseline. Different historical source lists mean this is not a pixel-identical whole-state comparison.
 - The furnished candidate's earlier private-room run passed 31 checks, and its neighbour/shared-work run passed 24; both use separate real browser identities and confirm their own public-API cleanup. They precede only the later sign/camera/header correction, and this scope is explicit in the final index. The final-source scene run additionally walks both furnished rooms. No physical phone or human artistic listening was claimed.
 - Local application `37e055b` now serves original port 18861. The tracked switch utility compared all rows in all twelve current tables (29 source rows) and verified 52 served module/style bytes. The preceding `bdb59c6` application remains available for rollback with the current DB. A fresh unjoined observer then opened the actual promoted café at both viewport sizes: nine previous public sources, six NPCs, distinct fixture sets, Sound off, no write requests and no page errors. Reports and unmodified captures are indexed in `docs/evidence/lived-in-3d-2026-11-08.json`; there was no public deploy or main push.
+
+## 2026-11-08 — Make an answer recognisable and reachable (ADR 030)
+
+- Wen asks for a working revision directed at HD quality. The decision is to
+  retain 3D and the reliable identity/audio/reply engine, and concentrate on
+  one understandable joint creation rather than more destinations. Branch
+  `codex/chorus-answers`; rollback tag `before-chorus-answers-2026-11-08`
+  preserves `2c0a9cc`. The original 18861 world is not a write-test target.
+- Before implementation, a real in-app-browser visit on a frozen historical
+  clone selected nick's Warm chords, privately previewed Soft pulse and chose
+  Leave. The real service returned `too_close`. This exposed a recommendation
+  that a new player could hear but could not contribute. Existing state has
+  nine live public planet sources, **five** belonging to Green works; these
+  are different counts. Historical coordinates and sound limits remain intact.
+- `0566fa3` makes outcome guidance depend on every live ingredient, shares
+  true author colour/shape between record and leaf, and directs light along
+  real live cross-author replies. Same-cookie tabs, NPCs and removed endpoints
+  do not unlock the shared form. Frozen previous Studio code fails the three
+  new behaviour targets; the native journal-close handoff also had a separate
+  observed failure before correction. These are controller/UI checks, not
+  listening or novice-playtest results.
+- `2ca764f` adds persistent public work links through joining, private Listen
+  when placement is blocked, and an explicit safe walk followed by a separate
+  Leave. No new schema, dependencies, samples or rewritten coordinates are
+  involved. README rendering also repairs localhost and four broken document
+  links; Docker context excludes development databases. A 33-check actual
+  Chrome path uses two independent identities without an autoplay bypass,
+  then a shared-cookie control, canopy creation, withdrawal, lantern
+  recomposition and phone return. No human listening verdict is inferred.
+- Read-only review found three additional boundaries: an arrived but cancelled
+  walk could steal modal/chat focus; SSE availability could read the old source
+  map; a distant clicked leaf could fall back to a different nearby sound.
+  `f557ade` fixes these. Its separate complete creation regression passes 43
+  actual-browser checks across Green, Stage and Reading, including the real
+  late-ACK/reconnect/audio lifecycle path. The independent process check passes
+  13 checks across three server PIDs/two restarts, with row equivalence and
+  preserved provenance. Its 26.82 ms maximum sample is HTTP/SSE observation,
+  not a UI, remote-network or acoustic guarantee.
+- `a68a642` gives a full old corner an explicit route to begin a new Stage
+  work. Three placement-harness attempts first had incorrect fixture
+  assumptions: nine planet sources were confused with Green membership, and
+  a new identity's preferred source was assumed to match Alison's. The harness
+  now reads actual counts and explicitly selects nick's live chord in the
+  record. No application state was changed to satisfy those assumptions.
+- The corrected historical browser path then exposed a **real application
+  failure**: immediate travel opened a chooser using the preceding frame's
+  position. Finding an already-valid spot created a zero-length walk that
+  ended without reopening the chooser. The failed result and screenshot are
+  retained. `5f1fc28` uses the controller's current position and refreshes the
+  existing chooser when no walking is needed. This fix is being verified on
+  the same historical clone, not a reset world.
+- A full repeated specification run hit the legacy coastal workflow's 5 s
+  overall timeout. That workflow deliberately waits 4.56 s for rate/movement
+  limits before HTTP overhead. Its overall budget is now 10 s; each actual
+  SSE requirement remains 1 s. A fresh isolated run passes all 275 checks in
+  43 files (107.04 s). The failed run is retained; no application latency
+  threshold was relaxed. Final exact-build scope belongs in the release index.
+- Personal README/PROCESS/research claims remain labelled author-review
+  drafts. Two unfamiliar pairs, named human listening, real next-day return,
+  physical-phone checks and the authorized course deployment remain separate
+  open gates. The submission checklist and URL-only pair protocol make those
+  omissions actionable rather than inventing a success story.
+- Final application `5f1fc28` passes the 33-check independent-browser answer
+  path again and the 20-check historical-placement path. The latter observes
+  real safe spacing of 4.48 m and automatic updates of the same open choice
+  after a separate identity's add/remove (56/45 ms in this run). Two new actual
+  controller checks pass; the frozen `a68a642` immediate-travel target fails.
+  The final isolated suite passes 277 checks/44 files in 99.60 s. These
+  independent runs are indexed with their actual source scopes, not combined
+  into a quality score.
+- A fresh release matches all 63 files of the browser-tested compilation.
+  The local switch then preserves every row in all twelve current tables,
+  including **31** sound rows at promotion, and verifies 56 served module/style
+  bytes and cache policies. The starting 29 rows are not misreported as the
+  later snapshot. `37e055b` is retained as the previous application with the
+  current database. No database backup was restored.
+- A fresh unjoined actual-18861 Chrome observer blocks all non-GET/HEAD
+  requests: zero writes and zero page errors, Sound off, nine existing live
+  public sources, author marks, 1920×1080 and 390×844 captures, four note routes
+  returning 200, an unknown note returning 404 and no phone horizontal page
+  overflow. Final raw records, observed failures and unmodified screenshots
+  are in `docs/evidence/answers-2026-11-08.json`. This is local promotion,
+  not an authorized public deployment or a completed unfamiliar-pair study.
