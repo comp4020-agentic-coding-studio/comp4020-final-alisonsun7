@@ -1,0 +1,353 @@
+{
+  "kind": "automated-developer-browser-test",
+  "base": "http://localhost:18897",
+  "checks": [
+    {
+      "label": "2D and 2.5D are played by two genuinely independent browser identities"
+    },
+    {
+      "label": "Both visual versions join the existing planet room rather than creating forked histories"
+    },
+    {
+      "label": "Each presentation respects its own explicit sounding or quiet entrance"
+    },
+    {
+      "label": "2.5D keyboard movement changes the actual shared ground position"
+    },
+    {
+      "label": "2D keyboard movement changes the actual shared ground position"
+    },
+    {
+      "label": "Movement shortcuts stay paused while the sound chooser is open"
+    },
+    {
+      "label": "A real decoded private audition leaves the shared world untouched"
+    },
+    {
+      "label": "Cancelling the audition creates no sound and returns to the world"
+    },
+    {
+      "label": "A sounding 2D visitor starts an actual decoded world voice after explicitly publishing"
+    },
+    {
+      "label": "A friend's new contribution does not start audio in the quiet 2.5D browser"
+    },
+    {
+      "label": "The 2.5D response chooser identifies the actual 2D friend being answered"
+    },
+    {
+      "label": "A real cross-person answer produces the same shared ensemble in both presentations",
+      "detail": {
+        "root": "snd_8f4eaccb88f876fc",
+        "answer": "snd_348c467a2fc1091d"
+      }
+    },
+    {
+      "label": "Both real renderers open the same full shared form from the actual two source IDs and participant IDs"
+    },
+    {
+      "label": "The shared transformation preserves the quiet visitor's local mute"
+    },
+    {
+      "label": "Nearby chat crosses from the 2D player to the 2.5D player with the real speaker identity"
+    },
+    {
+      "label": "Typing movement letters in chat does not move the 2D player"
+    },
+    {
+      "label": "Switching from 2D to 2.5D keeps the same identity, room and all authored sound coordinates"
+    },
+    {
+      "label": "A presentation switch does not silently start audio in the new document"
+    },
+    {
+      "label": "The return to 2D preserves the same participant rather than creating another contributor"
+    },
+    {
+      "label": "2d at 390×844 keeps #chorus-primary finger-sized and unobstructed"
+    },
+    {
+      "label": "2d at 390×844 keeps #chorus-minimise finger-sized and unobstructed"
+    },
+    {
+      "label": "2d at 390×844 keeps #planet-talk finger-sized and unobstructed"
+    },
+    {
+      "label": "2d at 390×844 keeps #planet-run finger-sized and unobstructed"
+    },
+    {
+      "label": "2d at 390×844 keeps #planet-jump finger-sized and unobstructed"
+    },
+    {
+      "label": "2d can minimise the work and explicitly reopen it without a second large panel"
+    },
+    {
+      "label": "2d phone chooser starts with a reachable audition and explicit contribution"
+    },
+    {
+      "label": "2d touch direction changes the actual player position"
+    },
+    {
+      "label": "2d touch chat can open, send and close"
+    },
+    {
+      "label": "2.5d at 390×844 keeps #chorus-primary finger-sized and unobstructed"
+    },
+    {
+      "label": "2.5d at 390×844 keeps #chorus-minimise finger-sized and unobstructed"
+    },
+    {
+      "label": "2.5d at 390×844 keeps #planet-talk finger-sized and unobstructed"
+    },
+    {
+      "label": "2.5d at 390×844 keeps #planet-run finger-sized and unobstructed"
+    },
+    {
+      "label": "2.5d at 390×844 keeps #planet-jump finger-sized and unobstructed"
+    },
+    {
+      "label": "2.5d can minimise the work and explicitly reopen it without a second large panel"
+    },
+    {
+      "label": "2.5d phone chooser starts with a reachable audition and explicit contribution"
+    },
+    {
+      "label": "2.5d touch direction changes the actual player position"
+    },
+    {
+      "label": "2.5d touch chat can open, send and close"
+    },
+    {
+      "label": "2d can walk inside, lock the shared room and start the actual private Flush from the world"
+    },
+    {
+      "label": "2d private occupancy is enforced by the server against the other real identity"
+    },
+    {
+      "label": "2d walking outside releases the lock and ends its private sound on the server"
+    },
+    {
+      "label": "2.5d can walk inside, lock the shared room and start the actual private Flush from the world"
+    },
+    {
+      "label": "2.5d private occupancy is enforced by the server against the other real identity"
+    },
+    {
+      "label": "2.5d walking outside releases the lock and ends its private sound on the server"
+    },
+    {
+      "label": "Phone Tools can switch both presentations without losing identity"
+    },
+    {
+      "label": "Both phone presentations fit the viewport without horizontal document overflow"
+    },
+    {
+      "label": "Both presentations complete the real shared path without browser page errors"
+    },
+    {
+      "label": "Only this run's ordinary sounds were soft-removed; existing planet and coastal histories remain exact"
+    }
+  ],
+  "failed": false,
+  "errors": [],
+  "metrics": [
+    {
+      "context": "2d",
+      "selector": "chorus-primary",
+      "x": 26,
+      "y": 651,
+      "width": 122.9375,
+      "height": 44,
+      "interceptor": "chorus-primary",
+      "usable": true
+    },
+    {
+      "context": "2d",
+      "selector": "chorus-minimise",
+      "x": 320,
+      "y": 523.421875,
+      "width": 44,
+      "height": 44,
+      "interceptor": "chorus-minimise",
+      "usable": true
+    },
+    {
+      "context": "2d",
+      "selector": "planet-talk",
+      "x": 271.6875,
+      "y": 713,
+      "width": 106.3125,
+      "height": 44,
+      "interceptor": "planet-talk",
+      "usable": true
+    },
+    {
+      "context": "2d",
+      "selector": "planet-run",
+      "x": 215,
+      "y": 778,
+      "width": 78,
+      "height": 44,
+      "interceptor": "planet-run",
+      "usable": true
+    },
+    {
+      "context": "2d",
+      "selector": "planet-jump",
+      "x": 300,
+      "y": 778,
+      "width": 78,
+      "height": 44,
+      "interceptor": "planet-jump",
+      "usable": true
+    },
+    {
+      "context": "2d",
+      "selector": "chorus-reopen",
+      "x": 13,
+      "y": 173,
+      "width": 143.109375,
+      "height": 44,
+      "interceptor": "chorus-reopen",
+      "usable": true
+    },
+    {
+      "context": "2.5d",
+      "selector": "chorus-primary",
+      "x": 26,
+      "y": 651,
+      "width": 116.0625,
+      "height": 44,
+      "interceptor": "chorus-primary",
+      "usable": true
+    },
+    {
+      "context": "2.5d",
+      "selector": "chorus-minimise",
+      "x": 320,
+      "y": 523.421875,
+      "width": 44,
+      "height": 44,
+      "interceptor": "chorus-minimise",
+      "usable": true
+    },
+    {
+      "context": "2.5d",
+      "selector": "planet-talk",
+      "x": 271.6875,
+      "y": 713,
+      "width": 106.3125,
+      "height": 44,
+      "interceptor": "planet-talk",
+      "usable": true
+    },
+    {
+      "context": "2.5d",
+      "selector": "planet-run",
+      "x": 215,
+      "y": 778,
+      "width": 78,
+      "height": 44,
+      "interceptor": "planet-run",
+      "usable": true
+    },
+    {
+      "context": "2.5d",
+      "selector": "planet-jump",
+      "x": 300,
+      "y": 778,
+      "width": 78,
+      "height": 44,
+      "interceptor": "planet-jump",
+      "usable": true
+    },
+    {
+      "context": "2.5d",
+      "selector": "chorus-reopen",
+      "x": 13,
+      "y": 173,
+      "width": 143.109375,
+      "height": 44,
+      "interceptor": "chorus-reopen",
+      "usable": true
+    },
+    {
+      "context": "switch 2d",
+      "selector": "2D",
+      "x": 31,
+      "y": 286.9375,
+      "width": 44,
+      "height": 44,
+      "interceptor": "",
+      "usable": true
+    },
+    {
+      "context": "switch 2.5d",
+      "selector": "2.5D",
+      "x": 79,
+      "y": 286.9375,
+      "width": 52.9375,
+      "height": 44,
+      "interceptor": "",
+      "usable": true
+    }
+  ],
+  "made": [
+    {
+      "id": "snd_8f4eaccb88f876fc",
+      "soundId": "chorus-chords",
+      "authorId": "par_3921be1f2e4bb378",
+      "x": 1.32,
+      "z": 2.2
+    },
+    {
+      "id": "snd_348c467a2fc1091d",
+      "soundId": "chorus-pulse",
+      "authorId": "par_def574392ea4ae1c",
+      "replyToId": "snd_8f4eaccb88f876fc",
+      "x": 2.37,
+      "z": 1.63
+    }
+  ],
+  "privateSounds": [
+    "snd_24a061c4644a46ec",
+    "snd_cfbeaf936a11151a"
+  ],
+  "phoneProbes": [
+    {
+      "presentation": "2d",
+      "element": "<button id=\"planet-listen-hint\" type=\"button\" class=\"planet-listen-hint\">Sound off · Tap to listen</button>",
+      "rect": {
+        "x": 12,
+        "y": 122,
+        "width": 143.203125,
+        "height": 44,
+        "top": 122,
+        "right": 155.203125,
+        "bottom": 166,
+        "left": 12
+      },
+      "display": "block",
+      "text": "Sound off · Tap to listen"
+    },
+    {
+      "presentation": "2.5d",
+      "element": "<button id=\"planet-listen-hint\" type=\"button\" class=\"planet-listen-hint\">Sound off · Tap to listen</button>",
+      "rect": {
+        "x": 12,
+        "y": 122,
+        "width": 143.203125,
+        "height": 44,
+        "top": 122,
+        "right": 155.203125,
+        "bottom": 166,
+        "left": 12
+      },
+      "display": "block",
+      "text": "Sound off · Tap to listen"
+    }
+  ],
+  "realUnfamiliarPairs": false,
+  "physicalPhone": false,
+  "humanListening": false
+}

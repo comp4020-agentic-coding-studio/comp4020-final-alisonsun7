@@ -1,0 +1,135 @@
+{
+  "kind": "developer-verification-index",
+  "date": "2026-11-08",
+  "branch": "codex/chorus-perspectives",
+  "applicationCommit": "bdb59c6",
+  "rollbackBoundary": "before-chorus-perspectives-2026-11-08",
+  "implementationCommits": [
+    "a89214f",
+    "88f0035",
+    "bdb59c6"
+  ],
+  "routes": {
+    "2d": "http://localhost:18861/2d",
+    "2.5d": "http://localhost:18861/2.5d",
+    "3d": "http://localhost:18861/planet"
+  },
+  "automated": {
+    "specifications": {
+      "files": 35,
+      "passed": 237,
+      "port": 18898,
+      "log": ".cache/perspectives/spec-run1.log",
+      "scope": "Full suite before the last CSS, hint-initialisation and label-spacing corrections; final browser run uses those corrections."
+    },
+    "browser": {
+      "passed": 47,
+      "errors": 0,
+      "port": 18897,
+      "report": "docs/evidence/perspectives-browser-2026-11-08.json",
+      "cleanup": "Verified only its own ordinary sounds were soft-removed, both private stays ended, and prior planet/coastal snapshots remained exact."
+    },
+    "negative": {
+      "httpPresentationChecks": 6,
+      "result": "All six failed against frozen preceding application on isolated 18899.",
+      "log": ".cache/perspectives/routes-before.log",
+      "phoneChat": [
+        "Initial blocked Say: work card.",
+        "First retry still served stale CSS from an incomplete scratch build.",
+        "Second retry exposed retained reply-intent card.",
+        "Final run checks the real hit target immediately after opening chat and completes sending in both modes."
+      ]
+    },
+    "typecheck": "Passed after final application changes",
+    "build": "Fresh release and tested candidate match for all 59 compiled/style files."
+  },
+  "promotion": {
+    "allRowsPreserved": true,
+    "tables": {
+      "memories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "participants": {
+        "rows": 25,
+        "sha256": "ad142a47a3e3ccbe9374eeb030ea6eca054756dc87ab038a110bde201a792a02"
+      },
+      "placed_sounds": {
+        "rows": 29,
+        "sha256": "661b6429f9aa957d697210972610f1e65215ffca9f877f2fa0350c0d95cc2fd7"
+      },
+      "placements": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scenes": {
+        "rows": 2,
+        "sha256": "840269eb592f274c692d94a12e0bba4bd86086e5a8cb5e742bdbb2a65ca68658"
+      },
+      "session_environments": {
+        "rows": 2,
+        "sha256": "f051254a97e25f3adf91778929d3ff310da6e92af7af619de02b4832d7340920"
+      },
+      "session_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sessions": {
+        "rows": 2,
+        "sha256": "5f1e05ba49b15fc80216defef830b83b9a004744b49b3ac92e5db949b168c73f"
+      },
+      "sound_assets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sound_operations": {
+        "rows": 13,
+        "sha256": "32699f775494fbccfc644674cca7f59b1ec07390877b331eeaab7a7c57fbcde7"
+      },
+      "sound_replies": {
+        "rows": 5,
+        "sha256": "499fbd733340960a40451593f85de474433d70d6844079a695c50d57ced45d9c"
+      },
+      "users": {
+        "rows": 26,
+        "sha256": "f5c496e3345a411a2fd0e2dbf6bc4f00183482544ba9d0cadef55e33d67062ed"
+      }
+    },
+    "servedModulesAndStyle": 52,
+    "previousApplicationCommit": "91ff33d47b36b2c7fb9888e07cd80f8c910d7cd7",
+    "rollback": "python3 scripts/local-preview.py --rollback",
+    "rollbackKeepsCurrentDatabase": true,
+    "observer": "docs/evidence/perspectives-promoted-observer-2026-11-08.json",
+    "writesDuringObserver": 0
+  },
+  "screenshots": {
+    "28-2d-storybook-desktop.png": "docs/screenshots/28-2d-storybook-desktop.png",
+    "28-2-5d-paper-theatre-desktop.png": "docs/screenshots/28-2-5d-paper-theatre-desktop.png",
+    "28-2d-storybook-phone.png": "docs/screenshots/28-2d-storybook-phone.png",
+    "28-2-5d-paper-theatre-phone.png": "docs/screenshots/28-2-5d-paper-theatre-phone.png",
+    "28-2d-chooser-phone.png": "docs/screenshots/28-2d-chooser-phone.png",
+    "28-2-5d-chooser-phone.png": "docs/screenshots/28-2-5d-chooser-phone.png",
+    "28-2-5d-restroom-phone.png": "docs/screenshots/28-2-5d-restroom-phone.png",
+    "28-promoted-2d-desktop.png": "docs/screenshots/28-promoted-2d-desktop.png",
+    "28-promoted-2-5d-desktop.png": "docs/screenshots/28-promoted-2-5d-desktop.png",
+    "28-promoted-3d-desktop.png": "docs/screenshots/28-promoted-3d-desktop.png"
+  },
+  "developerVisualInspection": {
+    "done": true,
+    "observations": [
+      "Two projections are visibly distinct and share palette, characters and interface.",
+      "Reduced label overlap and separated the local companion from Fern.",
+      "Both scoring viewport sizes inspected; no empty listening pill remains.",
+      "Some world pins still cover part of nearby figures; paper trees may occlude people. These are remaining presentation tradeoffs.",
+      "The 2.5D phone capture includes actual transient chat from the other test identity."
+    ]
+  },
+  "notVerified": [
+    "Artistic pleasantness through human listening or hardware speakers",
+    "Physical phone browsers/performance",
+    "Unfamiliar-pair onboarding or preference study",
+    "Actual next-day return in either new view",
+    "All peripheral exploration activities in each new view"
+  ],
+  "dataPolicy": "No schema migration, source-coordinate conversion, room split, restored database, main push or public deployment."
+}

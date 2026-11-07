@@ -280,3 +280,50 @@ floor and overhead forms, with the same real authors and withdrawal semantics.
 See `docs/evidence/neighbours-2026-11-08.json` for the final verified scope.
 Automated output measurement does not replace hardware listening, and the
 unfamiliar-pair study remains a separate human activity.
+
+## Try the same world in 2D and 2.5D (ADR 028)
+
+Three local presentations share the same identity, source history, responses,
+clock and private-room admission:
+
+- **2D Storybook:** `http://localhost:18861/2d`, an illustrated overhead village.
+- **2.5D Paper theatre:** `http://localhost:18861/2.5d`, an isometric village with
+  upright characters, building sides and foreground/background depth.
+- **3D Little planet:** `http://localhost:18861/planet`, the retained default.
+
+Use the desktop header's 2D / 2.5D / 3D links, or **Places & friends → World
+style** on a phone. Changing style keeps the same participant and briefly hands
+off the current position within that tab. It starts the new document quietly;
+use Sound to listen again. A style is not a second room or a copied save.
+
+In the illustrated views, W A S D / arrow keys move in screen directions; Shift
+runs and Space jumps. Click or tap a clear path to walk there, drag to pan, and
+choose Village overview to see more places. Touch arrows, Run and Jump remain
+available. The current three-choice sound invitation, Our works, nearby Talk,
+restroom/shower actions, café, local kangaroo and shared environment are reused.
+
+For a short comparison, enter Listening Green, audition and leave Warm chords.
+In a separate browser identity, choose Answer and add Soft pulse. Both views
+open the same beat flower and show both real authors. Walk around it, minimise
+the card, talk nearby, then change the visual style and find the same work.
+Shared-cookie tabs still represent one person. Listening volume and Sound off
+remain local; leaving, answering and withdrawing affect the common work.
+
+The local candidate is running. To start it again from the repository, use
+`python3 scripts/local-preview.py`; it uses the already recorded current DB.
+Build source with Node 24 and `npm run build` (or pnpm 11+). For a deliberate
+local file switch, build to another directory and use the tracked preview
+utility with `--dist`, `--commit` and `--restart`; it checks all rows and retains
+the preceding compiled app. The quick rollback on this machine is
+`python3 scripts/local-preview.py --rollback`: it switches the application back
+to `91ff33d` while keeping the **current** DB. Never restore a historical DB to
+undo a visual choice. Git tag `before-chorus-perspectives-2026-11-08` preserves
+the source boundary; branch `codex/chorus-perspectives` contains the comparison.
+
+Evidence: `docs/evidence/perspectives-2026-11-08.json`. The full specification
+suite passed before final UI corrections; the final real-browser run passed 47
+behaviour checks at 1920×1080 and 390×844. A read-only browser subsequently
+opened all three promoted views against the player's current history. These
+checks do not establish aesthetic preference, speaker/headphone sound quality,
+physical-phone performance or unfamiliar-player onboarding. Source pins and
+paper-tree occlusion still have room for refinement after choosing a direction.

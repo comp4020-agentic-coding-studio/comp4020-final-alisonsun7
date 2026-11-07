@@ -1,6 +1,7 @@
 # ADR 028 — Two paper views on the same world
 
-Date: 2026-11-08. Status: implementing; actual browser comparison follows.
+Date: 2026-11-08. Status: implemented and locally playable; visual preference
+and unfamiliar-player usability remain for Wen and real players to judge.
 
 ## Request
 
@@ -49,3 +50,33 @@ screenshots at 1920×1080 and 390×844 are required before calling the compariso
 complete. A green check is not a verdict on visual appeal, fun or pleasantness.
 The original preview/database stays untouched while writing tests use isolated
 ports and databases. Application rollback always keeps the current database.
+
+## Observed result
+
+Application `bdb59c6` was promoted to local port 18861 after a complete two-person
+browser path with one independent identity in each flat presentation. Both
+actual renderers opened the same full source-derived form, preserved local
+quiet preference, exchanged nearby chat and kept identity/source positions
+through view changes. Both phone views completed touch movement, audition,
+response entry, chat and real private-room entry/flush/exit; the server rejected
+the second person's attempt to enter the occupied room. These are developer
+automation results, not novice observations or proof that the audio is pleasant.
+
+Initial phone chat was genuinely obstructed by work and reply-intent cards.
+Synchronous CSS visibility now clears competing cards while chatting; a real
+hit-target assertion captures that regression. A stale scratch stylesheet also
+caused one failed retry, so the final fresh build compares compiled files AND
+styles with the tested candidate. Label spacing and the local companion's
+resting position were adjusted after actual screenshot inspection.
+
+The switch preserved every row in all twelve existing tables and verified 52
+served modules/styles. A separate unjoined observer loaded all three actual
+promoted views, saw the same nine existing public planet sounds, made no write
+requests and encountered no browser error. Original 3D remains the default;
+the coast and its history remain available.
+
+See `docs/evidence/perspectives-2026-11-08.json` for scope, raw reports and
+actual desktop/phone captures. Some source pins still partly cover characters,
+and foreground paper trees can obscure them. This is a comparison candidate,
+not a claim of final aesthetic quality. No physical-phone, artistic listening,
+unfamiliar-pair or next-day study was performed for these new lenses.

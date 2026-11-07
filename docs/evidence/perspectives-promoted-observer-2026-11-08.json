@@ -1,0 +1,51 @@
+{
+  "kind": "read-only-promoted-preview-inspection",
+  "base": "http://localhost:18861",
+  "writes": [],
+  "errors": [],
+  "views": [
+    {
+      "presentation": "2d",
+      "engine": "canvas2d",
+      "soundOn": "false",
+      "room": "ses_2f527293c0468bb3",
+      "joined": false,
+      "canvas": true,
+      "publicSounds": 9,
+      "links": [
+        "/planet?view=2d",
+        "/planet?view=2.5d",
+        "/planet"
+      ]
+    },
+    {
+      "presentation": "2.5d",
+      "engine": "canvas2d",
+      "soundOn": "false",
+      "room": "ses_2f527293c0468bb3",
+      "joined": false,
+      "canvas": true,
+      "publicSounds": 9,
+      "links": [
+        "/planet?view=2d",
+        "/planet?view=2.5d",
+        "/planet"
+      ]
+    },
+    {
+      "presentation": "3d",
+      "engine": "threejs",
+      "soundOn": "false",
+      "room": "ses_2f527293c0468bb3",
+      "joined": false,
+      "canvas": true,
+      "publicSounds": 9,
+      "links": [
+        "/planet?view=2d",
+        "/planet?view=2.5d",
+        "/planet"
+      ]
+    }
+  ],
+  "passed": true
+}
