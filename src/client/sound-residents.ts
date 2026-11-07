@@ -166,11 +166,11 @@ export class SoundResidents {
     } else if (behavior === "play") {
       if (resident.body) resident.body.rotation.y += Math.sin(q) * 0.18 * motion;
       if (resident.head) resident.head.rotation.z = 0.09;
-      if (resident.arm) resident.arm.rotation.set(-2.1, 0, -0.24 + Math.sin(q * 2) * 0.17 * motion);
+      if (resident.arm) resident.arm.rotation.set(-2.1, 0, 0.52 + Math.sin(q * 2) * 0.17 * motion);
       if (resident.elbow) resident.elbow.rotation.x = -0.35;
     } else if (behavior === "wave") {
       if (resident.head) resident.head.rotation.x = -0.13;
-      if (resident.arm) resident.arm.rotation.set(-2.3, 0, -0.18 + Math.sin(q * 2) * 0.2 * motion);
+      if (resident.arm) resident.arm.rotation.set(-2.3, 0, 0.65 + Math.sin(q * 2) * 0.2 * motion);
       if (resident.elbow) resident.elbow.rotation.x = -0.45;
     } else if (behavior === "watch") {
       if (resident.head) resident.head.rotation.set(-0.12, Math.sin(q) * 0.26 * motion, 0.13);
