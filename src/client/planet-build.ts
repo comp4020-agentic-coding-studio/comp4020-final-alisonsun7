@@ -449,7 +449,7 @@ export function buildPlanet(): PlanetBuild {
         const y = 1 - 2 * (i + .5) / 650, lon = i * 2.399963, lat = Math.asin(y);
         const x = ((lon + Math.PI) % (2 * Math.PI) - Math.PI) * R, z = lat * R;
         const grove = Math.sin(x * .22 + Math.sin(z * .3)) + Math.cos(z * .23 - x * .11);
-        const villageVista = x > 0 && x < 5 && z > 5 && z < 12;
+        const villageVista = x > -3 && x < 6 && z > 4 && z < 14;
         if (villageVista || clearMeeting(x, z) || nearPath(x, z) || z > coastlineAt(x) - 4 || grove < -.6) continue;
         const q = surfaceFrame(x, z), kind = i % 5, scale = .85 + (i % 7) * .075, lean = Math.sin(i * 1.7) * .11;
         const trunk = planetPoint(x, z, scale);
