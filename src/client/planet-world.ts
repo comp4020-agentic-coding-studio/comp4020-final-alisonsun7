@@ -435,7 +435,12 @@ export class PlanetWorld {
             const hits = new THREE.Raycaster(head, ray.normalize(), .1, length).intersectObjects(this.built.solids, false), distance = hits.length ? Math.max(.55, hits[0].distance - .22) : length;
             this.camera.position.copy(head).addScaledVector(ray, distance);
             const overview = THREE.MathUtils.clamp((this.zoom - 12) / 10, 0, 1) * (this.camera.aspect < .8 ? .5 : 1);
-            this.camera.lookAt(head.clone().lerp(up.clone().multiplyScalar(R * .1), overview));
+            const target = head.clone().lerp(up.clone().multiplyScalar(R * .1), overview);
+            // Portrait controls occupy the lower view. Aim below the head so
+            // the body and nearby work remain above the contribution card.
+            // Fade with overview and scale at close zoom; collision is unchanged.
+            if (this.camera.aspect < .8) target.addScaledVector(up, -Math.min(this.zoom, 8) * .16 * (1 - overview * 2));
+            this.camera.lookAt(target);
             if (this.self)
                 this.self.visible = distance > 1.15;
         }

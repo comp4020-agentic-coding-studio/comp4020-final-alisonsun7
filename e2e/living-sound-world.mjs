@@ -122,8 +122,8 @@ try {
   await a.locator("#leave-sound").click();
   // This deliberately fails on the old candidate before publishing anything.
   assert.equal(await a.locator('[data-intention="cozy"]').count(), 1, "The live library must expose intention-first sound ideas");
-  check(SOUNDS.length === 18 && await a.locator("#sound-palette [data-sound]").count() === SOUNDS.length,
-    "all eighteen real catalogue sounds are individually offered");
+  check(SOUNDS.length === 21 && await a.locator("#sound-palette [data-sound]").count() === SOUNDS.length,
+    "all twenty-one real catalogue sounds are individually offered");
   const beforeBrowse = await at(a);
   for (const mood of ["cozy", "lively", "wild"]) {
     await a.locator(`[data-intention="${mood}"]`).click();
