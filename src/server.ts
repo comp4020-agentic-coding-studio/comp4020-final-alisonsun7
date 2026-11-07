@@ -30,6 +30,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/sound-conversations.js": js("/client/sound-conversations.js"),
   "/client/shared-sound-place.js": js("/client/shared-sound-place.js"),
   "/client/sound-connections.js": js("/client/sound-connections.js"),
+  "/client/sound-residents.js": js("/client/sound-residents.js"),
   "/client/environment-panel.js": js("/client/environment-panel.js"),
   "/client/places.js": js("/client/places.js"),
   // three.js, the one library the browser loads (ADR 004), straight from the
@@ -38,6 +39,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/shared/catalog.js": js("/shared/catalog.js"),
   "/shared/protocol.js": js("/shared/protocol.js"),
   "/shared/sounds.js": js("/shared/sounds.js"),
+  "/shared/sound-response.js": js("/shared/sound-response.js"),
   "/shared/huts.js": js("/shared/huts.js"),
   "/shared/environment.js": js("/shared/environment.js"),
   "/shared/landscapes.js": js("/shared/landscapes.js"),

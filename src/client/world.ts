@@ -4,9 +4,10 @@
 // played by client/soundscape.ts, through the few things this lends it.
 import * as THREE from "three";
 import type { Scene } from "../shared/catalog.js";
-import type { Person } from "../shared/protocol.js";
+import type { Person, PlacedSound } from "../shared/protocol.js";
 import { kangarooSvg, passerAvatar, type Pose } from "./figures.js";
 import { AnimalFigure } from "./characters.js";
+import { SoundResidents, type ResidentResponseSummary } from "./sound-residents.js";
 import { CoastalRenderer } from "./coastal-renderer.js";
 import { beachBallTexture } from "./huts.js";
 import { environmentLight, mixLight, separateSkySun, type Light } from "./sky.js";
@@ -186,6 +187,7 @@ export class WorldView {
   private overlay: HTMLDivElement;
   private passers: Passer[] = [];
   private regulars: RegularView[] = [];
+  private soundResidents: SoundResidents;
   private game: BallGame | null = null;
   private rain: THREE.LineSegments | null = null;
   private raycaster = new THREE.Raycaster();
@@ -318,6 +320,23 @@ export class WorldView {
     for (const p of this.passers) { p.sprite.setPose("stand"); p.sprite.setMotion(0, false); }
     this.buildRegulars();
     this.buildGame();
+    this.soundResidents = new SoundResidents({
+      surfaceHeight: (x, z) => this.surfaceHeight(x, z),
+      canStand: (x, z) => canStand(this.built, x, z, 0.32) && !this.kit.roomAt?.(x, z)?.private,
+    });
+    // These are clearly authored NPCs, never joined people. Staff, seated
+    // customers, Mateo and the children's existing ball game keep their roles.
+    const coastalCat = this.regulars.find((r) => r.sprite.userData.figure?.seed === "quiet-coastal-cat");
+    if (coastalCat) this.soundResidents.add({ id: "coastal-neighbour", label: "Coastal neighbour · NPC", x: -16.1, z: -2.55, facing: 1.9, preference: "cozy" }, coastalCat.sprite);
+    for (const resident of [
+      { id: "beach-neighbour", label: "Beach neighbour · NPC", x: 9.7, z: 8.2, facing: 0.4, preference: "lively" as const, avatar: "dog" as const },
+      { id: "trail-neighbour", label: "Trail neighbour · NPC", x: 1, z: -36, facing: 0.2, preference: "wild" as const, avatar: "cat" as const },
+    ]) {
+      const sprite = new AnimalFigure({ avatar: resident.avatar, seed: resident.id, pose: "stand" });
+      this.built.root.add(sprite);
+      this.soundResidents.add(resident, sprite, true);
+    }
+    addEventListener("pagehide", (event) => { if (!event.persisted) this.soundResidents.dispose(); });
 
     this.zone = opts.startZone;
     this.placeAt(opts.startZone);
@@ -354,6 +373,16 @@ export class WorldView {
 
   setLookMode(mode: LookMode): void {
     this.lookMode = mode;
+  }
+
+  // Use the authoritative contribution list, including while sound is off.
+  // The shared selector excludes private stays and ended contributions.
+  setContributions(sounds: readonly PlacedSound[]): void {
+    this.soundResidents.setContributions(sounds);
+  }
+
+  get residentResponses(): readonly ResidentResponseSummary[] {
+    return this.soundResidents.responses;
   }
 
   // Room time is authoritative; elapsed time uses the monotonic clock so a
@@ -744,6 +773,7 @@ export class WorldView {
   // the fryers, the shelves), stay a while, and walk back.
   private moveRegulars(dt: number): void {
     for (const r of this.regulars) {
+      if (this.soundResidents.owns(r.sprite)) continue;
       const m = r.roam;
       if (!m) continue;
       if (!m.going) {
@@ -769,6 +799,7 @@ export class WorldView {
   private idle(now: number): void {
     const t = now / 1000;
     for (const r of this.regulars) {
+      if (this.soundResidents.owns(r.sprite)) continue;
       if (r.roam?.going) continue;
       const away = r.roam && r.sprite.position.distanceTo(r.roam.home) > 0.05;
       const second = away || (t / r.period + r.offset) % 1 > 1 - r.share;
@@ -1064,10 +1095,12 @@ export class WorldView {
       this.idle(now);
       this.playBall(dt);
     }
+    const sharedNow = this.environment ? this.environment.serverMs + Math.max(0, now - this.environment.receivedAt) : NaN;
+    this.soundResidents.frame(sharedNow, dt, reduced());
     this.moveOthers(dt);
     // Shared arrivals and passing walkers may occupy the camera's position.
     // Keep their identity/talk/sound intact without drawing clipped body parts.
-    for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? []), ...this.others.values()]) {
+    for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? []), ...this.others.values(), ...this.soundResidents.figures.map((sprite) => ({ sprite }))]) {
       p.sprite.visible = Math.hypot(p.sprite.position.x - this.x, p.sprite.position.z - this.z) > 0.65;
     }
     if (this.rain?.visible && !reduced()) {
@@ -1095,6 +1128,7 @@ export class WorldView {
       this.host.dataset.rainDrops = String(this.rain?.visible ? this.rain.geometry.getAttribute("position").count / 2 : 0);
       this.host.dataset.lampIntensity = this.built.lamp.intensity.toFixed(2);
       this.host.dataset.environmentIntensity = this.scene3.environmentIntensity.toFixed(3);
+      this.host.dataset.residentResponses = JSON.stringify(this.residentResponses);
     }
     this.opts.onListen?.({
       x: this.x,
