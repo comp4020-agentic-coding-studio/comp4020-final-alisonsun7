@@ -1,3 +1,9 @@
+> **Historical edition.** This document describes ADR024's first Soundfolk
+> planet, including its then-current camera, catalogue and checks. The current
+> product is **Little Chorus**: see the [current playable flow](little-chorus.md)
+> and [ADR026](decisions/026-a-world-that-remembers-an-answer.md). The text below
+> is retained as history, not the current acceptance claim.
+
 # Soundfolk: a little world made through sound
 
 The new edition is `/planet`. The coastal edition remains at

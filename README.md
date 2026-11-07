@@ -1,97 +1,72 @@
-# SoundGarden
+# Little Chorus
 
-## Everyone contributes a note
+> **Author review draft.** Prepared with coding-agent assistance from recorded requests and repository evidence. Personal judgements and marked author inputs need Alison’s review. No human listening, uncoached playtest or next-day result is claimed.
 
-SoundGarden is one shared 6×6 music grid. Pick a name, choose one of five
-coloured notes, and tap a square. Everyone who has the page open sees your
-note appear within about a second, and anyone can press Play to hear what the
-group has made so far. The grid plays as a six-step loop: each column is one
-beat, and every note in that column sounds together, so the six rows let
-several people stack notes into chords.
+## This place changed because I answered you
 
-The five notes are the C major pentatonic scale — C, D, E, G and A — so
-whatever ends up in the grid sounds reasonably consonant. Nobody needs to know
-any music to take part.
+Little Chorus is a little world for two to six friends without musical
+training. I want a short visit to leave something recognizable: your sound,
+my answer, and a place that changes because they meet. A solitary visitor can
+explore and leave a beginning. A friend opens a shared possibility rather
+than simply completing the same button sequence beside you.
 
-## What good means here
+Enter [the planet](http://localhost:18861/planet) and start at **Listening
+Green**. Join with a nickname, choose sound or quiet browsing, and audition
+one of three suggestions. Previews are private; leaving a sound is explicit.
+Select an existing contribution to see whose sound it is and choose
+**Answer [name]**. Suggestions explain different roles, while the full library
+remains available. There is no score, countdown or required daily work.
 
-I hold SoundGarden to three principles.
+## A reply should change our place
 
-**Anyone can make music.** A first-time visitor should go from the link to
-hearing their own note in four steps: type a name, pick a colour, tap a
-square, press Play. No account, no instructions, no music theory.
-Before they even type a name, the welcome page shows the garden as it is
-right now: a small live copy of the grid and how many people are creating,
-so a stranger can see there's something here worth joining. It's read-only
-and silent, and it shows no nicknames until you choose to take part.
+Actual sounds and their response relationships grow a recognizable object.
+Water and birds form a paper-bird canopy; melody and pulse form a beat flower;
+other combinations light a lantern. A living reply between different real
+contributors opens a shared form. In an ensemble, a low musical answer also
+joins. The work records who contributed each sound, what it answered and
+where it began. Removed ingredients leave history rather than pretending
+they are still playing.
 
-**Music belongs to everyone.** There is one grid, and everyone on it can add,
-change or erase any note and switch the instrument. That's the point: the
-app is more interesting when someone else is there, because their edits
-change the music you're listening to while you listen. When two people change
-the same square at the same moment, the server decides one order and every
-screen ends up showing the same result — see
-[`docs/decisions/001-simultaneous-edits.md`](docs/decisions/001-simultaneous-edits.md).
+**Pocket Jam Stage** offers three original 72 BPM parts with compatible
+pitches and bar-aligned entrances. **Reading Nook** emphasizes quiet, close
+listening. Moving changes the audible mixture; local volume, focus and mute
+change only your listening. Adding, answering and removing change the common
+work. Sound off remains off when a friend contributes. The local kangaroo
+offers companionship, but cannot count as another player or unlock a duet.
 
-**Every contribution leaves a trace.** Notes and the instrument are saved in
-a database on the server, so closing the tab, coming back tomorrow, or the
-server restarting doesn't wipe the music. The activity list says who did
-what, and so does the server's own log.
+## Small enough to matter
 
-## Why this scale
+[Robin Sloan's home-cooked software](https://www.robinsloan.com/notes/home-cooked-app/)
+helps frame a handful of friends as a sufficient audience. His family's
+ephemeral communication reduces the burden of a reply. I choose a different
+trade-off here: retain sound relationships so friends can recognize and
+continue a shared place, while avoiding scores and daily obligations.
+[Aurora Harley's discussion of visible system status](https://www.nngroup.com/articles/visibility-system-status/)
+provides another criterion: people should understand what their action did.
+For this product, an acknowledgement alone is insufficient; authorship,
+audible arrangement and moving objects should explain the same consequence.
 
-Robin Sloan's [An app can be a home-cooked meal](https://www.robinsloan.com/notes/home-cooked-app/)
-argues for software made for a particular small group rather than for
-growth. SoundGarden is that: one garden, a handful of people, no rooms, no
-profiles. A single shared space keeps the collaboration visible: everyone is
-always looking at, and changing, the same 36 squares.
+The candidate retains Three.js and its existing persistent backend. A close
+activity camera serves recognizable characters; overview is optional.
+Concentrating on three connected places sacrifices nine equally developed
+activities. The older coast, other destinations and existing contributions
+remain accessible. Original score generation and third-party recording
+provenance are distinguished in the [audio handoff](docs/chorus-audio.md)
+and [asset manifest](public/assets-manifest.json).
 
-Aurora Harley's [Visibility of System Status](https://www.nngroup.com/articles/visibility-system-status/)
-shapes the feedback. The grid shows your note the moment you tap; the
-playhead lights up the column that is sounding; the corner says how many
-people are actually connected right now, not how many have ever joined; and
-the activity list explains why the music just changed Watching the welcome page
-doesn't count you as one of the people creating.
+## What is enforced, what still needs judgement
 
-## How it works
+Server-derived identity, explicit publication, durable relationships, soft
+removal, safe retries and local sound preference are enforceable promises.
+Two same-cookie tabs remain one contributor. The [promise-to-evidence
+map](docs/submission/promise-evidence-map.md) separates technical checks from
+judgement. Pleasantness, understandable invitations and wanting to try another
+combination require people. First sound within a minute and a joint response
+within three minutes remain targets, not observed novice results. No unfamiliar
+pair study, artistic listening approval or real next-day return is claimed.
 
-Your browser keeps one open connection to the server (server-sent events).
-Every change — a note placed or erased, the instrument switched — goes to the
-server, is saved, and is pushed to every open page as the full current state
-of the garden. A page that loses its connection reconnects by itself and gets
-that full state again, so it never shows a grid that's missing a change.
-
-Playback runs in your own browser. Pressing Play starts your loop; it doesn't
-start anyone else's. But the instrument is shared: if someone switches to
-guitar while you're listening, your next beat is played on guitar. Likewise a
-note someone adds is heard the next time your playhead reaches it — you
-never have to press Play again to hear the group's latest edit.
-
-The three instruments — piano, guitar and saxophone — are synthesised in the
-browser with the Web Audio API. They are recognisably different, not
-realistic: there are no recorded samples, which is also why a switch takes
-effect on the very next note.
-
-## Promises and judgement
-
-The automated checks hold the promises above to account: a second person's
-open page sees a placed note, an erased note and an instrument switch within
-a second; two people writing the same square at once end up with the same
-result; two people with the same name are still two people; a request can't
-claim to be someone else; bad input is refused; every script the page loads
-actually loads; and the garden survives a server restart.
-
-Whether it *feels* like making music together — whether a stranger gets from
-the link to a sound without help, whether Bob's instrument switch lands as a
-pleasant surprise or an annoyance — is a judgement for people trying it side
-by side.
-
-## Deliberate limits
-
-There are no accounts, passwords, rooms, chat, saved songs or undo. Your
-identity is a random session cookie in this browser; clear it and you'll join
-as someone new. Anyone with the link can change or erase any note, including
-yours — that's the design, not an accident. Each person's playback runs on
-their own clock, so two people pressing Play at different moments hear the
-same music offset in time. Nicknames are visible to everyone, so don't use
-anything you'd rather keep private.
+**AUTHOR INPUT:** Confirm or revise this argument after listening and the
+[URL-only playtest](docs/submission/human-playtest.md). The linked localhost
+candidate is local; add the verified course Fly URL and final release record
+after authorized deployment. See [the current walkthrough](docs/little-chorus.md)
+for controls, starting and continuing a work.

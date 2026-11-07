@@ -1,136 +1,146 @@
-# SoundGarden — process overview
+# Little Chorus — process overview
 
-## From the brief to a deliberate scope
+> **Author review draft.** Prepared with coding-agent assistance from recorded requests and repository evidence. Personal judgements and marked author inputs need Alison’s review. No human listening, uncoached playtest or next-day result is claimed.
 
-Crit 9's requirement is precise:
-["a change one person makes reaches everyone else within about a second, without a reload"](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/crits/09-all-at-once/),
-plus one documented decision about multi-user behaviour, evaluated against
-README's own definition of good.
+## Directing toward one shared consequence
 
-My idea already depended on that requirement before I read the brief. I
-wanted a shared grid where switching instrument changes what someone *else*
-is hearing, which only works if the instrument is shared and changes travel
-fast. So the first scope decision was one garden for everyone (one grid, one
-instrument, no rooms) rather than private copies.
+My current brief defines Little Chorus for two to six friends without musical
+training. I want them to recognize a place changed because one answered the
+other. The unit of quality is a complete experience: discover, leave a sound,
+receive an answer, notice a common change and find the work again. More
+destinations or passing checks do not by themselves answer that brief.
 
-The work went through two versions. The first, NoteGrid
-([`2dfc5f0...555b2ad`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/compare/2dfc5f0...555b2ad)),
-was built from a one-paragraph sketch. It kept everything in memory and ran
-one global playback clock. That clock contradicted one of my own answers: I
-had chosen "each person plays locally", and the agent built global
-synchronised playback anyway. NoteGrid also shipped with a client that never
-loaded (below). I then wrote a much fuller design, SoundGarden: the pastel
-studio look, column-based playback, an eraser, a SQLite schema, anonymous
-session identity, structured logs, presence and an activity list. I asked for
-NoteGrid to be replaced with it
-([`fcb3ec9`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/fcb3ec9)
-for the app and tests,
-[`3767403`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/3767403)
-for the docs). This document describes SoundGarden;
-`docs/evidence-log.md` records the prompts and corrections in between.
+The repository contains earlier answers. Explicit spatial contributions landed
+in [`e1f2ed7`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/e1f2ed7),
+and durable replies in [`a79a9d3`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a79a9d3).
+Those foundations preserve who answered whom. They do not guarantee that
+players understand what changed. The current brief therefore prioritizes
+Listening Green, followed by a stage and reading nook with different uses.
 
-## The one documented decision
+## Rejection changed the criterion
 
-[`docs/decisions/001-simultaneous-edits.md`](docs/decisions/001-simultaneous-edits.md)
-is the required Crit 9 decision: what happens when two people change the same
-square near-simultaneously. Last-write-wins, decided by server arrival order
-and a monotonic `version` stamp, was chosen over a per-square lock,
-optimistic version rejection, or restricting edits to each note's own author.
-Evaluated against README's three principles — "anyone can make music,"
-"music belongs to everyone," "every contribution leaves a trace" — the
-alternatives all protect a half-second-old intention at the cost of making a
-tap sometimes silently fail, which contradicts the first principle directly.
-The real cost, named in the ADR: an overwritten note gives its author no
-warning, though the activity log and server log both still record who placed
-and who replaced it.
+I asked for stronger art and rejected attempts that fell far short of a chosen
+reference. I later clarified that coherence, harmony, a distinctive style and
+making sound together mattered more than cinematic fidelity.
+[ADR022](docs/decisions/022-shared-sound-identity.md) and
+[`56f8215`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/56f8215)
+record that correction. That changed the criterion; it did not establish success.
 
-## Stack and workflow
+The first planet then lost basic play. I reported missing running, jumping,
+direct responses, sea and kangaroo, and rejected its quality. The Little Chorus
+name and restoration priority appear in
+[`f282fde`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f282fde);
+movement returned in
+[`8e4e43b`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/8e4e43b),
+and direct response in
+[`92bef2c`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/92bef2c).
+These are regression repairs, not evidence of surpassing Little Ritual.
 
-Continuing the Node/TypeScript/Fly/single-machine shape this repo already
-uses, SoundGarden adds a real persistence layer this time: `node:sqlite`
-(built into Node, no native addon to compile for the Docker image) at
-`/data/garden.db` on the Fly volume, with four tables — `users`, `notes`,
-`garden_state`, `activity_logs` — matching Wen's supplied schema. Every
-mutation runs as one transaction that updates the relevant row(s), increments
-`garden_state.version`, and appends an activity row, so the version number
-and the audit trail can never drift apart.
+**AUTHOR INPUT:** Which rejection most changed how you personally directed
+the agent? Explain the actual change in your method; the commits alone cannot
+supply that memory.
 
-Identity is a random session token in an HttpOnly cookie; the database stores
-only its SHA-256 hash, and every mutating route resolves the acting user from
-that cookie — never from anything the request body claims. Two people with
-the same nickname get different ids, and a request can't attribute its write
-to someone else's name.
+## Keeping dependable foundations
 
-Real-time transport stays Server-Sent Events: the server pushes the complete
-`GardenState` (the full grid, instrument, online count, and recent activity)
-after every mutation and on every new connection, so a client that reconnects
-after a drop is never missing an event — it just gets the current truth
-again. Playback stays client-local: pressing Play starts only that browser's
-loop, reading the live grid and instrument at the moment each beat is
-scheduled, so another person's edit or instrument switch is heard on the very
-next beat without restarting anything.
+The candidate retains TypeScript, Node HTTP, SQLite, SSE and Three.js.
+[ADR026](docs/decisions/026-a-world-that-remembers-an-answer.md), authored in
+[`5d696e5`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/5d696e5),
+rejects both an engine rewrite and nine shallow games. A closer activity
+camera keeps existing coordinates, collision and social presence while making
+characters and sound objects legible. The cost is sphere-specific
+camera and distance logic.
 
-The three instruments are synthesised with the Web Audio API (layered sine
-harmonics for piano, a detuned sawtooth pair through a closing lowpass filter
-for guitar, a bandpass-filtered sawtooth with a vibrato LFO for saxophone) —
-recognisably different timbres, not sampled instruments, so a switch takes
-effect with no loading delay.
+The server obtains identity from the HttpOnly cookie, confirms mutations and
+keeps response metadata. SSE supplies canonical snapshots and changes; SQLite
+stores contributions across process restarts. Movement remains transient.
+Audio preference, audition, focus and camera remain local. The kangaroo cannot
+stand in for a second human. This distinction makes the multiplayer claim
+auditable without forcing every playful behaviour into persistent shared state.
 
-## A real bug that shipped, and what it changed
+Shared objects are projections of existing public contribution history, not a
+second editable work database. Root IDs retain work identity. A live direct
+reply between different authenticated authors enables the common form;
+same-cookie tabs cannot. Removed endpoints keep provenance but lose effects.
+This avoids synchronization between duplicate stores, at the cost of explicit
+grouping, ordering and variant rules that need adversarial checks.
 
-The first deployed build (NoteGrid, tagged `crit-9` at
-[`714901b`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/714901b))
-passed CI, returned 200 at `/`, and passed every spec test — but no grid ever
-appeared in a browser. The compiled `client/app.js` imported `../types.js`
-and `./audio.js`, and the server had no route for either, so both 404'd and
-the whole client script failed to load. Every test checked server responses
-and HTML; none checked what the browser could actually load.
+## A small score, not every recording on repeat
 
-I didn't catch it: the agent reported "opened it in the browser" after
-running `open`, without ever confirming the page worked. Wen did, by looking
-at it and saying the 6×6 grid and note blocks weren't there. Diagnosing it
-took two `curl` calls once someone looked.
+The new score has three original 72 BPM parts in compatible pentatonic pitches,
+with different registers and roles. Server-time bars give late joiners the
+same phase without promising sample-accurate synchronization across devices.
+Nature textures retain their own timing; short events have quiet intervals.
+Distance, voice limits, headroom and preview ducking protect intelligibility.
+The [audio handoff](docs/chorus-audio.md) explains the remaining listening work.
 
-The correction went into tests and rules, not just the code.
-`spec/client.test.ts` follows every `<script>` and `<link>` on the page and
-every `import` inside each script, and requires each to return 200. Before
-trusting it, I confirmed the old build 404s exactly those two paths. The
-server now lists every browser-loaded file explicitly. `CLAUDE.md` now says a
-green spec is not proof a page works: a UI change isn't done until a real
-browser renders it and a second session sees the change.
+When ffmpeg failed with a local library error, the build used installed LAME
+rather than altering system packages. The manifest distinguishes original generated score derivatives
+from licensed third-party recordings. Successful encoding and measured PCM
+are technical evidence; neither establishes a pleasant mix.
 
-## Verification
+## Failures changed the harness
 
-Automated (`pnpm check`, 18 tests across `spec/realtime.test.ts`,
-`spec/identity.test.ts`, `spec/client.test.ts`, plus the two required
-invariants): two independent sessions standing in for two people, asserting
-a placed note, an erased note, and an instrument switch each reach the other
-session within the crit's 1-second budget; two sessions writing the same
-square at the same time converging on one agreed value and version; presence
-counting connected people, not requests; a reconnecting session receiving
-the full current grid rather than only new events; two people sharing a
-nickname still resolving to different users; a request naming someone else's
-user id in its body still being attributed to the actual session that sent
-it; and every script and module the page loads actually resolving (the
-regression test for the bug above).
+The earlier NoteGrid served a healthy page but imported modules the server did
+not expose. The [SoundGarden correction](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/fcb3ec9)
+added import checking. That history supports the continuing CLAUDE rule that
+green specs do not prove the client works, rather than serving as current
+planet evidence.
 
-Manually verified in a real two-browser session (Chromium via Playwright,
-one context at 1280×1000, one at 390×844, screenshots kept alongside this
-work): both viewports render the full grid, palette, transport and
-instrument controls with no horizontal overflow; a note placed by one
-browser appeared in the other in under 50ms in that run; an erase by one
-browser reached the other in under 40ms; an instrument switched by one
-browser while the other was mid-playback took effect in the other's next
-beat about 47ms after the click; pressing Play in one browser did not start
-playback in the other.
+A previous planet screenshot revealed a tree crown hiding the player's body.
+[`2ead55d`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/2ead55d)
+added an actual-geometry raycast and widened the planting gap. The check failed
+before the correction. It protects a sightline, not artistic quality.
 
-Persistence was checked by placing a note and switching instrument, killing
-and restarting the server process, and confirming both survived — the point
-of putting state in SQLite on the Fly volume rather than in memory, which
-the first (NoteGrid) version of this crit's work did not do.
+A later audit found that missing both source events during a pending POST let
+its late ACK revive audio and labels while the sculpture stayed correct.
+[`92d706b`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/92d706b)
+makes ACKs receipts; six controller checks pass and fail against frozen old
+code. The browser case drops two real SSE frames before the production handler,
+then opens a fresh native connection for the actual snapshot before releasing
+the ACK. This is controlled frame loss, not natural outage timing.
 
-Not yet verified at the time of writing: the actual Fly deployment and
-Docker build for this specific SoundGarden version (see
-`docs/evidence-log.md`), and a real stranger's first few seconds with the
-app with no instruction — exactly the kind of judgement `spec/README.md`
-leaves to a person, not a script.
+The current HTTP/SSE check used two independent cookie jars and three server
+processes on isolated port 18886. It observed identical shared work, duplicate
+delivery deduplication, reconnection, two real restarts and removed-parent
+history. Four local server-to-stream update measurements ranged from 1.97 to
+2.71 ms. These establish bounded backend behaviour, not browser presentation
+latency, novice success or next-day return.
+
+In the new journal, withdrawal removed the focused button during a live
+rerender. [`51cb210`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/51cb210)
+restores the surviving action or Back button. The integrated 43-check browser
+path verifies that correction, real shared outcomes at all three places,
+quiet-browser behaviour, touch/keyboard/resize and late-acknowledgement removal.
+The source run passes 190 tests in 28 files, 63.48 s, against isolated port 18887.
+
+A rollback rehearsal initially passed 17 checks, but missed a normal restart
+losing the previous-application pointer.
+[`a3d6cf6`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a3d6cf6)
+preserves it; an expanded 20-check fixture verifies startup, switch, ordinary
+restart and rollback with all twelve tables unchanged. This failure shows why
+an operation's lifecycle needs checking beyond its successful first path. The
+[release record](docs/evidence/chorus-garden-2026-11-07.json) separates these
+runs, later visual refinements and preview promotion; none proves public deployment.
+
+## Acceptance has different observers
+
+Automation can establish identity, deterministic work state, explicit
+publication, persistence and cancellation. Developer-operated browsers can
+establish that a complete path is operable at 1920×1080 and 390×844. Neither
+proves an unfamiliar friend understands the invitation or enjoys the music.
+Those require separate observations. The [promise map](docs/submission/promise-evidence-map.md)
+connects product claims to agent rules, technical checks and human judgement.
+
+The [two-pair protocol](docs/submission/human-playtest.md) is prepared, not a
+completed study. First sound within sixty seconds, a shared answer within three
+minutes, voluntary recombination and a real next-day return remain unverified
+until observed. Tests write only isolated databases; application rollback keeps
+current data. No public deployment or main-branch push is implied by local
+acceptance.
+
+**AUTHOR INPUT:** Confirm the account and research argument, identify what you
+actually read and heard, and add only real unfamiliar-player findings. The old
+README/PROCESS mismatch was a submission defect; labelled drafts correct the
+product description while leaving personal sign-off visible. Historical
+reflections retain their original context rather than being rewritten as a
+successful Little Chorus narrative.

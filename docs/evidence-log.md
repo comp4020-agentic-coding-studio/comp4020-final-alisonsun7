@@ -2477,3 +2477,198 @@ port18885 uses another copied database. Old records and original sound
 coordinates are not migrated. Authorised first-person submission drafts are
 labelled for review and cannot invent private judgements. The official course
 pages were read; evidence and writing gaps are tracked under docs/submission.
+
+
+### A source-born common result, with separate acceptance evidence
+
+The core now has three original kinetic carriers rather than only a reply
+list/line. Commit `b3ad39c` derives stable works from existing public sources
+and durable replies. A live direct reply between different cookie-derived
+participants opens the shared form; a same-author answer still changes a work
+without pretending to be two people. Removed endpoints remain attributed but
+lose live effects. No schema, room or historical coordinate rewrite is needed.
+Commit `8c96213` adds three original 72 BPM compatible musical roles, bar entry,
+short-event intervals, local volume/focus, preview ducking and guarded playback.
+Original score provenance is distinguished from the existing licensed recordings.
+These are implementation claims, not a human verdict that the score is pleasant.
+
+Commit `51cb210` integrates the curated studio, quiet/sounding invitation,
+8-metre activity camera, canonical work choice, reachable sculptures and
+contextual dock. The three places share the relationship model but differ in
+purpose and sound reach: Green 14 m, Jam 18 m, Reading 6 m. Selecting a record
+is local; the most recently changed living work is the common displayed result.
+The companion can orient/hop near a work while remaining explicitly local.
+
+Real UI inspection found a live journal withdrawal destroyed the focused
+button on SSE rerender. The implementation now restores the surviving action
+or Back button, and the focused assertion passes in the integrated browser
+path. Native-close sequencing also keeps a distant saved-source answer walk
+from being cancelled by the dialog's queued close event. An undefined display
+font variable had left the scene title at 16 px; its scope now uses the actual
+established font. These are agent-operated observations, not novice feedback.
+
+The first current full source run passed 175 and failed one of 176 tests:
+its old provenance assertion looked for a Commons entry for every sound. ADR026
+explicitly authorizes original generated materials. The corrected check names
+only the three original scores, requires original provenance, score metadata
+and matching file/served SHA-256, while retaining the previous CC0/public-domain
+requirements for every other external recording. This is a justified test
+contract change, not an audible production fix or a general license exception.
+The final run passes **184 tests in 26 files**, 62.10 s, against runtime source
+`51cb210`. HTTP-writing specs use only independent 18887/spec.db; in-process
+specs create temporary databases. It is separate from the GPU browser run.
+
+The first integrated creation browser report contains **34 passing checks**.
+The final expanded report contains **41**, not a sum of both runs. Two actual
+independent cookie contexts use 1920×1080 and 390×844; one enters quietly. The
+script auditions and explicitly contributes, names the friend/target, observes
+actual additional rendered geometry and a bar-aligned derived harmony, reloads
+real work/identity, and checks shared-cookie non-third-authorship. The accepted
+reply is observed in the other browser in 36 ms in this local run. This is not
+a remote latency guarantee or an unprompted two-human study. Real touch,
+keyboard focus, phone first-screen Listen, cancellation, landscape resize,
+held late acknowledgements, withdrawal and an actually missed final removal
+followed by reconnect all pass. Normal API cleanup verifies no test sound is
+left playing, while all pre-existing coastal and planetary sounds are preserved.
+
+The expanded path had two retained harness failures. Its first attempt hit the
+unchanged one-change-per-second rate limit; another attempted to reach a safe
+Reading position by walking west across actual water. The corrected path uses
+real north-then-west key movement and actual-position readback. It does not
+teleport into the assertion, change old source coordinates or weaken spacing:
+the final reply is 2.772 m from its parent and 4.322 m from the pre-existing
+bird. The stage's real base stops the avatar 1.547 m from its centre. The same
+friends make another ensemble on the actual stage and a water/bird habitat at
+the actual nook; its playback range is 6 m versus the stage's 18 m. Both mute
+preferences remain intact. The old failed logs are not treated as product bugs
+that disappeared merely because a later script passed.
+
+HTTP/SSE and process checks remain their own evidence category. Isolated 18886
+uses two cookie jars and three real server PIDs, with two actual restarts and
+one continuously preserved database. Thirteen assertions cover distinct versus
+shared-cookie identity, same-author/duet results, duplicate delivery, reconnect,
+idempotent retry after restart, table equality and removed-parent history without
+revival. Four local server-to-stream samples are 1.97–2.71 ms. They exclude
+browser presentation and cannot stand in for a real next-day return.
+
+### Rollback needed a lifecycle correction too
+
+The tracked preview utility in `af8fd98` was exercised in an isolated checkout
+on 18888, using a copied scratch database and deliberately different candidate
+bytes. Seventeen checks initially passed startup/switch/rollback, wrong-PID and
+wrong-database refusal, all twelve unchanged tables and unchanged original
+18861 metadata. Subsequent review found a missing case: an ordinary restart
+without `--dist` discarded the prior application path/commit and could break a
+later rollback. Commit `a3d6cf6` retains that pointer. The expanded **20-check**
+fixture now includes normal restart before rollback, four verified listener
+processes, unchanged application bytes on restart, restored old application
+bytes on rollback and the same continuously preserved current database. The
+fixture is evidence of the utility, not an actual 18861 promotion or database
+restoration. Passing the first lifecycle did not justify claiming all later
+sequences were protected.
+
+### Writing and remaining release gates
+
+The root README and PROCESS now describe Little Chorus, and root
+research-note.md exists. All carry an upfront **Author review draft** notice.
+The user's explicit drafting authority supersedes the older blanket prohibition;
+it does not authorize fabricated reading, listening, private beliefs, friend
+reactions or retrospective reflection. The research note combines the requested
+two directions into a position that verification capacity must grow with
+throughput, and addresses the counter-case that agents can expand verification.
+The sources and their evidence limits are checked. Historical reflections are
+unchanged. The writing packet records the initial stale SoundGarden gap as
+history and the current root adoption separately.
+
+Actual final-run desktop/phone images are exported without retouching under
+`screenshots/26-chorus-*`. Reviewing them still found Reading's small carrier
+hidden behind the local body, despite the operable scripted path. A later
+art-only lateral porch offset and its focused desktop/phone/geometry checks
+remain separate from the passing 41-check run; old sound positions are not
+moved to fix a composition. The durable
+[release record](evidence/chorus-garden-2026-11-07.json) identifies completed
+artifacts, their hashes, later refinements and the remaining local promotion.
+No full current legacy regression, final 18861 cutover or public deployment is
+inferred here from the successful core. Root integration records their actual
+results when available.
+
+Still unperformed: the two unfamiliar pairs, by-ear artistic acceptance,
+voluntary recombination, physical-phone performance and real next-day return.
+The 60-second first-sound and three-minute first-response goals remain targets.
+Automation, developer UI review, human judgement and deployment are distinct;
+none is relabelled to fill a submission gap.
+
+
+### Later audit found an uncovered late-acknowledgement state
+
+After the 184-test and 41-browser-check successes, an actual-controller/audio
+race diagnostic reproduced a different case from the held-ACK assertion already
+in that browser path. While a new child POST was pending, the browser missed
+both its created and removed SSE events. A reconnect supplied the child's
+canonical tombstone, but the original delayed success response then reinserted
+that unknown child into local live-source/audio maps. The canonical sculpture
+was correct throughout: checking it alone would have missed the resurrected
+sound and label. The ignored diagnostic records live IDs before/after and
+`removedUnknownSourceRevived: true`; it executes the real controller functions
+and PlanetAudio, with supplied race states, rather than pretending to be a
+live browser test.
+
+The proposed correction treats POST acknowledgement as a receipt and feeds
+canonical work tombstones into local removal precedence. New source and real
+browser checks, followed by the final build/repeat, are pending. The earlier
+184/41 runs remain truthful but explicitly predate this guard. They must not be
+presented as proving the newly discovered case or the eventual release source.
+The [structured record](evidence/chorus-garden-2026-11-07.json) preserves that
+boundary and the diagnostic instead of rewriting the successful earlier run
+as if the race had already been covered.
+
+
+The late-ACK correction is now committed in `92d706b` for both planet and
+preserved coast: HTTP success is a receipt, while canonical accepted events
+and snapshots own live-source selection. Six regression checks pass against
+the actual current controller functions/handlers and all six fail against
+frozen old implementations. Planet checks use actual PlanetAudio source
+selection; coastal audio/render adapters expose requested IDs without claiming
+acoustic playback. Work history present and outside the bounded archive are
+both exercised. This focused result does not retroactively change the scope
+of the previous full source/browser runs.
+
+The first expanded browser attempt closed the only native stream before
+forwarding its intercepted POST, and the server legitimately returned
+`not_here`. The presence policy is retained. The revised fault fixture keeps
+real presence while dropping the two real created/removed sound frames before
+the production handler, then closes that transport and opens a new native
+EventSource using the production handlers. Actual event data, server snapshot
+and HTTP acknowledgement remain real; only delivery/order is controlled.
+Its final result is pending. It must be described as logical frame-loss fault
+injection, not an unmodified natural network outage or proof of automatic retry
+timing. The earlier 41-check path separately covers actual close/reconnect when
+no new POST is in flight.
+
+
+The guarded candidate at `2c2f587` now passes the separate full **190-test,
+28-file** source run in 63.48 s on independent 18887, and the expanded **43-check**
+actual browser path on 18885. Earlier 184/41 results remain recorded as their
+own narrower observations. The new race case proves the child is absent at
+the production handler after the two actual sound frames are dropped, receives
+its real tombstoned history through a new native connection, and then releases
+the original held HTTP receipt. No source, pin, sculpture or real audio start
+revives beyond the next bar. The separate actual stream-close/reconnect
+withdrawal case still passes. This is explicit logical frame-loss injection,
+not a fabricated server snapshot or a natural-network timing claim.
+
+The latest local shared update sample is 43 ms; the reading reply is 2.816 m
+from its target parent and 4.321 m from the pre-existing bird. These are the
+new run's observations, not numbers silently reused from the earlier run.
+Both canonical outcomes and local quiet preference remain consistent. Eight
+actual captures from that run were reviewed; a later portrait-only camera
+framing refinement and its focused phone review are still separate work.
+
+The initial coastal regression used a cloned historical world. Its third
+suite, leave-a-sound, assumed all marks/voices should be zero after removing
+its test-owned sound, while the clone correctly retained five old coastal
+sounds. The original assertions are unchanged. The full fifteen coastal
+suites are moving to an independent empty database on 18890 with a frozen
+compiled copy; the prior partial attempt and its fixture mismatch remain in
+the record. This is not evidence that the application failed to remove the
+test sound, and the original working preview is not a test target.

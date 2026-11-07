@@ -1,0 +1,1611 @@
+{
+  "date": "2026-11-07",
+  "product": "Little Chorus / 小小合鸣",
+  "status": "Candidate integration in progress; completed checks and pending gates are separate below",
+  "request": "A complete, memorable first shared creation for two to six friends without musical training, centred on Listening Green with distinct Pocket Jam and Reading Nook uses.",
+  "branch": "codex/chorus-garden",
+  "source": {
+    "baseline": "7d40be6d4a18581c1e0c1312b0a82e53d6b71dc5",
+    "decision": "5d696e5b5aab445774f3ec49b843c1cbf956e75c",
+    "sharedWorkProjection": "b3ad39c0644444eab866df4dec4a1eef544c8436",
+    "compatibleScoreAndAudio": "8c96213c3375792eed20339f9ec90d62b36b2f4f",
+    "playableGardenRuntime": "51cb210600d34bd5083c29229bf6b4f2e6db5766",
+    "initialPreviewUtility": "af8fd98e095fcde83061aad2dec8437c1470fae3",
+    "finalReleaseCommit": null,
+    "scope": "Source2c2f587 includes publication guard92d706b and the lateral Reading carrier shift. It passes the separate190-test full source run and43-check integrated three-place browser path. Earlier184/41 runs remain separately identified. Preview utilitya3d6cf6 passes20 lifecycle checks. A portrait-only camera adjustment and focused phone review, final legacy coastal regression,18861 cutover and release-tag fields remain pending.",
+    "previewUtilityRestartCorrection": "a3d6cf6ff691682c5243da792e4ed8a2d1625c0d",
+    "finalLateAcknowledgementGuardCommit": "92d706b1ffbd5f1f84f54fb88dbf499d0b423011",
+    "readingDisplayOffset": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
+    "guardedRuntime": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2"
+  },
+  "rollback": {
+    "tag": "before-chorus-garden-2026-11-07",
+    "dataRule": "Switch application files while retaining the same current database. Never restore a historical database for visual rollback.",
+    "script": "scripts/local-preview.py",
+    "compatibilityLimit": "An older catalogue may omit score choices and effects introduced by this edition. Their database sources/replies remain intact and become available again under the newer application; rollback is data-preserving, not a promise of identical feature support."
+  },
+  "implementation": {
+    "runtimeDependenciesAdded": 0,
+    "schemaChanges": 0,
+    "coordinateReinterpretation": false,
+    "preserved": "Existing cookie identity, original planet/coast rooms and contributions, authors, locations, timestamps, tombstones, operations and durable response metadata.",
+    "sharedWork": "Server projection of public source/reply history. Stable root-source ID. A living direct reply between different authenticated contributors unlocks the shared form. Same-cookie tabs, NPCs and the local companion cannot qualify.",
+    "canonicalDisplay": "The most recently changed living work at each place is selected by timestamp and ID for its dock, sculpture and resident choreography. Record browsing is local; an accepted new response can bring an older work back.",
+    "outcomes": [
+      "Water and birds/breeze: habitat canopy, paper birds and ripples",
+      "Melody/harmony and rhythm: kinetic ensemble/beat flower; two-human ensemble adds a low bar-aligned answer",
+      "Other pairings: lantern petals with travelling lights"
+    ],
+    "audio": "Three original 72 BPM pentatonic roles, shared fixed-epoch bars, unquantized natural textures, bounded short events, eight total voices, density headroom, preview ducking and local-only volume/focus/mute.",
+    "provenance": "Original generated score and derivatives are identified as original project work. Existing external recordings retain their CC0/public-domain manifest sources; no original score is relabelled Commons/CC0.",
+    "localCompanion": "Following/play remains local. The kangaroo can orient to a canonical work and hop near an ensemble; it never contributes a source or counts as another human."
+  },
+  "completed": {
+    "firstIntegratedCreationBrowser": {
+      "artifact": ".cache/chorus-creation-final/results.json",
+      "sha256": "ef4d26e6827fda8d2cbe720e9353570c73a09feed9865f530ebf4e7e4496698d",
+      "report": {
+        "type": "automated developer check",
+        "failed": false,
+        "checks": [
+          {
+            "label": "Shift plus movement changes the actual ground position and the friend receives the running pose"
+          },
+          {
+            "label": "Space lifts the real local body above its ground and the other browser renders the shared jump before landing"
+          },
+          {
+            "label": "two independent cookie identities, rather than two shared-cookie tabs, enter the actual world"
+          },
+          {
+            "label": "the welcome offers a sounding visit and a genuinely quiet visit"
+          },
+          {
+            "label": "keyboard Listen starts a real private buffer without publishing anything"
+          },
+          {
+            "label": "the native studio traps keyboard focus and movement keys do not move the character behind it"
+          },
+          {
+            "label": "the first real ingredient visibly grows one attributed source and leaves room for a friend's answer"
+          },
+          {
+            "label": "the friend's first contribution leaves the quiet browser silent"
+          },
+          {
+            "label": "the reply names the actual friend and the exact ingredient being answered"
+          },
+          {
+            "label": "the other open session sees the shared duet within one second of the accepted reply",
+            "detail": {
+              "latencyMs": 37
+            }
+          },
+          {
+            "label": "the server's durable reply chain forms one ensemble work with the two real contributors"
+          },
+          {
+            "label": "the actual renderer draws additional sculptural geometry after the duet, with solo and duet screenshots retained",
+            "detail": {
+              "soloRender": {
+                "calls": 540,
+                "triangles": 225186
+              },
+              "duetRender": {
+                "calls": 556,
+                "triangles": 228314
+              }
+            }
+          },
+          {
+            "label": "the real sounding browser schedules three compatible bar-aligned voices, including the duet's derived harmony"
+          },
+          {
+            "label": "forming the duet changes the quiet visitor's world and residents without starting local audio"
+          },
+          {
+            "label": "an extra shared-cookie tab stays the same person and cannot supply a third contributor"
+          },
+          {
+            "label": "a real reload restores the same work, identity, source relationship and both original authors"
+          },
+          {
+            "label": "at 390 × 844, contribution, records, mute, run, jump and all four movement directions have reachable 44px targets",
+            "detail": [
+              {
+                "text": "Answer Creation Ada",
+                "x": 29,
+                "y": 645,
+                "width": 144.953125,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Our works",
+                "x": 181.953125,
+                "y": 645,
+                "width": 85.046875,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Sound off",
+                "x": 284,
+                "y": 5.5,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Run Shift",
+                "x": 215,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Jump Space",
+                "x": 300,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move forward",
+                "x": 64,
+                "y": 726,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move left",
+                "x": 12,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move back",
+                "x": 64,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move right",
+                "x": 116,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              }
+            ]
+          },
+          {
+            "label": "the phone's essential buttons do not overlap"
+          },
+          {
+            "label": "the scoring phone viewport has no horizontal page overflow"
+          },
+          {
+            "label": "real touch input moves the phone character, returns through a place button and performs a real jump"
+          },
+          {
+            "label": "the first curated Listen is visible and finger-sized on the phone's first screen"
+          },
+          {
+            "label": "a quiet visitor can explicitly preview on touch without publishing or turning on the shared world mix"
+          },
+          {
+            "label": "resizing an open studio to landscape keeps its content within the dialog"
+          },
+          {
+            "label": "phone Cancel and resize preserve the quiet preference and create no contribution"
+          },
+          {
+            "label": "Our works presents real authors, the exact parent relationship and the work's place"
+          },
+          {
+            "label": "withdrawing a record preserves keyboard focus inside the journal after its focused button is removed by SSE"
+          },
+          {
+            "label": "a removed real contribution cannot be revived or replayed by its held late acknowledgement"
+          },
+          {
+            "label": "withdrawing the reply closes the shared form in both browsers while all sources, authors and reply history remain"
+          },
+          {
+            "label": "withdrawal removes the derived harmony while preserving the other visitor's quiet preference"
+          },
+          {
+            "label": "the disconnected browser actually misses a real final withdrawal"
+          },
+          {
+            "label": "a real reconnect clears the missed source and active sculpture while preserving the complete authored work in its archive"
+          },
+          {
+            "label": "the complete new creation path preserves every pre-existing planet and coastal contribution"
+          },
+          {
+            "label": "no runtime browser errors",
+            "detail": []
+          },
+          {
+            "label": "normal API cleanup leaves the complete work archived and no test sound playing"
+          }
+        ],
+        "errors": [],
+        "cleanupErrors": []
+      },
+      "passed": true,
+      "checks": 34,
+      "appUrl": "http://localhost:18885",
+      "independentBrowserContexts": 2,
+      "viewports": [
+        {
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "purpose": "resize while studio open"
+        }
+      ],
+      "browser": "Chrome through Playwright, Metal GPU; launch also uses --autoplay-policy=no-user-gesture-required for instrumentation. Quiet-browser non-start is explicitly checked; this is not a browser-policy certification.",
+      "classification": "Automated developer-operated browser verification, not an unfamiliar-human playtest.",
+      "scope": "34 saved checks: explicit auditions/contributions, two real cookie identities, real rendered shared ensemble and harmony, 37 ms accepted-reply-to-other-browser observation, quiet preference, same-cookie non-third-author, reload, touch/keyboard/resize, focus preservation, held late ACK/removal, missed-removal reconnect, pre-existing history preservation and normal soft cleanup. A later expanded three-area run remains pending."
+    },
+    "httpAndActualProcessRestart": {
+      "artifact": ".cache/chorus-review/chorus-persistence/results.json",
+      "sha256": "474ac2dc7598ba99282f9a1f7f94d997e300b138470b395261444032310653b0",
+      "report": {
+        "kind": "developer HTTP/SSE and process-restart check",
+        "base": "http://127.0.0.1:18886",
+        "independentCookieJars": 2,
+        "browserUI": false,
+        "audioAudition": false,
+        "pids": [
+          7623,
+          7624,
+          7625
+        ],
+        "updateLatenciesMs": [
+          2.63,
+          2.71,
+          1.97,
+          2.03
+        ],
+        "checks": [
+          "two cookie jars identify two people; a shared-cookie stream remains the same person",
+          "one person's own answer changes an instrument without pretending to be a duet",
+          "a real friend's answer opens one identical three-source work in both streams within one second",
+          "simultaneous duplicate HTTP delivery creates one source and one event per observer",
+          "a disconnected friend returns to the current work and their original participant",
+          "actual SIGTERM and a new server process preserve the room and both cookie identities",
+          "every durable table is byte-equivalent by row after startup; source authors, positions, timestamps and links are unchanged",
+          "a committed retry after process restart reads its original acknowledgement without needing a new position",
+          "removing the parent closes the duet, keeps the work identity and history, and changes both observers' live result",
+          "a second real restart preserves the removed parent's attribution and tombstone without reviving its sound",
+          "a fresh late reply cannot recreate a removed source or silently become an ordinary contribution",
+          "the historical conversation retains the real friend's source and removed parent after restart",
+          "verification used three separate server PIDs and one continuously preserved scratch database"
+        ],
+        "beforeRestartTableHash": "e205d22d32d76b3b269139761ae1b5e12a4986611fee38e68f2f81f35426c391",
+        "afterRemovalTableHash": "4a625bda739487abfa75c5d76bc89ece474ff853fae303a8f1fbccbccc507c0a",
+        "maxUpdateLatencyMs": 2.71,
+        "passed": true
+      },
+      "passed": true,
+      "checks": 13,
+      "classification": "HTTP/SSE and actual server-process checks; no browser UI, ear listening or real next-day visit.",
+      "scope": "Isolated 18886; two independent cookie jars; three PIDs and two real restarts using one continuous scratch database. Four local server-to-stream latencies do not include browser presentation or remote network latency."
+    },
+    "initialPreviewUtilityFixture": {
+      "artifact": ".cache/ensemble/preview-utility-fixture-results.json",
+      "sha256": "e228f2d0cfb70aa147fa0c1eae9139f0031a9342a1212ac02457f29f4e217c2d",
+      "report": {
+        "kind": "isolated copy of tracked preview utility",
+        "port": 18888,
+        "originalPreviewPort": 18861,
+        "sourcePreviewMetadataSha256": "0f62c3df0ac02b81680fc54a852ce73110f2ddc86a4cafc73a489fee6867e131",
+        "phases": {
+          "firstStart": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38620,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          },
+          "wrongRecordedPid": {
+            "exitCode": 1,
+            "output": "",
+            "error": "The listener does not match the recorded preview. No process stopped."
+          },
+          "wrongDatabase": {
+            "exitCode": 1,
+            "output": "",
+            "error": "This checkout already records another port/database. Use an isolated checkout for scratch previews; the current history was not changed."
+          },
+          "switch": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38665,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          },
+          "normalRestart": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38716,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          },
+          "rollback": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38751,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          }
+        },
+        "checks": [
+          "18888 is unused before the isolated fixture starts",
+          "the consistent backup contains no active private stay",
+          "first start's recorded PID is the actual 18888 listener",
+          "first start serves the fixture's actual compiled bytes",
+          "all persistent rows remain identical after first startup",
+          "wrong recorded PID is refused without stopping the real fixture listener",
+          "a mismatching database is refused without touching either history or listener",
+          "refused operations leave every fixture row unchanged",
+          "switch replaces only its own process with a new verified listener",
+          "switch serves the deliberately changed candidate bytes",
+          "all persistent rows remain identical after the application switch",
+          "the prior compiled application remains available for rollback",
+          "a routine restart replaces only its own process with another verified listener",
+          "a routine restart preserves the current application bytes and every database row",
+          "a routine restart retains the prior compiled application path and commit for rollback",
+          "rollback starts another verified process on its own fixture port",
+          "rollback restores original application bytes rather than old data",
+          "all twelve persistent tables remain identical through startup, switch, routine restart and rollback",
+          "all four application processes use the same continuously preserved fixture database path",
+          "the real 18861 preview metadata is byte-for-byte unchanged"
+        ],
+        "tables": {
+          "memories": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "participants": {
+            "rows": 39,
+            "sha256": "ceefebe212708881bb58735ff46d8fc01fff448a118aaecb3e6d815671b8acd7"
+          },
+          "placed_sounds": {
+            "rows": 44,
+            "sha256": "adca2c4bc5f079534320e2000da8db6d5294d02e765dd8088014655e11884055"
+          },
+          "placements": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "scenes": {
+            "rows": 2,
+            "sha256": "840269eb592f274c692d94a12e0bba4bd86086e5a8cb5e742bdbb2a65ca68658"
+          },
+          "session_environments": {
+            "rows": 2,
+            "sha256": "f051254a97e25f3adf91778929d3ff310da6e92af7af619de02b4832d7340920"
+          },
+          "session_events": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "sessions": {
+            "rows": 2,
+            "sha256": "5f1e05ba49b15fc80216defef830b83b9a004744b49b3ac92e5db949b168c73f"
+          },
+          "sound_assets": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "sound_operations": {
+            "rows": 28,
+            "sha256": "249507ecda15c96b81cb419473b8a9bf24ddbe59748d5cf0b20e0e1581dc282e"
+          },
+          "sound_replies": {
+            "rows": 13,
+            "sha256": "498e6c1aeaca41e64844b9868dce6504ae99f49b39a32897c8dbbb5ff2ade4d8"
+          },
+          "users": {
+            "rows": 35,
+            "sha256": "15de52a7943c1c946a1c0f1398c423be5f0e3d4924ca377b9e372f17b1e69e74"
+          }
+        },
+        "oldServedSha256": "2ffa1784fb6aced392803002a5856baea949bb8c367246ffd3bde2cf1035eaaa",
+        "switchedServedSha256": "5946583837633f7331f42d3ccaa1fdf31807a2279df7299c2c618ae06e76f531",
+        "verifiedAssets": 47,
+        "passed": true,
+        "ownListenerStopped": true,
+        "realPreviewMetadataUnchanged": true
+      },
+      "passed": true,
+      "checks": 20,
+      "classification": "An isolated copy on 18888; not a promotion of the real 18861 preview.",
+      "scope": "Initial 17 checks preserve all twelve fixture tables through startup/switch/rollback; reject wrong PID and wrong database; original 18861 metadata unchanged. It did not cover retaining rollback metadata through a normal no-dist restart. A newly discovered gap in that path requires a repeat and is not hidden by these passing results."
+    },
+    "currentPreviewUtilityFixture": {
+      "artifact": ".cache/ensemble/preview-utility-fixture-results.json",
+      "sha256": "e228f2d0cfb70aa147fa0c1eae9139f0031a9342a1212ac02457f29f4e217c2d",
+      "report": {
+        "kind": "isolated copy of tracked preview utility",
+        "port": 18888,
+        "originalPreviewPort": 18861,
+        "sourcePreviewMetadataSha256": "0f62c3df0ac02b81680fc54a852ce73110f2ddc86a4cafc73a489fee6867e131",
+        "phases": {
+          "firstStart": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38620,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          },
+          "wrongRecordedPid": {
+            "exitCode": 1,
+            "output": "",
+            "error": "The listener does not match the recorded preview. No process stopped."
+          },
+          "wrongDatabase": {
+            "exitCode": 1,
+            "output": "",
+            "error": "This checkout already records another port/database. Use an isolated checkout for scratch previews; the current history was not changed."
+          },
+          "switch": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38665,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          },
+          "normalRestart": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38716,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          },
+          "rollback": {
+            "exitCode": 0,
+            "error": "",
+            "summary": {
+              "url": "http://localhost:18888/planet",
+              "pid": 38751,
+              "allRowsPreserved": true,
+              "verifiedAssets": 47
+            }
+          }
+        },
+        "checks": [
+          "18888 is unused before the isolated fixture starts",
+          "the consistent backup contains no active private stay",
+          "first start's recorded PID is the actual 18888 listener",
+          "first start serves the fixture's actual compiled bytes",
+          "all persistent rows remain identical after first startup",
+          "wrong recorded PID is refused without stopping the real fixture listener",
+          "a mismatching database is refused without touching either history or listener",
+          "refused operations leave every fixture row unchanged",
+          "switch replaces only its own process with a new verified listener",
+          "switch serves the deliberately changed candidate bytes",
+          "all persistent rows remain identical after the application switch",
+          "the prior compiled application remains available for rollback",
+          "a routine restart replaces only its own process with another verified listener",
+          "a routine restart preserves the current application bytes and every database row",
+          "a routine restart retains the prior compiled application path and commit for rollback",
+          "rollback starts another verified process on its own fixture port",
+          "rollback restores original application bytes rather than old data",
+          "all twelve persistent tables remain identical through startup, switch, routine restart and rollback",
+          "all four application processes use the same continuously preserved fixture database path",
+          "the real 18861 preview metadata is byte-for-byte unchanged"
+        ],
+        "tables": {
+          "memories": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "participants": {
+            "rows": 39,
+            "sha256": "ceefebe212708881bb58735ff46d8fc01fff448a118aaecb3e6d815671b8acd7"
+          },
+          "placed_sounds": {
+            "rows": 44,
+            "sha256": "adca2c4bc5f079534320e2000da8db6d5294d02e765dd8088014655e11884055"
+          },
+          "placements": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "scenes": {
+            "rows": 2,
+            "sha256": "840269eb592f274c692d94a12e0bba4bd86086e5a8cb5e742bdbb2a65ca68658"
+          },
+          "session_environments": {
+            "rows": 2,
+            "sha256": "f051254a97e25f3adf91778929d3ff310da6e92af7af619de02b4832d7340920"
+          },
+          "session_events": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "sessions": {
+            "rows": 2,
+            "sha256": "5f1e05ba49b15fc80216defef830b83b9a004744b49b3ac92e5db949b168c73f"
+          },
+          "sound_assets": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "sound_operations": {
+            "rows": 28,
+            "sha256": "249507ecda15c96b81cb419473b8a9bf24ddbe59748d5cf0b20e0e1581dc282e"
+          },
+          "sound_replies": {
+            "rows": 13,
+            "sha256": "498e6c1aeaca41e64844b9868dce6504ae99f49b39a32897c8dbbb5ff2ade4d8"
+          },
+          "users": {
+            "rows": 35,
+            "sha256": "15de52a7943c1c946a1c0f1398c423be5f0e3d4924ca377b9e372f17b1e69e74"
+          }
+        },
+        "oldServedSha256": "2ffa1784fb6aced392803002a5856baea949bb8c367246ffd3bde2cf1035eaaa",
+        "switchedServedSha256": "5946583837633f7331f42d3ccaa1fdf31807a2279df7299c2c618ae06e76f531",
+        "verifiedAssets": 47,
+        "passed": true,
+        "ownListenerStopped": true,
+        "realPreviewMetadataUnchanged": true
+      },
+      "passed": true,
+      "checks": 20,
+      "sourceCommit": "a3d6cf6ff691682c5243da792e4ed8a2d1625c0d",
+      "classification": "Isolated 18888 application lifecycle fixture, not real 18861 promotion.",
+      "scope": "20 checks include startup, wrong-PID/database refusal, application switch, routine restart retaining previousDist/previousCommit, rollback to original application bytes and all twelve continuously preserved database tables. Original 18861 metadata remains byte-for-byte unchanged."
+    },
+    "canonicalPublicationGuardUnit": {
+      "passed": true,
+      "files": 2,
+      "tests": 6,
+      "sourceCommit": "92d706b1ffbd5f1f84f54fb88dbf499d0b423011",
+      "positive": {
+        "artifact": ".cache/ensemble/publication-canonical-pass.log",
+        "sha256": "017e15b8aefcfff53e8bf481df22b3f3df27e42eb99fac2c2e3df65d7ab7ec28"
+      },
+      "negativeControls": [
+        {
+          "artifact": ".cache/ensemble/planet-publication-old-ack-negative.log",
+          "sha256": "03791ae2e54a63ca1a543efe4837b7c1d178afd6f3258e6af06da2f8cee2d5b8",
+          "testsFailed": 3,
+          "scope": "Frozen pre-fix planet controller, not mutated production code"
+        },
+        {
+          "artifact": ".cache/ensemble/coastal-publication-old-ack-negative.log",
+          "sha256": "c36140aa446832b5cf2e70425a929b50a0048d7b974466bfd46bb79bb5b3f5ce",
+          "testsFailed": 3,
+          "scope": "Frozen pre-fix coastal controller, not mutated production code"
+        }
+      ],
+      "scope": "Actual controller functions and complete SSE handlers are extracted from current source. Planet checks use actual PlanetAudio source-selection methods; coast checks use inspectable audio/trail/view adapters. No GPU, acoustic output or live browser behaviour is implied.",
+      "cases": [
+        "Unknown removed child after reconnect with retained work history",
+        "Unknown removed child outside the bounded archive",
+        "Successful ACK is a receipt; canonical SSE alone inserts a live source",
+        "Coast retains snapshot source/trail/drawing truth after a stale ACK",
+        "Coast waits for canonical accepted event",
+        "A tombstoned retry cannot invent a removal actor or duplicate public activity"
+      ]
+    },
+    "preGuardFullSpecifications": {
+      "artifact": ".cache/ensemble/spec-final-results.json",
+      "sha256": "9c94ccfa77d5ea3c61ae4ea288a442b6f91d8d9282ed17f54492e9c0a26c8f88",
+      "report": {
+        "kind": "full final developer specification run",
+        "appUrl": "http://localhost:18887",
+        "database": ".cache/ensemble/spec.db",
+        "serverPid": 36424,
+        "build": ".cache/ensemble/spec-dist",
+        "readme": "current root README via symlink loaded on new server process",
+        "typecheck": {
+          "command": "node node_modules/typescript/bin/tsc --noEmit",
+          "exitCode": 0,
+          "log": ".cache/ensemble/typecheck-final.log"
+        },
+        "buildCheck": {
+          "command": "node node_modules/typescript/bin/tsc -p tsconfig.build.json --outDir .cache/ensemble/spec-next-final-dist",
+          "exitCode": 0
+        },
+        "vitest": {
+          "command": "APP_URL=http://localhost:18887 node node_modules/vitest/vitest.mjs run",
+          "exitCode": 0,
+          "filesPassed": 26,
+          "testsPassed": 184,
+          "duration": "62.10s (tests 95%, import 4%, transform 1%)",
+          "log": ".cache/ensemble/spec-final.log",
+          "sha256": "1c5e513f6f5e2bd6890054a1de56f2139110dae0bc8ef353da63626b0109eca0"
+        },
+        "scope": "HTTP-writing specs target only independent 18887/spec.db; in-process specs create their own temporary SQLite databases. No GPU/browser run, no writes to 18861 or 18885."
+      },
+      "passed": true,
+      "files": 26,
+      "tests": 184,
+      "durationSeconds": 62.1,
+      "scope": "Independent HTTP-writing server 18887/spec.db; in-process specs use temporary databases. Actual source 51cb210. No GPU/browser or 18861/18885 writes. A full spec result is not by-ear approval. This is the pre-final-guard run: a later unknown in-flight source ACK race needs new checks after the correction."
+    },
+    "preGuardThreePlaceCreationBrowser": {
+      "artifact": ".cache/chorus-creation-final-verified/results.json",
+      "sha256": "44350ddd69b7f76ccd38814044b26944f04f313b5dbc75b1142c60275f539958",
+      "report": {
+        "type": "automated developer check",
+        "failed": false,
+        "checks": [
+          {
+            "label": "Shift plus movement changes the actual ground position and the friend receives the running pose"
+          },
+          {
+            "label": "Space lifts the real local body above its ground and the other browser renders the shared jump before landing"
+          },
+          {
+            "label": "two independent cookie identities, rather than two shared-cookie tabs, enter the actual world"
+          },
+          {
+            "label": "the welcome offers a sounding visit and a genuinely quiet visit"
+          },
+          {
+            "label": "keyboard Listen starts a real private buffer without publishing anything"
+          },
+          {
+            "label": "the native studio traps keyboard focus and movement keys do not move the character behind it"
+          },
+          {
+            "label": "the first real ingredient visibly grows one attributed source and leaves room for a friend's answer"
+          },
+          {
+            "label": "the friend's first contribution leaves the quiet browser silent"
+          },
+          {
+            "label": "the reply names the actual friend and the exact ingredient being answered"
+          },
+          {
+            "label": "the other open session sees the shared duet within one second of the accepted reply",
+            "detail": {
+              "latencyMs": 36
+            }
+          },
+          {
+            "label": "the server's durable reply chain forms one ensemble work with the two real contributors"
+          },
+          {
+            "label": "the actual renderer draws additional sculptural geometry after the duet, with solo and duet screenshots retained",
+            "detail": {
+              "soloRender": {
+                "calls": 544,
+                "triangles": 226234
+              },
+              "duetRender": {
+                "calls": 560,
+                "triangles": 229362
+              }
+            }
+          },
+          {
+            "label": "the real sounding browser schedules three compatible bar-aligned voices, including the duet's derived harmony"
+          },
+          {
+            "label": "forming the duet changes the quiet visitor's world and residents without starting local audio"
+          },
+          {
+            "label": "an extra shared-cookie tab stays the same person and cannot supply a third contributor"
+          },
+          {
+            "label": "a real reload restores the same work, identity, source relationship and both original authors"
+          },
+          {
+            "label": "at 390 × 844, contribution, records, mute, run, jump and all four movement directions have reachable 44px targets",
+            "detail": [
+              {
+                "text": "Answer Creation Ada",
+                "x": 29,
+                "y": 645,
+                "width": 144.953125,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Our works",
+                "x": 181.953125,
+                "y": 645,
+                "width": 85.046875,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Sound off",
+                "x": 284,
+                "y": 5.5,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Run Shift",
+                "x": 215,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Jump Space",
+                "x": 300,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move forward",
+                "x": 64,
+                "y": 726,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move left",
+                "x": 12,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move back",
+                "x": 64,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move right",
+                "x": 116,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              }
+            ]
+          },
+          {
+            "label": "the phone's essential buttons do not overlap"
+          },
+          {
+            "label": "the scoring phone viewport has no horizontal page overflow"
+          },
+          {
+            "label": "real touch input moves the phone character, returns through a place button and performs a real jump"
+          },
+          {
+            "label": "the first curated Listen is visible and finger-sized on the phone's first screen"
+          },
+          {
+            "label": "a quiet visitor can explicitly preview on touch without publishing or turning on the shared world mix"
+          },
+          {
+            "label": "resizing an open studio to landscape keeps its content within the dialog"
+          },
+          {
+            "label": "phone Cancel and resize preserve the quiet preference and create no contribution"
+          },
+          {
+            "label": "Our works presents real authors, the exact parent relationship and the work's place"
+          },
+          {
+            "label": "withdrawing a record preserves keyboard focus inside the journal after its focused button is removed by SSE"
+          },
+          {
+            "label": "a removed real contribution cannot be revived or replayed by its held late acknowledgement"
+          },
+          {
+            "label": "withdrawing the reply closes the shared form in both browsers while all sources, authors and reply history remain"
+          },
+          {
+            "label": "withdrawal removes the derived harmony while preserving the other visitor's quiet preference"
+          },
+          {
+            "label": "the disconnected browser actually misses a real final withdrawal"
+          },
+          {
+            "label": "a real reconnect clears the missed source and active sculpture while preserving the complete authored work in its archive"
+          },
+          {
+            "label": "answering a distant saved sound closes the real journal before starting its walk and returns keyboard focus to the canvas"
+          },
+          {
+            "label": "a quick manual key and Cancel stop the distant reply intent without publishing or changing the historical source"
+          },
+          {
+            "label": "holding real movement toward the beat flower stops the avatar outside its physical base instead of crossing the sculpture",
+            "detail": {
+              "x": 10,
+              "z": -7.453,
+              "distance": 1.5470000000000004
+            }
+          },
+          {
+            "label": "the same friends can make a second bar-based ensemble at the actual Pocket Jam Stage without changing rooms"
+          },
+          {
+            "label": "an existing place offers a clear way to begin a new work instead of forcing a reply to its old sound"
+          },
+          {
+            "label": "water answered by a friend's bird creates a different shared canopy at the actual Reading Nook",
+            "detail": {
+              "x": -15.842,
+              "z": 9.862,
+              "coast": 9.75455012210292,
+              "water": 2.771985690635878,
+              "oldBird": 4.32157454794423
+            }
+          },
+          {
+            "label": "the quiet nook has a smaller real playback radius than the stage and shared transformations do not undo either visitor's mute",
+            "detail": {
+              "reading": 6,
+              "stage": 18
+            }
+          },
+          {
+            "label": "the complete new creation path preserves every pre-existing planet and coastal contribution"
+          },
+          {
+            "label": "no runtime browser errors",
+            "detail": []
+          },
+          {
+            "label": "normal API cleanup leaves the complete work archived and no test sound playing"
+          }
+        ],
+        "errors": [],
+        "cleanupErrors": []
+      },
+      "passed": true,
+      "checks": 41,
+      "appUrl": "http://localhost:18885",
+      "runtimeSourceCommit": "51cb210600d34bd5083c29229bf6b4f2e6db5766",
+      "independentBrowserContexts": 2,
+      "classification": "Automated developer browser path, not an unfamiliar-human playtest or by-ear judgement.",
+      "viewports": [
+        {
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "purpose": "resize while studio open"
+        }
+      ],
+      "browser": "Chrome through Playwright with Metal GPU; launch also includes --autoplay-policy=no-user-gesture-required. Explicit quiet preference is checked; this is not independent browser-policy certification.",
+      "scope": "41 passing checks include the entire first creation path, distant saved-source native journal-to-walk, immediate cancellation, actual Stage base collision, a second real ensemble at Pocket Jam, starting another root, and water/bird habitat at Reading Nook. Separate quiet-browser preference remains intact. Final actual scene placement checks use keyboard input/readback, never synthetic positions or changed historical sound coordinates.",
+      "details": {
+        "sharedUpdateLatencyMs": 36,
+        "stageBaseStopMetres": 1.547,
+        "readingReplyDistanceFromParentMetres": 2.771985690635878,
+        "readingDistanceFromExistingBirdMetres": 4.32157454794423,
+        "sourceRangesMetres": {
+          "reading": 6,
+          "stage": 18
+        }
+      },
+      "limitation": "Subsequent Reading Nook visual occlusion correction is a separate later source/check; do not label this 41-check run as covering that change. It also predates the later missing-create-and-remove late-ACK race correction; its held-ACK test had an already-known tombstone and did not cover that unknown-source case."
+    },
+    "fullSpecifications": {
+      "artifact": ".cache/ensemble/spec-canonical-final.log",
+      "sha256": "20bb1f759ead73aee799c6a01363d52aa243a218df5052f9cec7292eb20c0f69",
+      "passed": true,
+      "files": 28,
+      "tests": 190,
+      "durationSeconds": 63.48,
+      "runtimeSourceCommit": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
+      "serverPid": 48608,
+      "appUrl": "http://localhost:18887",
+      "database": ".cache/ensemble/spec.db",
+      "build": ".cache/ensemble/spec-dist",
+      "scope": "Final canonical source run after92d706b publication ownership guards and2c2f587 Reading carrier shift. HTTP-writing specs use only independent18887; in-process specs use temporary databases. No GPU/browser,18861 or18885 writes. A later portrait-only camera framing adjustment requires focused phone review, not a relabelled190-test run.",
+      "machineRecord": {
+        "artifact": ".cache/ensemble/spec-canonical-final-results.json",
+        "sha256": "24cb7f58230473940d2ba5001e5c7898a22e8653d818b12432824af8c2de3dcb",
+        "report": {
+          "kind": "full final developer specification run after canonical playback ownership correction",
+          "appUrl": "http://localhost:18887",
+          "database": ".cache/ensemble/spec.db",
+          "serverPid": 48608,
+          "build": ".cache/ensemble/spec-dist",
+          "source": {
+            "publicationCorrection": "92d706b1ffbd5f1f84f54fb88dbf499d0b423011",
+            "readingCarrierOffset": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
+            "appSourceMatches2c2f587": true,
+            "allCompiledFilesMatchCombinedCandidate": true,
+            "compiledFilesCompared": 54,
+            "compiledManifestSha256": "d7a7065ef480ed7d8cffe6740956df5ff758144aaf85dc8ca0478795d9878ca1"
+          },
+          "typecheck": {
+            "command": "node node_modules/typescript/bin/tsc --noEmit",
+            "exitCode": 0,
+            "log": ".cache/ensemble/typecheck-canonical-confirmation.log"
+          },
+          "buildCheck": {
+            "command": "node node_modules/typescript/bin/tsc -p tsconfig.build.json --outDir .cache/ensemble/spec-next-canonical-dist",
+            "exitCode": 0,
+            "log": ".cache/ensemble/spec-canonical-build.log"
+          },
+          "readme": {
+            "url": "http://localhost:18887/readme/",
+            "status": 200,
+            "equalsCurrentReadmeRendering": true,
+            "servedSha256": "5ef5b2bac20714fa61a686d96b4798b9322eba8b5401492738120ec6c27808c8",
+            "currentMarkdownSha256": "40558d931eae45a9dd813184290c6b09f17789162e83211a57f4c13e608f422e"
+          },
+          "vitest": {
+            "command": "APP_URL=http://localhost:18887 node node_modules/vitest/vitest.mjs run",
+            "exitCode": 0,
+            "filesPassed": 28,
+            "testsPassed": 190,
+            "duration": "63.48s (tests 94%, import 5%, transform 1%)",
+            "log": ".cache/ensemble/spec-canonical-final.log",
+            "sha256": "20bb1f759ead73aee799c6a01363d52aa243a218df5052f9cec7292eb20c0f69"
+          },
+          "scope": "Combined canonical planet/coast publication ownership correction and Reading Nook carrier offset. HTTP-writing specs target only independent 18887/spec.db; in-process specs create temporary SQLite databases. No browser/GPU run or writes to 18861/18885. Subsequent portrait-camera-only refinements require their separately scoped geometry/render checks; they are not retroactively part of this full-suite result. Earlier184/26 result retained separately."
+        }
+      }
+    },
+    "canonicalCreationBrowser": {
+      "artifact": ".cache/chorus-creation-all-guards/results.json",
+      "sha256": "1a8920ba79d1d4a6edae06eb0b7f4054e2cbd70faba18566326023fdbb9a9d70",
+      "report": {
+        "type": "automated developer check",
+        "mode": "complete three-place creation",
+        "transportFixture": "The missed-both-events case retains native presence but drops the two real sound frames before the production message handler. It then closes that transport and opens a fresh native connection using the production handlers. All HTTP acknowledgements, event data and snapshots are real; this is logical frame loss, not a claim to reproduce native network failure or retry timing.",
+        "failed": false,
+        "checks": [
+          {
+            "label": "Shift plus movement changes the actual ground position and the friend receives the running pose"
+          },
+          {
+            "label": "Space lifts the real local body above its ground and the other browser renders the shared jump before landing"
+          },
+          {
+            "label": "two independent cookie identities, rather than two shared-cookie tabs, enter the actual world"
+          },
+          {
+            "label": "the welcome offers a sounding visit and a genuinely quiet visit"
+          },
+          {
+            "label": "keyboard Listen starts a real private buffer without publishing anything"
+          },
+          {
+            "label": "the native studio traps keyboard focus and movement keys do not move the character behind it"
+          },
+          {
+            "label": "the first real ingredient visibly grows one attributed source and leaves room for a friend's answer"
+          },
+          {
+            "label": "the friend's first contribution leaves the quiet browser silent"
+          },
+          {
+            "label": "the reply names the actual friend and the exact ingredient being answered"
+          },
+          {
+            "label": "the other open session sees the shared duet within one second of the accepted reply",
+            "detail": {
+              "latencyMs": 43
+            }
+          },
+          {
+            "label": "the server's durable reply chain forms one ensemble work with the two real contributors"
+          },
+          {
+            "label": "the actual renderer draws additional sculptural geometry after the duet, with solo and duet screenshots retained",
+            "detail": {
+              "soloRender": {
+                "calls": 550,
+                "triangles": 226318
+              },
+              "duetRender": {
+                "calls": 566,
+                "triangles": 229446
+              }
+            }
+          },
+          {
+            "label": "the real sounding browser schedules three compatible bar-aligned voices, including the duet's derived harmony"
+          },
+          {
+            "label": "forming the duet changes the quiet visitor's world and residents without starting local audio"
+          },
+          {
+            "label": "an extra shared-cookie tab stays the same person and cannot supply a third contributor"
+          },
+          {
+            "label": "a real reload restores the same work, identity, source relationship and both original authors"
+          },
+          {
+            "label": "at 390 × 844, contribution, records, mute, run, jump and all four movement directions have reachable 44px targets",
+            "detail": [
+              {
+                "text": "Answer Creation Ada",
+                "x": 29,
+                "y": 645,
+                "width": 144.953125,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Our works",
+                "x": 181.953125,
+                "y": 645,
+                "width": 85.046875,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Sound off",
+                "x": 284,
+                "y": 5.5,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Run Shift",
+                "x": 215,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Jump Space",
+                "x": 300,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move forward",
+                "x": 64,
+                "y": 726,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move left",
+                "x": 12,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move back",
+                "x": 64,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move right",
+                "x": 116,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              }
+            ]
+          },
+          {
+            "label": "the phone's essential buttons do not overlap"
+          },
+          {
+            "label": "the scoring phone viewport has no horizontal page overflow"
+          },
+          {
+            "label": "real touch input moves the phone character, returns through a place button and performs a real jump"
+          },
+          {
+            "label": "the first curated Listen is visible and finger-sized on the phone's first screen"
+          },
+          {
+            "label": "a quiet visitor can explicitly preview on touch without publishing or turning on the shared world mix"
+          },
+          {
+            "label": "resizing an open studio to landscape keeps its content within the dialog"
+          },
+          {
+            "label": "phone Cancel and resize preserve the quiet preference and create no contribution"
+          },
+          {
+            "label": "Our works presents real authors, the exact parent relationship and the work's place"
+          },
+          {
+            "label": "withdrawing a record preserves keyboard focus inside the journal after its focused button is removed by SSE"
+          },
+          {
+            "label": "the author's production handler misses both the real child's creation and its removal, leaving the held child unknown locally"
+          },
+          {
+            "label": "a real reconnect snapshot imports the previously unknown removed-child history before its original acknowledgement arrives"
+          },
+          {
+            "label": "after both missed events and a fresh snapshot, the held late acknowledgement cannot revive the source, sculpture, pin or real audio even beyond the next bar"
+          },
+          {
+            "label": "withdrawing the reply closes the shared form in both browsers while all sources, authors and reply history remain"
+          },
+          {
+            "label": "withdrawal removes the derived harmony while preserving the other visitor's quiet preference"
+          },
+          {
+            "label": "the disconnected browser actually misses a real final withdrawal"
+          },
+          {
+            "label": "a real reconnect clears the missed source and active sculpture while preserving the complete authored work in its archive"
+          },
+          {
+            "label": "answering a distant saved sound closes the real journal before starting its walk and returns keyboard focus to the canvas"
+          },
+          {
+            "label": "a quick manual key and Cancel stop the distant reply intent without publishing or changing the historical source"
+          },
+          {
+            "label": "holding real movement toward the beat flower stops the avatar outside its physical base instead of crossing the sculpture",
+            "detail": {
+              "x": 10,
+              "z": -7.453,
+              "distance": 1.5470000000000004
+            }
+          },
+          {
+            "label": "the same friends can make a second bar-based ensemble at the actual Pocket Jam Stage without changing rooms"
+          },
+          {
+            "label": "an existing place offers a clear way to begin a new work instead of forcing a reply to its old sound"
+          },
+          {
+            "label": "water answered by a friend's bird creates a different shared canopy at the actual Reading Nook",
+            "detail": {
+              "x": -15.837,
+              "z": 9.756,
+              "coast": 9.75698522498367,
+              "water": 2.815882273503682,
+              "oldBird": 4.321342515464782
+            }
+          },
+          {
+            "label": "the quiet nook has a smaller real playback radius than the stage and shared transformations do not undo either visitor's mute",
+            "detail": {
+              "reading": 6,
+              "stage": 18
+            }
+          },
+          {
+            "label": "the complete new creation path preserves every pre-existing planet and coastal contribution"
+          },
+          {
+            "label": "no runtime browser errors",
+            "detail": []
+          },
+          {
+            "label": "normal API cleanup leaves the complete work archived and no test sound playing"
+          }
+        ],
+        "errors": [],
+        "cleanupErrors": []
+      },
+      "passed": true,
+      "checks": 43,
+      "runtimeSourceCommit": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
+      "appUrl": "http://localhost:18885",
+      "independentBrowserContexts": 2,
+      "viewports": [
+        {
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "purpose": "resize while studio open"
+        }
+      ],
+      "browser": "Chrome through Playwright with Metal GPU and --autoplay-policy=no-user-gesture-required instrumentation; explicit quiet preference is checked. No independent browser-policy certification.",
+      "classification": "Automated developer browser path, not an unfamiliar-human playtest or by-ear judgement.",
+      "scope": "43 checks include the complete three-place path, real move/run/jump, direct attributed replies, shared sculptural/audio consequence, quiet/preview separation, native focus/cancel/resize, known and unknown source removals, actual disconnect/reconnect, and strict old-history preservation/normal API cleanup. The unknown-source race uses the transportFixture stated verbatim in its report; no event data or server state is fabricated.",
+      "distinction": "Selective logical sound-frame loss followed by actual native stream close/new connection and fresh snapshot is a controlled fault fixture. A separate unchanged actual-close/reconnect case also passes. Neither is a claim about natural network-failure or native automatic-retry timing.",
+      "sharedUpdateLatencyMs": 43,
+      "details": {
+        "stageBaseStopMetres": 1.547,
+        "readingReplyDistanceFromParentMetres": 2.815882273503682,
+        "readingDistanceFromExistingBirdMetres": 4.321342515464782,
+        "sourceRangesMetres": {
+          "reading": 6,
+          "stage": 18
+        }
+      },
+      "limitation": "A later portrait-only camera framing adjustment is separately checked; this43-check run covers the canonical shared/audio logic and Reading carrier offset, not that final camera change."
+    }
+  },
+  "failuresAndCorrections": [
+    {
+      "observed": "Initial full spec run passed 175 and failed one provenance test out of 176. It assumed every sound must have a commons- manifest entry.",
+      "correction": "The check now permits exactly the three explicitly named original scores, requires original provenance, score metadata and matching file/served SHA-256, while retaining strict Commons CC0/public-domain checks for every other recording.",
+      "classification": "Changed test contract justified by ADR026, not a production audio defect or a blanket license relaxation.",
+      "artifacts": [
+        ".cache/ensemble/spec-all.log",
+        "spec/world.test.ts"
+      ],
+      "verifiedBy": "The final 26-file/184-test run passes."
+    },
+    {
+      "observed": "Live withdrawal removed the focused journal action during an SSE rerender, leaving native focus outside the dialog.",
+      "correction": "Restore the same surviving record action, otherwise focus the journal Back button. Native close sequencing also preserves an answer-walk after closing the journal.",
+      "artifacts": [
+        "src/client/chorus-studio.ts",
+        "spec/chorus-studio.test.ts"
+      ],
+      "verifiedBy": "Saved 34-check creation report explicitly verifies focus stays inside the journal after withdrawal; full final specs pass."
+    },
+    {
+      "observed": "A scene title inherited 16 px because an undefined font variable invalidated the shorthand.",
+      "correction": "Use the established scoped display font rather than the undefined token.",
+      "classification": "Agent-operated real UI inspection, not human artistic acceptance."
+    },
+    {
+      "observed": "The initial three-place extension was rejected with slow_down, and a later extension attempted a reading-nook clearance path across blocked water.",
+      "correction": "Respect the unchanged server rate limit; use real north-then-west keyboard walking with strict actual-position readback to avoid blocked water and existing same-kind sound spacing.",
+      "artifacts": [
+        ".cache/chorus-creation-three-places.log",
+        ".cache/chorus-creation-final-three-places.log"
+      ],
+      "status": "Verified by the final 41-check browser path. Final reading position remains 2.772 m from the target parent and 4.322 m from the pre-existing bird; no historical coordinates changed and no assertion was relaxed."
+    },
+    {
+      "observed": "Normal preview restart without --dist discarded the stored previous application pointer, which could prevent a subsequent rollback.",
+      "correction": "Preserve the previousDist/previousCommit rollback metadata through ordinary restarts.",
+      "status": "Verified in a3d6cf6 by the expanded 20-check fixture, including an ordinary restart before rollback. All twelve fixture tables remain unchanged."
+    },
+    {
+      "observed": "Final three-place screenshots showed the Reading Nook carrier still hidden behind the local player despite an operable action path.",
+      "correction": "An art-only lateral porch offset is being applied; source positions and shared work identity stay unchanged.",
+      "status": "Focused real desktop/phone captures and geometry repeat pending; automation success is not treated as sufficient visual acceptance."
+    },
+    {
+      "observed": "An in-flight new child was created and removed while its browser missed both SSE events. Reconnect supplied its canonical tombstone, but the original delayed acknowledgement inserted the previously unknown child into local live sound/audio maps. The work sculpture remained correct, so checking only canonical work state missed the playback/label resurrection.",
+      "correction": "Treat a POST acknowledgement as a receipt rather than a new authoritative source snapshot, and retain tombstones from canonical work feedback.",
+      "status": "Verified: guard92d706b, six real-controller regressions with six frozen-old failures,190-test full source run and43-check browser path. Browser fault injection drops actual created/removed sound frames while retaining valid presence, then uses a fresh native snapshot before the held receipt. No source/audio/pin/sculpture revival beyond the next bar.",
+      "diagnostic": ".cache/ensemble/late-unknown-ack-diagnostic.json"
+    },
+    {
+      "observed": "An expanded race harness initially closed the only EventSource before forwarding its intercepted POST. The server correctly refused the uncommitted contribution as not_here under the existing presence policy.",
+      "correction": "Keep real presence during the request and selectively drop the two actual source frames before the production handler; then perform a real transport close/new native connection and release the held acknowledgement after the real snapshot.",
+      "classification": "Fault-injection harness correction, not a production-policy relaxation or proof of natural offline retry timing.",
+      "status": "Revised fault fixture passes in the43-check integrated path. Actual server snapshots, HTTP acknowledgement and event data are retained; this is not natural network-failure timing."
+    },
+    {
+      "observed": "The first coastal regression attempt used a cloned historical world. leave-a-sound expected zero total marks and voices after removing its own one sound, but five original coastal sounds remained live and were correctly preserved.",
+      "correction": "Run the original unchanged15-suite coastal regression on a dedicated empty database at18890 with a frozen compiled application. Preserve the earlier partial attempt and the original world.",
+      "classification": "Fresh-world fixture assumption, not proof that the app failed to remove its owned source; no assertion is weakened.",
+      "status": "Fresh isolated legacy run pending."
+    }
+  ],
+  "pending": {
+    "previewPromotion": {
+      "status": "pending",
+      "port": 18861,
+      "required": "Fresh all-table preservation comparison, verified listener identity, served candidate bytes and current-data rollback metadata."
+    },
+    "finalReleaseCommitAndTag": {
+      "status": "pending"
+    },
+    "finalScreenshots": {
+      "status": "Eight43-check raw exports verified byte-for-byte. Post-portrait-framing focused captures pending separately.",
+      "exportedFiles": [
+        "docs/screenshots/26-chorus-final-desktop-duet.png",
+        "docs/screenshots/26-chorus-final-desktop-solo.png",
+        "docs/screenshots/26-chorus-final-phone-work.png",
+        "docs/screenshots/26-chorus-final-phone-studio.png",
+        "docs/screenshots/26-chorus-final-phone-journal.png",
+        "docs/screenshots/26-chorus-final-pocket-jam.png",
+        "docs/screenshots/26-chorus-final-reading-canopy.png",
+        "docs/screenshots/26-chorus-final-reading-canopy-phone.png"
+      ]
+    },
+    "publicDeployment": {
+      "status": "not authorized or performed in this turn",
+      "note": "Local promotion and deployment preparation do not authorize main push or public access changes."
+    },
+    "readingNookVisualRefinement": {
+      "status": "carrier shift included in43-check actual source and reviewed captures; later portrait-only framing pending",
+      "reason": "No sound coordinates, shared state, audio or collision change. Focused actual phone self/carrier review will be recorded separately from190/43."
+    },
+    "currentLegacyCoastalRegression": {
+      "status": "pending",
+      "appUrl": "http://localhost:18890",
+      "reason": "Original unmodified15 coastal suites are moving to a dedicated empty DB/frozen compiled copy. On the historical clone, the third suite assumed zero total marks/voices after removing its test sound despite five preserved pre-existing live coastal sounds. The failed fixture attempt is retained, not treated as an application-removal failure."
+    },
+    "portraitCameraReview": {
+      "status": "pending",
+      "reason": "A lower portrait camera head target should raise the full self and Reading stem above the phone work card. This is display framing only and must have actual post-change phone evidence."
+    }
+  },
+  "humanAndArtisticJudgement": {
+    "unfamiliarTwoPairPlaytest": "Not run. Protocol and blank record in docs/submission/human-playtest.md.",
+    "firstSoundWithin60Seconds": "Design target, not an observed novice result.",
+    "twoPersonReplyWithinThreeMinutes": "Design target, not an observed novice result.",
+    "voluntarySecondCombination": "Not established by scripted instructions.",
+    "pleasantnessAndMix": "No by-ear artistic approval. Concrete clips/devices/questions in docs/chorus-audio.md.",
+    "physicalPhone": "390x844 is desktop touch/viewport emulation, not physical-phone performance.",
+    "realNextDayReturn": "Not run. Actual process restarts are distinct evidence.",
+    "submissionWriting": "Root README, PROCESS and research-note now contain author-review drafts; beliefs, reading and personal experience still require author sign-off. Historical reflections unchanged."
+  },
+  "pushed": false,
+  "deployed": false,
+  "recordingRule": "Pending fields must be updated only from actual later results; do not sum historical test runs into a claimed final run.",
+  "diagnostics": {
+    "unknownSourceLateAcknowledgement": {
+      "artifact": ".cache/ensemble/late-unknown-ack-diagnostic.json",
+      "sha256": "ee0ad11c87148c7e4e50bdf8cd0faf322f23b51be435ebbd367bf08b4d554164",
+      "report": {
+        "kind": "read-only actual planet controller functions with an unknown in-flight source, canonical reconnect tombstone and original late ACK",
+        "afterCanonicalReconnect": {
+          "ended": [],
+          "liveIds": [
+            "snd_root"
+          ],
+          "audioSourceIds": [
+            "snd_root"
+          ],
+          "canonical": [
+            {
+              "id": "snd_root",
+              "placeId": "green",
+              "variant": "lantern",
+              "duet": false,
+              "sources": [
+                {
+                  "id": "snd_root",
+                  "byId": "ada"
+                },
+                {
+                  "id": "snd_unknown_child",
+                  "byId": "you",
+                  "replyToId": "snd_root",
+                  "removedAt": "2026-11-07T12:00:02Z"
+                }
+              ],
+              "live": [
+                "snd_root"
+              ]
+            }
+          ]
+        },
+        "afterLateAck": {
+          "ended": [],
+          "liveIds": [
+            "snd_root",
+            "snd_unknown_child"
+          ],
+          "audioSourceIds": [
+            "snd_root",
+            "snd_unknown_child"
+          ],
+          "canonical": [
+            {
+              "id": "snd_root",
+              "placeId": "green",
+              "variant": "lantern",
+              "duet": false,
+              "sources": [
+                {
+                  "id": "snd_root",
+                  "byId": "ada"
+                },
+                {
+                  "id": "snd_unknown_child",
+                  "byId": "you",
+                  "replyToId": "snd_root",
+                  "removedAt": "2026-11-07T12:00:02Z"
+                }
+              ],
+              "live": [
+                "snd_root"
+              ]
+            }
+          ]
+        },
+        "publishResult": null,
+        "removedUnknownSourceRevived": true
+      },
+      "classification": "Read-only execution of actual controller functions with actual PlanetAudio and supplied race states, not a live browser path or by-ear observation."
+    }
+  },
+  "preGuardScreenshots": [
+    {
+      "file": "docs/screenshots/26-chorus-desktop-duet.png",
+      "sourceArtifact": ".cache/chorus-creation-final-verified/chorus-creation-desktop-duet.png",
+      "sha256": "386e78347d01fb14e41467a4b4f8af60744e3182103996f6790ab2fe6c4b3850",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Final 41-check path at runtime51cb210, before the later Reading Nook display-only shift"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-desktop-solo.png",
+      "sourceArtifact": ".cache/chorus-creation-final-verified/chorus-creation-desktop-solo.png",
+      "sha256": "861b8037c84c8d69d4167d7eab9badc7f98f6179dca8d98e4104153519290164",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Final 41-check path at runtime51cb210, before the later Reading Nook display-only shift"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-phone-work.png",
+      "sourceArtifact": ".cache/chorus-creation-final-verified/chorus-creation-phone-work.png",
+      "sha256": "8aa5c73da33285c7abc738b4c8e166269eac15e2bb51d6a97dd1b47bc8b72df7",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Final 41-check path at runtime51cb210, before the later Reading Nook display-only shift"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-phone-studio.png",
+      "sourceArtifact": ".cache/chorus-creation-final-verified/chorus-creation-phone-studio.png",
+      "sha256": "6986867d564df813751b352539a837f0e785c049b181f325948a15969efbc21d",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Final 41-check path at runtime51cb210, before the later Reading Nook display-only shift"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-phone-journal.png",
+      "sourceArtifact": ".cache/chorus-creation-final-verified/chorus-creation-phone-journal.png",
+      "sha256": "4e7f6800676cf326c1e82113b7134c4d3b10d3e40abc4dcff9c5af1d4df6d7b1",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Final 41-check path at runtime51cb210, before the later Reading Nook display-only shift"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-pocket-jam.png",
+      "sourceArtifact": ".cache/chorus-creation-final-verified/chorus-creation-pocket-jam.png",
+      "sha256": "3f94e60e51397f35acb2c3609e5846ababa91d83a6ae4cb4c4d1b3c0d3e4073c",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Final 41-check path at runtime51cb210, before the later Reading Nook display-only shift"
+    }
+  ],
+  "actualScreenshots": [
+    {
+      "file": "docs/screenshots/26-chorus-final-desktop-duet.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-desktop-duet.png",
+      "sha256": "fefcc5e44b608bb5c3d4d3a9aa6b08dac4d127cb2b62b0ff1174d59380963d7b",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-desktop-solo.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-desktop-solo.png",
+      "sha256": "6905a8c40087857cc367b8621f70bac7fcd14974469d16f7d4de7c4785a3b5e0",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-phone-work.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-phone-work.png",
+      "sha256": "7e0b3ec1064071294985564afd791504da38638ca80b32cefd363c61acbe4ddc",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-phone-studio.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-phone-studio.png",
+      "sha256": "bdc10f21496514b19bf2f8249055261a9cb86072811b84d3e1d8ba7f018b963e",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-phone-journal.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-phone-journal.png",
+      "sha256": "7d0e1ab5808935a7130202c8867e16d5445b73910976fcb6414ed47637c5f9f5",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-pocket-jam.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-pocket-jam.png",
+      "sha256": "bce5a898c482d82d324e5ee472244b319d5dfc3adfb638895f8064137f88519c",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-reading-canopy.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-reading-canopy.png",
+      "sha256": "9d6cdbf7973dbfe90db803508e96660551bef7b2acca8b80f75fc01abecb0463",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-final-reading-canopy-phone.png",
+      "sourceArtifact": ".cache/chorus-creation-all-guards/chorus-creation-reading-canopy-phone.png",
+      "sha256": "3b5f07e77de167bd9ff97017540951885438475505035c63f377b7f8f314bd0a",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    }
+  ]
+}

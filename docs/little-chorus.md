@@ -1,113 +1,222 @@
-# Little Chorus: restore play, then author the coast
+# Little Chorus: a place that remembers an answer
 
-Wen selected **Little Chorus (小小合鸣)** after rejecting the first Soundfolk
-sphere's missing actions, buried sound responses and sparse scenery. ADR
-[025](decisions/025-little-chorus-play.md) records the correction. `/planet`
-retains its original `planet:morning` room and coordinates. The older coast at
-`/scene/seaside?mode=weekday` retains its own people and sound history.
+The current candidate follows [ADR026](decisions/026-a-world-that-remembers-an-answer.md):
+two to six friends without musical training answer sounds to make a place
+recognizably different. Listening Green is the main encounter. Pocket Jam and
+Reading Nook offer related experiences with different listening distances and
+rhythms. The other destinations remain explorable rather than nine separate
+games. This supersedes the prior 16-metre default framing and feature-restoration
+priority in [ADR025](decisions/025-little-chorus-play.md); it retains that
+release's movement, sea, kangaroo and dependable sound relationships.
 
-## The playable sound loop
+`/planet` keeps `planet:morning`, the existing identity and all source
+coordinates. The original coast at `/scene/seaside?mode=weekday` retains its
+own room and history. Camera, travel and listening preferences never create a
+new room or reinterpret a contribution's position.
 
-Hear or see something someone left, approach it, and choose **Respond to sound**.
-Named markers expose the actual recording and human author in the world.
-The nearby action card offers Respond, Conversation and Remove. E on the
-focused world responds to a nearby sound before offering the kangaroo action.
-Off-screen or more distant sources remain available in **Our soundscape**.
+## First visit: make a beginning
 
-A response within four metres opens the same private audition library. Farther
-away, the action starts a cancellable walk; manual movement cancels that travel.
-An explicit choice is still required to publish. The response intent offers
-Choose a response and Cancel; walking nearby later does not reopen a cancelled
-chooser. Removing a source cancels its route, preserves the child's relationship
-metadata, and prevents stale confirmations from restarting or resurrecting it.
+1. Open `/planet`, join with a nickname and animal, then choose **Enter with
+   sound** or **Explore quietly**. Quiet browsing does not prevent an explicit
+   private audition. Escape dismisses the invitation quietly; **Show the
+   invitation again** is in **Places & friends**.
+2. At Listening Green choose **Make a first sound**. The studio offers three
+   starting ingredients. **Listen** is private, becomes **Stop**, and never
+   publishes. **Cancel** returns to the world. **Explore every sound** opens
+   the complete library if you want more choice.
+3. Choose **Leave it here** once ready. The server confirms the contribution.
+   A coloured leaf/seed and the work card identify the real source and author.
+   This is a complete solo beginning; no second person is required to continue
+   exploring, auditioning, trying another ingredient or visiting another place.
+4. Open **Our works** to find the record, its ingredients, authors, replies and
+   place. **Begin a new work here** starts another root rather than answering
+   the current work. **Answer [name]** continues a saved live ingredient.
+5. To try again cheaply, answer with another choice or withdraw a sound while
+   within four metres of it. Withdrawal stops its live effect; the record
+   retains its author, time and relationship. Nothing silently republishes a
+   cancelled choice.
 
-**Conversation** shows the actual durable parent and answers, including a
-removed endpoint. Its Walk toward sound action waits for native dialog closure
-before resuming movement. Real public replies form curved threads over the
-sphere. Both endpoints must be live and public; preview audio and private
-restroom stays never enter this public loop. Labels can move beside one another
-with a leader line instead of hiding the farther visible contribution.
+This path is an instruction for trying the product, not evidence that a new
+player discovers it in sixty seconds. The [URL-only two-pair protocol](submission/human-playtest.md)
+measures that separately.
 
-## Movement and encounters
+## Two friends: hear and see the answer
 
-| Action | Desktop | Touch |
+Use separate browser profiles, an incognito profile or separate devices.
+Ordinary tabs sharing cookies are one identity even with multiple connections.
+
+One friend can leave **Warm chords** at Listening Green. The other chooses
+**Answer [friend's name]**. The studio states the exact author and ingredient
+being answered, recommends **Soft pulse** alongside contrasting alternatives,
+and keeps audition separate from publication. After the second friend leaves
+the pulse, both browsers receive the same ensemble work: its source petals
+open, the kinetic form changes, nearby residents adopt a shared-work gesture,
+and the sounding browser gains a low harmony on the next bar. A quiet visitor
+sees the change without being unmuted. **Our works** explains who answered whom.
+
+There is no single required recipe:
+
+| Live ingredients in a reply work | Recognizable result | What a different real author's live reply adds |
 | --- | --- | --- |
-| Walk | WASD or arrows | Direction buttons |
+| Water texture and bird/breeze texture | Watersong canopy, paper birds and ripples | Open shared form and the wider source-derived choreography |
+| Melody/harmony and pulse | Pocket chorus / beat flower | Open rotating form and a low musical answer on the next shared bar |
+| Other combinations | Firefly lantern | Open petals with light travelling between their ingredients |
+
+A response from the same identity still adds a real ingredient and changes the
+work. It cannot unlock the two-human form. NPCs and the companion are never
+participants in the work's contributor list. Removing a live endpoint can close
+that form; its history stays readable. Returning after a reload restores the
+same root identity, sources and authors rather than a locally invented result.
+
+## One shared sculpture, many lasting records
+
+The server derives works from actual public contribution and reply history.
+A root source provides the stable work ID and original location. Private
+restroom stays, previews and unknown sounds cannot grow a public work. No
+second mutable work table or scene-coordinate migration is required.
+
+Each of the three places displays its **most recently changed living work**,
+chosen by canonical timestamp and ID. The dock, sculpture and residents use
+that same choice. Browsing or highlighting an older record is local and does
+not replace the shared installation for someone else. Answering an older live
+ingredient changes its shared work and can bring it back to the stage. Fully
+withdrawn works remain in a bounded recent journal archive; the full durable
+conversation endpoint retains their relationship history.
+
+The sculptures are actual procedural Three.js geometry in the walkable world,
+not concept-image backdrops. Their visible bases have walking boundaries;
+clicking a reachable sculpture opens its corresponding work action. Reduced
+motion preserves its final topology, colours and authorship while reducing
+movement. Server-anchored time selects the common choreography, independent
+of local sound preference or a visitor's wall clock.
+
+## Three places with different uses
+
+| Place | Invitation | Listening range of a contribution originating there |
+| --- | --- | --- |
+| Listening Green | Begin with one ingredient; answer a friend; recognize a canopy, flower or lantern | 14 m |
+| Pocket Jam | Combine Warm chords, Soft pulse and Little bell notes; give friends different musical roles | 18 m |
+| Reading Nook | Approach, listen closely and leave a quieter natural answer | 6 m |
+
+The top place buttons move only you through the existing world. They do not
+create private copies. Ordinary walking changes the spatial blend continuously;
+source distance and direction determine what reaches you. The stage reaches
+farther than the nook, while each has the same persistent relationship rules.
+Other venues, the blue sea, beach and raised pier remain available through
+**Places & friends** and on foot. Books, furniture and the telescope are scenery,
+not promised minigames or a furniture editor.
+
+## A small compatible score and private listening
+
+**Warm chords**, **Soft pulse** and **Little bell notes** are original generated
+parts with separate harmonic, rhythmic and higher answering roles. They share
+72 BPM, four-beat bars and C-major pentatonic pitches. New musical voices enter
+on a future server-time bar; late visitors join the same phase. This is
+reasonable browser synchronization, not sample locking between audio devices.
+Nature recordings keep their own timelines. Bells, claps and other short events
+have bounded playback and quiet intervals instead of universal endless looping.
+
+Private auditions soften the world mix and stop on close/cancel. There is an
+eight-voice budget including any derived harmony, spatial falloff, density
+headroom and a compressor where supported. The [audio handoff](chorus-audio.md)
+records the score, legacy recording audit, PCM checks, lifecycle guards,
+provenance and exact human-listening questions. None is artistic approval.
+
+**Places & friends → Your listening → Work volume** affects only your mix of
+contributions. **Listen closely** is also local. **Sound off** silences the
+world and residents; someone else's contribution never turns it back on.
+Adding, answering and withdrawing are shared writes. Local volume, mute,
+camera and listening focus do not edit the shared work. Every recording and
+original score derivative remains documented in the
+[asset manifest](../public/assets-manifest.json).
+
+## Moving, characters and useful tools
+
+The default activity camera is eight metres from the character. **World
+overview** in **Places & friends** is an explicit wider view; **Back to my
+place** returns to the activity distance. The first-/third-person control and
+V remain available. Advanced look conventions are under **Moving, listening &
+looking**, rather than leading the first sound choice.
+
+| Action | Keyboard / pointer | Touch |
+| --- | --- | --- |
+| Walk | WASD, arrows, or click ground | Four direction buttons |
 | Run | Hold Shift | Run toggle |
 | Jump | Space | Jump button |
-| Respond / meet the kangaroo | E on the focused world, or visible action | Visible action button |
-| First / third person | V or header control | Header control |
-| Inspect the world | Drag; plus/minus camera distance | Drag; plus/minus controls |
+| Main nearby action | E on the focused world, or its visible button | Visible action button |
+| Inspect | Drag; camera plus/minus controls | Drag; camera controls |
+| Close a dialog | Cancel/Back or Escape | Cancel/Back |
 
-Running is 5.6 metres/second versus 3.2 walking. A jump is a real radial body
-offset with a 0.72-second arc and 0.88-metre apex. Other people receive actual
-running/jump poses through existing movement SSE. Height never changes sound
-coordinates or bypasses the authoritative restroom gate. Narrow-door collision
-uses movement substeps. Stale network poses land after 450ms without samples;
-none of this introduces persistent activity rows.
+Native dialogs pause movement, contain keyboard focus and keep typing separate
+from movement shortcuts. A live journal rerender preserves the selected action
+or returns focus to a surviving button when withdrawal removes it. Players
+retain their distinct role styling; residents are labelled NPCs on approach.
+Labels are contextual rather than an always-visible crowd of names.
 
-Meet the original volumetric kangaroo by the listening green. Invite it to
-follow, lead it to a sound, jump together, start a hopping game, or let it rest.
-It follows safe land and stays outside private rooms. This is a local companion:
-it never increments human presence, publishes sounds, starts unsolicited audio
-or claims that another human performed an action.
+The kangaroo remains a **local companion**. Invite it along, hop together or
+let it rest. Near a canonical ensemble work it can look toward the result and
+hop with the shared beat. Its following/play position remains local; it never
+adds a contributor, creates a sound or impersonates a friend's participation.
 
-The existing authoritative resident restroom visit and its explicit test remain
-under **Places & friends → Restrooms & doors → Test with a resident**. NPC and
-human occupancy share the same server gate. Running and jumping cannot evade it.
+**Places & friends** is the Tools drawer: destinations, nearby people/chat,
+visit-scoped activity, shared weather/light, local listening, invitation replay,
+overview and advanced controls. **Restrooms & doors → Test with a resident**
+lets Rowan demonstrate the authoritative occupied-door/flush sequence. Human
+and NPC occupancy use the same gate; running or jumping cannot bypass it.
+Those exploration features support the world without replacing its core work.
 
-## A coastal world with authored places
+## Run, verify and roll back
 
-The sphere now has a curved blue ocean, irregular dry/wet sand, low moving foam,
-a raised timber pier and a small sailboat. The tide pools join the shore through
-a water channel. Open water stops walking; the real pier has a walkable raised
-floor. A continuous land route still circles the globe. Existing destination
-anchors, private rooms and contribution coordinates remain in place.
+The candidate is reviewed on isolated port 18885, with separate data for HTTP
+restart checks and other tests. The working preview is
+`http://localhost:18861/planet`; confirm the promotion entry in the
+[release record](evidence/chorus-garden-2026-11-07.json) before assuming it serves
+this candidate. That record distinguishes the completed two-browser creation
+path, HTTP/process checks and isolated preview-utility fixture from pending
+final integration checks. Historical release numbers in
+[little-chorus-play](evidence/little-chorus-play-2026-11-07.json) describe the
+previous version only.
 
-Connected paths lead to nine distinct venues. The tea house and workshop have
-gabled roofs, deep eaves, windows, porches and flower boxes; the reading nook has
-an arched canopy, the stage a cloth sail, and the conservatory raised beds.
-Grove, pine and wind-shaped trees form groups instead of a uniform ring. Low
-timber lanterns, meadow grass and small flower clusters share the painted palette.
-The default camera was selected from eight actual angle/distance comparisons;
-its 16-metre framing shows coast while the closer control reveals your figure.
-A small central sightline is kept clear. The tide-pool seat no longer blocks
-the first-person view toward the water.
+Runtime `2c2f587`, including the canonical ACK guards and Reading carrier shift,
+passed 43 automated browser checks. Its separate full source run passed 190
+tests in 28 files, 63.48 s, on 18887. The restart check uses
+18886 and an isolated preview-lifecycle fixture uses 18888. These are different
+observations, not one summed score or evidence of human enjoyment. The release
+record preserves the earlier 184/41 runs and the later discovered
+unknown-source late-acknowledgement guard separately. The 43-check path controls
+logical loss of two actual sound frames, then opens a fresh native connection
+for the real snapshot before releasing the held receipt. Another case checks
+actual close/reconnect. No server state/event data is fabricated, and this is
+not a natural-outage timing claim. A later portrait-only camera improvement
+requires its own focused phone review.
 
-The [Little Ritual primary process](https://developers.openai.com/showcase/little-ritual)
-informed the order: playable central action, expressive movement, authored
-landmarks, then camera/mobile refinement and optimization. Its lead cover is
-labelled generated illustration, not gameplay proof. This edition uses our
-own procedural Three.js geometry; it does not claim the same Blender asset
-pipeline, identical artwork, new furniture minigames or user visual acceptance.
+Reviewed real captures from the 43-check run include the
+[desktop beginning](screenshots/26-chorus-final-desktop-solo.png),
+[desktop duet](screenshots/26-chorus-final-desktop-duet.png),
+[phone work](screenshots/26-chorus-final-phone-work.png),
+[phone first choices](screenshots/26-chorus-final-phone-studio.png),
+[phone journal](screenshots/26-chorus-final-phone-journal.png),
+[Pocket Jam](screenshots/26-chorus-final-pocket-jam.png), and the Reading canopy
+on [desktop](screenshots/26-chorus-final-reading-canopy.png) and
+[phone](screenshots/26-chorus-final-reading-canopy-phone.png). These are
+unretouched running screenshots. They include the lateral Reading offset;
+a subsequent portrait-only camera refinement is recorded separately.
 
-## Verification and rollback
+Use Node 24 and the package's pnpm 11 environment to build with `pnpm build`.
+An existing preview can be started safely with
+`python3 scripts/local-preview.py`; it refuses an unrecorded listener or a
+mismatching database. An intentional candidate switch uses `--dist` and
+`--restart`. `python3 scripts/local-preview.py --rollback` restores the retained
+previous compiled application with the **same current database**. The source
+rollback point is `before-chorus-garden-2026-11-07`; build it in an isolated
+checkout if the compiled backup is unavailable. Never restore an older database
+for a visual rollback. An older catalogue can omit the new score choices and
+their display effects; their stored sources and replies remain for the newer
+application to read again. The script's startup/switch/rollback fixture is separate
+from an actual 18861 promotion, and neither authorizes a public push/deploy.
 
-Browser checks use isolated scratch port18882. HTTP-writing specs use another
-database on18883; they never race the browser suite's preservation assertions.
-The evidence log records actual completed checks and limitations, separately
-from silent geometry/camera fixtures. Physical-phone performance, native
-tab-blur behavior unavailable in headless Chrome, and an artistic listening
-verdict are not claimed.
-
-The final legacy run passed15 suites, followed by all50 planet checks after
-correcting stale test camera samples and a duplicate Close selector. The new
-two-person play suite passed33 checks. Full specs passed151 tests; the final
-actual-geometry sightline test passed separately. See the
-[structured verification](evidence/little-chorus-play-2026-11-07.json) for scope
-and retained failures. Actual reviewed captures include the
-[default view](screenshots/25-chorus-default.png),
-[whole globe](screenshots/25-chorus-globe.png),
-[sound response on phone](screenshots/25-chorus-phone-response.png),
-[durable conversation](screenshots/25-chorus-conversation.png),
-[kangaroo play](screenshots/25-chorus-kangaroo.png),
-[shore](screenshots/25-chorus-shore.png) and
-[night interior](screenshots/25-chorus-night-interior.png).
-
-`before-little-chorus-play-2026-11-07` preserves the prior source at `a65cead`.
-Ignored `.cache/chorus-baseline/dist` preserves the prior compiled preview.
-Rollback changes application files and retains the **current database**.
-The sole intended persistent metadata edit is the planet catalogue title from
-Soundfolk to Little Chorus. Users, sound rows, replies, operations, rooms and
-shared weather/clock anchors are retained. Never restore an older database to
-roll an art or interface change back. No remote push or deployment is included.
+The core ambition is understandable, enjoyable shared authorship. Automated
+browser success and server persistence do not establish pleasant music, a
+newcomer's understanding, voluntary second combinations, physical-phone
+performance or a real next-day return. Those remaining judgements and the
+[author-review writing packet](submission/README.md) stay explicit.

@@ -2,8 +2,8 @@
 
 This is an implementation and listening handoff, not an artistic approval. The
 coding agent can inspect PCM, scheduling and WebAudio graphs; it has not heard
-these sounds. Wen and the friend-playtest groups still need to judge comfort,
-clarity and whether they want to try another combination.
+these sounds. The project author and friend-playtest groups still need to judge
+comfort, clarity and whether they want to try another combination.
 
 ## Decision and scope
 

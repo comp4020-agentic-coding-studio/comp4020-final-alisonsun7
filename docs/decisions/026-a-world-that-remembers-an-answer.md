@@ -44,3 +44,19 @@ rewritten. The stale root README/PROCESS gap must remain visible until the
 author confirms replacements. No public deployment, main push or access
 change is authorized. Develop on codex/chorus-garden; the rollback tag is
 before-chorus-garden-2026-11-07. Application rollback always keeps current DB.
+
+Integration review found a case the first 184-spec/41-browser passes did not
+cover: a client can miss both creation and removal of its pending source,
+receive a fresh snapshot, then revive it from the original HTTP acknowledgement.
+ACKs are now receipts; only canonical SSE/snapshots introduce live sources on
+both planet and coast. Work-history tombstones improve feedback but are not
+the sole guard, because a bounded archive can omit an unknown source. Six
+actual-controller regressions fail on frozen earlier code and pass after the
+correction; the expanded browser path uses explicitly controlled frame loss.
+
+Actual portrait screenshots also showed the lower character and Reading
+Nook stem behind the contribution card. The close third-person portrait view
+now aims below the head, scaled by zoom and faded into overview. This changes
+projection only; first person, desktop composition, physical camera collision
+and stored coordinates are unchanged. Focused touch/three-place screenshot
+review is required before promoting this last framing adjustment.
