@@ -1,6 +1,7 @@
 // Original low-cost, volumetric Soundfolk architecture. No downloaded models.
 import * as THREE from "three";
 import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, planetBasis, planetPoint, planetDistance, planetLocal, type PlanetPlace } from "../shared/planet.js";
+import { coastlineAt, createPlanetCoast, planetPierHeightAt } from "./planet-coast.js";
 export interface PlanetDoor {
     id: string;
     group: THREE.Group;
@@ -26,6 +27,7 @@ export interface PlanetBuild {
     heightAt(x: number, z: number): number;
     inside(x: number, z: number): boolean;
     canStand(x: number, z: number, locked: ReadonlySet<string>, ownHut?: string): boolean;
+    animate(seconds: number, reducedMotion: boolean): void;
     dispose(): void;
 }
 export function surfaceFrame(x: number, z: number): THREE.Quaternion {
@@ -50,8 +52,9 @@ export function buildPlanet(): PlanetBuild {
         materials.add(m);
         return m;
     };
-    const sage = mat(0x668879), cream = mat(0xf0e5ce), timber = mat(0xb68c53), terra = mat(0xb8795d), dark = mat(0x40564e), leaves = mat(0x698d6a);
-    const sea = mat(0x67aaa8), stone = mat(0xd1c8a5), gold = mat(0xdfb46c), paper = mat(0xdce2c2);
+    const sage = mat(0x64887a), cream = mat(0xeee3c9), timber = mat(0xb18a5d), terra = mat(0xba7a60), dark = mat(0x3e5b51);
+    const sea = mat(0x76b4ad), stone = mat(0xd8c6a3), gold = mat(0xd8b778), paper = mat(0xe0d2ae);
+    const rose = mat(0xc58c7b), shadow = mat(0x3b665f), roofMat = mat(0x67897f);
     const mesh = (g: THREE.BufferGeometry, m: THREE.Material, parent: THREE.Object3D = root): THREE.Mesh => {
         geometries.add(g);
         const o = new THREE.Mesh(g, m);
@@ -62,20 +65,32 @@ export function buildPlanet(): PlanetBuild {
     };
     const box = (w: number, h: number, d: number, m: THREE.Material, parent: THREE.Object3D, x = 0, y = 0, z = 0): THREE.Mesh => { const o = mesh(new THREE.BoxGeometry(w, h, d), m, parent); o.position.set(x, y, z); return o; };
     const ball = (size: number, m: THREE.Material, parent: THREE.Object3D, x = 0, y = 0, z = 0): THREE.Mesh => { const o = mesh(new THREE.SphereGeometry(size, 12, 8), m, parent); o.position.set(x, y, z); return o; };
+    const strut = (parent: THREE.Object3D, a: [number, number, number], b: [number, number, number], radius: number, m: THREE.Material): THREE.Mesh => {
+        const from = new THREE.Vector3(...a), to = new THREE.Vector3(...b), delta = to.clone().sub(from);
+        const object = mesh(new THREE.CylinderGeometry(radius, radius, delta.length(), 6), m, parent);
+        object.position.copy(from).add(to).multiplyScalar(.5);
+        object.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize());
+        return object;
+    };
     const place = (x: number, z: number): THREE.Group => { const g = new THREE.Group(); onPlanet(g, x, z); root.add(g); return g; };
     const globe = new THREE.SphereGeometry(R, 112, 64);
     geometries.add(globe);
     const pos = globe.getAttribute("position"), colours = [];
     for (let i = 0; i < pos.count; i++) {
         const v = new THREE.Vector3().fromBufferAttribute(pos, i).normalize();
-        const grain = Math.sin(v.x * 19 + v.z * 8) * Math.sin(v.y * 17 - v.x * 11) * .025;
-        const c = new THREE.Color().setRGB(.45 + grain, .57 + grain, .36 + grain);
+        const x = Math.atan2(v.x, v.z) * R, z = -Math.asin(v.y) * R;
+        const grain = Math.sin(v.x * 19 + v.z * 8) * Math.sin(v.y * 17 - v.x * 11) * .018;
+        const coastal = THREE.MathUtils.smoothstep(z, coastlineAt(x) - 6, coastlineAt(x) - 2);
+        const c = new THREE.Color(0x8caa78).lerp(new THREE.Color(0xb5b786), coastal);
+        c.multiplyScalar(1 + grain);
         colours.push(c.r, c.g, c.b);
     }
     globe.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
     const earthMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 });
     materials.add(earthMat);
     mesh(globe, earthMat);
+    const coast = createPlanetCoast();
+    root.add(coast.root);
     // Curved patches follow the real sphere, rather than floating flat discs.
     function patch(x: number, z: number, r: number, m: THREE.Material): void {
         const segments = 48, rings = Math.ceil(r / .35), q = surfaceFrame(x, z), base = planetPoint(x, z), vertices: number[] = [], indices: number[] = [];
@@ -103,11 +118,44 @@ export function buildPlanet(): PlanetBuild {
     for (const p of PLANET_PLACES)
         if (p.kind !== "pool" && p.kind !== "restrooms")
             patch(p.x, p.z, 3.5, paper);
-    // A winding, continuous great-circle promenade is a visible meeting route.
-    for (let i = 0; i < 96; i++) {
-        const x = -Math.PI * R + i * Math.PI * 2 * R / 96, z = 1.2 * Math.sin(i / 96 * Math.PI * 4);
-        patch(x, z, .86, stone);
+    // Continuous ribbons replace a necklace of overlapping discs. Branches
+    // arrive at the actual doors and porches, leaving the meeting green open.
+    function path(points: [number, number][], width = 1.2, title = "village-path"): void {
+        const curve = new THREE.CatmullRomCurve3(points.map(([x, z]) => new THREE.Vector3(x, 0, z)));
+        const samples = curve.getPoints(Math.max(12, Math.ceil(curve.getLength() / .3)));
+        const vertices: number[] = [], indices: number[] = [];
+        for (let i = 0; i < samples.length; i++) {
+            const p = samples[i], a = samples[Math.max(0, i - 1)], b = samples[Math.min(samples.length - 1, i + 1)];
+            const dx = b.x - a.x, dz = b.z - a.z, length = Math.max(.001, Math.hypot(dx, dz));
+            for (const side of [-1, 1]) {
+                const xx = p.x - dz / length * width / 2 * side / Math.max(.3, Math.cos(p.z / R));
+                const zz = p.z + dx / length * width / 2 * side;
+                const v = planetPoint(xx, zz, .055);
+                vertices.push(v.x, v.y, v.z);
+            }
+            if (i < samples.length - 1) { const n = i * 2; indices.push(n, n + 1, n + 2, n + 1, n + 3, n + 2); }
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+        geometry.setIndex(indices); geometry.computeVertexNormals();
+        const object = mesh(geometry, stone); object.castShadow = false; object.name = title;
     }
+    const promenade: [number, number][] = [];
+    for (let i = 0; i <= 96; i++) promenade.push([-Math.PI * R + i * Math.PI * 2 * R / 96, 1.2 * Math.sin(i / 96 * Math.PI * 4)]);
+    path(promenade, 1.65, "around-the-world-promenade");
+    const villageRoutes: [number, number][][] = [
+        [[-4, -.4], [-6.5, -1.4], [-9, -3.7]],
+        [[5, .5], [7, -3], [10, -5.8]],
+        [[-7, .8], [-10, 4], [-13, 10.1]],
+        [[-.6, 3], [-4, 8], [-4.5, 12], [-2, 18.8]],
+        [[7, 1], [9, 5], [10, 9], [14, 10]],
+        [[14, 10], [16.5, 11.5], [16, 14]],
+        [[-9, -3.7], [-15, -5], [-19, -8], [-21, -11.8]],
+        [[55, -1.2], [54, -3], [55, -5]],
+        [[16, 14], [20, 17], [20, coastlineAt(20) - .7]],
+        [[3, 2], [7, 9], [7, coastlineAt(7) - 1.4]],
+    ];
+    for (const points of villageRoutes) path(points, 1.2);
     function sign(parent: THREE.Object3D, text: string, y = 3.8): void {
         const canvas = document.createElement("canvas");
         canvas.width = 512;
@@ -128,11 +176,15 @@ export function buildPlanet(): PlanetBuild {
         o.userData.signTexture = texture;
     }
     function lamp(parent: THREE.Object3D, x: number, z: number): void {
-        box(.09, 2.65, .09, dark, parent, x, 1.32, z);
+        // Low timber lanterns belong to the village, rather than a repeated
+        // line of tall city lamp-posts competing with the small buildings.
+        box(.14, 1.35, .14, timber, parent, x, .68, z);
         const glow = mat(0xf6d694, 0xffc375);
-        ball(.18, glow, parent, x, 2.66, z);
+        box(.3, .32, .3, glow, parent, x, 1.49, z);
+        box(.4, .07, .4, dark, parent, x, 1.69, z);
+        box(.36, .06, .36, dark, parent, x, 1.29, z);
         const light = new THREE.PointLight(0xffd2a0, 0, 8, 2);
-        light.position.set(x, 2.5, z);
+        light.position.set(x, 1.5, z);
         parent.add(light);
         lamps.push(light);
     }
@@ -144,19 +196,58 @@ export function buildPlanet(): PlanetBuild {
     }
     function house(p: PlanetPlace, colour: THREE.Material, open = false): THREE.Group {
         const g = place(p.x, p.z);
+        g.name = `village-${p.kind}`;
         box(5, .18, 4.4, timber, g, 0, .06, 0);
-        for (const x of [-2.4, 2.4])
-            solids.push(box(.18, 2.8, 4.1, colour, g, x, 1.5, 0));
+        const glass = new THREE.MeshStandardMaterial({ color: 0x7caaa3, transparent: true, opacity: .28, roughness: .3, depthWrite: false });
+        materials.add(glass);
+        for (const x of [-2.4, 2.4]) {
+            solids.push(box(.18, 1, 4.1, colour, g, x, .65, 0));
+            solids.push(box(.18, .48, 4.1, colour, g, x, 2.63, 0));
+            for (const z of [-1.7, -.55, .55, 1.7]) {
+                solids.push(box(.2, 2.65, .12, cream, g, x, 1.45, z));
+                if (z < 1) box(.03, 1.18, .97, glass, g, x, 1.76, z + .55);
+            }
+            box(.28, .12, 4.35, cream, g, x, 1.12, 0);
+            box(.2, .15, 4.25, timber, g, x, .22, 0);
+        }
         solids.push(box(4.9, 2.8, .17, colour, g, 0, 1.5, -2));
         if (!open)
-            for (const x of [-1.65, 1.65])
+            for (const x of [-1.65, 1.65]) {
                 solids.push(box(1.55, 2.8, .17, colour, g, x, 1.5, 2));
-        const roof = mesh(new THREE.ConeGeometry(3.7, 1.35, 4), terra, g);
-        roof.rotation.y = Math.PI / 4;
-        roof.position.y = 3.65;
-        roof.scale.z = .88;
-        solids.push(roof);
-        sign(g, p.title, 2.95);
+                box(1.13, 1.05, .055, shadow, g, x, 1.75, 2.1);
+                for (const xx of [-.61, .61]) box(.08, 1.25, .12, cream, g, x + xx, 1.75, 2.15);
+                for (const yy of [1.17, 2.34]) box(1.3, .08, .12, cream, g, x, yy, 2.15);
+                box(.055, 1.05, .11, timber, g, x, 1.75, 2.17);
+                box(1.35, .18, .4, timber, g, x, 1.02, 2.25);
+                for (let flower = 0; flower < 4; flower++) ball(.1, flower % 2 ? cream : rose, g, x - .45 + flower * .3, 1.18, 2.28);
+            }
+        if (p.kind === "reading") {
+            const geometry = new THREE.CylinderGeometry(2.75, 2.75, 5.75, 28, 1, true, 0, Math.PI);
+            geometry.rotateZ(Math.PI / 2); geometry.scale(1, .4, 1);
+            const canopyMaterial = mat(0x719b90); canopyMaterial.side = THREE.DoubleSide;
+            const roof = mesh(geometry, canopyMaterial, g); roof.position.y = 2.75; solids.push(roof);
+            for (const x of [-2.65, 2.65]) strut(g, [x, 0, 2.35], [x, 3.05, 2.35], .07, timber);
+        } else {
+            const shape = new THREE.Shape();
+            shape.moveTo(-2.85, 0); shape.lineTo(0, 1.25); shape.lineTo(2.85, 0); shape.closePath();
+            const roofGeometry = new THREE.ExtrudeGeometry(shape, { depth: 5.1, bevelEnabled: true, bevelSize: .04, bevelThickness: .04, bevelSegments: 1, steps: 1 });
+            const roof = mesh(roofGeometry, p.kind === "tea" ? terra : roofMat, g); roof.position.set(0, 2.95, -2.55); solids.push(roof);
+            box(5.65, .12, 5.08, cream, g, 0, 2.94, 0);
+            for (const z of [-2.6, 2.6]) {
+                strut(g, [-2.85, 3, z], [0, 4.24, z], .055, cream);
+                strut(g, [0, 4.24, z], [2.85, 3, z], .055, cream);
+            }
+            strut(g, [0, 4.25, -2.65], [0, 4.25, 2.65], .07, cream);
+            const chimney = box(.48, 1.2, .55, cream, g, -1.35, 4.02, -.8);
+            box(.64, .12, .7, terra, chimney, 0, .64, 0);
+        }
+        // A real shaded porch and framed entrance are readable from the path.
+        box(5.1, .09, .8, timber, g, 0, .025, 2.5);
+        for (const x of [-2.35, 2.35]) {
+            strut(g, [x, .04, 2.65], [x, 2.95, 2.65], .075, dark);
+            box(.28, .1, .28, cream, g, x, .08, 2.65);
+        }
+        sign(g, p.kind === "tea" ? "Tide & tea" : p.title, 2.69);
         lamp(g, -1.7, -.6);
         lamp(g, 1.7, -.6);
         return g;
@@ -173,6 +264,8 @@ export function buildPlanet(): PlanetBuild {
             }
             const fountain = mesh(new THREE.CylinderGeometry(.75, 1, .45, 20), stone, g);
             fountain.position.y = .25;
+            const basin = mesh(new THREE.CylinderGeometry(.67, .67, .035, 24), sea, g);
+            basin.position.y = .49;
             const rings = mesh(new THREE.TorusGeometry(.9, .055, 6, 48), gold, g);
             rings.rotation.x = Math.PI / 2;
             rings.position.y = .5;
@@ -201,20 +294,34 @@ export function buildPlanet(): PlanetBuild {
         }
         else if (p.kind === "stage") {
             const g = place(p.x, p.z);
+            g.name = "village-sail-stage";
             const plinth = mesh(new THREE.CylinderGeometry(3.1, 3.25, .22, 32), timber, g);
             plinth.position.y = .12;
-            for (const x of [-2.5, 2.5]) {
-                box(.12, 3.2, .12, sage, g, x, 1.6, -1.8);
-                lamp(g, x, 1.8);
+            for (const x of [-2.6, 2.6]) for (const z of [-2.1, 2.1]) {
+                strut(g, [x, .1, z], [x, 3.55, z], .085, timber);
+                box(.25, .12, .25, cream, g, x, .19, z);
             }
-            box(5.2, .15, .3, gold, g, 0, 3.2, -1.8);
-            sign(g, "Pocket jam", 3.7);
+            const canvas = new THREE.BufferGeometry();
+            canvas.setAttribute("position", new THREE.Float32BufferAttribute([0, 3.12, 0, -2.85, 3.62, -2.4, 2.85, 3.45, -2.4, 2.85, 3.65, 2.4, -2.85, 3.85, 2.4], 3));
+            canvas.setIndex([0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1]); canvas.computeVertexNormals();
+            const sail = mat(0xe5d2a8); sail.side = THREE.DoubleSide;
+            solids.push(mesh(canvas, sail, g));
+            for (const z of [-2.4, 2.4]) strut(g, [-2.85, z < 0 ? 3.62 : 3.85, z], [2.85, z < 0 ? 3.45 : 3.65, z], .025, cream);
+            sign(g, "Pocket jam", 2.75);
+            lamp(g, -2.5, 1.8); lamp(g, 2.5, 1.8);
             const drum = mesh(new THREE.CylinderGeometry(.43, .35, .65, 16), terra, g);
             drum.position.set(-1, .55, -1);
-            ball(.25, gold, g, 1, 1, -1);
+            const skin = mesh(new THREE.CylinderGeometry(.44, .44, .035, 20), cream, g); skin.position.set(-1, .89, -1);
+            for (const x of [-1.28, -.72]) strut(g, [x, .1, -1], [x, .38, -1], .035, dark);
+            const lower = ball(.29, gold, g, 1, .68, -1); lower.scale.set(.9, 1, .35);
+            const upper = ball(.23, gold, g, 1, .98, -1); upper.scale.set(.9, 1, .35);
+            box(.11, .7, .1, timber, g, 1, 1.4, -1);
+            const hole = mesh(new THREE.CircleGeometry(.07, 16), dark, g); hole.position.set(1, .92, -.89);
+            box(.16, .2, .12, terra, g, 1, 1.81, -1);
         }
         else if (p.kind === "conservatory") {
             const g = place(p.x, p.z);
+            g.name = "village-conservatory";
             for (const x of [-2.5, 0, 2.5]) {
                 const arch = mesh(new THREE.TorusGeometry(2.7, .075, 6, 32, Math.PI), sage, g);
                 arch.rotation.y = Math.PI / 2;
@@ -222,13 +329,19 @@ export function buildPlanet(): PlanetBuild {
             }
             for (const z of [-2.6, 2.6])
                 box(5.3, .1, .1, sage, g, 0, .2, z);
+            for (const x of [-1.65, 1.65]) {
+                box(1.1, .45, 3.4, terra, g, x, .23, 0);
+                box(1.18, .08, 3.5, cream, g, x, .48, 0);
+                box(.94, .04, 3.2, dark, g, x, .5, 0);
+            }
+            for (const z of [-2.6, 0, 2.6]) strut(g, [-2.5, z === 0 ? 2.85 : .2, z], [2.5, z === 0 ? 2.85 : .2, z], .04, cream);
             const flowers = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.15, 0), gold, 40);
             geometries.add(flowers.geometry);
             g.add(flowers);
             const dummy = new THREE.Object3D();
             for (let i = 0; i < 40; i++) {
                 const a = i * 2.4, rr = 1 + ((i * 7) % 11) / 8;
-                dummy.position.set(Math.sin(a) * rr, .3 + ((i * 3) % 5) * .08, Math.cos(a) * rr);
+                dummy.position.set(i % 2 ? 1.65 : -1.65, .65 + ((i * 3) % 5) * .08, Math.sin(a) * rr * .65);
                 dummy.updateMatrix();
                 flowers.setMatrixAt(i, dummy.matrix);
             }
@@ -237,13 +350,19 @@ export function buildPlanet(): PlanetBuild {
             lamp(g, 2.5, 0);
         }
         else if (p.kind === "pool") {
-            patch(p.x, p.z, 3, sea);
+            const poolWater = mat(0x78b5ba, 0x286f91); poolWater.emissiveIntensity = .18;
+            patch(p.x, p.z, 3, poolWater);
             const g = place(p.x, p.z);
             for (let i = 0; i < 10; i++) {
-                const a = i * Math.PI / 5, rock = ball(.45 + (i % 3) * .13, stone, g, Math.sin(a) * 3.1, .15, Math.cos(a) * 3.1);
+                const a = i * Math.PI / 5;
+                // An open mouth faces the sea; seated visitors and a ring of
+                // boulders must not hide the coast at first-person eye level.
+                if (Math.cos(a) > .6) continue;
+                const rock = ball(.32 + (i % 3) * .1, stone, g, Math.sin(a) * 3.1, .10, Math.cos(a) * 3.1);
                 rock.scale.y = .65;
             }
-            bench(g, 0, 4);
+            const seat = new THREE.Group(); seat.position.set(-3.8, 0, 1); seat.rotation.y = Math.PI / 2; g.add(seat);
+            bench(seat, 0, 0);
             lamp(g, -3.5, 2);
         }
         else if (p.kind === "workshop") {
@@ -279,55 +398,124 @@ export function buildPlanet(): PlanetBuild {
         solids.push(box(3.1, 2.8, .13, colour, g, 0, 1.4, -1.5));
         for (const x of [-1.05, 1.05])
             solids.push(box(.95, 2.8, .13, colour, g, x, 1.4, 1.5));
-        solids.push(box(3.4, .25, 3.4, terra, g, 0, 2.95, 0));
+        solids.push(box(3.4, .15, 3.4, cream, g, 0, 2.9, 0));
+        const hutRoofShape = new THREE.Shape();
+        hutRoofShape.moveTo(-1.8, 0); hutRoofShape.lineTo(0, .72); hutRoofShape.lineTo(1.8, 0); hutRoofShape.closePath();
+        const hutRoof = mesh(new THREE.ExtrudeGeometry(hutRoofShape, { depth: 3.6, bevelEnabled: false }), h.kind.endsWith("toilet") ? terra : roofMat, g);
+        hutRoof.position.set(0, 2.98, -1.8); solids.push(hutRoof);
+        for (const x of [-1.48, 1.48]) box(.16, 2.85, .16, cream, g, x, 1.45, 1.55);
+        for (const z of [-1.82, 1.82]) {
+            strut(g, [-1.8, 2.98, z], [0, 3.7, z], .04, cream);
+            strut(g, [0, 3.7, z], [1.8, 2.98, z], .04, cream);
+        }
         const hinge = new THREE.Group();
         hinge.position.set(-.5, 0, 1.51);
         g.add(hinge);
         const leaf = box(1, 2.55, .10, sage, hinge, .5, 1.3, 0);
+        box(.055, .15, .065, gold, leaf, .34, -.13, .09);
         solids.push(leaf);
         const signal = ball(.09, mat(0x74be92, 0x48ad79), g, .83, 1.7, 1.65);
         doors.push({ id: h.id, group: hinge, leaf, signal, open: 0 });
         const fixture = mesh(new THREE.CylinderGeometry(.3, .23, .48, 16), cream, g);
         fixture.position.set(0, .29, -.8);
         lamp(g, 1, -.4);
-        sign(g, h.kind.endsWith("toilet") ? "Restroom" : "Shower", 3.5);
+        sign(g, h.kind.endsWith("toilet") ? "Restroom" : "Shower", 3.03);
     }
-    // Instanced trees across the whole sphere, leaving meeting areas legible.
-    const trunkGeo = new THREE.CylinderGeometry(.08, .14, 1.55, 7), crownGeo = new THREE.IcosahedronGeometry(.85, 1);
-    geometries.add(trunkGeo);
-    geometries.add(crownGeo);
-    const trunks = new THREE.InstancedMesh(trunkGeo, timber, 130), crowns = new THREE.InstancedMesh(crownGeo, leaves, 390);
-    let ti = 0, ci = 0;
+    // Grouped groves have three silhouettes: wide orchard trees, layered
+    // pines and wind-shaped coastal crowns. Shared instancing keeps the
+    // authored irregularity inexpensive, without rows of lollipop trees.
+    const trunkGeo = new THREE.CylinderGeometry(.10, .17, 2, 8), crownGeo = new THREE.IcosahedronGeometry(1, 1);
+    const pineGeo = new THREE.CylinderGeometry(.08, 1, 1.2, 9);
+    for (const geometry of [trunkGeo, crownGeo, pineGeo]) geometries.add(geometry);
+    const trunks = new THREE.InstancedMesh(trunkGeo, timber, 150);
+    const treeMaterial = mat(0xffffff);
+    const crowns = new THREE.InstancedMesh(crownGeo, treeMaterial, 640), pines = new THREE.InstancedMesh(pineGeo, treeMaterial, 300);
+    trunks.name = "village-tree-trunks"; crowns.name = "village-irregular-canopies"; pines.name = "village-pines";
+    let ti = 0, ci = 0, pi = 0;
     const d = new THREE.Object3D();
-    for (let i = 0; i < 280; i++) {
-        const y = 1 - 2 * (i + .5) / 280, lon = i * 2.399963, lat = Math.asin(y), x = ((lon + Math.PI) % (2 * Math.PI) - Math.PI) * R, z = lat * R;
-        if (PLANET_PLACES.some(p => planetDistance({ x, z }, p) < 5.5) || Math.abs(z - 1.2 * Math.sin((x + Math.PI * R) / (Math.PI * 2 * R) * Math.PI * 4)) < 2.2 || ti >= 130)
-            continue;
-        const q = surfaceFrame(x, z), p = planetPoint(x, z, .74);
-        d.position.set(p.x, p.y, p.z);
-        d.quaternion.copy(q);
-        d.scale.setScalar(1);
-        d.updateMatrix();
+    const tint = new THREE.Color();
+    const palette = [0x668469, 0x53745f, 0x8b9b6c, 0x749578, 0x5f8275];
+    const nearPath = (x: number, z: number): boolean => {
+        if (Math.abs(z - 1.2 * Math.sin((x + Math.PI * R) / (Math.PI * 2 * R) * Math.PI * 4)) < 2) return true;
+        return villageRoutes.some(route => route.some((a, i) => {
+            const b = route[i + 1]; if (!b) return false;
+            const dx = b[0] - a[0], dz = b[1] - a[1], length2 = dx * dx + dz * dz;
+            const t = THREE.MathUtils.clamp(((x - a[0]) * dx + (z - a[1]) * dz) / Math.max(.001, length2), 0, 1);
+            return Math.hypot(x - a[0] - t * dx, z - a[1] - t * dz) < 1.6;
+        }));
+    };
+    const clearMeeting = (x: number, z: number): boolean => PLANET_PLACES.some(p => planetDistance({ x, z }, p) < 5.4) || PLANET_HUTS.some(h => x > h.x0 - 1 && x < h.x1 + 1 && z > h.z0 - 1 && z < h.z1 + 1);
+    for (let i = 0; i < 650 && ti < 150; i++) {
+        const y = 1 - 2 * (i + .5) / 650, lon = i * 2.399963, lat = Math.asin(y);
+        const x = ((lon + Math.PI) % (2 * Math.PI) - Math.PI) * R, z = lat * R;
+        const grove = Math.sin(x * .22 + Math.sin(z * .3)) + Math.cos(z * .23 - x * .11);
+        const villageVista = x > 0 && x < 5 && z > 5 && z < 12;
+        if (villageVista || clearMeeting(x, z) || nearPath(x, z) || z > coastlineAt(x) - 4 || grove < -.6) continue;
+        const q = surfaceFrame(x, z), kind = i % 5, scale = .85 + (i % 7) * .075, lean = Math.sin(i * 1.7) * .11;
+        const trunk = planetPoint(x, z, scale);
+        d.position.set(trunk.x, trunk.y, trunk.z);
+        d.quaternion.copy(q).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), lean));
+        d.scale.set(.85 * scale, scale, .85 * scale); d.updateMatrix();
         trunks.setMatrixAt(ti++, d.matrix);
-        for (let j = 0; j < 3; j++) {
-            const centre = planetPoint(x, z, 1.75 + j * .43), v = new THREE.Vector3(j === 1 ? .25 : -.12, 0, j === 2 ? .22 : 0).applyQuaternion(q);
-            d.position.set(centre.x, centre.y, centre.z).add(v);
-            d.scale.set(.9 - j * .1, .65, .9 - j * .1);
-            d.updateMatrix();
-            crowns.setMatrixAt(ci++, d.matrix);
+        if (kind < 2) {
+            for (let layer = 0; layer < 4; layer++) {
+                const p = planetPoint(x, z, (1.9 + layer * .53) * scale);
+                const offset = new THREE.Vector3(lean * (2 + layer), 0, Math.sin(i + layer) * .12).applyQuaternion(q);
+                d.position.set(p.x, p.y, p.z).add(offset); d.quaternion.copy(q);
+                const width = (1.35 - layer * .25) * scale;
+                d.scale.set(width, .82 * scale, width); d.updateMatrix();
+                pines.setMatrixAt(pi, d.matrix); pines.setColorAt(pi++, tint.setHex(palette[(i + layer) % palette.length]));
+            }
+        } else {
+            for (let lobe = 0; lobe < 4; lobe++) {
+                const angle = lobe * 2.4 + i, wide = kind === 4 ? 1.25 : .9;
+                const p = planetPoint(x, z, (2.4 + Math.sin(i + lobe) * .28) * scale);
+                const offset = new THREE.Vector3(Math.sin(angle) * .6 * wide + lean * 3, lobe === 3 ? .45 : 0, Math.cos(angle) * .5).applyQuaternion(q);
+                d.position.set(p.x, p.y, p.z).add(offset); d.quaternion.copy(q);
+                d.scale.set((.88 + (lobe % 2) * .2) * scale * wide, (kind === 4 ? .52 : .77) * scale, .85 * scale); d.updateMatrix();
+                crowns.setMatrixAt(ci, d.matrix); crowns.setColorAt(ci++, tint.setHex(palette[(i + lobe) % palette.length]));
+            }
         }
     }
-    trunks.count = ti;
-    crowns.count = ci;
-    trunks.castShadow = crowns.castShadow = true;
-    trunks.receiveShadow = crowns.receiveShadow = true;
-    root.add(trunks, crowns);
-    for (let i = 0; i < 20; i++) {
-        const g = place(-Math.PI * R + i * Math.PI * 2 * R / 20, 3.5);
-        lamp(g, 0, 0);
+    trunks.count = ti; crowns.count = ci; pines.count = pi;
+    for (const trees of [trunks, crowns, pines]) { trees.castShadow = true; trees.receiveShadow = true; root.add(trees); }
+
+    // Deliberate garden drifts and dune tufts replace otherwise bare grass.
+    // They stay outside the actual doors, central gathering pads and route.
+    const bladeGeometry = new THREE.BufferGeometry();
+    bladeGeometry.setAttribute("position", new THREE.Float32BufferAttribute([-.035, 0, 0, .035, 0, 0, .12, .48, 0], 3));
+    bladeGeometry.computeVertexNormals(); geometries.add(bladeGeometry);
+    const grassMaterial = mat(0x8d9f75); grassMaterial.side = THREE.DoubleSide;
+    const grass = new THREE.InstancedMesh(bladeGeometry, grassMaterial, 2300);
+    const flowerGeometry = new THREE.IcosahedronGeometry(.075, 0); geometries.add(flowerGeometry);
+    const flowers = new THREE.InstancedMesh(flowerGeometry, cream, 360);
+    grass.name = "village-meadow-and-dune-grass"; flowers.name = "village-garden-daisies";
+    let gi = 0, fi = 0;
+    for (let i = 0; i < 1500 && gi < 2296; i++) {
+        const x = -Math.PI * R + ((i * 47.31) % (Math.PI * R * 2));
+        const z = -24 + ((i * 23.71) % 48);
+        if (z > coastlineAt(x) - .85 || nearPath(x, z) || clearMeeting(x, z)) continue;
+        const drift = Math.sin(x * .7) * Math.cos(z * .6);
+        if (drift < -.15 && z < coastlineAt(x) - 4) continue;
+        const q = surfaceFrame(x, z);
+        for (let blade = 0; blade < 3; blade++) {
+            const p = planetPoint(x + Math.sin(blade * 2.4) * .13, z + Math.cos(blade * 2.4) * .13, .04);
+            d.position.set(p.x, p.y, p.z); d.quaternion.copy(q).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), i * 2.4 + blade * 1.8));
+            d.scale.setScalar(.65 + ((i + blade) % 7) * .12); d.updateMatrix(); grass.setMatrixAt(gi++, d.matrix);
+        }
+        if (i % 4 === 0 && fi < 360 && z < coastlineAt(x) - 4) {
+            const p = planetPoint(x, z, .28); d.position.set(p.x, p.y, p.z); d.quaternion.copy(q); d.scale.set(1, .65, 1); d.updateMatrix();
+            flowers.setMatrixAt(fi, d.matrix); flowers.setColorAt(fi++, tint.setHex(i % 3 ? 0xe9dbb3 : 0xc69682));
+        }
     }
+    grass.count = gi; flowers.count = fi; root.add(grass, flowers);
+    // Fewer lanterns, grouped by the places and junctions rather than a ring
+    // of identical poles. The continuous path itself provides wayfinding.
+    for (const [x, z] of [[-6, 2.8], [6, -2.5], [23, 2.8], [42, -2.8], [-35, 2.8], [-54, -2.8]]) lamp(place(x, z), 0, 0);
     const buildings = PLANET_PLACES.filter(p => ["tea", "reading", "workshop"].includes(p.kind));
     function heightAt(x: number, z: number): number {
+        const pier = planetPierHeightAt(x, z);
+        if (pier !== null) return pier;
         const p = buildings.find(p => { const local = planetLocal({ x, z }, p); return Math.abs(local.x) < 2.5 && Math.abs(local.z) < 2.2; });
         const h = PLANET_HUTS.find(h => x > h.x0 && x < h.x1 && z > h.z0 && z < h.z1);
         const center = p ?? (h ? { x: (h.x0 + h.x1) / 2, z: (h.z0 + h.z1) / 2 } : null);
@@ -337,6 +525,9 @@ export function buildPlanet(): PlanetBuild {
         return planetDistance({ x, z }, stage) < 3 ? (R + .24) / Math.cos(planetDistance({ x, z }, stage) / R) - R : 0;
     }
     function canStand(x: number, z: number, locked: ReadonlySet<string>, ownHut?: string): boolean {
+        // Water is visibly water. The continuous land promenade still wraps
+        // the whole planet; only the actual timber pier carries people at sea.
+        if (z > coastlineAt(x) + .12 && planetPierHeightAt(x, z) === null) return false;
         for (const p of buildings) {
             const { x: dx, z: dz } = planetLocal({ x, z }, p);
             if (Math.abs(dx) > 2.7 || Math.abs(dz) > 2.5)
@@ -359,7 +550,8 @@ export function buildPlanet(): PlanetBuild {
         return true;
     }
     const inside = (x: number, z: number): boolean => buildings.some(p => { const local = planetLocal({ x, z }, p); return Math.abs(local.x) < 2.3 && Math.abs(local.z) < 1.95; });
-    return { root, solids, doors, lamps, lanterns, blossoms, heightAt, inside, canStand, dispose: () => {
+    return { root, solids, doors, lamps, lanterns, blossoms, heightAt, inside, canStand, animate: coast.animate, dispose: () => {
+            coast.dispose();
             root.traverse(o => { const t = o.userData.signTexture as THREE.Texture | undefined; t?.dispose(); });
             for (const g of geometries)
                 g.dispose();
