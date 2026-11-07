@@ -1,6 +1,6 @@
 # Your harness
 
-# Sound of a City agent rules
+# Soundfolk agent rules
 
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) was the starting point. The decisions in `docs/decisions/`
@@ -38,13 +38,16 @@ players, but never create users, presence counts or ordinary sound rows.
 
 ## What it is
 
-Sound of a City. One imagined place you walk through in first person, From
+Soundfolk. Friends shape little places together through sounds. The new
+`/planet` edition is a freely walkable sphere with first-/third-person views,
+nine meeting destinations and one independent `planet:morning` room. The
+original coastal edition remains available in its original room, From
 the Forest to the Sea: a forest trail, a creek and footbridge, a boardwalk
 with a café, fish and chip kiosk and beach huts, the beach and a pier. Built from CC0 assets, with original three-dimensional cat and dog figures for
 the people in it, who see each other and can talk when they meet, and
 leave sounds where they stand for everyone to hear (ADR 011).
 
-The place (`seaside`, three.js, shared weather and clock: ADR 018) is the only one. Its
+The original place (`seaside`, three.js, shared weather and clock: ADR 018) keeps its history. Its
 `PlaceKit` is in `client/seaside.ts` (the café's room in `client/cafe.ts`);
 the toolkit in `client/world-build.ts`; original people in `client/characters.ts`;
 the view in `client/world.ts`; the
@@ -72,6 +75,17 @@ Local sound preference and the viewer's position must never select a different
 resident response. The busker, staff and existing children's game keep their
 roles; reacting residents are clearly NPCs, never counted as joined people.
 
+The planet controller is `client/planet.ts`, spherical view/camera in
+`client/planet-world.ts`, original geometry in `client/planet-build.ts`, and
+optional playback in `client/planet-audio.ts`. `shared/planet.ts` is the same
+great-circle metric used by server chat, spacing and removal. Never replace it
+with a raw longitude difference: proximity must work across seams and poles.
+Every source-derived shared decoration uses canonical timestamp/id order.
+Anchor time from the first real server sample, independent of client Date.now.
+NPC restroom state is in `npc-routines.ts`, wire types in
+`shared/npc-routines.ts`. `client/routine-audio.ts` plays only the actual
+server-timed flush token, near the listener, with Sound off/visibility guards.
+
 ## Product invariants
 
 - **The standard (Wen):** suits people playing together; keeps what they do,
@@ -83,14 +97,16 @@ roles; reacting residents are clearly NPCs, never counted as joined people.
   individually auditionable and explicitly placed. Wen explicitly requested
   restoring Mateo's nearby guitar: that one NPC has local spatial audio,
   respects Sound off, and yields to a nearby player guitar; it never creates
-  a contribution or database row. The tables from before
+  a contribution or database row. ADR 024 also authorizes a nearby transient
+  NPC flush, only during its real server-timed restroom visit. The tables from before
   ADR 010 stay untouched (`before-sound-removal` tag); `placed_sounds` rows
   are never deleted (removing sets `removed_at`).
 - **Toilets and showers are one at a time (ADR 013).** A red light and a
   shut, locked door while anyone is in; the sound left for a stay
   (`whileInside`, `placed_sounds.while_in`) is ended by the server as soon
   as its person isn't inside, never by the page. The hut layout lives in
-  `shared/huts.ts` for both sides. The server admits only one person;
+  `shared/huts.ts` and `shared/planet.ts` for both sides. The server admits
+  only one occupant, including NPC reservations;
   rejected moves return a safe position. Expired positions cannot be revived
   inside an occupied hut. Temporary sounds do not consume permanent slots.
 - **Imagined places say so (ADR 005).** The place's page shows its `about`
@@ -107,7 +123,9 @@ roles; reacting residents are clearly NPCs, never counted as joined people.
 - **Published images are processed derivatives only.** `public/scenes/`
   (Wen's photos, blurred, no metadata) is unused now but stays. The
   originals are gitignored and must never be committed: this repo is public.
-- **One place, one room (ADR 007, 012, 018).** Weather and time are shared,
+- **One room per edition (ADR 007, 012, 018, 024).** The explicitly requested
+  planet edition adds only `planet:morning`; the original `seaside:morning`
+  retains its history. Weather and time are shared within each edition,
   persisted visual state; the room keeps its database name `morning`
   (`Scene.room`), so never change it. The canonical route remains `weekday`;
   retired modes redirect there. Scenic destinations move only the visitor who
@@ -193,6 +211,16 @@ without Wen's go-ahead.
   removal, mixed corners, Sound off, phone controls and private-stay exclusion.
   It soft-removes its ordinary contributions and confirms the final snapshot.
   Use an isolated scratch database; it runs in `pnpm e2e`.
+- `e2e/view-mode.mjs` checks the real coastal self model, camera memory,
+  idle body orientation, wall avoidance, indoor night fill and NPC privacy
+  in a silent fixture. `e2e/planet.mjs` checks the real two-person sphere,
+  nine destinations, camera/phone controls, replies, clock skew, shared weather
+  and authoritative resident restroom visits. Both run in `pnpm e2e`.
+- `spec/planet-audio.test.ts` tests actual WebAudio lifecycles with fake nodes:
+  cancelled decodes, off/on generations, removal, the eight-voice limit,
+  five-second private previews and disposal. NPC admission and routine audio
+  also have focused clock-controlled tests. Never run HTTP-writing specs and
+  browser suites concurrently against the same scratch database.
 - `SCENE=seaside SHOTS=forest,creek,forest-edge,boardwalk,beach,pier,counter node e2e/look-world.mjs <dir>`
   saves screenshots of those zones (`MODES=` for others).
 - Keep `spec/invariants.test.ts` as shipped. Never weaken a test to get

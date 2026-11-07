@@ -132,3 +132,25 @@ separately in the evidence log and ignored `.cache/living-world-promotion.json`.
 three new assets match the reviewed build. The shared environment anchor and
 five live ordinary sounds remain intact. The ignored promotion record retains
 the former compiled directory; switching applications must keep the current DB.
+
+## Soundfolk little planet
+
+`before-soundfolk-planet-2026-11-07` preserves `5afd955`, the complete prior
+living-world source. Development uses `codex/soundfolk-planet`, isolated
+`.cache/planet-build/dist` and a separate scratch database on port18881.
+`.cache/planet-baseline/dist` retains the former compiled application.
+
+The new edition is `/planet`, with a deliberately separate `planet:morning`
+room; the original `/scene/seaside?mode=weekday` keeps its coordinates,
+ordinary sounds, replies and weather/clock anchor. No schema migration is
+required. Startup adds the new scene catalogue row; opening its page creates
+only its own session and default environment. The previous source simply
+does not offer the planet. Its catalogue upsert does not delete extra rows.
+
+Use the separate-checkout method above with this tag and the **current** DB.
+Never restore a historical DB to change applications, and never delete the
+new scene, users, contributions or relationships during rollback. The ignored
+`.cache/planet-promotion.json` will record the previous compiled directory,
+every persistent-table comparison and the precise allowed new-edition rows.
+The [walkthrough](soundfolk-planet.md) describes camera, identity, night light
+and the real resident restroom test. No push or deployment is authorized.

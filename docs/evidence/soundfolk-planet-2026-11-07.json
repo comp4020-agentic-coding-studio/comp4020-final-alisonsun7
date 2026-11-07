@@ -1,0 +1,272 @@
+{
+  "date": "2026-11-07",
+  "product": "Soundfolk",
+  "applicationSourceCommit": "e9988c0",
+  "request": "Rename around shared sound-making; distinguish players and NPCs; third person; test authoritative NPC restroom visits; local indoor night readability; separate freely walkable little-planet edition.",
+  "branch": "codex/soundfolk-planet",
+  "rollbackTag": "before-soundfolk-planet-2026-11-07",
+  "rollbackSourceCommit": "5afd955",
+  "editions": {
+    "seaside": "original seaside:morning, unchanged coordinates/history",
+    "planet": "new planet:morning, radius22m, nine meeting destinations"
+  },
+  "noNewRuntimeDependencies": true,
+  "noNewExternalAssets": true,
+  "invariantTestUnchanged": true,
+  "buildPassed": true,
+  "typecheckPassed": true,
+  "spec": {
+    "files": 19,
+    "tests": 137,
+    "passed": true,
+    "durationSeconds": 57.26,
+    "scope": "Full run before the final first-server-time anchor and canonical source-order refinements; final clock-skew browser checks and legacy regression use final source."
+  },
+  "coastalRegression": [
+    {
+      "suite": "world-two-browsers",
+      "exitCode": 0,
+      "seconds": 41.3
+    },
+    {
+      "suite": "meet-and-talk",
+      "exitCode": 0,
+      "seconds": 59.5
+    },
+    {
+      "suite": "leave-a-sound",
+      "exitCode": 0,
+      "seconds": 12.21
+    },
+    {
+      "suite": "sound-discovery",
+      "exitCode": 0,
+      "seconds": 17.02
+    },
+    {
+      "suite": "look-controls",
+      "exitCode": 0,
+      "seconds": 10.3
+    },
+    {
+      "suite": "huts",
+      "exitCode": 0,
+      "seconds": 32.13
+    },
+    {
+      "suite": "busker-sound",
+      "exitCode": 0,
+      "seconds": 9.49
+    },
+    {
+      "suite": "cooperative-play",
+      "exitCode": 0,
+      "seconds": 30.6
+    },
+    {
+      "suite": "cooperative-ack-race",
+      "exitCode": 0,
+      "seconds": 19.54
+    },
+    {
+      "suite": "environment",
+      "exitCode": 0,
+      "seconds": 23.71
+    },
+    {
+      "suite": "quiet-light",
+      "exitCode": 0,
+      "seconds": 6.06
+    },
+    {
+      "suite": "d-reference-ui",
+      "exitCode": 0,
+      "seconds": 15.86
+    },
+    {
+      "suite": "shared-sound-focus",
+      "exitCode": 0,
+      "seconds": 48.86
+    },
+    {
+      "suite": "living-sound-world",
+      "exitCode": 1,
+      "seconds": 22.41,
+      "initialFailure": "Playwright locator evaluation timed out in openShared; failure screenshots show intact coast UI, not a missing node.",
+      "unchangedStandaloneRepeat": {
+        "exitCode": 0,
+        "checks": 20,
+        "browserErrors": 0,
+        "ordinarySoftCleanupConfirmedFromActualSnapshot": true
+      }
+    }
+  ],
+  "coastalThirdPerson": {
+    "checks": 15,
+    "passed": true,
+    "errors": [],
+    "posts": 0,
+    "silentFixture": true,
+    "checksPerformed": [
+      "first person remains the default and hides only the actual self body",
+      "third person shows a real identity-seeded 3D player and remembers the choice",
+      "third-person Follow pointer preserves both look directions",
+      "orbiting alone does not walk or spin the stationary player",
+      "third-person W walks through the same movement controller",
+      "Drag the scene remains reversed on both axes in third person",
+      "an actual wall shortens the camera boom without moving the player through it",
+      "an occupied NPC is hidden and the actual private door is red, closed and locked",
+      "NPC entry opens the visible door while preserving the reserved red lock",
+      "night readability is local to indoor figures and never brightens outdoor figures",
+      "actual player names and NPC labels use different text and role accessories",
+      "switching back restores first person and remembers it",
+      "the orbit camera also resizes to a phone viewport",
+      "view, identity, labels and routine fixtures never post or modify shared data",
+      "no page errors: "
+    ]
+  },
+  "planetBrowser": {
+    "checks": 50,
+    "passed": true,
+    "actualTwoPersonSessions": true,
+    "browserErrors": 0,
+    "ordinarySoftCleanupConfirmedFromActualSnapshot": true,
+    "coastalSoundsStrictlyUnchanged": true,
+    "coverage": [
+      "first/third person, real self and close/far zoom",
+      "nine destinations and spherical standing",
+      "great-circle seam interactions, actual shared replies and tombstones",
+      "private decoded previews and explicit placement",
+      "nearby chat",
+      "shared weather Apply/SSE/restore",
+      "client one-hour clock skew",
+      "native dialog Tab and Shift+Tab focus",
+      "44px phone movement controls",
+      "actual invited NPC approach, reserve, red closed door, authoritative409 rejection, flush voice and release",
+      "no NPC contribution/database rows"
+    ]
+  },
+  "focusedChecks": {
+    "planetAudioTests": 9,
+    "npcRoutineAndAdmissionTests": 11,
+    "routineAudioTests": 6,
+    "coastalCharacterAndCameraTests": 15
+  },
+  "negativeControls": [
+    {
+      "check": "NPC/human mutual exclusion",
+      "result": "Removing only the NPC admission gate in an ignored copy caused two actual admission tests to fail."
+    },
+    {
+      "check": "routine replay token",
+      "result": "Removing seen-token handling in an ignored copy caused two actual routine audio tests to fail."
+    },
+    {
+      "check": "camera wall and indoor fill",
+      "result": "Ignored-copy mutations failed the respective helper tests."
+    },
+    {
+      "check": "PlanetAudio lifecycle",
+      "result": "Independent tests reproduced disposal, stale decode and voice budget failures before guards; a ninth test reproduced a preview looping beyond the five-second library duration before the final stop fix."
+    }
+  ],
+  "failuresAndCorrections": [
+    {
+      "failure": "Old one-scene catalogue assertion expected seaside only.",
+      "correction": "Updated the non-invariant catalogue assertion to the explicitly requested seaside plus planet editions, citing ADR024."
+    },
+    {
+      "failure": "Node direct TypeScript harness import could not resolve a runtime .js import.",
+      "correction": "Planet E2E imports its shared geometry from the built application, matching build/e2e usage."
+    },
+    {
+      "failure": "First globe ground patches were hidden inside the spherical surface.",
+      "correction": "Subdivided curved patches and placed their vertices above the sphere."
+    },
+    {
+      "failure": "Read-only audit found stale ACKs could clear newer drafts, old NPC frames could rewind and missed removals could retain an available reply parent.",
+      "correction": "Use draft/audio generations, monotonic routine server time and snapshot tombstone reconciliation."
+    },
+    {
+      "failure": "First real planet run failed strict coastal preservation because the main agent concurrently ran HTTP-writing specs against the same scratch database.",
+      "correction": "Retained the strict check; isolated the runs; all50 passed. Original18861 preview was never affected."
+    },
+    {
+      "failure": "Last suite of the long coastal regression had one locator-evaluation timeout.",
+      "correction": "Preserved the failure and intact UI screenshots; unchanged standalone20-check repeat passed. Resource pressure is unproven."
+    }
+  ],
+  "visualReview": {
+    "actualRunningPlanet": true,
+    "allFourWeathersCaptured": true,
+    "errors": [],
+    "outsideNightFill": 0.0,
+    "insideTeaNightFill": 0.17,
+    "performance": [
+      {
+        "name": "desktop-rain",
+        "frames": 152,
+        "elapsedMs": 2516.6000000000004,
+        "fps": 60.001589446078036,
+        "p95FrameMs": 16.700000000000728,
+        "calls": 450,
+        "triangles": 188452,
+        "viewport": {
+          "width": 1440,
+          "height": 960
+        }
+      },
+      {
+        "name": "desktop-overview",
+        "frames": 152,
+        "elapsedMs": 2516.5,
+        "fps": 60.003973773097556,
+        "p95FrameMs": 16.700000000000728,
+        "calls": 550,
+        "triangles": 189984,
+        "viewport": {
+          "width": 1440,
+          "height": 960
+        }
+      },
+      {
+        "name": "narrow-rain-desktop-gpu",
+        "frames": 152,
+        "elapsedMs": 2516.5999999999985,
+        "fps": 60.00158944607808,
+        "p95FrameMs": 16.700000000000728,
+        "calls": 90,
+        "triangles": 147564,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    ],
+    "performanceHardware": "Chrome/Metal on local Apple M5 Pro; phone viewports are desktop emulations.",
+    "viewedScreenshots": [
+      "24-planet-overview.png",
+      "24-planet-self.png",
+      "24-planet-night-tea.png",
+      "24-planet-phone.png",
+      "24-planet-rain.png",
+      "24-planet-sound-library-phone.png",
+      "24-planet-places-phone.png",
+      "24-planet-restroom.png"
+    ]
+  },
+  "limits": [
+    "Nine destinations support shared sounds, replies and nearby conversation; telescope, books and furniture remain authored scenery, not separate minigames or a furniture editor.",
+    "NPC choices and restroom visits are authored deterministic routines; no language-model reasoning or fabricated joined people.",
+    "No physical-phone performance benchmark or by-ear artistic sound approval.",
+    "No claim of user visual acceptance or identical Little Ritual artwork."
+  ],
+  "notRun": [
+    "Docker, not installed"
+  ],
+  "preview": {
+    "status": "pending verified promotion; original preview not used for browser tests"
+  },
+  "pushed": false,
+  "deployed": false
+}

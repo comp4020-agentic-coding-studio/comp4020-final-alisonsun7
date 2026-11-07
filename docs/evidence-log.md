@@ -2222,3 +2222,106 @@ build/files byte for byte. The server is detached with parent 1 and no TTY.
 The former compiled directory is retained. `living-sound-world-2026-11-07`
 marks the verified version; rollback keeps the current DB. No push/deployment
 or claim of user artistic acceptance is included.
+
+# 2026-11-07 — Soundfolk, an inhabited little planet
+
+Prompt: change the title to express the core, diversify people while clearly
+distinguishing players from NPCs, add a third-person view, make NPCs use the
+restroom and provide a practical lock test, illuminate people indoors after
+dark, and develop a reversible Little Ritual–inspired small spherical world
+with more meeting places. ADR 024 records the deliberate second edition;
+`before-soundfolk-planet-2026-11-07` preserves `5afd955`. Development is on
+`codex/soundfolk-planet`, using a scratch DB/build on port18881. The working
+18861 preview was not driven by browser tests or populated with test sounds.
+
+The title is **Soundfolk**, with the invitation “A little world, made together
+through sound.” `/planet` provides freely walkable original Three.js geometry:
+nine meeting destinations on a 22-metre sphere, a continuous promenade,
+coordinated paper/sage UI, warm timber, rounded vegetation and separate
+blue player/ochre NPC identification. The verified design skill's broad
+entertainment and generic purple palettes did not fit this existing product;
+we retained its established paper/sage language and used targeted keyboard
+focus and 44px interaction guidance. No new dependency, external model,
+recording or generated bitmap was needed for this edition. Little Ritual is
+an inspiration for the inhabited globe, not a claim of copied or identical art.
+
+Actual players have identity-seeded clothing/coats and a visible self model.
+First/third person, idle orbit, wall-aware camera shortening and Near/Far zoom
+operate on the real character. Both pointer conventions remain configurable.
+The coast retains its original first-person default with a remembered optional
+third-person view. Shared weather and clock remain explicit changes per room.
+Night figures receive local warm indoor fill, while outdoors stays cooler.
+
+The sphere uses great-circle movement and parallel-transported heading.
+Server chat, spacing, crowding and removal use the same metric across seams
+and poles. Buildings use tangent-plane collision coordinates. Initial flat
+ground fans sank into the sphere; subdividing their vertices along the actual
+surface fixed the running geometry. Nine places offer distinct settings for
+sounds, replies and nearby conversation. Books, telescope and furniture remain
+scenery, not unimplemented games or an editor. Actual public source families
+colour lanterns and flower beds in canonical timestamp/id order. Sound-driven
+residents use the shared source list and server time, independent of local
+audio settings or computer-clock skew.
+
+Rowan's restroom visit is authoritative transient server state: walk, wait,
+reserve entry, close/lock, use, flush and leave. Humans and NPCs share the
+same admission gate. NPCs never become joined users, inflate presence or
+create public contribution rows. Nearby current flush tokens can play only
+while Sound is on. Slow automatic visits run only while the room has listeners;
+**Places & friends → Restrooms & doors → Test with a resident** starts a
+visible real test immediately. [The walkthrough](soundfolk-planet.md) also
+explains two-browser testing and human private-stay flush/shower actions.
+
+Independent audio tests reproduced stale decoded starts, disposal resurrection,
+an async voice-budget overrun and previews continuing beyond the library's
+five-second duration. Wanted IDs and generations now guard every pending
+decode; previews stop and disconnect after five seconds. Read-only review also
+led to draft/audio generations for late placement ACKs, monotonic NPC timestamps
+and snapshot reconciliation for a removed reply parent. The first real server
+clock sample anchors the world even when a visitor's Date.now is an hour wrong.
+
+TypeScript check/build and all **137 tests in 19 files** passed. That full run
+predates only the final first-server-clock anchor and canonical source-order
+refinements; the final 50-check real planet suite and coastal regression use
+the final application source `e9988c0`. The planet suite checks two real human
+identities, nine destinations, camera/self/zoom, great-circle seam interaction,
+private decoded listening, actual contributions/replies/removal, nearby chat,
+shared weather Apply/SSE, hour-skewed client time, keyboard focus and phone
+controls. It verifies an actual server409 against an NPC-occupied room, a real
+decoded flush voice, released admission, no fake NPC sounds and final ordinary
+soft cleanup. Strict comparison confirms coastal sounds remain unchanged.
+
+All fourteen existing coastal browser suites passed, with the last requiring
+an unchanged standalone repeat after one locator-evaluation timeout during
+the long sequence. Failure screenshots show the intact UI; the standalone
+20-check run passed without errors. Resource pressure is a possible cause,
+not a demonstrated one. The separate silent coastal third-person fixture
+passed all15 checks with zero POSTs, including real wall collision, NPC privacy
+and local night light. Ignored-copy mutations broke two NPC admission tests,
+two flush-token tests and the wall/fill helper checks; production invariants
+were not weakened. The old one-scene catalogue assertion was updated only to
+the explicitly requested seaside-plus-planet list, citing ADR024.
+
+Two test-harness failures are retained: direct Node TypeScript import could
+not resolve its runtime .js dependency, so the planet suite now reads the
+normal compiled shared module; and the first real planet run's strict coast
+comparison caught the main agent simultaneously running HTTP-writing specs
+against that scratch DB. No assertion was relaxed. After isolating runs,
+all50 planet checks passed; the working preview was never affected.
+
+Final solo rendering exercised all four weathers, a close front view, whole
+globe, real tea-house night entry and narrow layout. Indoors reported local
+fill0.17 versus0 outside at22:00; the actual self remains visible. Desktop rain,
+whole globe and narrow rain each measured about60fps over2.5seconds on the
+local M5 Pro/Metal GPU, with zero page errors. Narrow views are desktop viewport
+emulations, not a physical phone benchmark. Reviewed and saved the actual
+[globe](screenshots/24-planet-overview.png),
+[self](screenshots/24-planet-self.png),
+[night interior](screenshots/24-planet-night-tea.png),
+[phone](screenshots/24-planet-phone.png),
+[sound library](screenshots/24-planet-sound-library-phone.png) and
+[occupied restroom](screenshots/24-planet-restroom.png).
+The [structured verification](evidence/soundfolk-planet-2026-11-07.json)
+keeps full-run scope, retries, negative controls and limits explicit.
+Docker is absent and was not run. No user visual approval or final artistic
+listening verdict is claimed. Preview promotion is recorded separately below.
