@@ -141,6 +141,18 @@ shortened indoor-camera body clearance while changing their presentation.
 
 ## Product invariants
 
+ADR 028 adds optional `2D Storybook` and `2.5D Paper theatre` lenses alongside
+the retained default 3D. `client/flat-world.ts` and `client/flat-art.ts` render
+the same canonical planet state in Canvas2D. They must never create a separate
+room, copy source rows or reinterpret persisted coordinates. The camera remains
+spherical for spatial audio; movement and privacy use the existing great-circle
+metric and authoritative admission. `client/presentation-handoff.ts` consumes
+only a short-lived, identity-bound tab-local position when changing lenses.
+New documents still require explicit listening. Preserve scene-level chat,
+private-room actions, run/jump and actual reply-derived forms in every lens.
+Use CSS to keep competing context cards clear of an open chat; animation-frame
+timing must not decide whether Say can be reached. Build styles as well as TS.
+
 - **The standard (Wen):** suits people playing together; keeps what they do,
   so tomorrow shows today's changes; what others change, you see.
 - **Sound is Wen's design (ADR 011).** Sounds are left where you stand and
@@ -273,6 +285,11 @@ without Wen's go-ahead.
   encounter, visible author pins, direct responses and spherical threads,
   native conversation-to-walk handoff, travel cancellation, missed removals
   and reachable phone actions. It uses scratch data and verifies soft cleanup.
+- `APP_URL=http://localhost:<scratch-port> node e2e/flat-versions.mjs <shots>`
+  compares actual 2D/2.5D views with independent browser identities, real decoded
+  audition, shared replies and rendered forms, quiet preference, chat, local
+  handoff and 390×844 touch controls. It refuses port 18861 and verifies public
+  API cleanup. Never mistake automated WebAudio checks for hardware listening.
 - `spec/planet-audio.test.ts` tests actual WebAudio lifecycles with fake nodes:
   cancelled decodes, off/on generations, removal, the eight-voice limit,
   five-second private previews and disposal. NPC admission and routine audio

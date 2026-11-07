@@ -102,7 +102,7 @@ export class PlanetSoundInteractions {
       const {x,y} = placement;
       let pin = this.pins.get(s.id);
       if (!pin) {
-        pin = document.createElement("button");pin.type = "button";pin.className = "planet-sound-pin";pin.dataset.id = s.id;
+        pin = document.createElement("button");pin.type = "button";pin.className = "planet-sound-pin";pin.dataset.id = s.id;pin.setAttribute("aria-label", `${findSound(s.soundId)!.label} by ${s.by}`);
         const name = document.createElement("strong"), author = document.createElement("span");
         name.textContent = findSound(s.soundId)!.label;author.textContent = "by " + s.by;
         const leader = document.createElement("i");leader.className = "planet-pin-leader";leader.setAttribute("aria-hidden","true");

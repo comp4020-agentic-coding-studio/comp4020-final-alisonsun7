@@ -1,5 +1,8 @@
 // Little Chorus: cookie identity, real SSE, durable sounds,
 // ephemeral nearby words and authoritative shared restroom routines.
+import { FlatWorld } from "./flat-world.js";
+import { presentation, presentationHref } from "../shared/presentation.js";
+import { enterPresentation, leavePresentation } from "./presentation-handoff.js";
 import { PlanetWorld } from "./planet-world.js";
 import { PlanetSocial } from "./planet-social.js";
 import { PlanetAudio } from "./planet-audio.js";
@@ -22,7 +25,9 @@ const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) 
 const boot = JSON.parse($("planet-boot").textContent!) as {
     snapshot: Snapshot;
     joined: boolean;
+    view?: string;
 };
+const visualView = presentation(boot.view), flat = visualView !== "3d";
 let snapshot = boot.snapshot, connected = false;
 let chorus: ChorusWork[] = snapshot.chorus ?? [];
 const stage = $("planet-stage"), notice = $("planet-notice"), tools = $<HTMLDialogElement>("planet-tools-panel"), arrival = $<HTMLDialogElement>("planet-join");
@@ -45,7 +50,7 @@ const audio = new PlanetAudio(count => stage.dataset.voices = String(count));
 audio.setVolume(.7);
 const routineAudio = new RoutineAudio({ distanceBetween: planetDistance, report: count => stage.dataset.npcFlushVoices = String(count) });
 let currentArea = PLANET_PLACES[0];
-const world = new PlanetWorld(stage, { listen: l => {
+const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l => {
         here = { x: l.x, z: l.z, yaw: l.yaw };
         audio.frame(here, l.camera, l.serverNow);
         routineAudio.frame(npcs, here, audio.on, l.serverNow);
@@ -58,18 +63,23 @@ const world = new PlanetWorld(stage, { listen: l => {
             void reportMove();
     }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description;document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b => b.setAttribute("aria-pressed",String(b.dataset.place === p.id))); }, wait: say,
     work: (id) => id ? studio.showJournal(id) : openLibrary(),
-    interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } });
+    interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } };
+const world = flat ? new FlatWorld(stage, worldOptions, visualView) : new PlanetWorld(stage, worldOptions);
 world.setSelf(snapshot.you);
 world.setNpcs(npcs);
 world.setEnvironment(snapshot.environment, snapshot.serverNow);
 world.setContributions([...sounds.values()]);
 audio.setAll([...sounds.values()]);
 try {
-    world.setViewMode(localStorage.getItem("soundfolk-view") === "first" ? "first" : "third");
+    world.setViewMode(!flat && localStorage.getItem("soundfolk-view") === "first" ? "first" : "third");
 }
 catch { }
-function updateView(): void { const button = $("planet-view"); button.querySelector("span")!.textContent = world.viewMode === "third" ? "Third person" : "First person"; button.setAttribute("aria-pressed", String(world.viewMode === "third")); button.setAttribute("aria-label", world.viewMode === "third" ? "Third person; switch to first person" : "First person; switch to third person"); }
-$("planet-view").onclick = () => { world.setViewMode(world.viewMode === "third" ? "first" : "third"); updateView(); world.focus(); };
+function updateView(): void {
+    const button = $("planet-view");
+    if(flat){const overview=world.cameraDistance>=20;button.querySelector("span")!.textContent=overview?"Follow me":"Village overview";button.setAttribute("aria-pressed",String(overview));button.setAttribute("aria-label",overview?"Follow my character":"See the whole village");button.title=overview?"Follow my character":"See the whole village";return;}
+    button.querySelector("span")!.textContent = world.viewMode === "third" ? "Third person" : "First person";button.setAttribute("aria-pressed", String(world.viewMode === "third"));button.setAttribute("aria-label", world.viewMode === "third" ? "Third person; switch to first person" : "First person; switch to third person");
+}
+$("planet-view").onclick = () => { if(flat)world.setCameraDistance(world.cameraDistance<20?26:8);else world.setViewMode(world.viewMode === "third" ? "first" : "third");updateView();world.focus(); };
 updateView();
 const zoomControls=document.createElement("div");zoomControls.className="planet-zoom";zoomControls.setAttribute("aria-label","Camera distance");
 for(const [id,label,text,delta]of [["planet-zoom-in","Camera closer","+",-2],["planet-zoom-out","See more of the world","−",2]] as const){const b=document.createElement("button");b.type="button";b.id=id;b.setAttribute("aria-label",label);b.title=label;b.textContent=text;b.onclick=()=>{world.setViewMode("third");world.setCameraDistance(world.cameraDistance+delta);updateView();world.focus();};zoomControls.append(b);}stage.append(zoomControls);
@@ -81,7 +91,7 @@ catch { } for (const id of ["planet-look", "planet-look-settings"])
 setLook(loadLookMode());
 for (const id of ["planet-look", "planet-look-settings"])
     $<HTMLSelectElement>(id).onchange = e => setLook((e.target as HTMLSelectElement).value);
-const listenHint = document.createElement("button");listenHint.id = "planet-listen-hint";listenHint.type = "button";listenHint.className = "planet-listen-hint";stage.append(listenHint);
+const listenHint = document.createElement("button");listenHint.id = "planet-listen-hint";listenHint.type = "button";listenHint.className = "planet-listen-hint";listenHint.hidden = true;stage.append(listenHint);
 function updateSoundControl(): void {
     const running = audio.playbackState === "running", on = audio.on, silent = audio.volumeLevel === 0;
     const label = !on ? "Sound off; turn on" : !running ? "Audio paused; tap to resume" : "Sound on; turn off";
@@ -90,6 +100,7 @@ function updateSoundControl(): void {
     listenHint.hidden = running && !silent || !!document.querySelector("dialog:modal") || !$("planet-chat").hidden;
     listenHint.textContent = !on ? "Sound off · Tap to listen" : !running ? "Audio paused · Tap to resume" : "Volume is zero · Restore sound";
 }
+updateSoundControl();
 function setSound(on: boolean): void {if(disposed)return;audio.setOn(on);updateSoundControl();routineAudio.frame(npcs, here, on, world.serverNow);}
 function enableListening(): void {if(audio.volumeLevel===0){audio.setVolume(.7);$<HTMLInputElement>("chorus-volume").value="70";}setSound(true);}
 listenHint.onclick = () => {enableListening();world.focus();};
@@ -539,7 +550,7 @@ $<HTMLFormElement>("planet-join-form").onsubmit = async (e) => {
             error.textContent = data.error ?? "Choose a name and character.";
             return;
         }
-        location.assign("/planet");
+        location.assign(presentationHref(visualView));
     }
     catch {
         const error = $("planet-join-error");
@@ -562,6 +573,13 @@ $("chorus-notebook").onclick = () => afterDialogClose(tools, () => studio.showJo
 $<HTMLInputElement>("chorus-volume").oninput = e => audio.setVolume(Number((e.target as HTMLInputElement).value)/100);
 $("chorus-overview").onclick = () => {const overview=world.cameraDistance<20;world.setViewMode("third");world.setCameraDistance(overview?26:8);$("chorus-overview").setAttribute("aria-pressed",String(overview));$("chorus-overview").textContent=overview?"Back to my place":"World overview";world.focus();};
 document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b=>b.onclick=()=>{cancelReply();world.goTo(b.dataset.place!);world.setCameraDistance(8);lastSent="";world.focus();});
+document.querySelectorAll<HTMLAnchorElement>(".planet-presentations a[data-presentation]").forEach(link=>link.onclick=event=>{
+    event.preventDefault();const next=presentation(link.dataset.presentation);
+    if(next===visualView){if(tools.open)hide(tools);else world.focus();return;}
+    try {leavePresentation(sessionStorage,next,world.at,snapshot.you?.id??null,Date.now());}catch{}
+    location.assign(presentationHref(next));
+});
+try {const handoff=enterPresentation(sessionStorage,visualView,snapshot.you?.id??null,Date.now());if(handoff)world.correctPosition(handoff);}catch{}
 const startPlace = new URLSearchParams(location.search).get("zone");
 if (startPlace)
     world.goTo(startPlace);

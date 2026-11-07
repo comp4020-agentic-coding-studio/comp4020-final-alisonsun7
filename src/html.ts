@@ -3,6 +3,7 @@ import { marked } from "marked";
 import { SCENES, findZone, type Mode, type Scene } from "./shared/catalog.js";
 import type { Snapshot } from "./shared/protocol.js";
 import { WEATHER_LABELS, formatTime, minuteAt } from "./shared/environment.js";
+import { PRESENTATIONS, presentationHref, presentationLabel, type Presentation } from "./shared/presentation.js";
 import type { User } from "./users.js";
 
 const readmeSource = readFileSync(new URL("../README.md", import.meta.url), "utf8");
@@ -204,14 +205,17 @@ ${modeNav}
 
 // A separate playable edition. The server supplies this world's real room;
 // the new page never maps old coastal contributions onto planet coordinates.
-export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null = null): string {
+export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null = null, view: Presentation = "3d"): string {
   const identity = user?.nickname ?? snap.you?.name ?? "Just looking around";
+  const flat = view !== "3d";
+  const viewLinks = PRESENTATIONS.map(item=>`<a href="${presentationHref(item)}" data-presentation="${item}" title="${presentationLabel(item)}"${item===view?' aria-current="page"':""}>${item === "3d" ? "3D" : item === "2d" ? "2D" : "2.5D"}</a>`).join("");
   const avatar = user?.avatar ?? snap.you?.avatar ?? "cat";
   return page(
-    "Little Chorus — The little world",
-    "scene-page planet-page is-world",
+    flat ? `Little Chorus — ${presentationLabel(view)}` : "Little Chorus — The little world",
+    `scene-page planet-page is-world${flat ? " planet-flat" : ""}`,
     `<header class="planet-bar">
-  <a class="planet-brand" href="/" aria-label="Little Chorus home"><span class="planet-brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Little Chorus</span></a>
+  <a class="planet-brand" href="/" aria-label="Little Chorus home"><span class="planet-brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Little Chorus${flat ? `<small class="planet-style-caption">${presentationLabel(view)}</small>` : ""}</span></a>
+  <nav id="planet-presentations" class="planet-presentations" aria-label="World style">${viewLinks}</nav>
   <p id="planet-identity" class="planet-identity">${escapeHtml(identity)}</p>
   <nav class="planet-actions" aria-label="World controls">
     <button type="button" id="planet-view" class="planet-control" aria-pressed="false" title="Change first or third person view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M6 21v-4a6 6 0 0 1 12 0v4M3 7H1m22 0h-2"/></svg><span>Third person</span></button>
@@ -219,7 +223,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
     <button type="button" id="planet-tools" class="planet-control" aria-haspopup="dialog" aria-controls="planet-tools-panel" aria-expanded="false" title="Places, friends and settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="9" cy="5" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="19" r="2"/></svg><span>Places &amp; friends</span></button>
   </nav>
 </header>
-<main id="planet-stage" class="planet-stage" aria-label="A little world made through sound">
+<main id="planet-stage" class="planet-stage" data-presentation="${view}" aria-label="A little world made through sound">
   <nav id="chorus-travel" class="chorus-travel" aria-label="Little places"><button type="button" data-place="green" aria-pressed="true">Listening Green</button><button type="button" data-place="stage" aria-pressed="false">Pocket Jam</button><button type="button" data-place="reading" aria-pressed="false">Reading Nook</button><button type="button" data-place="tea" aria-pressed="false">Tide &amp; Coffee</button></nav>
   <aside class="planet-corner" aria-label="Where you are">
     <button type="button" id="planet-shared" aria-haspopup="dialog" aria-label="Our soundscape: sounds and responses"><span class="planet-corner-kicker">Our soundscape · sounds &amp; responses</span><strong id="planet-area">Listening Green</strong><span id="planet-presence">Connecting to the world…</span></button>
@@ -235,17 +239,18 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   </form>
   <div id="planet-chat-log" class="planet-chat-log" role="log" aria-live="polite"></div>
   <p id="planet-notice" class="planet-notice" role="status" aria-live="polite" hidden></p>
-  <p class="planet-movement"><span class="planet-keys">W A S D · Shift run · Space jump · E interact · drag to look</span><span class="planet-touch-hint">Arrows to move · Run &amp; Jump buttons · drag to look</span></p>
+  <p class="planet-movement"><span class="planet-keys">${flat ? "W A S D · Shift run · Space jump · E interact · click a path to walk" : "W A S D · Shift run · Space jump · E interact · drag to look"}</span><span class="planet-touch-hint">${flat ? "Arrows to move · Run &amp; Jump · tap a path to walk" : "Arrows to move · Run &amp; Jump buttons · drag to look"}</span></p>
 </main>
 <dialog id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title" hidden>
   <div class="planet-dialog-heading"><div><p class="planet-kicker">Your kind of world</p><h2 id="planet-tools-title">Places &amp; friends</h2></div><button type="button" id="planet-tools-close" class="btn ghost" autofocus>Close</button></div>
   <p class="planet-dialog-intro">A little world, made together through sound.</p>
+  <section class="planet-panel-section"><h3>World style</h3><p>Same friends. Same sounds. A different view.</p><nav id="planet-presentations-settings" class="planet-presentations" aria-label="Choose world style">${viewLinks}</nav></section>
   <section class="planet-panel-section" aria-labelledby="planet-places-title"><h3 id="planet-places-title">Find a little place</h3><div id="planet-destinations" class="planet-destinations"></div></section>
   <section class="planet-panel-section" aria-labelledby="planet-friends-title"><h3 id="planet-friends-title">Here together</h3><div id="planet-people" class="planet-people"></div><button type="button" id="planet-chat-toggle" class="btn ghost">Talk nearby</button></section>
   <section class="planet-panel-section" aria-labelledby="planet-activity-title"><h3 id="planet-activity-title">Made while you’re here</h3><div id="planet-activity" class="planet-activity"><p>Shared changes appear here as they happen during this visit.</p></div></section>
   <section id="planet-environment" class="planet-panel-section" aria-label="Weather and light"></section>
   <section class="planet-panel-section"><h3>Your listening</h3><label for="chorus-volume">Work volume <input id="chorus-volume" type="range" min="0" max="100" value="70"/></label><p>Work volume and Listen closely change only your mix of contributions. Sound off also silences residents. Adding, answering and withdrawing change the shared work.</p><button type="button" id="chorus-notebook" class="btn ghost">Our works</button><button type="button" id="chorus-welcome-again" class="btn ghost">Show the invitation again</button><button type="button" id="chorus-overview" class="btn ghost" aria-pressed="false">World overview</button></section>
-  <details id="planet-help" class="planet-help"><summary>Moving, listening &amp; looking</summary><p>Walk with W A S D or the arrows. Hold Shift to run; Space jumps. Drag to look; click the ground to walk there. On a phone, use the arrows and Run / Jump buttons.</p><p>First person brings you close to the little details. Third person lets you see your character and the people you meet.</p><label class="planet-look" for="planet-look-settings">Look direction<select id="planet-look-settings"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label><p class="planet-form-note">Follow pointer: down looks down, left looks left. Drag the scene reverses both directions. Saved in this browser.</p><p>Choose a sound, listen privately, then share it where you stand. Click its named marker or press E beside it to Respond to sound. Real replies form threads around the globe. Meet the kangaroo at the green: invite it along, then jump and play together.</p><a href="/about#how">How sounds and privacy work</a></details>
+  <details id="planet-help" class="planet-help"><summary>Moving, listening &amp; looking</summary><p>Walk with W A S D or the arrows. Hold Shift to run; Space jumps. ${flat ? "Click a path to walk there. Drag to pan the view, or use the arrows and Run / Jump on a phone." : "Drag to look; click the ground to walk there. On a phone, use the arrows and Run / Jump buttons."}</p><p>${flat ? "Follow your character for a close view, or choose Village overview to find friends and places." : "First person brings you close to the little details. Third person lets you see your character and the people you meet."}</p><label ${flat ? "hidden " : ""}class="planet-look" for="planet-look-settings">Look direction<select id="planet-look-settings"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label><p class="planet-form-note">Follow pointer: down looks down, left looks left. Drag the scene reverses both directions. Saved in this browser.</p><p>Choose a sound, listen privately, then share it where you stand. Click its named marker or press E beside it to Respond to sound. ${flat ? "Real replies connect your contributions across this village." : "Real replies form threads around the globe."} Meet the kangaroo at the green: invite it along, then jump and play together.</p><a href="/about#how">How sounds and privacy work</a></details>
   <details class="planet-restroom"><summary>Restrooms &amp; doors</summary><p>A red lamp means someone is in. Occupied doors stay locked. Sounds left for a stay end when that visitor comes out.</p><button type="button" id="planet-test-restroom" class="btn ghost">Test with a resident</button><p>Rowan will walk in, lock the door, flush and come back out. Open another browser with a different nickname to try the occupied door together.</p><p id="planet-occupancy" role="status" aria-live="polite">Walk to the restrooms to see the shared door state.</p></details>
   <a class="planet-coast-link" href="/scene/seaside">Visit the coastal world <span aria-hidden="true">↗</span></a>
   <p class="planet-edition-note">A separate edition. Everything you left at the coast stays at the coast.</p>
@@ -255,10 +260,10 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   <p class="planet-kicker">Welcome to Little Chorus</p><h2 id="planet-join-title">A little room for you.</h2>
   <p>Bring a friend, leave a sound, and see what this world becomes. A quiet nook or a lively gathering is yours to make together.</p>
   <form id="planet-join-form" method="post" action="/join">
-    <input type="hidden" name="next" value="/planet"/>
+    <input type="hidden" name="next" value="${presentationHref(view)}"/>
     <label class="planet-name" for="planet-nickname">Your name here<input id="planet-nickname" name="nickname" maxlength="24" autocomplete="nickname" required value="${escapeHtml(user?.nickname ?? "")}" placeholder="A nickname is fine"/></label>
     <fieldset class="planet-avatars"><legend>Come as</legend><label><input type="radio" name="avatar" value="cat"${avatar === "cat" ? " checked" : ""}/>${avatarMark("cat")} A cat</label><label><input type="radio" name="avatar" value="dog"${avatar === "dog" ? " checked" : ""}/>${avatarMark("dog")} A dog</label></fieldset>
-    <details><summary>Look direction</summary><label class="planet-look" for="planet-look">Mouse or trackpad<select id="planet-look" name="look-mode"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label>
+    <details${flat ? " hidden" : ""}><summary>Look direction</summary><label class="planet-look" for="planet-look">Mouse or trackpad<select id="planet-look" name="look-mode"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label>
     <p id="planet-look-hint" class="planet-form-note">Follow pointer: drag down to look down, left to look left. You can change this later.</p></details>
     <p id="planet-join-error" class="planet-form-error" role="alert" hidden></p>
     <button type="submit" id="planet-enter" class="btn primary">Find my place</button>
@@ -267,7 +272,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   <p class="planet-form-note">Your name is visible to people you meet. No account or email.</p>
 </dialog>
 <noscript><p class="noscript">This little world needs JavaScript. <a href="/explore">Choose a place</a>.</p></noscript>
-<script type="application/json" id="planet-boot">${embed({ snapshot: snap, joined, user: user ? { nickname: user.nickname, avatar: user.avatar } : null })}</script>
+<script type="application/json" id="planet-boot">${embed({ snapshot: snap, joined, view, user: user ? { nickname: user.nickname, avatar: user.avatar } : null })}</script>
 <script type="module" src="/client/planet.js"></script>`,
   );
 }

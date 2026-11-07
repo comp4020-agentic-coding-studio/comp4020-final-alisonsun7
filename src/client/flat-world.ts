@@ -109,7 +109,7 @@ export class FlatWorld {
     private hasEnvironment = false;
     private environment: Environment = { weather: "clear", minuteOfDay: 840, clockRunning: false, updatedAt: new Date().toISOString(), revision: 0 };
     private serverSample = { server: Date.now(), received: performance.now() };
-    private companion = { x: -2.3, z: 1, yaw: .8, phase: "resting" as "resting" | "following" | "playing", height: 0, played: false, until: 0 };
+    private companion = { x: -2, z: 3.6, yaw: .8, phase: "resting" as "resting" | "following" | "playing", height: 0, played: false, until: 0 };
     private companionAction: string | null = null;
     private lastWait = "";
     constructor(private host: HTMLElement, private opts: Options, readonly mode: FlatMode) {
@@ -209,10 +209,17 @@ export class FlatWorld {
         Object.assign(label.style,{ position: "absolute", padding: "3px 8px", borderRadius: "12px", background: role === "player" ? "#edf5ed" : "#f6e8c9", color: "#304d48", font: "600 11px system-ui", whiteSpace: "nowrap", border: role === "player" ? "1px solid #7b9e96" : "1px solid #cfb38a", transform: "translate(-50%,-100%)" });
         this.overlay.append(label);return label;
     }
+    private labelSlots: { x: number; y: number; width: number }[] = [];
     private label(label: HTMLSpanElement | null | undefined, position: Point, role: "self" | "player" | "npc", height = 2.3): void {
         if (!label) return;const point = this.project(position.x,position.z,height), distance = planetDistance(position,this.position);
         label.hidden = !point.visible || this.zoom >= 20 || role !== "self" && distance > (role === "player" ? 7 : 2.7);
-        if (!label.hidden) {label.style.left = point.x + "px";label.style.top = point.y + "px";}
+        if (!label.hidden) {
+            const width = Math.min(this.width-24,(label.textContent?.length ?? 0)*6.5+18);
+            const x = Math.max(width/2+12,Math.min(this.width-width/2-12,point.x));
+            let y = point.y;
+            for (let row = 0;row < 6 && this.labelSlots.some(slot => Math.abs(slot.x-x) < (slot.width+width)/2+4 && Math.abs(slot.y-y) < 23);row++) y -= 24;
+            this.labelSlots.push({ x,y,width });label.style.left = x + "px";label.style.top = y + "px";
+        }
     }
     private locked(): Set<string> {
         const locked = new Set(this.npcs.filter(n => n.occupying).map(n => n.hutId));
@@ -305,6 +312,7 @@ export class FlatWorld {
     }
     private draw(walking: boolean,dt: number,locked: ReadonlySet<string>): void {
         const ctx = this.context,view = this.projection,style: FlatStyle = this.mode === "2d" ? "flat" : "iso",time = this.serverNow/1000,reducedMotion = this.reduced.matches;
+        this.labelSlots = [];
         ctx.setTransform(this.pixelRatio,0,0,this.pixelRatio,0,0);ctx.clearRect(0,0,this.width,this.height);
         this.drawGround(ctx,view,time,reducedMotion);
         ctx.save();ctx.globalAlpha = .13;drawFlatBackdrop(ctx,{ style,width: this.width,height: this.height,time,reducedMotion });ctx.restore();

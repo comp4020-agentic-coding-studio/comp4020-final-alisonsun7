@@ -4,6 +4,7 @@ import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme
 import { log } from "./log.js";
 import * as sessions from "./sessions.js";
 import { SCENES, findMode, findScene, findZone, liveMode } from "./shared/catalog.js";
+import { presentation } from "./shared/presentation.js";
 import { AVATARS, type Avatar } from "./shared/protocol.js";
 import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users.js";
 
@@ -32,6 +33,10 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/sound-connections.js": js("/client/sound-connections.js"),
   "/client/sound-residents.js": js("/client/sound-residents.js"),
   "/client/view-mode.js": js("/client/view-mode.js"),
+  "/client/flat-world.js": js("/client/flat-world.js"),
+  "/client/flat-art.js": js("/client/flat-art.js"),
+  "/client/presentation-handoff.js": js("/client/presentation-handoff.js"),
+  "/shared/presentation.js": js("/shared/presentation.js"),
   "/client/planet.js": js("/client/planet.js"),
   "/client/chorus-studio.js": js("/client/chorus-studio.js"),
   "/client/chorus-garden.js": js("/client/chorus-garden.js"),
@@ -159,9 +164,13 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (method === "GET" && pathname === "/") return html(res, renderLanding(user));
   if (method === "GET" && pathname === "/readme/") return html(res, renderReadme());
   if (method === "GET" && pathname === "/about") return html(res, renderAbout());
+  if(method === "GET" && ["/2d", "/2.5d"].includes(pathname)) {
+    const target = new URLSearchParams({view:pathname.slice(1)});if(url.searchParams.get("zone"))target.set("zone",url.searchParams.get("zone")!);
+    res.writeHead(303,{location:"/planet?"+target.toString()});res.end();return;
+  }
   if (method === "GET" && pathname === "/planet") {
     const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
-    return html(res, renderPlanet(snap, !!user, user));
+    return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view"))));
   }
   if (method === "GET" && pathname === "/explore") {
     const places = SCENES.flatMap((s) => s.modes.map((m) => ({ sceneId: s.id, mode: m.id, ...sessions.placeSummary(s.id, m.id) })));
@@ -183,7 +192,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
     if (scene.id === "planet") {
       const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
-      return html(res, renderPlanet(snap, !!user, user));
+      return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view"))));
     }
     // ?zone= (or the older ?shot=) picks where you arrive
     const zoneAsked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";
