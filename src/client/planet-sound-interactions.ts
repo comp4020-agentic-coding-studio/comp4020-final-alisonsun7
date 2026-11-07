@@ -61,7 +61,7 @@ export class PlanetSoundInteractions {
   }
   dismiss(): void {this.dismissed = true;this.last = -Infinity;this.frame();}
   select(id: string): boolean {
-    if (!this.sounds.some(sound => sound.id === id)) return false;
+    if (!this.sounds.some(sound => sound.id === id && planetDistance(this.opts.at(),sound)<=18)) return false;
     this.selected = id;this.dismissed = false;this.last = -Infinity;this.frame();this.answer.focus({preventScroll:true});return true;
   }
   respondNearest(): boolean {

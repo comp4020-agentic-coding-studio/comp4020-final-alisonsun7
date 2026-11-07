@@ -2376,6 +2376,7 @@ h3 {
 .chorus-dock-actions #chorus-focus { border:0;padding:2px 0;min-height:44px;color:#385448;background:none;flex-basis:100%;text-align:left;justify-content:flex-start; }
 .planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-nearby-sound,
 .planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-nearby-reopen,
+.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-sound-pins,
 .planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden]))>.planet-place { display:none; }
 .planet-page .planet-sound-response { display:none; }
 .planet-page .planet-zoom { top:96px;right:22px; }

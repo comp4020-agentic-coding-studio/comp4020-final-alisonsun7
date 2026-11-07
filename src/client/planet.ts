@@ -69,7 +69,7 @@ const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l =
             void reportMove();
     }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description;document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b => b.setAttribute("aria-pressed",String(b.dataset.place === p.id))); }, wait: say,
     work: (id, _place, sourceId) => {
-        if(sourceId){studio.dock.querySelector<HTMLButtonElement>("#chorus-minimise")?.click();soundInteractions?.select(sourceId);}
+        if(sourceId){studio.dock.querySelector<HTMLButtonElement>("#chorus-minimise")?.click();if(!soundInteractions?.select(sourceId)&&id)studio.showJournal(id);}
         else if(id)studio.showJournal(id);else openLibrary();
     },
     interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } };
@@ -208,7 +208,7 @@ native(shared, $("planet-shared"));
 containFocus(shared);
 $("planet-shared").onclick = () => { renderShared(); show(shared); };
 function publicSounds(): PlacedSound[] { return [...sounds.values()].filter(s => !s.whileIn && !s.removedAt && !ended.has(s.id)); }
-function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list); soundInteractions?.setAll(list);conversations.changed();renderShared(); renderPeople(); }
+function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list); soundInteractions?.setAll(list);studio.setWorks(chorus);conversations.changed();renderShared(); renderPeople(); }
 function record(kind: string, s: PlacedSound, by = s.by): void { if (s.whileIn)
     return; const id = s.id + ":" + kind; if (events.has(id))
     return; events.add(id); activity.unshift(by + (kind === "removed" ? " removed " : " left ") + (findSound(s.soundId)?.label ?? "a sound")); activity.splice(4); $("planet-activity").replaceChildren(...activity.map(text => { const p = document.createElement("p"); p.textContent = text; return p; })); }
@@ -380,12 +380,13 @@ function makeRoom(soundId: string, parent: SoundReference | null): void {
 }
 function updatePlacementPlan(): void {
     const plan=placementPlan;if(!plan)return;
+    if(document.querySelector("dialog:modal")||!$("planet-chat").hidden||!world.walkingIntent||world.walkingIntentRevision!==plan.revision){cancelPlacement();say("Walk cancelled. Nothing was shared.");return;}
     if(plan.parent&&(!sounds.has(plan.parent.id)||ended.has(plan.parent.id))){cancelPlacement();say("That sound was withdrawn. Your answer was not sent.");return;}
     const arrived=planetDistance(here,plan.target)<.34;
     if(arrived){
         cancelPlacement();reply=plan.parent;library.setReply(reply);openLibrary();
         studio.element.querySelector<HTMLButtonElement>(`[data-leave="${CSS.escape(plan.soundId)}"]`)?.focus();
-    }else if(!world.walkingIntent||world.walkingIntentRevision!==plan.revision){cancelPlacement();say("Walk cancelled. Nothing was shared.");}
+    }
 }
 const invitation=document.createElement("dialog");invitation.id="chorus-invite-dialog";invitation.className="chorus-dialog chorus-invite-dialog";invitation.hidden=true;invitation.setAttribute("aria-labelledby","chorus-invite-title");
 const invitationTitle=document.createElement("h2");invitationTitle.id="chorus-invite-title";invitationTitle.textContent="Meet me at our work.";

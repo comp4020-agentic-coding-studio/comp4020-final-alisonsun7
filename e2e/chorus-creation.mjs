@@ -375,7 +375,7 @@ async function run() {
   const removing = b.waitForResponse(response => response.request().method() === "DELETE" && new URL(response.url()).pathname.endsWith("/sounds/" + delayed.sound.id));
   await delayedRecord.locator(`[data-record-action="remove:${delayed.sound.id}"]`).tap();
   assert.ok((await (await removing).json()).ok);
-  await delayedRecord.locator(`[data-source="${delayed.sound.id}"]`).filter({ hasText: "withdrawn, remembered here" }).waitFor();
+  await delayedRecord.locator(`[data-source="${delayed.sound.id}"] [data-live="false"]`).waitFor();
   check(await b.locator("#chorus-journal").evaluate(dialog => dialog.contains(document.activeElement)),
     "withdrawing a record preserves keyboard focus inside the journal after its focused button is removed by SSE");
   check(!JSON.parse(await stageData(a, "chorus")).some(work => work.sources.some(source => source.id === delayed.sound.id)),
@@ -438,7 +438,7 @@ async function run() {
   await b.waitForFunction(id => JSON.parse(document.getElementById("planet-stage").dataset.chorus ?? "[]").some(work => work.id === id && work.live.length === 0)
     && JSON.parse(document.getElementById("planet-stage").dataset.chorusGardens ?? "[]").every(work => work.workId !== id), first.sound.id);
   const recovered = await journal(b, first.sound.id);
-  check((await recovered.locator("[data-source]").count()) === 3 && (await recovered.textContent()).includes("resting") && (await recovered.textContent()).includes("withdrawn, remembered here"),
+  check((await recovered.locator("[data-source]").count()) === 3 && (await recovered.textContent()).includes("resting") && (await recovered.locator('[data-live="false"]').count()) === 3,
     "a real reconnect clears the missed source and active sculpture while preserving the complete authored work in its archive");
   await closeDialog(b, "#chorus-journal");
 
