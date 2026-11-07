@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PlanetAudio, planetHearingRadius } from "../src/client/planet-audio.ts";
 import { CHORUS_BAR_SECONDS, nextChorusBar, renderChorusPart, seamlessRecording } from "../src/client/chorus-instrument.ts";
 import { deriveChorusWorks } from "../src/shared/chorus.ts";
+import { planetStep } from "../src/shared/planet.ts";
 import type { PlacedSound } from "../src/shared/protocol.ts";
 const origin = Date.parse("2026-11-07T10:00:00Z"), camera = new THREE.PerspectiveCamera();
 const listener = { x: 0, z: 0, yaw: 0 };
@@ -70,7 +71,7 @@ describe("local listening and the shared musical consequence", () => {
   let document: Doc, contexts: Context[], sources: Node[], gains: Node[], instances: PlanetAudio[];
   let fetcher: ReturnType<typeof vi.fn>, decode: ReturnType<typeof vi.fn<(bytes: ArrayBuffer) => Promise<AudioBuffer>>>;
   class Context {
-    currentTime = 10; sampleRate = 12000;
+    currentTime = 10; sampleRate = 12000; state: AudioContextState = "running";
     destination = new Node();
     listener = Object.fromEntries(["positionX", "positionY", "positionZ", "forwardX", "forwardY", "forwardZ", "upX", "upY", "upZ"].map(key => [key, parameter()]));
     constructor() { contexts.push(this); }
@@ -120,6 +121,50 @@ describe("local listening and the shared musical consequence", () => {
     const root = sound("root"), friend = sound("friend", "chorus-pulse", { replyToId: root.id, byId: "b" });
     const instance = audio(); instance.setAll([root, friend]); instance.setWorks(deriveChorusWorks([root, friend]));
     instance.frame(listener, camera, origin); await settle(); expect(contexts).toHaveLength(0); expect(sources).toHaveLength(0);
+  });
+  it("distinguishes the listener's enabled preference from a suspended context and zero local volume", async () => {
+    const instance = audio();
+    expect(instance.playbackState).toBe("off"); expect(contexts).toHaveLength(0);
+    instance.setOn(true); expect(instance.on).toBe(true); expect(instance.playbackState).toBe("running");
+    contexts[0].state = "suspended";
+    expect(instance.on).toBe(true); expect(instance.playbackState).toBe("suspended");
+    instance.setVolume(0); expect(instance.volumeLevel).toBe(0);
+    instance.setOn(false); expect(instance.playbackState).toBe("off");
+    expect(instance.volumeLevel).toBe(0);
+  });
+  it("keeps a nearby reading source clear through the normal reply distance, then fades to its quiet boundary", async () => {
+    const instance = audio(), position = { x: -13, z: 7, yaw: 0 };
+    instance.setAll([sound("reading-bells", "chorus-bells", position)]);
+    instance.setOn(true); instance.frame(position, camera, origin); await settle();
+    const voice = gains[2], beside = voice.gain.value;
+    instance.frame(planetStep(position, 1, 0, 1.5), camera, origin + 100);
+    expect(voice.gain.value / beside).toBeCloseTo(1, 5);
+    instance.frame(planetStep(position, 1, 0, 4), camera, origin + 200);
+    expect(voice.gain.value / beside).toBeGreaterThanOrEqual(.25);
+    instance.frame(planetStep(position, 1, 0, 5.9), camera, origin + 300);
+    expect(voice.gain.value / beside).toBeLessThan(.01);
+    instance.frame(planetStep(position, 1, 0, 6.1), camera, origin + 400);
+    expect(sources[0].stop).toHaveBeenCalledOnce();
+  });
+  it("retains sample headroom for eight synchronized original parts even before the output compressor", async () => {
+    const arrangements = [
+      Array(8).fill("chorus-chords"), Array(8).fill("chorus-pulse"), Array(8).fill("chorus-bells"),
+      ["chorus-chords", "chorus-chords", "chorus-chords", "chorus-pulse", "chorus-pulse", "chorus-bells", "chorus-bells", "chorus-bells"],
+    ];
+    for (const arrangement of arrangements) {
+      const gainIndex = gains.length, sourceIndex = sources.length, instance = audio();
+      instance.setAll(arrangement.map((id, i) => sound("part-" + i, id, { x: 0 })));
+      instance.setVolume(1); instance.setOn(true); instance.frame(listener, camera, origin); await settle();
+      const mix = sources.slice(sourceIndex), master = gains[gainIndex].gain.value;
+      expect(mix).toHaveLength(8);
+      let peak = 0;
+      for (let sample = 0; sample < mix[0].buffer!.length; sample++) {
+        const sum = mix.reduce((total, voice, i) => total + voice.buffer!.getChannelData(0)[sample] * gains[gainIndex + 2 + i].gain.value, 0) * master;
+        expect(Number.isFinite(sum)).toBe(true); peak = Math.max(peak, Math.abs(sum));
+      }
+      expect(peak).toBeGreaterThan(.05); expect(peak).toBeLessThan(.85);
+      instance.dispose();
+    }
   });
   it("ducks the world for private audition, restores it, and keeps volume and focus local", async () => {
     const instance = audio(), rows = [sound("a", "guitar"), sound("b", "trickle", { x: 2 })];

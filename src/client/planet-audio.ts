@@ -49,6 +49,11 @@ export class PlanetAudio {
     private listener: Position = { x: 0, z: 0, yaw: 0 };
     constructor(private report: (count: number) => void) { document.addEventListener("visibilitychange", this.visibility); }
     get on(): boolean { return this.enabled; }
+    // Enabled is the listener's preference; it is not proof that autoplay or
+    // the operating system has allowed this context to run. The interface can
+    // offer a fresh gesture instead of claiming that suspended audio is on.
+    get playbackState(): "off" | AudioContextState { return this.enabled ? this.ctx?.state ?? "suspended" : "off"; }
+    get volumeLevel(): number { return this.volume; }
     private context(): AudioContext {
         if (this.disposed) throw new Error("Audio disposed");
         if (!this.ctx) {
@@ -124,10 +129,17 @@ export class PlanetAudio {
         if (document.hidden) { this.generation++; this.stopAll(); this.stopPreview(); }
     };
     private gainFor(sound: Audible, distance: number): number {
-        const base = sound.derived ? .17 : isChorusInstrument(sound.soundId) ? .32 : .24;
+        // Quiet does not mean inaudible beside the object. Squaring a linear
+        // falloff had reduced Reading Nook's four-metre reply position to 11%
+        // gain before its already quiet score and master headroom. Keep a
+        // conversational near field, then ease smoothly to the same boundary.
+        const radius = planetHearingRadius(sound), near = Math.min(1.5, radius / 4);
+        const edge = Math.max(0, Math.min(1, (distance - near) / (radius - near)));
+        const spatial = Math.cos(edge * Math.PI / 2) ** 2;
+        const base = sound.derived ? .26 : isChorusInstrument(sound.soundId) ? .72 : EVENTS[sound.soundId] ? .28 : .42;
         const localFocus = this.focus && this.focus !== sound.id && !sound.derived ? .12 : 1;
         const headroom = 1 / Math.sqrt(Math.max(1, this.wanted.size / 3));
-        return base * Math.max(0, 1 - distance / planetHearingRadius(sound)) ** 2 * localFocus * headroom;
+        return base * spatial * localFocus * headroom;
     }
     frame(position: Position, camera: THREE.Camera, serverNow: number): void {
         this.listener = position; this.serverNow = serverNow;
@@ -198,7 +210,8 @@ export class PlanetAudio {
             const ctx = this.context(); await ctx.resume(); const buffer = await this.buffer(id);
             if (this.disposed || revision !== this.previewRevision || document.hidden) return false;
             const source = ctx.createBufferSource(), gain = ctx.createGain();
-            source.buffer = buffer; source.loop = false; gain.gain.value = isChorusInstrument(id) ? .36 : .22;
+            source.buffer = buffer; source.loop = false;
+            gain.gain.value = isChorusInstrument(id) ? .72 : EVENTS[id] ? .28 : .42;
             source.connect(gain).connect(this.master!);
             this.previewing = true; this.worldGain!.gain.setTargetAtTime(.18, ctx.currentTime, .035);
             source.start(0, 0, Math.min(5, buffer.duration));
