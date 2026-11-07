@@ -2212,3 +2212,13 @@ regression from the focused final pose checks. Viewed final actual
 [real shared mix](screenshots/23-living-shared-mix.png) captures. The
 [gesture study](screenshots/23-living-responses-fixture.png) is explicitly a
 silent synthetic fixture of real geometry/controller, not a populated session.
+
+Promoted application commit `cd70c7a` to the original 18861 preview using its
+current database. All 12 persistent table digests match before and after,
+including 20 sound rows, four operations, one reply and 25 users. Five ordinary
+sounds remain live; the entire shared weather/clock row is unchanged. All 30
+served application modules/styles and three new assets match the tested
+build/files byte for byte. The server is detached with parent 1 and no TTY.
+The former compiled directory is retained. `living-sound-world-2026-11-07`
+marks the verified version; rollback keeps the current DB. No push/deployment
+or claim of user artistic acceptance is included.

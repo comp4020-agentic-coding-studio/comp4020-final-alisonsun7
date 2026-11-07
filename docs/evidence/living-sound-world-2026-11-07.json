@@ -404,5 +404,71 @@
   "notRun": [
     "Docker, not installed"
   ],
-  "preview": null
+  "preview": {
+    "applicationCommit": "cd70c7a22e2f1648c282d34be69963fd19aa1451",
+    "port": 18861,
+    "databaseUnchanged": true,
+    "allPersistentTablesCompared": 12,
+    "tableCounts": {
+      "memories": 0,
+      "participants": 23,
+      "placed_sounds": 20,
+      "placements": 0,
+      "scenes": 1,
+      "session_environments": 1,
+      "session_events": 0,
+      "sessions": 1,
+      "sound_assets": 0,
+      "sound_operations": 4,
+      "sound_replies": 1,
+      "users": 25
+    },
+    "ordinaryLiveSoundCount": 5,
+    "sharedEnvironmentPreserved": true,
+    "detachedProcess": {
+      "pid": 75120,
+      "parentPid": 1,
+      "processGroup": 75120,
+      "tty": "??"
+    },
+    "verifiedModules": {
+      "client/cafe.js": "ea9b61e4158c46f5c80cf47809b2d2e095df28cb8d5d47e0f92e634191f0b8ad",
+      "client/characters.js": "511d177fad8bf5feb8ad977d9f346016975006741d04e61cd9e5b284ce60c4fb",
+      "client/coastal-renderer.js": "5d48223777f6d20b488293450366e75097ed82a9fa0fe312fdda21846ffea826",
+      "client/d-pines.js": "2a98aa3718d57e21f61ff9f0c654352278e5bb7323c20c7e405a6f1c82a70b79",
+      "client/environment-panel.js": "73a2739ab0ccd54054b2172d9bbaa7618e699ef51963e5a2b4f21ff5cbe92aa2",
+      "client/figures.js": "a672f99ce98d3d543ac69096c600c06cc916afe436b1f274225acfb7e5d28386",
+      "client/guide.js": "bbe34ba005b02a32a8e634296d6aca887cf9af8a778a5a26980c908a6b066a2e",
+      "client/huts.js": "5b0d254a528d9dc69239edfa0c04508210c6fb2d6b291f6fa933191af7b0390a",
+      "client/listening-trail.js": "d113c9e2f59346d2a095e5941ac128782144765679e9fd606ce736508106f5f8",
+      "client/look-settings.js": "74a8d2ffa87882b15f0ede080aaaa81650e1c4048f2e64a454f29d0d1b2b5741",
+      "client/places.js": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "client/scene.js": "252fa66c08f2b804f358c82635b0dec03d17b1d7f7290792ad59607de0c507cf",
+      "client/seaside.js": "011b7acc4b39e77cc4b1b549c0f027e86781d26b09f38188a8ad2de270150dfb",
+      "client/shared-sound-place.js": "7cb84965ed7e9b7f92258e0d4882d2e10aea952be619689d62d744ab70207e77",
+      "client/sky.js": "ec8e1f446b908b1300cbc175d6a2b6c06546cd697e6669872f6da5f83d35723c",
+      "client/sound-connections.js": "b7d38890612d7d43d450fd2a8c9251a2c3c57d4cfdb19df409315b1335b85d9b",
+      "client/sound-conversations.js": "aa2bf90b4d7dcc3fe4fa422b4346a2a30f8f8ece5f164246890dc08b75e55a5e",
+      "client/sound-library.js": "2bd7ac7ea502c02d797d35142e1484f90acaf59ecda6b15272214c019b54ea28",
+      "client/sound-residents.js": "7551ecdc796a306bdc80df0f04f00b415bd3746205b3bedea5fca918489074f0",
+      "client/soundscape.js": "e61cf00908766b420a8e3b95dbef910e2e61e287f268c46aaf146100802d0f0a",
+      "client/world-build.js": "6cab2fb6ee376d48f49b4e1f6a150f002acc9ae65667cac54ba4a796762b007e",
+      "client/world.js": "7af10167424f2d7e537e6c68937276dfc8ffde9a841d9f8798dd602c39af275e",
+      "shared/catalog.js": "b88456d7af18eb9d356576a106dcc5ebc984a7161b206d63615ce39ee2acaa50",
+      "shared/environment.js": "074e77e3fb5af1c186f1608163f68faa8965676d0f60caffb9707b4040b2d3cb",
+      "shared/huts.js": "7f0a0dee675ef17173e317e8cba4b5dd46828d17569115d75ae31b4905b5a33d",
+      "shared/landscapes.js": "0b81ba04a0d402a71d1fdc80d31cb3441956b293c482063784c4a619a63488cc",
+      "shared/protocol.js": "764ca473e2976086396b4233fd06bfe5a37ccc3d7ed74b8af784d3501587e0b3",
+      "shared/sound-response.js": "4d64375a00d0d9288039920633a80b06da03e999fff8169a05670450c85fd346",
+      "shared/sounds.js": "5440010a44f2d5a8dac2075fa05951eddefe1ea145db58d6949d2caab3654ddd",
+      "client/style.css": "753626d8b6546174017d649e474bb4a7a491173f1c3f3e552b8e6558b2884f93"
+    },
+    "verifiedNewAssets": {
+      "assets/sounds/rainstick.mp3": "dad3fcce14270ac8459d67792588f5055f09262ef56a7d80228386f7b1fe4dd3",
+      "assets/sounds/hand-claps.mp3": "00c1ef933d92cb40c35c3c150b6658fe8fd29b0663b623618e77724b47e7cff9",
+      "assets/textures/sound_world_mural/mural.png": "27266c8b8156579e8a12b33db11fe89151d92ab576cbbbac42e4325df0dad377"
+    },
+    "rollbackTag": "before-living-sound-world-2026-11-07",
+    "oldCompiledOutputRetained": true
+  }
 }

@@ -125,3 +125,10 @@ never delete them or restore an older database to roll the art back.
 The [production walkthrough](living-sound-world.md) records the new direction,
 process references and reproducible briefs. Preview promotion is recorded
 separately in the evidence log and ignored `.cache/living-world-promotion.json`.
+
+`living-sound-world-2026-11-07` marks this verified implementation. The original
+18861 preview serves application commit `cd70c7a`, with every digest in all
+12 persistent tables unchanged at promotion. All 30 served modules/styles and
+three new assets match the reviewed build. The shared environment anchor and
+five live ordinary sounds remain intact. The ignored promotion record retains
+the former compiled directory; switching applications must keep the current DB.
