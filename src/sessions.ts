@@ -14,7 +14,10 @@ import { placeMode, roomKey } from "./shared/catalog.js";
 import { createDefaultEnvironment, WEATHERS, type Environment, type EnvironmentResult, type Weather } from "./shared/environment.js";
 import type { Avatar, MoveResult, Person, PlacedSound, Snapshot, SoundPlacementResult, SoundReference, SoundReplies } from "./shared/protocol.js";
 import { CROWD_MAX, CROWD_RADIUS, PLACE_MAX, REACH, SAME_APART, findSound } from "./shared/sounds.js";
-import { hutAt, isPrivate, privateSound } from "./shared/huts.js";
+import { isPrivate, privateSound } from "./shared/huts.js";
+import { sceneDistance, sceneHutAt, sceneHuts, planetCoordsValid } from "./shared/planet.js";
+import type { NpcRestroomResult, NpcRoutineFrame } from "./shared/npc-routines.js";
+import { NpcRestroomRoutines } from "./npc-routines.js";
 import type { User } from "./users.js";
 
 const newId = (prefix: string): string => `${prefix}_${randomBytes(8).toString("hex")}`;
@@ -67,6 +70,7 @@ function ensureParticipant(session: SessionRow, user: User): Person {
 // Open SSE streams per place. A stream without a user is someone looking
 // before they've joined: they see everyone but aren't counted as here.
 const rooms = new Map<string, Map<ServerResponse, User | null>>();
+const npcRooms = new Map<string, NpcRestroomRoutines>();
 
 function onlineIn(sceneId: string, mode: string, session: SessionRow): Person[] {
   const room = rooms.get(roomKey(sceneId, mode));
@@ -87,6 +91,7 @@ export function snapshotFor(session: SessionRow, user: User | null): Snapshot {
     you: user ? ensureParticipant(session, user) : null,
     sounds: liveSounds(session.id),
     environment: environmentFor(session),
+    npcs: advanceNpcs(roomKey(session.scene_id, session.mode), Date.now()),
   };
 }
 
@@ -186,7 +191,7 @@ export function unsubscribe(res: ServerResponse, sceneId: string, mode: string, 
   const room = rooms.get(key);
   if (!room) return;
   room.delete(res);
-  if (room.size === 0) rooms.delete(key);
+  if (room.size === 0) { rooms.delete(key); npcRooms.delete(key); }
   if (user && ![...room.values()].some((u) => u?.id === user.id)) {
     if (standing.get(key)?.delete(user.id)) moved.add(key);
     endHutSounds(sceneId, mode, user, "left_place");
@@ -226,11 +231,60 @@ function streamsOf(key: string, userId: string): ServerResponse[] {
 function sendMoves(key: string): void {
   const room = rooms.get(key);
   const here = standing.get(key);
-  if (!room || !here) return;
+  if (!room) return;
   const [sceneId, mode] = key.split(":");
   const session = openSession(sceneId, mode);
-  const msg = frame({ type: "moves", sessionId: session.id, people: [...here.values()].map((s) => ({ ...s.person, x: s.x, z: s.z, yaw: s.yaw })) });
+  const now = Date.now();
+  const msg = frame({ type: "moves", sessionId: session.id, serverNow: new Date(now).toISOString(),
+    people: [...(here?.values() ?? [])].map((s) => ({ ...s.person, x: s.x, z: s.z, yaw: s.yaw })),
+    npcs: advanceNpcs(key, now) });
   for (const res of room.keys()) res.write(msg);
+}
+
+// Both human moves and resident entry consult this one synchronous authority.
+// Resident reservations stay separate from human presence and persisted sound.
+function hutTaken(sceneId: string, key: string, hutId: string, now: number, exceptUserId?: string, exceptNpcId?: string): boolean {
+  return [...(standing.get(key)?.entries() ?? [])].some(([id, position]) => id !== exceptUserId && now - position.at <= 20_000
+    && sceneHutAt(sceneId, position.x, position.z)?.id === hutId)
+    || (npcRooms.get(key)?.occupies(hutId, now, exceptNpcId) ?? false);
+}
+
+function advanceNpcs(key: string, now: number): NpcRoutineFrame[] {
+  if (!rooms.get(key)?.size) return [];
+  const [sceneId] = key.split(":");
+  let routines = npcRooms.get(key);
+  if (!routines) { routines = new NpcRestroomRoutines(sceneId, sceneHuts(sceneId), now); npcRooms.set(key, routines); }
+  if (routines.advance(now, (hutId, npcId) => !hutTaken(sceneId, key, hutId, now, undefined, npcId))) moved.add(key);
+  return routines.frames(now);
+}
+
+const npcInviteTimes = new Map<string, number>();
+
+// An explicit, cookie-authenticated invitation makes the real routine easy to
+// observe. It cannot force a resident into an occupied hut or create a sound.
+export function inviteNpcRestroom(user: User, sessionId: string, raw: unknown): NpcRestroomResult {
+  const session = getSession(sessionId);
+  if (!session) return { ok: false, code: "no_session" };
+  if (raw !== undefined && (!raw || typeof raw !== "object" || Array.isArray(raw))) return { ok: false, code: "bad_request" };
+  const request = (raw ?? {}) as Record<string, unknown>;
+  if (request.hutId !== undefined && typeof request.hutId !== "string") return { ok: false, code: "bad_request" };
+  const huts = sceneHuts(session.scene_id);
+  const hut = request.hutId === undefined ? huts.find(item => item.kind.endsWith("toilet"))
+    : huts.find(item => item.id === request.hutId && item.kind.endsWith("toilet"));
+  if (!hut) return { ok: false, code: "bad_request" };
+  const key = roomKey(session.scene_id, session.mode);
+  const now = Date.now();
+  const person = standing.get(key)?.get(user.id);
+  if (!person || now - person.at > 20_000 || !rooms.get(key)?.size) return { ok: false, code: "not_here" };
+  const last = npcInviteTimes.get(user.id);
+  if (last !== undefined && now - last < 5000) return { ok: false, code: "slow_down" };
+  advanceNpcs(key, now);
+  const routines = npcRooms.get(key)!;
+  if (!routines.invite(now, hut.id)) return { ok: false, code: "busy" };
+  npcInviteTimes.set(user.id, now);
+  sendMoves(key);
+  log("npc_restroom_invited", { user: user.id, nickname: user.nickname, session: session.id, hut: hut.id });
+  return { ok: true, npcs: routines.frames(now), serverNow: new Date(now).toISOString() };
 }
 
 // Five times a second, send whoever moved; forget anyone silent for 20 s.
@@ -245,6 +299,12 @@ setInterval(() => {
         endHutSounds(sceneId, mode, { id: userId, nickname: s.person.name } as User, "went_quiet");
       }
   }
+  // Periodic visits run only while the room has actual SSE listeners. Active
+  // walks send shared positions at the same five-Hz cadence as human moves.
+  for (const key of rooms.keys()) {
+    advanceNpcs(key, now);
+    if (npcRooms.get(key)?.active) moved.add(key);
+  }
   for (const key of moved) sendMoves(key);
   moved.clear();
 }, 200).unref();
@@ -257,6 +317,7 @@ export function move(user: User, sessionId: string, raw: unknown): MoveResult {
   if (!session) return { ok: false, code: "no_session" };
   const o = (raw ?? {}) as Record<string, unknown>;
   if (!finite(o.x, 2000) || !finite(o.z, 2000) || !finite(o.yaw, 1000)) return { ok: false, code: "bad_request" };
+  if (session.scene_id === "planet" && !planetCoordsValid(o.x, o.z)) return { ok: false, code: "bad_request" };
   // at most ten a second; more are dropped, not refused
   const now = Date.now();
   if (now - (moveTimes.get(user.id) ?? 0) < 90) return { ok: true };
@@ -264,15 +325,16 @@ export function move(user: User, sessionId: string, raw: unknown): MoveResult {
   const key = roomKey(session.scene_id, session.mode);
   const here = standing.get(key) ?? new Map<string, Standing>();
   standing.set(key, here);
-  const hut = hutAt(o.x, o.z);
+  advanceNpcs(key, now);
+  const hut = sceneHutAt(session.scene_id, o.x, o.z);
   // Checking and accepting a move are synchronous in this single process:
   // two arrivals cannot both claim the same private hut. The browser's
   // locked doorway is helpful feedback, not the authority for admission.
-  if (hut && isPrivate(hut) && [...here].some(([id, s]) => id !== user.id && now - s.at <= 20_000 && hutAt(s.x, s.z)?.id === hut.id)) {
+  if (hut && isPrivate(hut) && hutTaken(session.scene_id, key, hut.id, now, user.id)) {
     let previous = here.get(user.id);
     // A reconnect may beat the expiry sweep after another person has
     // entered. Never refresh or return to that expired/contested position.
-    if (previous && (now - previous.at > 20_000 || hutAt(previous.x, previous.z)?.id === hut.id)) {
+    if (previous && (now - previous.at > 20_000 || sceneHutAt(session.scene_id, previous.x, previous.z)?.id === hut.id)) {
       here.delete(user.id);
       moved.add(key);
       endHutSounds(session.scene_id, session.mode, user, now - previous.at > 20_000 ? "went_quiet" : "hut_taken");
@@ -320,7 +382,7 @@ export function say(user: User, sessionId: string, raw: unknown): { ok: boolean;
   times.push(now);
   sayTimes.set(user.id, times);
   // only people within earshot (and the speaker's own pages) hear it
-  const listeners = [...(here?.entries() ?? [])].filter(([, s]) => Math.hypot(s.x - me.x, s.z - me.z) <= EARSHOT).map(([id]) => id);
+  const listeners = [...(here?.entries() ?? [])].filter(([, s]) => sceneDistance(session.scene_id, s, me) <= EARSHOT).map(([id]) => id);
   const msg = frame({ type: "said", sessionId: session.id, by: me.person.id, name: me.person.name, text });
   for (const id of listeners) for (const res of streamsOf(key, id)) res.write(msg);
   log("said", { user: user.id, nickname: user.nickname, session: session.id, chars: text.length, heard: listeners.length - 1 });
@@ -442,7 +504,7 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): SoundPl
   // For while you're inside (ADR 013): only in a toilet or shower, only
   // its own sound, one at a time; the room rules don't apply, since it
   // goes as soon as you come out.
-  const hut = body.whileInside === true ? hutAt(me.x, me.z) : undefined;
+  const hut = body.whileInside === true ? sceneHutAt(session.scene_id, me.x, me.z) : undefined;
   if (body.whileInside === true) {
     if (!hut || !isPrivate(hut)) return { ok: false, code: "not_inside" };
     if (privateSound(hut) !== kind.id) return { ok: false, code: "bad_request" };
@@ -461,8 +523,8 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): SoundPl
       // up a neighbour's room: they end as soon as their person leaves.
       const kept = live.filter((p) => !p.whileIn);
       if (kept.length >= PLACE_MAX) return { ok: false, code: "place_full" };
-      const near = kept.filter((p) => Math.hypot(p.x - me.x, p.z - me.z) <= CROWD_RADIUS);
-      if (near.some((p) => p.soundId === kind.id && Math.hypot(p.x - me.x, p.z - me.z) < SAME_APART)) return { ok: false, code: "too_close" };
+      const near = kept.filter((p) => sceneDistance(session.scene_id, p, me) <= CROWD_RADIUS);
+      if (near.some((p) => p.soundId === kind.id && sceneDistance(session.scene_id, p, me) < SAME_APART)) return { ok: false, code: "too_close" };
       if (near.length >= CROWD_MAX) return { ok: false, code: "crowded" };
     }
     const sound: PlacedSound = {
@@ -535,7 +597,7 @@ export function removeSound(user: User, sessionId: string, soundRowId: string): 
     )
     .get(soundRowId, session.id) as PlacedRow | undefined;
   if (!row) return { ok: false, code: "gone" };
-  if (Math.hypot(row.x - me.x, row.z - me.z) > REACH) return { ok: false, code: "too_far" };
+  if (sceneDistance(session.scene_id, row, me) > REACH) return { ok: false, code: "too_far" };
   // only the first of two people removing it at once removes it
   const removedAt = nowIso();
   const changed = db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(me.person.id, removedAt, row.id);

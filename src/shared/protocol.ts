@@ -2,6 +2,7 @@
 // POSTs (client → server). A place's live state is who is there, where they
 // stand, what they say, and the sounds people have left in it (ADR 011).
 import type { Environment } from "./environment.js";
+import type { NpcRoutineFrame } from "./npc-routines.js";
 
 export type Avatar = "cat" | "dog";
 export const AVATARS: Avatar[] = ["cat", "dog"];
@@ -75,6 +76,7 @@ export interface Snapshot {
   you: Person | null; // null for someone looking before they've joined
   sounds: PlacedSound[];
   environment: Environment;
+  npcs?: NpcRoutineFrame[];
 }
 
 export interface Presence {
@@ -89,6 +91,8 @@ export interface Moves {
   type: "moves";
   sessionId: string;
   people: (Person & { x: number; z: number; yaw: number })[];
+  npcs?: NpcRoutineFrame[];
+  serverNow?: string;
 }
 
 // Something someone said, sent only to people standing near them. Never
