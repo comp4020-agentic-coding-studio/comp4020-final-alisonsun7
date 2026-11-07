@@ -38,8 +38,8 @@ const footer = `<footer class="site-footer">
 </footer>`;
 
 const nav = `<header class="site-bar">
-  <a class="brand" href="/">Sound of a City</a>
-  <nav><a href="/explore">Places</a> <a href="/about">About</a></nav>
+  <a class="brand" href="/">Soundfolk</a>
+  <nav><a href="/planet">Little world</a> <a href="/explore">Places</a> <a href="/about">About</a></nav>
 </header>`;
 
 const avatarMark = (avatar: string): string => `<span class="avatar-mark avatar-${avatar === "dog" ? "dog" : "cat"}" aria-hidden="true"></span>`;
@@ -62,20 +62,21 @@ function joinForm(next: string, error: string | null): string {
 
 export function renderLanding(user: User | null): string {
   return page(
-    "Sound of a City",
+    "Soundfolk — A little world, made together through sound",
     "landing",
     `<main class="hero">
   <div class="hero-photo sound-field" aria-hidden="true"><span class="field-ring field-water"></span><span class="field-ring field-animal"></span><span class="field-ring field-people"></span></div>
   <div class="hero-text">
-    <p class="kicker">A place we make by listening</p>
-    <h1>Sound of a City</h1>
-    <p class="subtitle">Your kind of place, made with sound.</p>
-    <p class="lede">Walk from the forest to the sea. With your friends, layer sounds into a cozy corner or a lively gathering. Nearby residents listen, sway and play in response.</p>
+    <p class="kicker">Find your people. Make your atmosphere.</p>
+    <h1>Soundfolk</h1>
+    <p class="subtitle">A little world, made together through sound.</p>
+    <p class="lede">A quiet reading nook, a lively jam, tea with a friend. Wander a little planet, leave sounds for each other, and watch its residents join in.</p>
     <p class="hero-promise">The sounds we leave stay here after we go, until someone beside them removes them.</p>
     <p class="actions">
-      <a class="btn primary" href="/scene/seaside">Enter &amp; listen</a>
-      <a class="btn ghost" href="/about#how">How it Works</a>
+      <a class="btn primary" href="/planet">Enter the little world</a>
+      <a class="btn ghost" href="/scene/seaside">Visit the coast</a>
     </p>
+    <p class="hero-editions">The coastal world is still here, with everything you left in it. <a href="/about#how">How it works</a></p>
     <ul class="hero-families" aria-label="Three kinds of shared sound"><li class="family-water">Water &amp; wind</li><li class="family-animal">Animals</li><li class="family-people">People</li></ul>
     ${user ? `<p class="fine">Welcome back, ${escapeHtml(user.nickname)}.</p>` : ""}
     <p class="independent">An independent student project.</p>
@@ -96,32 +97,35 @@ const placeLine = (p: PlaceSummary | undefined): string =>
 
 export function renderExplore(user: User | null, places: PlaceSummary[], error: string | null): string {
   const find = (sceneId: string, mode: string): PlaceSummary | undefined => places.find((p) => p.sceneId === sceneId && p.mode === mode);
-  const cards = SCENES.map((scene) => {
+  const ordered = [...SCENES].sort((a, b) => Number(b.id === "planet") - Number(a.id === "planet"));
+  const cards = ordered.map((scene) => {
+    const planet = scene.id === "planet";
     const modes = scene.modes
       .map(
-        (m) => `<li><a class="mode-link" href="/scene/${scene.id}?mode=${m.id}">
+        (m) => `<li><a class="mode-link" href="${planet ? "/planet" : `/scene/${scene.id}?mode=${m.id}`}">
             <span class="mode-label">${m.label}</span>
             <span class="place-live">${placeLine(find(scene.id, m.id))}</span>
           </a></li>`,
       )
       .join("");
-    return `<article class="place-card">
+    return `<article class="place-card${planet ? " planet-place-card" : ""}">
         <div class="place-body">
           <h2>${scene.title}</h2>
           <p>${scene.summary}</p>
-          <p class="badge real">One shared place · lasting sounds</p>
+          <p class="badge real">${planet ? "The little world · made together" : "Coastal edition · your sounds stay here"}</p>
           <ul class="modes">${modes}</ul>
         </div>
       </article>`;
   }).join("\n");
 
   return page(
-    "Our shared place — Sound of a City",
+    "Our worlds — Soundfolk",
     "explore",
     `${nav}
 <main class="explore-main">
-  <h1>Our shared place</h1>
-  <p class="lede">Everyone walks in the same world. Make a cozy corner with a friend, bring the boardwalk to life, or find your own mix of sounds. Nearby residents respond; shared sounds stay after you leave, until someone beside them removes them.</p>
+  <h1>Find your kind of place</h1>
+  <p class="lede">Make a cozy corner with a friend, start a lively gathering, or find your own mix. The little world and the coast each keep their own sounds. You bring the same name and character to both.</p>
+  <p class="explore-planet-invite"><a class="btn primary" href="/planet">Enter the little world</a><span>Little places for the things you do together.</span></p>
   ${
     user
       ? `<form method="post" action="/leave" class="you-are">${avatarMark(user.avatar)} You're <strong>${escapeHtml(user.nickname)}</strong>. <button class="link-btn" type="submit">Change</button></form>`
@@ -142,11 +146,11 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
     .map((m) => `<a href="/scene/${scene.id}?mode=${m.id}"${m.id === mode.id ? ' aria-current="page"' : ""}>${m.label}</a>`)
     .join("")}</nav>`;
   return page(
-    `${scene.title} — Sound of a City`,
+    `${scene.title} — Soundfolk`,
     `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
   <a class="back" href="/explore" aria-label="Places"><span aria-hidden="true">←</span><span class="back-label">Places</span></a>
-  <div class="where"><h1>Sound of a City</h1></div>
+  <div class="where"><h1>Soundfolk <span class="edition-label">· Coast</span></h1></div>
   <div class="world-actions">
     <button type="button" class="btn ghost controls-switch" id="look-settings" aria-label="Controls" title="Controls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9v6m-3-3h6m5-3h2m-2 6h2"/></svg><span class="world-action-label">Controls</span></button>
     <button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false" aria-label="Sound off" title="Sound off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m11 4-5 4H2v8h4l5 4Z"/><g class="sound-on-wave"><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></g><path class="sound-off-line" d="m16 9 6 6m0-6-6 6"/></svg><span class="world-action-label">Sound off</span></button>
@@ -169,6 +173,11 @@ ${modeNav}
   <div class="people" id="people" aria-live="polite"></div>
   <div id="shared-sound-place"></div>
   <div id="tools-listening"></div>
+    <div class="legacy-view-tools">
+      <h3>Your view</h3>
+      <button type="button" class="world-tool" id="view-mode" aria-pressed="false">See my character</button>
+      <p>Switch between walking in first person and seeing your character from behind.</p>
+    </div>
     <div class="world-tools" aria-label="World settings">
       <div class="world-conditions"><span class="world-conditions-label">The shared sky</span><span id="world-conditions">${escapeHtml(WEATHER_LABELS[snap.environment.weather])} · ${formatTime(minuteAt(snap.environment, Date.parse(snap.serverNow)))}</span><span id="world-clock-mode">${snap.environment.clockRunning ? "24-minute day" : "Time paused"}</span></div>
       <div class="world-tool-actions">
@@ -180,6 +189,8 @@ ${modeNav}
       .map((z) => `<a href="?mode=${mode.id}&amp;zone=${z.id}" data-zone="${z.id}"${z.id === zone.id ? ' aria-current="true"' : ""}>${escapeHtml(z.title)}</a>`)
       .join("")}</nav>
     <p class="evidence"><span class="label">Here</span> <span id="zone-text">${escapeHtml(zone.description)}</span></p>
+    <details class="restroom-check"><summary>Restrooms &amp; doors</summary><p>One person per room. A red lamp means occupied; the door stays locked until that person leaves.</p><button type="button" class="world-tool" id="test-restroom">Test with a resident</button><p>Invite Rowan to walk in, lock the door, flush and come back out. Open another browser with a different nickname to try the occupied door together.</p><p id="restroom-status" role="status" aria-live="polite">Walk to a restroom to see whether it is free.</p></details>
+    <a class="world-tool planet-edition-link" href="/planet">Visit the little world</a>
     <p class="mode-note">${escapeHtml(scene.about)}</p>
     <p class="fine not-affiliated">${NOT_AFFILIATED} <a href="/about">Sources</a></p>
 </dialog>
@@ -191,9 +202,75 @@ ${modeNav}
   );
 }
 
+// A separate playable edition. The server supplies this world's real room;
+// the new page never maps old coastal contributions onto planet coordinates.
+export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null = null): string {
+  const identity = user?.nickname ?? snap.you?.name ?? "Just looking around";
+  const avatar = user?.avatar ?? snap.you?.avatar ?? "cat";
+  return page(
+    "Soundfolk — The little world",
+    "scene-page planet-page is-world",
+    `<header class="planet-bar">
+  <a class="planet-brand" href="/" aria-label="Soundfolk home"><span class="planet-brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Soundfolk</span></a>
+  <p id="planet-identity" class="planet-identity">${escapeHtml(identity)}</p>
+  <nav class="planet-actions" aria-label="World controls">
+    <button type="button" id="planet-view" class="planet-control" aria-pressed="false" title="Change first or third person view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M6 21v-4a6 6 0 0 1 12 0v4M3 7H1m22 0h-2"/></svg><span>Third person</span></button>
+    <button type="button" id="planet-sound" class="planet-control" aria-pressed="false" title="Turn sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m11 4-5 4H2v8h4l5 4Z"/><path d="m16 9 6 6m0-6-6 6"/></svg><span>Sound off</span></button>
+    <button type="button" id="planet-tools" class="planet-control" aria-haspopup="dialog" aria-controls="planet-tools-panel" aria-expanded="false" title="Places, friends and settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="9" cy="5" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="19" r="2"/></svg><span>Places &amp; friends</span></button>
+  </nav>
+</header>
+<main id="planet-stage" class="planet-stage" aria-label="A little world made through sound">
+  <aside class="planet-corner" aria-label="Where you are">
+    <button type="button" id="planet-shared" aria-haspopup="dialog"><span class="planet-corner-kicker">Our little world</span><strong id="planet-area">Listening Green</strong><span id="planet-presence">Connecting to the world…</span></button>
+    <p id="planet-guide">A place for what you make together.</p>
+  </aside>
+  <button type="button" id="planet-place" class="btn primary planet-place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 9v6m4-9v12m4-16v20m4-16v12m4-9v6"/></svg><span>Share a sound</span></button>
+  <form id="planet-chat" class="planet-chat" hidden>
+    <div class="planet-chat-heading"><label id="planet-chat-to" for="planet-chat-input">Talk to friends nearby</label><button type="button" id="planet-chat-close" aria-label="Close chat">Close</button></div>
+    <div class="planet-chat-row"><input id="planet-chat-input" name="text" maxlength="120" autocomplete="off" placeholder="Say something…"/><button type="submit" id="planet-chat-submit" class="btn primary">Say</button></div>
+    <p class="planet-chat-note">Only people nearby hear you. Your words are not saved.</p>
+  </form>
+  <div id="planet-chat-log" class="planet-chat-log" role="log" aria-live="polite"></div>
+  <p id="planet-notice" class="planet-notice" role="status" aria-live="polite" hidden></p>
+  <p class="planet-movement"><span class="planet-keys">W A S D to walk · drag to look · click ground to walk</span><span class="planet-touch-hint">Use the arrows to walk · drag to look</span></p>
+</main>
+<dialog id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title" hidden>
+  <div class="planet-dialog-heading"><div><p class="planet-kicker">Your kind of world</p><h2 id="planet-tools-title">Places &amp; friends</h2></div><button type="button" id="planet-tools-close" class="btn ghost" autofocus>Close</button></div>
+  <p class="planet-dialog-intro">A little world, made together through sound.</p>
+  <section class="planet-panel-section" aria-labelledby="planet-places-title"><h3 id="planet-places-title">Find a little place</h3><div id="planet-destinations" class="planet-destinations"></div></section>
+  <section class="planet-panel-section" aria-labelledby="planet-friends-title"><h3 id="planet-friends-title">Here together</h3><div id="planet-people" class="planet-people"></div><button type="button" id="planet-chat-toggle" class="btn ghost">Talk nearby</button></section>
+  <section class="planet-panel-section" aria-labelledby="planet-activity-title"><h3 id="planet-activity-title">Made while you’re here</h3><div id="planet-activity" class="planet-activity"><p>Shared changes appear here as they happen during this visit.</p></div></section>
+  <section id="planet-environment" class="planet-panel-section" aria-label="Weather and light"></section>
+  <details id="planet-help" class="planet-help"><summary>Moving, listening &amp; looking</summary><p>Walk with W A S D or the arrows. Drag to look; click the ground to walk there. On a phone, use the on-screen arrows.</p><p>First person brings you close to the little details. Third person lets you see your character and the people you meet.</p><label class="planet-look" for="planet-look-settings">Look direction<select id="planet-look-settings"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label><p class="planet-form-note">Follow pointer: down looks down, left looks left. Drag the scene reverses both directions. Saved in this browser.</p><p>Choose a sound, listen privately, then share it where you stand. Beside a friend’s sound, leave an answer. You can make different corners feel different.</p><a href="/about#how">How sounds and privacy work</a></details>
+  <details class="planet-restroom"><summary>Restrooms &amp; doors</summary><p>A red lamp means someone is in. Occupied doors stay locked. Sounds left for a stay end when that visitor comes out.</p><button type="button" id="planet-test-restroom" class="btn ghost">Test with a resident</button><p>Rowan will walk in, lock the door, flush and come back out. Open another browser with a different nickname to try the occupied door together.</p><p id="planet-occupancy" role="status" aria-live="polite">Walk to the restrooms to see the shared door state.</p></details>
+  <a class="planet-coast-link" href="/scene/seaside">Visit the coastal world <span aria-hidden="true">↗</span></a>
+  <p class="planet-edition-note">A separate edition. Everything you left at the coast stays at the coast.</p>
+  <p class="planet-project-note">${NOT_AFFILIATED} <a href="/about">Sources &amp; privacy</a></p>
+</dialog>
+<dialog id="planet-join" class="planet-dialog planet-arrival" aria-labelledby="planet-join-title" hidden>
+  <p class="planet-kicker">Welcome to Soundfolk</p><h2 id="planet-join-title">A little room for you.</h2>
+  <p>Bring a friend, leave a sound, and see what this world becomes. A quiet nook or a lively gathering is yours to make together.</p>
+  <form id="planet-join-form" method="post" action="/join">
+    <input type="hidden" name="next" value="/planet"/>
+    <label class="planet-name" for="planet-nickname">Your name here<input id="planet-nickname" name="nickname" maxlength="24" autocomplete="nickname" required value="${escapeHtml(user?.nickname ?? "")}" placeholder="A nickname is fine"/></label>
+    <fieldset class="planet-avatars"><legend>Come as</legend><label><input type="radio" name="avatar" value="cat"${avatar === "cat" ? " checked" : ""}/>${avatarMark("cat")} A cat</label><label><input type="radio" name="avatar" value="dog"${avatar === "dog" ? " checked" : ""}/>${avatarMark("dog")} A dog</label></fieldset>
+    <label class="planet-look" for="planet-look">Look direction<select id="planet-look" name="look-mode"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label>
+    <p id="planet-look-hint" class="planet-form-note">Follow pointer: drag down to look down, left to look left. You can change this later.</p>
+    <p id="planet-join-error" class="planet-form-error" role="alert" hidden></p>
+    <button type="submit" id="planet-enter" class="btn primary">Find my place</button>
+    <button type="button" id="planet-observe" class="planet-observe">Just look around first</button>
+  </form>
+  <p class="planet-form-note">Your name is visible to people you meet. No account or email.</p>
+</dialog>
+<noscript><p class="noscript">This little world needs JavaScript. <a href="/explore">Choose a place</a>.</p></noscript>
+<script type="application/json" id="planet-boot">${embed({ snapshot: snap, joined, user: user ? { nickname: user.nickname, avatar: user.avatar } : null })}</script>
+<script type="module" src="/client/planet.js"></script>`,
+  );
+}
+
 export function renderAbout(): string {
   return page(
-    "Sources and privacy — Sound of a City",
+    "Sources and privacy — Soundfolk",
     "about",
     `${nav}
 <main class="prose">
@@ -201,9 +278,10 @@ export function renderAbout(): string {
   <p><strong>${NOT_AFFILIATED}</strong></p>
 
   <h2 id="how">How it works</h2>
+  <p>Soundfolk has two editions: <a href="/planet">the little world</a> and <a href="/scene/seaside">the coast</a>. Each keeps its own sounds and shared sky. Your name and character work in both.</p>
   <ol>
     <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
-    <li>Walk with W A S D or the arrow keys, drag to look, or use <em>Go to</em>. Wander far off the forest trail and a kangaroo comes to point you back.</li>
+    <li>Walk with W A S D or the arrow keys, drag to look, or choose a destination. On the coastal forest trail, a kangaroo points you back if you wander too far.</li>
     <li>Everyone in the place sees everyone else. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
     <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone until someone standing beside it removes it. It stays after you leave. Anyone can leave or remove any sound, and everyone is told who did.</li>
     <li>Find someone else's sound and choose <em>Reply with a sound</em>. Walk to a spot, choose your answer, and leave it there. The two sounds stay connected in their conversation.</li>
@@ -226,7 +304,7 @@ ${footer}`,
 
 export function renderReadme(): string {
   return page(
-    "About — Sound of a City",
+    "About — Soundfolk",
     "about",
     `${nav}
 <main class="prose readme">
@@ -238,9 +316,9 @@ ${footer}`,
 
 export function renderNotFound(message: string): string {
   return page(
-    "Not found — Sound of a City",
+    "Not found — Soundfolk",
     "about",
-    `<header class="site-bar"><a class="brand" href="/">Sound of a City</a></header>
+    `<header class="site-bar"><a class="brand" href="/">Soundfolk</a></header>
 <main class="prose"><h1>Not here</h1><p>${escapeHtml(message)}</p><p><a href="/explore">Choose a place</a></p></main>`,
   );
 }

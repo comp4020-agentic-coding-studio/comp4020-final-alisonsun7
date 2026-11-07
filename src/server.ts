@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme, renderScene } from "./html.js";
+import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme, renderScene, renderPlanet } from "./html.js";
 import { log } from "./log.js";
 import * as sessions from "./sessions.js";
 import { SCENES, findMode, findScene, findZone, liveMode } from "./shared/catalog.js";
@@ -31,6 +31,12 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/shared-sound-place.js": js("/client/shared-sound-place.js"),
   "/client/sound-connections.js": js("/client/sound-connections.js"),
   "/client/sound-residents.js": js("/client/sound-residents.js"),
+  "/client/view-mode.js": js("/client/view-mode.js"),
+  "/client/planet.js": js("/client/planet.js"),
+  "/client/planet-world.js": js("/client/planet-world.js"),
+  "/client/planet-build.js": js("/client/planet-build.js"),
+  "/client/planet-audio.js": js("/client/planet-audio.js"),
+  "/client/routine-audio.js": js("/client/routine-audio.js"),
   "/client/environment-panel.js": js("/client/environment-panel.js"),
   "/client/places.js": js("/client/places.js"),
   // three.js, the one library the browser loads (ADR 004), straight from the
@@ -40,6 +46,8 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/shared/protocol.js": js("/shared/protocol.js"),
   "/shared/sounds.js": js("/shared/sounds.js"),
   "/shared/sound-response.js": js("/shared/sound-response.js"),
+  "/shared/planet.js": js("/shared/planet.js"),
+  "/shared/npc-routines.js": js("/shared/npc-routines.js"),
   "/shared/huts.js": js("/shared/huts.js"),
   "/shared/environment.js": js("/shared/environment.js"),
   "/shared/landscapes.js": js("/shared/landscapes.js"),
@@ -141,6 +149,10 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   if (method === "GET" && pathname === "/") return html(res, renderLanding(user));
   if (method === "GET" && pathname === "/readme/") return html(res, renderReadme());
   if (method === "GET" && pathname === "/about") return html(res, renderAbout());
+  if (method === "GET" && pathname === "/planet") {
+    const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
+    return html(res, renderPlanet(snap, !!user, user));
+  }
   if (method === "GET" && pathname === "/explore") {
     const places = SCENES.flatMap((s) => s.modes.map((m) => ({ sceneId: s.id, mode: m.id, ...sessions.placeSummary(s.id, m.id) })));
     return html(res, renderExplore(user, places, url.searchParams.get("error")));
@@ -159,6 +171,10 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return;
     }
     if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
+    if (scene.id === "planet") {
+      const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
+      return html(res, renderPlanet(snap, !!user, user));
+    }
     // ?zone= (or the older ?shot=) picks where you arrive
     const zoneAsked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";
     const zone = findZone(scene, zoneAsked) ?? scene.zones[0];
@@ -220,14 +236,15 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return;
   }
 
-  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/(move|say|environment)$/);
+  const sessionApi = pathname.match(/^\/api\/sessions\/(ses_[a-f0-9]{16})\/(move|say|environment|npc-restroom)$/);
   // Where a person stands, and something they say to whoever is near (ADR
   // 007). Who it is comes from the cookie, as for every change.
   if (method === "POST" && sessionApi) {
     if (!user) return json(res, 401, { ok: false, code: "no_session" });
     const body = await readJson(req);
     const result = sessionApi[2] === "move" ? sessions.move(user, sessionApi[1], body)
-      : sessionApi[2] === "environment" ? sessions.changeEnvironment(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
+      : sessionApi[2] === "environment" ? sessions.changeEnvironment(user, sessionApi[1], body)
+      : sessionApi[2] === "npc-restroom" ? sessions.inviteNpcRestroom(user, sessionApi[1], body) : sessions.say(user, sessionApi[1], body);
     const status = result.ok ? 200 : result.code === "no_session" ? 404 : result.code === "slow_down" ? 429 : result.code === "bad_request" ? 400 : 409;
     return json(res, status, result);
   }

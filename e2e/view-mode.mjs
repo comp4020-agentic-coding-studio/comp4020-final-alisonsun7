@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { chromium } from 'playwright';
-const base=process.env.APP_URL??'http://localhost:18881';
+const base=process.env.APP_URL??'http://localhost:8080';
 const address=new URL(base);
 assert.ok(['localhost','127.0.0.1','[::1]'].includes(address.hostname));
 assert.notEqual(address.port,'18861','Use an isolated scratch server.');

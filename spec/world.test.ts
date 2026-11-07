@@ -22,7 +22,8 @@ async function snapshot(mode: string, who: Person | null = null): Promise<Snapsh
 
 describe("the walkable world", () => {
   it("is the place listed, and says on its page what it is", async () => {
-    expect(SCENES.map((s) => s.id)).toEqual(["seaside"]);
+    // ADR024: the explicitly requested new edition retains the original coast.
+    expect(SCENES.map((s) => s.id)).toEqual(["seaside", "planet"]);
     const explore = await (await fetch(new URL("/explore", baseUrl))).text();
     expect(explore).toContain(`/scene/${world.id}?mode=`);
     const html = await (await fetch(new URL(`/scene/${world.id}?mode=weekday`, baseUrl))).text();

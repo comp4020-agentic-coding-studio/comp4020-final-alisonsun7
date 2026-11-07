@@ -64,7 +64,7 @@ export const RESIDENT_SETTLE_MS = 2000;
  * This is deliberately stateless: a late arrival picks the same source as a
  * long-running page, unlike an incumbent-dependent local hysteresis rule.
  */
-export function chooseResidentResponse(home: ResidentHome, sounds: readonly PlacedSound[], serverNowMs: number): ResidentResponse | null {
+export function chooseResidentResponse(home: ResidentHome, sounds: readonly PlacedSound[], serverNowMs: number, distanceBetween: (a: {x:number;z:number}, b: {x:number;z:number}) => number = (a,b) => Math.hypot(a.x-b.x,a.z-b.z)): ResidentResponse | null {
   if (![home.x, home.z, serverNowMs].every(Number.isFinite)) return null;
   let selected: ResidentResponse | null = null;
   let selectedPriority = Infinity;
@@ -76,7 +76,7 @@ export function chooseResidentResponse(home: ResidentHome, sounds: readonly Plac
     const profile = soundResponseFor(sound.soundId);
     const at = Date.parse(sound.at);
     if (!profile || !Number.isFinite(at) || serverNowMs - at < RESIDENT_SETTLE_MS) continue;
-    const distance = Math.hypot(sound.x - home.x, sound.z - home.z);
+    const distance = distanceBetween(sound, home);
     if (distance > RESIDENT_HEAR) continue;
     const priority = Math.floor(distance / 3) + (profile.mood === home.preference ? 0 : 1);
     if (selected && (priority > selectedPriority || (priority === selectedPriority && (at > selected.at || (at === selected.at && sound.id >= selected.sourceId))))) continue;

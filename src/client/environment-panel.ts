@@ -92,6 +92,7 @@ export class EnvironmentPanel {
     const head = document.createElement("div");
     head.className = "environment-heading";
     head.innerHTML = '<div><p class="environment-kicker">From the forest to the sea</p><h2 id="environment-title">A place that changes</h2></div>';
+    if(this.opts.scene.id==="planet")head.querySelector(".environment-kicker")!.textContent="Soundfolk · our little world";
     const close = document.createElement("button");
     close.type = "button";
     close.className = "environment-close";
@@ -255,13 +256,14 @@ export class EnvironmentPanel {
     intro.textContent = "Find a new view in the same shared place. Your sounds and the people here stay with you.";
     const cards = document.createElement("div");
     cards.className = "environment-scenes";
-    for (const destination of LANDSCAPES.filter((entry) => this.opts.scene.zones.some((zone) => zone.id === entry.zoneId))) {
+    const destinations=this.opts.scene.id==="planet"?this.opts.scene.zones.map(zone=>({zoneId:zone.id,label:zone.title,detail:zone.description,kind:"A little place to make together"})):LANDSCAPES.filter((entry)=>this.opts.scene.zones.some(zone=>zone.id===entry.zoneId));
+    for (const destination of destinations) {
       const card = document.createElement("article");
       card.className = "environment-scene";
       card.dataset.zone = destination.zoneId;
       const art = document.createElement("div");
       art.className = "environment-postcard";
-      art.innerHTML = postcard(destination.zoneId);
+      art.innerHTML = this.opts.scene.id==="planet"?'<svg viewBox="0 0 240 100" aria-hidden="true"><rect width="240" height="100" fill="#e4ead9"/><circle cx="120" cy="57" r="37" fill="#a5b892"/><ellipse cx="120" cy="57" rx="37" ry="13" fill="none" stroke="#f4e8cd" stroke-width="5"/><circle cx="126" cy="28" r="7" fill="#dcae64"/></svg>':postcard(destination.zoneId);
       const body = document.createElement("div");
       body.className = "environment-scene-body";
       const kind = document.createElement("p");

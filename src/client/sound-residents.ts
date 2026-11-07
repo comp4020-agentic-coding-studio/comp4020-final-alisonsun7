@@ -40,6 +40,7 @@ interface Options {
   surfaceHeight: (x: number, z: number) => number;
   // Includes authored solids, occupied private huts and floor boundaries.
   canStand: (x: number, z: number) => boolean;
+  distanceBetween?: (a: {x:number;z:number}, b: {x:number;z:number}) => number;
 }
 
 const TAU = Math.PI * 2;
@@ -99,7 +100,7 @@ export class SoundResidents {
     this.selectedAt = sample;
     for (const resident of this.residents) {
       const { definition, sprite, home } = resident;
-      const response = select ? chooseResidentResponse(definition, this.sounds, sample) : resident.response;
+      const response = select ? chooseResidentResponse(definition, this.sounds, sample, this.options.distanceBetween) : resident.response;
       if (response?.sourceId !== resident.response?.sourceId) {
         resident.release = !response && resident.response ? { from: sprite.position.clone(), at: sample } : null;
         resident.response = response;

@@ -3,6 +3,7 @@
 // disagree about what exists.
 //
 // The sounds people can leave in a place are in shared/sounds.ts (ADR 011).
+import { PLANET_PLACES } from "./planet.js";
 
 export interface Mode {
   id: string;
@@ -65,7 +66,14 @@ const SEASIDE: Scene = {
   ],
 };
 
-export const SCENES: Scene[] = [SEASIDE];
+const PLANET: Scene = {
+  id: "planet", title: "Soundfolk · a little world", room: "morning",
+  summary: "A small spherical world friends shape through sound. Walk around, meet again, and make each corner your own.",
+  about: "An original imagined little planet, built from procedural Three.js geometry and original animal figures. Optional recordings are public domain or CC0, with their sources in the asset manifest. This is a separate new version; the coastal world's history is kept in its original room.",
+  modes: [{ id: "weekday", label: "Shared planet" }], retiredModes: [],
+  zones: PLANET_PLACES.map(p => zone(p.id, p.title, p.description, false, { x: p.x, z: p.z, yaw: Math.PI })),
+};
+export const SCENES: Scene[] = [SEASIDE, PLANET];
 
 export function findScene(id: string): Scene | undefined {
   return SCENES.find((s) => s.id === id);
