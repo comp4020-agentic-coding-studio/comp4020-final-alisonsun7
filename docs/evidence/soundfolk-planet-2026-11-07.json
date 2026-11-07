@@ -265,7 +265,209 @@
     "Docker, not installed"
   ],
   "preview": {
-    "status": "pending verified promotion; original preview not used for browser tests"
+    "url": "http://localhost:18861/planet",
+    "applicationCommit": "b5472278e7c3c2bdd43c5efd59a46e22f927eee7",
+    "port": 18861,
+    "noBrowserTestWrites": true,
+    "schemaUnchanged": true,
+    "allExistingRowsPreserved": true,
+    "newRows": {
+      "scenes": [
+        {
+          "id": "planet",
+          "title": "Soundfolk \u00b7 a little world",
+          "version": 1
+        }
+      ],
+      "session_environments": [
+        {
+          "clock_running": 0,
+          "minute_of_day": 840,
+          "revision": 0,
+          "session_id": "ses_2f527293c0468bb3",
+          "updated_at": "2026-11-07T07:22:23.749Z",
+          "weather": "clear"
+        }
+      ],
+      "sessions": [
+        {
+          "created_at": "2026-11-07T07:22:23.747Z",
+          "duration_ms": 180000,
+          "error": null,
+          "id": "ses_2f527293c0468bb3",
+          "mode": "morning",
+          "revision": 0,
+          "scene_id": "planet",
+          "started_at": null,
+          "started_by": null,
+          "status": "idle"
+        }
+      ]
+    },
+    "tableCounts": {
+      "memories": 0,
+      "participants": 23,
+      "placed_sounds": 20,
+      "placements": 0,
+      "scenes": 2,
+      "session_environments": 2,
+      "session_events": 0,
+      "sessions": 2,
+      "sound_assets": 0,
+      "sound_operations": 4,
+      "sound_replies": 1,
+      "users": 25
+    },
+    "tableDigestsBefore": {
+      "memories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "participants": {
+        "rows": 23,
+        "sha256": "a7cc96f1bc49cde4ec760388ddf340d2f3364f99b132ca1f78a629989a9003e1"
+      },
+      "placed_sounds": {
+        "rows": 20,
+        "sha256": "3753c97809eb86855cfc16742c184fd2c519f6ab4bec0047ba0ec852648762d5"
+      },
+      "placements": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scenes": {
+        "rows": 1,
+        "sha256": "da99542ba9e5880a4411c3ab3fbb0b5521d73f4da4accdbf2886fafd95f7e349"
+      },
+      "session_environments": {
+        "rows": 1,
+        "sha256": "c49374ca674ff2f017fc79513dedb4431191978037218f118b93a25ac086b487"
+      },
+      "session_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sessions": {
+        "rows": 1,
+        "sha256": "4393c574904a58590fbbbc0e749d7a30ab7c8d3260ac029e1c5ab77318f0eb1a"
+      },
+      "sound_assets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sound_operations": {
+        "rows": 4,
+        "sha256": "4220511a53e93c28c947f59ac2624289cde8147c5c73e0d54bc34643415e62d3"
+      },
+      "sound_replies": {
+        "rows": 1,
+        "sha256": "904da9f8c0191a9580a7310afb7c6d1e0769120cf50a5199dd5d8d3a3fe7f9c6"
+      },
+      "users": {
+        "rows": 25,
+        "sha256": "c8e2ee4f38fe6abaae03114b89b3e155c15159a0db8bd005f0774bd2d44abc7c"
+      }
+    },
+    "tableDigestsAfter": {
+      "memories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "participants": {
+        "rows": 23,
+        "sha256": "a7cc96f1bc49cde4ec760388ddf340d2f3364f99b132ca1f78a629989a9003e1"
+      },
+      "placed_sounds": {
+        "rows": 20,
+        "sha256": "3753c97809eb86855cfc16742c184fd2c519f6ab4bec0047ba0ec852648762d5"
+      },
+      "placements": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "scenes": {
+        "rows": 2,
+        "sha256": "7d9a427c1a582142542d3d76f074888632df2dd9f55c2d50e252c32ce833fcd1"
+      },
+      "session_environments": {
+        "rows": 2,
+        "sha256": "256fe9daa62801776fb50204d98c2c3bfd3ffb41b787fecc248168f816591d01"
+      },
+      "session_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sessions": {
+        "rows": 2,
+        "sha256": "fc173a6bce8ff912e51e3fa1b1433941eb81ca8de40c9bff7f3467bc2f04303a"
+      },
+      "sound_assets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sound_operations": {
+        "rows": 4,
+        "sha256": "4220511a53e93c28c947f59ac2624289cde8147c5c73e0d54bc34643415e62d3"
+      },
+      "sound_replies": {
+        "rows": 1,
+        "sha256": "904da9f8c0191a9580a7310afb7c6d1e0769120cf50a5199dd5d8d3a3fe7f9c6"
+      },
+      "users": {
+        "rows": 25,
+        "sha256": "c8e2ee4f38fe6abaae03114b89b3e155c15159a0db8bd005f0774bd2d44abc7c"
+      }
+    },
+    "ordinaryLiveSoundCount": 5,
+    "oldSharedEnvironmentPreserved": true,
+    "verifiedModules": {
+      "client/scene.js": "03951dfa4427b3f486385105121fae1bca358e87511de7044ea4a5ea5b0a225a",
+      "client/figures.js": "a672f99ce98d3d543ac69096c600c06cc916afe436b1f274225acfb7e5d28386",
+      "client/characters.js": "8cbe158b4d32fe1f1b26a90f7b6d22ed205fbc27b0a1fc1c08c89306f5c42ca8",
+      "client/coastal-renderer.js": "5d48223777f6d20b488293450366e75097ed82a9fa0fe312fdda21846ffea826",
+      "client/d-pines.js": "2a98aa3718d57e21f61ff9f0c654352278e5bb7323c20c7e405a6f1c82a70b79",
+      "client/world.js": "429397ff7aed0ed7d3d47d07d688ab01c7d83741fd0b7bb98240bc8e0955297f",
+      "client/world-build.js": "6cab2fb6ee376d48f49b4e1f6a150f002acc9ae65667cac54ba4a796762b007e",
+      "client/sky.js": "ec8e1f446b908b1300cbc175d6a2b6c06546cd697e6669872f6da5f83d35723c",
+      "client/cafe.js": "ea9b61e4158c46f5c80cf47809b2d2e095df28cb8d5d47e0f92e634191f0b8ad",
+      "client/seaside.js": "011b7acc4b39e77cc4b1b549c0f027e86781d26b09f38188a8ad2de270150dfb",
+      "client/huts.js": "5b0d254a528d9dc69239edfa0c04508210c6fb2d6b291f6fa933191af7b0390a",
+      "client/guide.js": "bbe34ba005b02a32a8e634296d6aca887cf9af8a778a5a26980c908a6b066a2e",
+      "client/sound-library.js": "2bd7ac7ea502c02d797d35142e1484f90acaf59ecda6b15272214c019b54ea28",
+      "client/listening-trail.js": "d113c9e2f59346d2a095e5941ac128782144765679e9fd606ce736508106f5f8",
+      "client/look-settings.js": "74a8d2ffa87882b15f0ede080aaaa81650e1c4048f2e64a454f29d0d1b2b5741",
+      "client/sound-conversations.js": "aa2bf90b4d7dcc3fe4fa422b4346a2a30f8f8ece5f164246890dc08b75e55a5e",
+      "client/shared-sound-place.js": "7cb84965ed7e9b7f92258e0d4882d2e10aea952be619689d62d744ab70207e77",
+      "client/sound-connections.js": "b7d38890612d7d43d450fd2a8c9251a2c3c57d4cfdb19df409315b1335b85d9b",
+      "client/sound-residents.js": "ca291a1a1eca189fe3734fafb834a74c318ee15fed08ee5124b35df37043aee1",
+      "client/view-mode.js": "6a10a1089aa9d1b261eedef321bc7018394d0dbed287fb42cb4a9a1ad8661eca",
+      "client/planet.js": "56f4e06ecf87585739ad57cbccb9cd165e39d8c9603b205cf5cb09422163a38c",
+      "client/planet-world.js": "75bd4c0874ab2ff463838631bc4a339c8454c27b3185b2ed222aa404b5fb6996",
+      "client/planet-build.js": "fc89b224b7c965668640e78655d4a3025912ba0fde846e79a5d548004b2f3d73",
+      "client/planet-audio.js": "54ff0cc4abc464fb2b113df8db26a22148e0a54bbcab15ce17fb9de381a84e43",
+      "client/routine-audio.js": "5611411c45cee1438a3ab9d2b4504e983155e92534cc74bf16c663344ce7579b",
+      "client/environment-panel.js": "f2e98f7002cac9eca9ef6798dfb38f1fa3ecbf4bf2e74bcb4e56d70f780ac325",
+      "client/places.js": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "shared/catalog.js": "167edfbe3c8392ae535a05295fb6e928593918622d0ef1a5fd64ecd74432148b",
+      "shared/protocol.js": "764ca473e2976086396b4233fd06bfe5a37ccc3d7ed74b8af784d3501587e0b3",
+      "shared/sounds.js": "5440010a44f2d5a8dac2075fa05951eddefe1ea145db58d6949d2caab3654ddd",
+      "shared/sound-response.js": "659159d03f2d4c5df50e714f8118973324b4f487d21504df2f336aa14c3b8d34",
+      "shared/planet.js": "5830c71f783410405c14242785b9eb581fc02e2dd636fabb051b47996e24a5d2",
+      "shared/npc-routines.js": "8447f8d27b55c48567c1971c15d4608033050e1a193b91ba7da48f64036ca1e2",
+      "shared/huts.js": "7f0a0dee675ef17173e317e8cba4b5dd46828d17569115d75ae31b4905b5a33d",
+      "shared/environment.js": "074e77e3fb5af1c186f1608163f68faa8965676d0f60caffb9707b4040b2d3cb",
+      "shared/landscapes.js": "0b81ba04a0d402a71d1fdc80d31cb3441956b293c482063784c4a619a63488cc",
+      "client/soundscape.js": "e61cf00908766b420a8e3b95dbef910e2e61e287f268c46aaf146100802d0f0a",
+      "client/style.css": "ec66f2147fab55a5cade40f56bf098e7439b21d578c17b7934301de03f6f23c6"
+    },
+    "oldCompiledOutputRetained": true,
+    "rollbackTag": "before-soundfolk-planet-2026-11-07",
+    "detachedProcess": {
+      "pid": 37700,
+      "parentPid": 1,
+      "processGroup": 37700,
+      "tty": "??"
+    }
   },
   "pushed": false,
   "deployed": false

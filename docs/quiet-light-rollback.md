@@ -154,3 +154,11 @@ new scene, users, contributions or relationships during rollback. The ignored
 every persistent-table comparison and the precise allowed new-edition rows.
 The [walkthrough](soundfolk-planet.md) describes camera, identity, night light
 and the real resident restroom test. No push or deployment is authorized.
+
+`soundfolk-planet-2026-11-07` marks the verified new edition. The18861 preview
+serves application commit `b547227`; all38 modules/styles match the reviewed
+candidate. Every existing row in all12 tables was preserved. Only the new
+scene, its session and environment were added; the old coast's five live
+ordinary sounds and exact weather/clock anchor remain intact. The promotion
+record retains the former compiled output. No remote push or deployment took
+place.

@@ -2325,3 +2325,17 @@ The [structured verification](evidence/soundfolk-planet-2026-11-07.json)
 keeps full-run scope, retries, negative controls and limits explicit.
 Docker is absent and was not run. No user visual approval or final artistic
 listening verdict is claimed. Preview promotion is recorded separately below.
+
+Promoted application commit `b547227` to the original18861 preview with its
+current database. All existing rows in all12 tables remain byte-equivalent,
+including all20 sound rows, four operations, one reply,25 users and23
+participants. Five ordinary sounds remain live and the original coastal
+weather/clock anchor is unchanged. The precise allowed additions are one
+`planet` scene, its `morning` session and its default environment; no other
+rows or schema changes occurred. All38 served application modules/styles
+match the tested candidate and installed files byte for byte, with no-cache
+headers. The server is detached with parent1 and no TTY. Both `/planet` and
+the original coast return200. The former compiled output is retained;
+`soundfolk-planet-2026-11-07` marks the verified version. Rollback changes
+application files while retaining the current database. No push or deployment
+occurred.
