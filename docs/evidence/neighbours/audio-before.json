@@ -1,0 +1,48 @@
+{
+  "label": "before",
+  "base": "http://localhost:18891",
+  "autoplayBypass": false,
+  "scope": "Actual destination Analyser samples, local in-memory test source, no HTTP writes; not a hardware listening judgement",
+  "results": [
+    {
+      "name": "at-source",
+      "rms": 0.0053696440855172224,
+      "rmsDb": -45.40108999110573,
+      "peak": 0.031325917690992355,
+      "peakDb": -30.08192395030192,
+      "contextState": "running",
+      "enabled": true,
+      "voiceCount": 1,
+      "voiceGains": [
+        0.3199999928474426
+      ],
+      "masterGain": 0.49000000953674316
+    },
+    {
+      "name": "reading-4m",
+      "rms": 0.0007260123693925095,
+      "rmsDb": -62.781119599410005,
+      "peak": 0.003989276010543108,
+      "peakDb": -47.9821182925601,
+      "contextState": "running",
+      "enabled": true,
+      "voiceCount": 1,
+      "voiceGains": [
+        0.03556270897388458
+      ],
+      "masterGain": 0.49000000953674316
+    },
+    {
+      "name": "explicit-off",
+      "rms": 0,
+      "rmsDb": null,
+      "peak": 0,
+      "peakDb": null,
+      "contextState": "running",
+      "enabled": false,
+      "voiceCount": 0,
+      "voiceGains": [],
+      "masterGain": 0.49000000953674316
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # ADR 027 — Neighbours within reach
 
-Date: 2026-11-07. Status: implementing; browser validation follows.
+Date: 2026-11-07. Status: implemented; verified and promoted locally on 2026-11-08.
 
 ## Request and observed problem
 
@@ -24,4 +24,4 @@ A louder world is not an autoplay exemption: silent visits remain silent, and in
 
 ## Verification boundary
 
-Focused local checks cover audio gain/lifecycle/headroom, source filtering and removal, real geometry, chat/private-room UI and dismiss/reopen persistence. Actual browser output, independent-identity chat/locked-room paths, desktop/phone screenshots and candidate promotion are recorded separately in the evidence log. No unfamiliar-pair playtest, next-day return or artistic listening acceptance is claimed.
+Focused local checks cover audio gain/lifecycle/headroom, source filtering and removal, real geometry, chat/private-room UI and dismiss/reopen persistence. Actual browser output, independent-identity chat/locked-room paths, desktop/phone screenshots and data-preserving candidate promotion are recorded separately in the evidence log and `docs/evidence/neighbours-2026-11-08.json`. No unfamiliar-pair playtest, next-day return or artistic listening acceptance is claimed.

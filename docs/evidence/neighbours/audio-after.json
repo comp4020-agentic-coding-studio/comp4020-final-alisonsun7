@@ -1,0 +1,88 @@
+{
+  "label": "after",
+  "base": "http://localhost:18891",
+  "autoplayBypass": false,
+  "scope": "Actual destination Analyser samples, local in-memory test source, no HTTP writes; not a hardware listening judgement",
+  "results": [
+    {
+      "name": "at-source",
+      "rms": 0.012242140328766818,
+      "rmsDb": -38.242852931861954,
+      "peak": 0.0704684630036354,
+      "peakDb": -23.04010401700209,
+      "contextState": "running",
+      "enabled": true,
+      "voiceCount": 1,
+      "voiceGains": [
+        0.7200000286102295
+      ],
+      "masterGain": 0.49000000953674316
+    },
+    {
+      "name": "reading-4m",
+      "rms": 0.006470639720345787,
+      "rmsDb": -43.78105561295679,
+      "peak": 0.033391937613487244,
+      "peakDb": -29.527167593497403,
+      "contextState": "running",
+      "enabled": true,
+      "voiceCount": 1,
+      "voiceGains": [
+        0.29754388332366943
+      ],
+      "masterGain": 0.49000000953674316
+    },
+    {
+      "name": "explicit-off",
+      "rms": 0,
+      "rmsDb": null,
+      "peak": 0,
+      "peakDb": null,
+      "contextState": "running",
+      "enabled": false,
+      "voiceCount": 0,
+      "voiceGains": [],
+      "masterGain": 0.49000000953674316
+    },
+    {
+      "name": "mixed-6-parts-volume-0.7",
+      "rms": 0.08529955210234981,
+      "rmsDb": -21.381064985087672,
+      "peak": 0.3433608412742615,
+      "peakDb": -9.284984712810239,
+      "contextState": "running",
+      "enabled": true,
+      "voiceCount": 6,
+      "voiceGains": [
+        0.5091168880462646,
+        0.5091168880462646,
+        0.5091168880462646,
+        0.5091168880462646,
+        0.5091168880462646,
+        0.5091168880462646
+      ],
+      "masterGain": 0.49000000953674316
+    },
+    {
+      "name": "mixed-8-parts-volume-1",
+      "rms": 0.16324612612022907,
+      "rmsDb": -15.743142317390987,
+      "peak": 0.5385568141937256,
+      "peakDb": -5.375369494885226,
+      "contextState": "running",
+      "enabled": true,
+      "voiceCount": 8,
+      "voiceGains": [
+        0.44090816378593445,
+        0.44090816378593445,
+        0.44090816378593445,
+        0.44090816378593445,
+        0.44090816378593445,
+        0.44090816378593445,
+        0.44090816378593445,
+        0.44090816378593445
+      ],
+      "masterGain": 0.699999988079071
+    }
+  ]
+}

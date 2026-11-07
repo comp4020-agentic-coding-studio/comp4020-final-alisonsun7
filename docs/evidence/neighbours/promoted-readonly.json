@@ -1,0 +1,15 @@
+{
+  "kind": "read-only promoted original preview",
+  "url": "http://localhost:18861/planet",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "writes": [],
+  "errors": [],
+  "sourceCount": "9",
+  "fourDestinations": true,
+  "talkVisible": true,
+  "localSoundOff": true,
+  "identity": "unjoined observer; does not replace an existing user's position"
+}

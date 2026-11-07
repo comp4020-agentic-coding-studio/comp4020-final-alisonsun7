@@ -277,6 +277,6 @@ widening the 6/14/18-metre area boundaries; source coordinates remain exact.
 Grounded folded buds mark those actual positions. Shared works now grow larger
 floor and overhead forms, with the same real authors and withdrawal semantics.
 
-See `docs/evidence/neighbours-2026-11-07.json` for the final verified scope.
+See `docs/evidence/neighbours-2026-11-08.json` for the final verified scope.
 Automated output measurement does not replace hardware listening, and the
 unfamiliar-pair study remains a separate human activity.
