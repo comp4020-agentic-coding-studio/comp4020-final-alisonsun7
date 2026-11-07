@@ -162,3 +162,28 @@ scene, its session and environment were added; the old coast's five live
 ordinary sounds and exact weather/clock anchor remain intact. The promotion
 record retains the former compiled output. No remote push or deployment took
 place.
+
+## Little Chorus: coastal play and direct sound responses
+
+`before-little-chorus-play-2026-11-07` preserves the prior source at `a65cead`.
+Development uses `codex/little-chorus-play`, isolated
+`.cache/chorus-build/dist` and a scratch database on18882. HTTP-writing specs
+use a second database on18883. `.cache/chorus-baseline/dist` retains the former
+compiled application. [ADR025](decisions/025-little-chorus-play.md) records the
+requested name and correction of the first planet's lost play.
+
+Use the separate-checkout method above and retain the **current database**.
+Users, contributions, replies, operations, rooms, coordinates and shared
+weather/clock anchors must not be restored from a historical backup. No schema
+change is required. The only intended persistent edit is the existing planet
+catalogue title from `Soundfolk · a little world` to
+`Little Chorus · a little world`; it creates no new room. The older application
+may display its previous title after rollback. This is a catalogue label, not
+a reason to delete or recreate any sound data.
+
+The ignored `.cache/chorus-promotion.json` records the exact application commit,
+previous compiled directory, current database, all12 table digests, title-only
+row allowance and43 served module/style hashes. Switching applications must
+retain the current DB. The [walkthrough](little-chorus.md) covers the restored
+run/jump controls, source responses, companion and real shoreline. Final
+preview verification and release tag are recorded after the cutover checks.

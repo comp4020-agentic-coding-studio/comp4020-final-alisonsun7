@@ -1,6 +1,6 @@
 # Your harness
 
-# Soundfolk agent rules
+# Little Chorus agent rules
 
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) was the starting point. The decisions in `docs/decisions/`
@@ -32,13 +32,13 @@ ADR 024 records the explicitly requested Soundfolk planet edition. Its `/planet`
 route has one new `planet:morning` room, spherical movement and distances, while
 the original `seaside:morning` room and its entire history remain unchanged.
 Camera modes and mood filters never create rooms. The product-facing title is
-Soundfolk; existing storage paths, cookie/account setup and deployment identity
+Little Chorus (Wen's selection in ADR 025); existing storage paths, cookie/account setup and deployment identity
 are retained. NPC restroom visits use the same authoritative occupancy gate as
 players, but never create users, presence counts or ordinary sound rows.
 
 ## What it is
 
-Soundfolk. Friends shape little places together through sounds. The new
+Little Chorus. Friends shape little places together through sounds. The new
 `/planet` edition is a freely walkable sphere with first-/third-person views,
 nine meeting destinations and one independent `planet:morning` room. The
 original coastal edition remains available in its original room, From
@@ -85,6 +85,25 @@ Anchor time from the first real server sample, independent of client Date.now.
 NPC restroom state is in `npc-routines.ts`, wire types in
 `shared/npc-routines.ts`. `client/routine-audio.ts` plays only the actual
 server-timed flush token, near the listener, with Sound off/visibility guards.
+
+ADR 025 records Wen's rejection of the first sphere's lost play and sparse art.
+Keep Shift running, Space jumping, touch equivalents and the interactive
+kangaroo. `client/planet-locomotion.ts` uses collision substeps; optional
+`Position.motion` shares bounded transient poses, never contribution positions.
+The server lands stale poses after 450ms without new samples. The kangaroo
+in `client/planet-wildlife.ts` is a clearly identified local companion, not a
+shared human or a fabricated source of public sounds.
+
+`client/planet-sound-interactions.ts` exposes real authors and direct Respond
+actions in the world. Pins must retain reachable alternative placements when
+labels collide. `client/planet-connections.ts` draws actual public reply arcs
+over the sphere. Conversation browsing reuses `client/sound-conversations.ts`.
+Wait for native dialog close handlers before starting a walk; manual movement
+or cancellation must not reopen a chooser later. A paused chat remains paused
+after other dialogs close. No interaction automatically publishes a sound.
+`client/planet-coast.ts` provides the real ocean, beach and raised pier.
+The land loop remains continuous; water has a genuine walking boundary.
+Preserve existing source positions and access when authoring shorelines.
 
 ## Product invariants
 
@@ -216,6 +235,10 @@ without Wen's go-ahead.
   in a silent fixture. `e2e/planet.mjs` checks the real two-person sphere,
   nine destinations, camera/phone controls, replies, clock skew, shared weather
   and authoritative resident restroom visits. Both run in `pnpm e2e`.
+- `e2e/chorus-play.mjs` covers real two-person running/jumping, a kangaroo
+  encounter, visible author pins, direct responses and spherical threads,
+  native conversation-to-walk handoff, travel cancellation, missed removals
+  and reachable phone actions. It uses scratch data and verifies soft cleanup.
 - `spec/planet-audio.test.ts` tests actual WebAudio lifecycles with fake nodes:
   cancelled decodes, off/on generations, removal, the eight-voice limit,
   five-second private previews and disposal. NPC admission and routine audio

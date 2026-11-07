@@ -2339,3 +2339,95 @@ the original coast return200. The former compiled output is retained;
 `soundfolk-planet-2026-11-07` marks the verified version. Rollback changes
 application files while retaining the current database. No push or deployment
 occurred.
+
+## Little Chorus: restore the playable sound world
+
+Wen rejected the first sphere's lost running/jumping, hidden sound responses,
+missing sea and kangaroo, and sparse scenery. Wen selected **Little Chorus
+(小小合鸣)**; [ADR025](decisions/025-little-chorus-play.md) replaces the public
+Soundfolk name. The [walkthrough](little-chorus.md) describes the real controls
+and sound loop. Source work is on `codex/little-chorus-play`; the previous
+source is tagged `before-little-chorus-play-2026-11-07` at `a65cead`.
+
+Running and radial jumping use the same collision and authoritative private
+door admission as walking. Real remote players receive bounded transient
+motion over movement SSE; stale poses land after450ms. The kangaroo is a
+clearly labelled local companion: invite it along, jump together, play a
+hopping game, then let it rest. It adds no joined people or public sounds.
+Named public-source markers expose real authors and direct Respond actions.
+Nearby responses open the private chooser; distant ones offer cancellable
+travel. Explicit confirmation is still required. Real public replies draw
+curved connections above the sphere and retain durable Conversation browsing.
+
+The authored coast has actual curved blue water, dry/wet sand, animated foam,
+a raised walkable pier, a sailboat and a tide-pool channel. Connected paths,
+gabled porches/windows, a reading canopy, stage sail, conservatory beds and
+grouped planting distinguish the nine existing destinations. All anchors and
+the three existing planet sound coordinates remain accessible. Night indoor
+fill and both camera/pointer modes remain available. No new dependencies,
+external models, recordings or generated bitmaps were needed this turn.
+
+We re-read the [Little Ritual primary process](https://developers.openai.com/showcase/little-ritual):
+prioritize the playable central action, expressive movement, authored places,
+camera/touch refinement, then optimization. Its cover is explicitly a generated
+illustration, not gameplay proof; its website was not played this turn.
+Our procedural Three.js geometry does not reproduce its Blender pipeline or
+establish equivalent artistic quality. The local ui-ux-pro-max skill's generic
+theme results did not fit; we retained the existing painted paper/sage palette
+and applied its relevant keyboard-focus and44px action guidance.
+
+Actual failures led to corrections rather than weaker assertions. Two motion
+admission tests failed before bounded SSE poses and stale landing were added.
+Ignored-copy locomotion mutations failed faster-run, real-jump and collision
+checks. The previous18881 application fails the new Run preflight before
+joining or publishing. Browser review found stacked source labels could hide
+a reachable guitar marker; alternative placements now retain leader lines to
+the real source. A quick key tap between frames failed to cancel reply travel;
+keydown now cancels synchronously and a revision invalidates stale arrival.
+Read-only review also corrected native dialog-close timing, stale Run state,
+chat pause restoration and guarded E capture. The final33-check suite retains
+the quick-tap assertion and passed on the actual application.
+
+Actual initial-camera screenshots still showed a tree crown hiding the body.
+A new test raycasts the real authored instanced geometry at legs, torso and
+head. It failed with two crown intersections at leg height; widening only the
+central planting gap made it pass. This changes no sound or doorway positions.
+The16-suite regression's final planet run also exposed two harness issues:
+stale12-frame camera samples allowed rapid test clicks to overshoot the6m
+target, and the restored Conversation dialog introduced a second `.library-close`.
+Each native zoom click now waits for its actual expected value, and Close is
+scoped to the sound palette. The ≤6m and exact12m camera assertions remain.
+Failure logs/screenshots and interrupted cleanup are retained in ignored cache.
+
+Full specs passed **151 tests in21 files** in57.72seconds on the independent
+18883 scratch database. That run precedes final UI/input refinements; the new
+actual-geometry sightline test passed separately after the final planting edit.
+The real two-person **33-check** play suite covers shared run/jump, kangaroo,
+ocean, direct replies, native keyboard handoffs, immediate travel cancellation,
+muted playback, missed removal/reconnection, reachable phone actions, strict
+coastal preservation and authoritative soft cleanup. Its source predates only
+the final planting-gap edit. Browser runs and HTTP-writing specs use separate
+scratch databases; no browser test writes to the working18861 preview.
+
+The headless browser did not emit native blur/visibility events when another
+tab/window was opened, so that behavior is explicitly untested. A stale
+position-sample wait was corrected without relaxing the no-movement/no-POST
+assertions. Docker is absent and was not run. Physical-phone performance,
+by-ear artistic sound approval, new furniture minigames, globally shared
+kangaroo state and user visual acceptance are not claimed. Final visual,
+legacy-regression and preview-preservation records follow in the structured
+[verification](evidence/little-chorus-play-2026-11-07.json).
+
+The final legacy outcome is15 passing suites plus a complete passing
+**50-check planet repeat** after those two harness corrections. Final solo
+captures include the widened planting gap: the actual self is unobscured in
+the [default view](screenshots/25-chorus-default.png), the
+[globe](screenshots/25-chorus-globe.png) shows the authored blue coast and pier,
+and the [phone view](screenshots/25-chorus-phone.png) keeps movement, run/jump
+and sharing reachable. The [real response card](screenshots/25-chorus-phone-response.png)
+and [conversation](screenshots/25-chorus-conversation.png) are from the33-check
+two-person run just before that final planting-only change. A real joined
+[night interior](screenshots/25-chorus-night-interior.png) reports third person,
+selfVisible true and local figure fill0.17. Final globe and narrow viewport
+samples each measured about60fps over2.5seconds with zero page errors on
+M5 Pro/Chrome Metal. This is not a physical-phone performance claim.

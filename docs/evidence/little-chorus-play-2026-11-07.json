@@ -1,0 +1,267 @@
+{
+  "date": "2026-11-07",
+  "product": "Little Chorus (小小合鸣)",
+  "request": "Restore run/jump, visible Respond to sound, sea and kangaroo; replace Soundfolk name with user-selected Little Chorus; improve authored coastal globe without losing existing play or sound data.",
+  "branch": "codex/little-chorus-play",
+  "applicationSourceCommit": "ba1d2facc9a93a952500fbd57079b5fd93f58517",
+  "rollbackTag": "before-little-chorus-play-2026-11-07",
+  "rollbackSourceCommit": "a65cead",
+  "runtimeDependenciesAdded": 0,
+  "externalAssetsAdded": 0,
+  "typecheckPassed": true,
+  "buildPassed": true,
+  "evidenceScriptPassed": true,
+  "userOwnedFilesUnchanged": [
+    "README.md",
+    "PROCESS.md",
+    "reflections/"
+  ],
+  "spec": {
+    "files": 21,
+    "tests": 151,
+    "passed": true,
+    "durationSeconds": 57.72,
+    "scope": "Full run before final UI/input/camera and tree-gap refinements; HTTP-writing specs isolated on18883, distinct from browser scratch18882. Direct source unit tests and frozen HTTP server are distinguished."
+  },
+  "finalSightline": {
+    "tests": 1,
+    "passed": true,
+    "negativeBeforeFix": {
+      "failed": true,
+      "actualLegRayCrownHits": 2
+    },
+    "method": "Real buildPlanet instanced canopy raycasts at legs, torso and head. Only sign canvas stubbed. Wider planting gap verified on source and final actual UI screenshot."
+  },
+  "legacyRegression": [
+    {
+      "suite": "world-two-browsers",
+      "exitCode": 0,
+      "seconds": 40.8
+    },
+    {
+      "suite": "meet-and-talk",
+      "exitCode": 0,
+      "seconds": 59.71
+    },
+    {
+      "suite": "leave-a-sound",
+      "exitCode": 0,
+      "seconds": 11.75
+    },
+    {
+      "suite": "sound-discovery",
+      "exitCode": 0,
+      "seconds": 14.89
+    },
+    {
+      "suite": "look-controls",
+      "exitCode": 0,
+      "seconds": 9.6
+    },
+    {
+      "suite": "huts",
+      "exitCode": 0,
+      "seconds": 30.4
+    },
+    {
+      "suite": "busker-sound",
+      "exitCode": 0,
+      "seconds": 9.0
+    },
+    {
+      "suite": "cooperative-play",
+      "exitCode": 0,
+      "seconds": 23.73
+    },
+    {
+      "suite": "cooperative-ack-race",
+      "exitCode": 0,
+      "seconds": 15.83
+    },
+    {
+      "suite": "environment",
+      "exitCode": 0,
+      "seconds": 17.55
+    },
+    {
+      "suite": "quiet-light",
+      "exitCode": 0,
+      "seconds": 5.5
+    },
+    {
+      "suite": "d-reference-ui",
+      "exitCode": 0,
+      "seconds": 14.8
+    },
+    {
+      "suite": "shared-sound-focus",
+      "exitCode": 0,
+      "seconds": 37.15
+    },
+    {
+      "suite": "living-sound-world",
+      "exitCode": 0,
+      "seconds": 35.24
+    },
+    {
+      "suite": "view-mode",
+      "exitCode": 0,
+      "seconds": 6.13
+    },
+    {
+      "suite": "planet",
+      "exitCode": -15,
+      "seconds": 184.71
+    }
+  ],
+  "planetRepeat": {
+    "passed": true,
+    "exitCode": 0,
+    "checks": 50,
+    "scope": "Final application including widened planting gap. Native zoom waits and palette-scoped Close retain all original assertions.",
+    "browserErrors": 0,
+    "coastalSoundsStrictlyPreserved": true,
+    "ordinarySoftCleanupVerifiedFromSnapshot": true
+  },
+  "newPlayBrowser": {
+    "passed": true,
+    "exitCode": 0,
+    "checks": 33,
+    "actualTwoPersonSessions": true,
+    "browserErrors": 0,
+    "scope": "Final input, label, reply and pose logic before only the last tree-gap edit; followed by final geometry and actual UI review.",
+    "coverage": [
+      "actual5.6m/s run versus3.2m/s walk",
+      "real self and remote jump/landing with stable participant and source counts",
+      "kangaroo invitation, hopping and let-rest",
+      "actual ocean/beach/raised-pier geometry",
+      "visible source author pins and direct responses",
+      "durable replies and public spherical arcs in both browsers",
+      "native Conversation-to-walk and canvas keyboard handoff",
+      "quick-tap manual cancellation and explicit Cancel with stable position/noPOST",
+      "removed parent metadata and missed-removal reconnection",
+      "Sound off remains silent when friend publishes",
+      "nine reachable44px phone core actions without overlap",
+      "strict coast snapshot equality",
+      "ordinary soft cleanup verified from actual snapshot"
+    ]
+  },
+  "negativeControls": [
+    {
+      "check": "motion admission and stale landing",
+      "result": "Two real tests fail before implementation, then pass with bounded in-memory SSE poses and shared NPC/human gate."
+    },
+    {
+      "check": "locomotion",
+      "result": "Ignored-copy faster-run, jump and collision mutations fail three assertions; source helper suite passes."
+    },
+    {
+      "check": "old application",
+      "result": "18881 fails new Run control preflight before joining or publishing."
+    },
+    {
+      "check": "actual initial sightline",
+      "result": "Real canopy rays fail at leg height before widening planting gap; pass after."
+    }
+  ],
+  "failuresAndCorrections": [
+    {
+      "failure": "Projected source label collision hid a reachable guitar pin.",
+      "correction": "Use multiple reachable alternative placements and true-source leader lines."
+    },
+    {
+      "failure": "Quick key tap between animation frames did not cancel reply travel.",
+      "correction": "Cancel synchronously on direction key/touch down, invalidate stale walking intent by revision; exact quick-tap check retained."
+    },
+    {
+      "failure": "Read-only audit found dialog-close handoff, cancelled arrival, Run aria and chat pause restoration issues.",
+      "correction": "Wait queued native close, maintain route revision, sync actual run state, and preserve chat pause."
+    },
+    {
+      "failure": "Initial screenshot still had a tree crown over the player body.",
+      "correction": "Meaningful actual-geometry test reproduced2 intersections, then widened only the central planting gap and reviewed final screenshots."
+    },
+    {
+      "failure": "First final legacy planet run stopped after close-camera check and browser cleanup stalled; process terminated.",
+      "correction": "Independent audit identified stale12-frame samples could overclick clamp. Await each actual native zoom result; retain <=6 and exact12 assertions. Exact overshot endpoint was inferred, not logged."
+    },
+    {
+      "failure": "First repeated planet run found two .library-close elements after Conversation restoration.",
+      "correction": "Scope Close to #sound-palette; complete final50-check unchanged focus assertions pass."
+    },
+    {
+      "failure": "Headless Chrome emitted no blur/visibility transition for a new tab/window.",
+      "correction": "Retain native blur handler but explicitly mark browser-native blur untested; do not synthesize events as proof."
+    },
+    {
+      "failure": "Position dataset updated only every12frames.",
+      "correction": "Await a fresh server-time sample for stop measurement; stable-position/noPOST assertion unchanged."
+    }
+  ],
+  "visualReview": {
+    "actualRunningUI": true,
+    "screenshots": [
+      "25-chorus-default.png",
+      "25-chorus-globe.png",
+      "25-chorus-phone.png",
+      "25-chorus-shore.png",
+      "25-chorus-night-interior.png",
+      "25-chorus-phone-response.png",
+      "25-chorus-conversation.png",
+      "25-chorus-kangaroo.png"
+    ],
+    "defaultCameraMetres": 16,
+    "initialBodyClear": true,
+    "finalNightThirdPerson": true,
+    "insideNightFigureFill": 0.17,
+    "seaMeshVisible": true,
+    "errors": [],
+    "performance": [
+      {
+        "name": "final-desktop-overview",
+        "frames": 152,
+        "elapsedMs": 2516.4,
+        "fps": 60.00635828962009,
+        "p95FrameMs": 16.799999999999727,
+        "calls": 778,
+        "triangles": 210858,
+        "viewport": {
+          "width": 1440,
+          "height": 960
+        }
+      },
+      {
+        "name": "final-narrow-desktop-gpu",
+        "frames": 152,
+        "elapsedMs": 2516.500000000002,
+        "fps": 60.00397377309751,
+        "p95FrameMs": 16.700000000000728,
+        "calls": 219,
+        "triangles": 169904,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    ],
+    "hardware": "Local Apple M5 Pro, Chrome Metal. Narrow view is desktop viewport emulation, not a physical phone.",
+    "separateFixtures": "Environment agent silent geometry/camera fixtures and eight angle candidates informed authoring; they are not presented as joined human gameplay. Final33 interaction images predate only the last tree gap; final solo images include it."
+  },
+  "primaryReference": {
+    "url": "https://developers.openai.com/showcase/little-ritual",
+    "readThisTurn": true,
+    "playedThisTurn": false,
+    "coverIsGeneratedIllustration": true,
+    "applied": "Playable central action, expressive movement, authored landmarks, actual camera/touch review and optimization; no claim of Blender asset pipeline or equal artwork."
+  },
+  "limits": [
+    "Kangaroo is a local companion, not globally shared NPC state.",
+    "Furniture, telescope and books are scenery, not additional minigames.",
+    "No physical-phone performance, native headless tab-blur proof, by-ear artistic sound approval or user visual acceptance."
+  ],
+  "notRun": [
+    "Docker, absent"
+  ],
+  "pushed": false,
+  "deployed": false
+}
