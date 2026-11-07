@@ -164,7 +164,7 @@ export function buildPlanet(): PlanetBuild {
         [[3, 2], [7, 9], [7, coastlineAt(7) - 1.4]],
     ];
     for (const points of villageRoutes) path(points, 1.2);
-    function sign(parent: THREE.Object3D, text: string, y = 3.8): void {
+    function sign(parent: THREE.Object3D, text: string, y = 3.8, front = 2.04): void {
         const canvas = document.createElement("canvas");
         canvas.width = 512;
         canvas.height = 96;
@@ -180,8 +180,9 @@ export function buildPlanet(): PlanetBuild {
         texture.colorSpace = THREE.SRGBColorSpace;
         const m = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, side: THREE.DoubleSide });
         materials.add(m);
-        const o = box(3.5, .66, .08, m, parent, 0, y, 2.04);
+        const o = box(3.5, .66, .08, m, parent, 0, y, front);
         o.userData.signTexture = texture;
+        solids.push(o);
     }
     function lamp(parent: THREE.Object3D, x: number, z: number): void {
         // Low timber lanterns belong to the village, rather than a repeated
@@ -255,7 +256,9 @@ export function buildPlanet(): PlanetBuild {
             strut(g, [x, .04, 2.65], [x, 2.95, 2.65], .075, dark);
             box(.28, .1, .28, cream, g, x, .08, 2.65);
         }
-        sign(g, p.kind === "tea" ? "Coffee & company" : p.title, 2.69);
+        // The cafe's name belongs on the front gable, clear of the camera
+        // under its eaves. The former low board filled the indoor view.
+        sign(g, p.kind === "tea" ? "Coffee & company" : p.title, p.kind === "tea" ? 3.38 : 2.69, p.kind === "tea" ? 2.66 : 2.04);
         lamp(g, -1.7, -.6);
         lamp(g, 1.7, -.6);
         return g;

@@ -58,6 +58,7 @@ const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l =
         studio.frame();
         social?.frame();
         updateReplyIntent();
+        updateView();
         const run = $("planet-run"), pressed = String(world.runEnabled);if (run.getAttribute("aria-pressed") !== pressed) run.setAttribute("aria-pressed", pressed);
         if (boot.joined && connected && performance.now() - lastMove > 180)
             void reportMove();
@@ -74,7 +75,11 @@ try {
     world.setViewMode(!flat && localStorage.getItem("soundfolk-view") === "first" ? "first" : "third");
 }
 catch { }
+let drawnViewState = "";
 function updateView(): void {
+    const state = flat ? "flat:" + String(world.cameraDistance >= 20) : "3d:" + world.viewMode;
+    if(state === drawnViewState)return;
+    drawnViewState = state;
     const button = $("planet-view");
     if(flat){const overview=world.cameraDistance>=20;button.querySelector("span")!.textContent=overview?"Follow me":"Village overview";button.setAttribute("aria-pressed",String(overview));button.setAttribute("aria-label",overview?"Follow my character":"See the whole village");button.title=overview?"Follow my character":"See the whole village";return;}
     button.querySelector("span")!.textContent = world.viewMode === "third" ? "Third person" : "First person";button.setAttribute("aria-pressed", String(world.viewMode === "third"));button.setAttribute("aria-label", world.viewMode === "third" ? "Third person; switch to first person" : "First person; switch to third person");

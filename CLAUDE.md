@@ -153,6 +153,21 @@ private-room actions, run/jump and actual reply-derived forms in every lens.
 Use CSS to keep competing context cards clear of an open chat; animation-frame
 timing must not decide whether Say can be reached. Build styles as well as TS.
 
+ADR029 records Wen's selection of 3D after the view studies. Prioritise that
+presentation and the shared sound experience. The café shell/terrace is wider
+at its original centre, with matching floor height and wall clearance; never
+scale historical source positions or the people/furniture with the shell.
+Its six café neighbours remain NPCs, and idle gestures yield to actual source
+responses. The renderer already uses MSAA; additional sampling must stay within
+the six-million-pixel budget and respect resize. Fix coplanar surfaces through
+real separation rather than disguising them with arbitrary material offsets.
+Private rooms have distinct actual fixtures and the original admission gate.
+Residents visit naturally: no player-facing Invite/Test lock button. Controlled
+NPC scheduling belongs only in explicitly labelled scratch browser fixtures.
+Inspect the view after actually walking inside a furnished building; a green
+movement check cannot detect a name board filling the camera. Signs participate
+in camera avoidance, and keyboard view changes must promptly update the header.
+
 - **The standard (Wen):** suits people playing together; keeps what they do,
   so tomorrow shows today's changes; what others change, you see.
 - **Sound is Wen's design (ADR 011).** Sounds are left where you stand and
