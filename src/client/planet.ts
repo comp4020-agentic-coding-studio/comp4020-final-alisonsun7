@@ -369,7 +369,15 @@ function cancelPlacement(): void { if(placementPlan)world.cancelWalkingIntent();
 function makeRoom(soundId: string, parent: SoundReference | null): void {
     const place=chorusPlaceAt(here);
     const target=findNearbyPlan(soundId,here,parent,[...sounds.values()],(x,z)=>world.canPlaceAt(x,z) && (!!parent || !place || chorusPlaceAt({x,z})===place));
-    if(!target){const feedback=studio.element.querySelector<HTMLElement>(".chorus-feedback");if(feedback)feedback.textContent="There is no safe space beside this sound. Cancel and try Pocket Jam or Reading Nook, or withdraw a sound beside you. Nothing has been shared.";return;}
+    if(!target){
+        const feedback=studio.element.querySelector<HTMLElement>(".chorus-feedback");
+        if(feedback){
+            feedback.textContent="There is no safe space beside this sound. You can begin in a quieter place, or withdraw a sound beside you. Nothing has been shared. ";
+            const next=place==="stage"?"reading":"stage", destination=PLANET_PLACES.find(p=>p.id===next)!;
+            const elsewhere=button(`Begin a new work at ${destination.title}`,()=>afterDialogClose(studio.element,()=>{cancelReply();world.goTo(next);world.setCameraDistance(8);lastSent="";openLibrary();}));
+            elsewhere.id="chorus-try-another-place";elsewhere.className="btn primary";feedback.append(elsewhere);elsewhere.focus();elsewhere.scrollIntoView({block:"nearest"});
+        }return;
+    }
     afterDialogClose(studio.element,()=>{
         cancelPlacement();walkingReply=null;
         if(!world.walkToward(target,.15))return say("Choose a spot again when you are back in the world.");
