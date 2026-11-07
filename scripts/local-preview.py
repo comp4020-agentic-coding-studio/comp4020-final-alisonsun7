@@ -140,13 +140,19 @@ except Exception:
 meta.update(pid=process.pid, port=args.port, database=str(database), log=str(log), applicationCommit=commit)
 metadata.write_text(json.dumps(meta, indent=2) + "\n")
 digest = lambda rows: hashlib.sha256("\n".join(rows).encode()).hexdigest()
+release_record = cache / "chorus-garden-promotion.json"
+# Restarting the same compiled app must not discard the preceding version.
+# Only an actual file switch replaces the rollback target.
+prior_release = json.loads(release_record.read_text()) if release_record.exists() else {}
+rollback_dist = str(staging / "old-dist") if args.dist else prior_release.get("previousDist")
+rollback_commit = previous_commit if args.dist else prior_release.get("previousCommit")
 record = {"applicationCommit": commit, "pid": process.pid, "port": args.port,
-          "previousCommit": previous_commit,
+          "previousCommit": rollback_commit,
           "database": str(database), "allRowsPreserved": True,
           "tables": {name: {"rows": len(rows), "sha256": digest(rows)} for name, rows in after.items()},
-          "served": served, "previousDist": str(staging / "old-dist") if args.dist else None,
+          "served": served, "previousDist": rollback_dist,
           "backupIsNotForVisualRollback": str(staging / "before.db")}
-(cache / "chorus-garden-promotion.json").write_text(json.dumps(record, indent=2) + "\n")
+release_record.write_text(json.dumps(record, indent=2) + "\n")
 print(json.dumps({"url": f"http://localhost:{args.port}/planet", "pid": process.pid,
                   "allRowsPreserved": True, "verifiedAssets": len(served),
                   "record": str(cache / "chorus-garden-promotion.json")}, indent=2))
