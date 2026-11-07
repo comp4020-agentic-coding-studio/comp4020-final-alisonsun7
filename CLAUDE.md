@@ -25,8 +25,10 @@ a cohesive painted world. It authorizes new optional recordings and replaces
 the original design-pack priority for realistic adult character proportions.
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
-reflections and the research note are Wen's to write: offer outlines and
-checks, never draft them.
+reflections and the research note remain Wen's personal account. The explicit
+2026-11-07 brief (ADR026) now permits clearly labelled evidence-bound drafts;
+never invent beliefs, listening verdicts, playtest observations or retrospective
+reflections. Preserve original historical reflections and mark author inputs.
 
 ADR 024 records the explicitly requested Soundfolk planet edition. Its `/planet`
 route has one new `planet:morning` room, spherical movement and distances, while
@@ -37,6 +39,25 @@ are retained. NPC restroom visits use the same authoritative occupancy gate as
 players, but never create users, presence counts or ordinary sound rows.
 
 ## What it is
+
+ADR026 is the current priority: two to six friends without musical training
+answer real sounds to grow a recognisable lasting work. Finish Listening Green
+before expanding scope. Pocket Jam and Reading Nook have distinct purposes;
+the other destinations remain exploration. The activity camera, curated three
+choices, original72BPM compatible parts and source-derived kinetic sculptures
+supersede old UI/catalogue/raw-loop assumptions. They never supersede identity,
+explicit placement, durable replies, tombstones or original coordinates.
+`shared/chorus.ts` projects works from real public contribution history.
+`sessions.chorusWorks` sends authoritative works in snapshots and sound events.
+Distinct participant IDs on a live cross-author reply unlock the shared form;
+same-cookie tabs, NPCs and the local companion cannot. Removed endpoints stay
+in records but lose live effects. No separate mutable work store or schema is
+required. `client/chorus-studio.ts` provides invitation, recommendations and
+source-complete works; `client/chorus-garden.ts` draws actual kinetic carriers.
+Local sound/volume/focus never changes the shared work or automatically unmutes.
+Original musical PCM and licensed recording sources must remain documented.
+Automated timing/peak checks cannot establish pleasantness. Keep developer
+self-test, automation, real unfamiliar pairs and artistic judgement separate.
 
 Little Chorus. Friends shape little places together through sounds. The new
 `/planet` edition is a freely walkable sphere with first-/third-person views,

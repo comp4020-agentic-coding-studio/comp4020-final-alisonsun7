@@ -2445,3 +2445,35 @@ The detached server has parent1 and no TTY; both editions return200. The old
 compiled output is retained and `little-chorus-play-2026-11-07` marks the
 verified release. Rollback changes application files and retains the current
 database. No remote push or deployment occurred.
+
+## Chorus Garden: a shared consequence, not more destinations
+
+The new full brief asks whether a friend changed the result, rather than how
+many features exist. Before implementation, source7d40be6 and the running
+06c1ca9 preview were checked; the working tree was clean. No AGENTS.md was
+found in the repository or its workspace ancestors. A SQLite backup copy and
+the current compiled application run separately at18884. Actual agent-operated
+IAB actions completed Sound on → private Bird sounds preview → placement →
+Respond → private Trickling stream preview → explicit placement → Conversation
+→ close/reload. Both authors were the same cloned browser identity, so this
+is a baseline flow review, not two-person evidence or human unfamiliarity.
+The source and child remained after reload; Sound off remained explicit.
+The default world showed a small player and stacked labels;18 choices and a
+list/line result made the claimed shared consequence difficult to identify.
+No artistic listening verdict is claimed from clicking playback.
+
+[ADR026](decisions/026-a-world-that-remembers-an-answer.md) records keeping
+the sphere/backend, using an activity camera and three source-born carriers,
+and rejecting a new engine or nine shallow games. The UI skill's first broad
+search returned storytelling/brutalism, which did not fit; a narrowed organic
+biophilic style search returned an applicable earthy/rounded language. Existing
+paper/wood/sage colours are retained rather than adopting the unrelated theme.
+The Sites skill is used in its local-only existing-checkout mode. No Site is
+registered, no remote push/deploy or public-access change is authorized.
+
+Work proceeds on codex/chorus-garden, with
+before-chorus-garden-2026-11-07 preserving the previous source. Candidate
+port18885 uses another copied database. Old records and original sound
+coordinates are not migrated. Authorised first-person submission drafts are
+labelled for review and cannot invent private judgements. The official course
+pages were read; evidence and writing gaps are tracked under docs/submission.
