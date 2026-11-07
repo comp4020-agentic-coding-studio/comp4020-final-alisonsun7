@@ -157,4 +157,63 @@ describe("studio dialog handoffs and interrupted choices", () => {
     expect(opts.stop).toHaveBeenCalled();
     expect(opts.publish).not.toHaveBeenCalled();
   });
+
+  it("explains a choice's actual response before publishing and distinguishes a same-person layer", () => {
+    const parent = source("water");studio.setWorks([work([parent])]);studio.open(parent);
+    const forecast = studio.element.querySelector('[data-sound="evening-forest"] .chorus-choice-outcome')!;
+    expect(forecast?.textContent).toContain("Ada");
+    expect(forecast?.textContent).toContain("Watersong canopy");
+    expect(forecast?.textContent).toContain("together");
+    studio.close();opts.you = () => ({id:"ada",name:"Ada",avatar:"cat"});studio.open(parent);
+    expect(studio.element.querySelector('[data-sound="evening-forest"] .chorus-choice-outcome')?.textContent).toContain("another layer of your own");
+    expect(opts.publish).not.toHaveBeenCalled();
+  });
+
+  it("offers an own-source layer and a separate real friend invitation without treating the owner as a duet", () => {
+    opts.at = () => ({x:0,z:0});opts.you = () => ({id:"ada",name:"Ada",avatar:"cat"});
+    opts.invite = vi.fn();const ownWork=work([source("own")]);studio.setWorks([ownWork]);
+    expect(document.getElementById("chorus-primary")?.textContent).toBe("Add another layer");
+    expect(document.getElementById("chorus-step")?.textContent).toContain("friend");
+    document.getElementById("chorus-invite")!.click();
+    expect(opts.invite).toHaveBeenCalledExactlyOnceWith(ownWork);
+    expect(opts.respond).not.toHaveBeenCalled();expect(opts.publish).not.toHaveBeenCalled();
+  });
+
+  it("records withdrawn ancestry without claiming it still opens the shared result", () => {
+    const a=source("parent", {removedAt:"2026-11-07T12:01:00Z"}), b=source("answer", {by:"Bo",byId:"bo",soundId:"evening-forest",replyToId:a.id});
+    studio.setWorks([work([a,b])]);studio.showJournal();
+    const record=studio.journal.querySelector('[data-work="parent"]')!;
+    expect(record.querySelector('[data-source="parent"] .chorus-source-state')?.textContent).toContain("Withdrawn");
+    expect(record.querySelector('[data-source="answer"]')?.textContent).toContain("withdrawn");
+    expect(record.querySelector(".chorus-record-result")?.textContent).toContain("live");
+    expect(record.querySelector('[data-record-action="reply:parent"]')).toBeNull();
+    expect(opts.publish).not.toHaveBeenCalled();
+  });
+
+  it("waits for the journal's close before opening a new creation, and updates forecasts without stealing focus", async () => {
+    studio.showJournal();
+    opts.create=vi.fn(()=>{studio.open(null);});
+    document.getElementById("chorus-new-work")!.click();
+    expect(opts.create).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(opts.create).toHaveBeenCalledTimes(1);expect(studio.element.open).toBe(true);expect((actor as unknown as {paused:boolean}).paused).toBe(true);
+    const parent=source("parent");studio.close();await vi.advanceTimersByTimeAsync(0);studio.setWorks([work([parent])]);studio.open(parent);
+    const listen=studio.element.querySelector<HTMLButtonElement>('[data-listen="evening-forest"]')!;listen.focus();
+    studio.setWorks([work([{...parent,removedAt:"2026-11-07T12:01:00Z"}])]);
+    expect(studio.element.querySelector('[data-sound="evening-forest"] .chorus-choice-outcome')?.textContent).toContain("withdrawn");
+    expect(document.activeElement).toBe(listen);expect(opts.publish).not.toHaveBeenCalled();
+  });
+
+  it("keeps a blocked choice privately audible and offers an explicit move without publishing", () => {
+    const parent=source("root");opts.availability=()=>({allowed:false,reason:"This corner needs a little more room."});opts.makeRoom=vi.fn();
+    studio.open(parent);const card=studio.element.querySelector<HTMLElement>('[data-sound="evening-forest"]')!;
+    expect(card.querySelector<HTMLButtonElement>("[data-leave]")!.disabled).toBe(true);
+    expect(card.querySelector<HTMLButtonElement>("[data-listen]")!.disabled).toBe(false);
+    expect(card.querySelector(".chorus-room-reason")?.textContent).toContain("more room");
+    card.querySelector<HTMLButtonElement>("[data-find-room]")!.click();
+    expect(opts.makeRoom).toHaveBeenCalledExactlyOnceWith("evening-forest",parent);expect(opts.publish).not.toHaveBeenCalled();
+    opts.availability=()=>({allowed:true,reason:""});studio.setWorks([work([parent])]);
+    expect(card.querySelector<HTMLButtonElement>("[data-leave]")!.disabled).toBe(false);
+    expect(card.querySelector<HTMLButtonElement>("[data-find-room]")!.hidden).toBe(true);
+  });
 });

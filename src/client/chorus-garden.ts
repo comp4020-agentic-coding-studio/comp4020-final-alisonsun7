@@ -5,6 +5,8 @@ import type { ChorusPlace, ChorusWork } from "../shared/chorus.js";
 import { CHORUS_BPM, CHORUS_PLACES } from "../shared/chorus.js";
 import { FAMILIES, findSound } from "../shared/sounds.js";
 import { PLANET_PLACES, PLANET_RADIUS, planetDistance } from "../shared/planet.js";
+import { authorMark, liveChorusAnswers, visibleChorusSources, workSignature } from "../shared/chorus-signature.js";
+import type { AuthorMark, ChorusAnswer } from "../shared/chorus-signature.js";
 import { onPlanet } from "./planet-build.js";
 
 const TAU = Math.PI * 2;
@@ -21,10 +23,18 @@ const hash = (text: string): number => {
 };
 interface Slot {
   sourceId: string;
+  authorId: string;
+  mark: AuthorMark;
   branch: THREE.Group;
   leaf: THREE.Mesh;
   seed: THREE.Mesh;
   angle: number;
+}
+interface Answer extends ChorusAnswer {
+  curve: THREE.QuadraticBezierCurve3;
+  light: THREE.Mesh;
+  fromColor: THREE.Color;
+  toColor: THREE.Color;
 }
 interface Installation {
   group: THREE.Group;
@@ -39,8 +49,10 @@ interface Installation {
   canopy: THREE.Group[];
   score: THREE.InstancedMesh | null;
   arrival: THREE.Mesh | null;
+  answers: Answer[];
   work: ChorusWork | null;
   signature: string;
+  fingerprint: string | null;
   resources: { geometries: Set<THREE.BufferGeometry>; materials: Set<THREE.Material> };
 }
 
@@ -54,6 +66,9 @@ export interface ChorusGardenState {
   open: number;
   phase: number;
   focused: boolean;
+  signature: string | null;
+  marks: { sourceId: string; authorId: string; color: string; shape: AuthorMark["shape"] }[];
+  answers: ChorusAnswer[];
 }
 
 export class ChorusGarden {
@@ -71,13 +86,13 @@ export class ChorusGarden {
   setWorks(works: readonly ChorusWork[]): void {
     if (this.disposed) return;
     // A reordered SSE snapshot must choose precisely the same living work.
-    const ordered = [...works].filter(work => work.liveSources.length > 0)
+    const ordered = [...works].filter(work => work.liveSources.some(source => !source.removedAt))
       .sort((a, b) => b.lastAt.localeCompare(a.lastAt) || a.id.localeCompare(b.id));
     for (const placeId of CHORUS_PLACES) {
       const work = ordered.find(candidate => candidate.placeId === placeId) ?? null;
       const signature = work ? JSON.stringify([work.id, work.variant, work.duet,
         [...work.liveSources].sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id))
-          .map(source => [source.id, source.soundId, source.byId]), work.lastAt]) : "dormant";
+          .map(source => [source.id, source.soundId, source.byId, source.replyToId, source.removedAt]), work.lastAt]) : "dormant";
       if (this.installations.get(placeId)?.signature === signature) continue;
       this.install(placeId, work, signature);
     }
@@ -94,17 +109,21 @@ export class ChorusGarden {
   }
 
   /** A real mesh hit, with the same great-circle reach used by the world. */
-  pick(ray: THREE.Raycaster, visitor: { x: number; z: number }): { workId: string | null; placeId: ChorusPlace; distance: number } | null {
+  pick(ray: THREE.Raycaster, visitor: { x: number; z: number }): { workId: string | null; placeId: ChorusPlace; distance: number; sourceId?: string } | null {
     if (this.disposed) return null;
     this.root.updateMatrixWorld(true);
     for (const hit of ray.intersectObject(this.root, true)) {
       let ancestor: THREE.Object3D | null = hit.object;
-      while (ancestor && ancestor !== this.root && !ancestor.userData.placeId) ancestor = ancestor.parent;
+      let sourceId: string | undefined;
+      while (ancestor && ancestor !== this.root && !ancestor.userData.placeId) {
+        if (!sourceId && typeof ancestor.userData.sourceId === "string") sourceId = ancestor.userData.sourceId;
+        ancestor = ancestor.parent;
+      }
       const placeId = ancestor?.userData.placeId as ChorusPlace | undefined;
       if (!placeId || !CHORUS_PLACES.includes(placeId)) continue;
       const anchor = PLANET_PLACES.find(place => place.id === placeId)!;
       if (planetDistance(visitor, anchor) > 8) continue;
-      return { workId: this.installations.get(placeId)?.work?.id ?? null, placeId, distance: hit.distance };
+      return { workId: this.installations.get(placeId)?.work?.id ?? null, placeId, distance: hit.distance, ...(sourceId ? { sourceId } : {}) };
     }
     return null;
   }
@@ -123,7 +142,10 @@ export class ChorusGarden {
       duet: item.work?.duet ?? false, sourceIds: item.slots.map(slot => slot.sourceId),
       contributors: item.work?.contributors.map(person => person.id) ?? [],
       open: item.work?.duet ? 1 : 0, phase: this.phase,
-      focused: !!item.work && item.work.id === this.focused }));
+      focused: !!item.work && item.work.id === this.focused,
+      signature: item.fingerprint,
+      marks: item.slots.map(slot => ({ sourceId: slot.sourceId, authorId: slot.authorId, color: slot.mark.color, shape: slot.mark.shape })),
+      answers: item.answers.map(({ sourceId, parentId, fromAuthorId, toAuthorId }) => ({ sourceId, parentId, fromAuthorId, toAuthorId })) }));
   }
 
   frame(serverNow: number, reducedMotion = false): void {
@@ -135,7 +157,7 @@ export class ChorusGarden {
     for (const item of this.installations.values()) {
       const work = item.work, duet = !!work?.duet;
       const movement = reducedMotion || !work ? 0 : 1;
-      const seedPhase = work ? hash(work.id) % 997 / 997 * TAU : 0;
+      const seedPhase = item.fingerprint ? hash(item.fingerprint) % 997 / 997 * TAU : 0;
       const t = movement ? beats * Math.PI / 2 + seedPhase : seedPhase;
       const open = duet ? 1 : .32;
       const arrivalAge = work ? Math.max(0, serverNow - Date.parse(work.lastAt)) : Infinity;
@@ -143,6 +165,7 @@ export class ChorusGarden {
         workId: work?.id ?? null, placeId: item.group.userData.placeId,
         variant: work?.variant ?? null, duet, sourceIds: item.slots.map(slot => slot.sourceId),
         participants: work?.contributors.map(person => person.id) ?? [],
+        signature: item.fingerprint,
       };
       const haloMat = item.halo.material as THREE.MeshStandardMaterial;
       haloMat.emissiveIntensity = work ? .2 + (work.id === this.focused ? .45 : 0) : 0;
@@ -184,8 +207,20 @@ export class ChorusGarden {
         rib.rotation.y = rib.userData.restAngle + Math.sin(t / 3 + i) * .035 * movement;
         rib.rotation.z = Math.sin(t / 2 + i) * .035 * movement;
       }
+      for (let i = 0; i < item.answers.length; i++) {
+        const answer = item.answers[i];
+        // Each four-beat journey is a visible parent -> answer, rather than
+        // particles invented independently of the actual relationship. A late
+        // arrival gets the exact same phase; quiet preference never alters it.
+        const progress = movement ? ((beats / 4 - i * .35) % 1 + 1) % 1 : .65;
+        answer.light.position.copy(answer.curve.getPoint(progress));
+        answer.light.scale.setScalar(.8 + Math.sin(progress * Math.PI) * .65);
+        const m = answer.light.material as THREE.MeshStandardMaterial;
+        m.color.copy(answer.fromColor).lerp(answer.toColor, progress);
+        m.emissive.copy(m.color); m.emissiveIntensity = .6;
+      }
       if (item.score) {
-        const colour = new THREE.Color(), sourceColours = work!.liveSources.map(source => new THREE.Color(colourOf(source.soundId)));
+        const colour = new THREE.Color(), sourceColours = item.slots.map(slot => new THREE.Color(slot.mark.color));
         for (let i = 0; i < item.score.count; i++) {
           colour.copy(sourceColours[i % sourceColours.length]);
           // The whole floor, rather than just a tiny flower, gives a slow
@@ -211,8 +246,12 @@ export class ChorusGarden {
     // silently mutate the sculpture between explicit setWorks calls.
     const work: ChorusWork | null = sourceWork ? { ...sourceWork,
       sources: sourceWork.sources.map(source => ({ ...source })),
-      liveSources: sourceWork.liveSources.map(source => ({ ...source })),
+      liveSources: sourceWork.liveSources.filter(source => !source.removedAt).map(source => ({ ...source }))
+        .sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id)),
       contributors: sourceWork.contributors.map(person => ({ ...person })) } : null;
+    // Server projection remains authoritative. Defensively require its real
+    // live endpoints too, so a stale duet flag cannot keep a withdrawn form.
+    if (work) work.duet = work.duet && liveChorusAnswers(work).length > 0;
     const group = new THREE.Group(), body = new THREE.Group();
     group.name = `chorus-garden-${placeId}`; group.userData.placeId = placeId;
     const anchor = PLANET_PLACES.find(place => place.id === placeId)!;
@@ -265,20 +304,52 @@ export class ChorusGarden {
       // author or shared achievement before someone has actually published.
       const leaf = sphere(.17, green); leaf.position.set(.12, .27, 0); leaf.scale.set(1.6, .35, .75); leaf.rotation.z = -.4;
     }
-    const item: Installation = { group, body, halo, work, signature, slots: [], birds: [], rotors: [], sparks: [], ripples: [],
-      surround: null, canopy: [], score: null, arrival: null, resources };
-    const orderedSources = [...(work?.liveSources ?? [])].sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id)).slice(0, 6);
+    const fingerprint = work ? workSignature(work) : null;
+    const item: Installation = { group, body, halo, work, signature, fingerprint, slots: [], birds: [], rotors: [], sparks: [], ripples: [],
+      surround: null, canopy: [], score: null, arrival: null, answers: [], resources };
+    const orderedSources = work ? visibleChorusSources(work) : [];
+    const turn = fingerprint ? hash(fingerprint) % 997 / 997 * .45 : 0;
     for (let i = 0; i < orderedSources.length; i++) {
-      const source = orderedSources[i], angle = i / Math.max(3, orderedSources.length) * TAU;
+      const source = orderedSources[i], angle = i / Math.max(3, orderedSources.length) * TAU + turn, mark = authorMark(source.byId);
       const orbit = new THREE.Group(); orbit.rotation.y = angle; orbit.position.y = 1.15; body.add(orbit);
       const branch = new THREE.Group(); orbit.add(branch);
+      branch.userData.sourceId = source.id; branch.rotation.z = .33 + (work!.duet ? 1 : .32) * .75;
       stem(branch, .96, .025, wood);
       const colour = material(colourOf(source.soundId), true);
-      const leaf = sphere(.29, colour, branch); leaf.position.y = .8;
+      const geometry = mark.shape === "round" ? new THREE.SphereGeometry(.29, 12, 8)
+        : mark.shape === "diamond" ? new THREE.OctahedronGeometry(.34, 0)
+          : mark.shape === "triangle" ? new THREE.ConeGeometry(.32, .52, 3)
+            : new THREE.SphereGeometry(.29, 9, 6);
+      if (mark.shape === "petal") geometry.scale(1.6, 1, .8);
+      if (mark.shape === "triangle") geometry.rotateZ(Math.PI / 2);
+      const leaf = add(geometry, material(mark.color), branch); leaf.position.y = .8;
       leaf.scale.set(1, .32, .6); leaf.rotation.z = -.25;
+      leaf.name = "chorus-author-mark"; leaf.userData = { sourceId: source.id, authorId: source.byId, color: mark.color, shape: mark.shape };
       const seed = sphere(.11, colour, branch); seed.position.set(.06, .72, .16);
       seed.name = "chorus-source-pendant"; seed.userData.sourceId = source.id; seed.userData.authorId = source.byId;
-      item.slots.push({ sourceId: source.id, branch, seed, leaf, angle });
+      item.slots.push({ sourceId: source.id, authorId: source.byId, mark, branch, seed, leaf, angle });
+    }
+    if (work?.duet) {
+      body.updateWorldMatrix(true, true);
+      const inverseBody = body.matrixWorld.clone().invert();
+      for (const answer of liveChorusAnswers(work)) {
+        const parent = item.slots.find(slot => slot.sourceId === answer.parentId), child = item.slots.find(slot => slot.sourceId === answer.sourceId);
+        // At most six visible ingredients. A relation outside this display
+        // budget remains in the work record and is never fabricated as a slot.
+        if (!parent || !child) continue;
+        const start = parent.seed.getWorldPosition(new THREE.Vector3()).applyMatrix4(inverseBody);
+        const end = child.seed.getWorldPosition(new THREE.Vector3()).applyMatrix4(inverseBody);
+        const crest = start.clone().add(end).multiplyScalar(.5); crest.y = Math.max(start.y, end.y) + .6;
+        const curve = new THREE.QuadraticBezierCurve3(start, crest, end);
+        const pathMaterial = new THREE.MeshBasicMaterial({ color: authorMark(answer.toAuthorId).color, transparent: true,
+          opacity: .62, depthWrite: false }); resources.materials.add(pathMaterial);
+        const path = add(new THREE.TubeGeometry(curve, 18, .018, 4, false), pathMaterial);
+        path.name = "chorus-answer-path"; path.userData = { ...answer }; path.castShadow = false;
+        const light = sphere(.085, material(authorMark(answer.toAuthorId).color, true));
+        light.name = "chorus-answer-light"; light.userData = { ...answer }; light.castShadow = false;
+        item.answers.push({ ...answer, curve, light, fromColor: new THREE.Color(authorMark(answer.fromAuthorId).color),
+          toColor: new THREE.Color(authorMark(answer.toAuthorId).color) });
+      }
     }
     if (work?.variant === "habitat") {
       const water = material(0x83b5ad, true);
@@ -288,7 +359,7 @@ export class ChorusGarden {
         const bird = new THREE.Group(); bird.name = "chorus-paper-bird"; body.add(bird); item.birds.push(bird);
         bird.scale.setScalar(1.5);
         for (const side of [-1, 1]) {
-          const wing = add(new THREE.ConeGeometry(.13, .38, 3), i % 2 ? paper : warm, bird);
+          const wing = add(new THREE.ConeGeometry(.13, .38, 3), i % 2 ? material(authorMark(orderedSources[i % orderedSources.length].byId).color) : paper, bird);
           wing.geometry.rotateZ(-side * Math.PI / 2); wing.position.x = side * .13; wing.scale.z = .2;
         }
       }
@@ -347,12 +418,13 @@ export class ChorusGarden {
       const pose = new THREE.Object3D(), colour = new THREE.Color();
       for (let i = 0; i < score.count; i++) {
         pose.rotation.y = i / score.count * TAU; pose.scale.setScalar(width); pose.updateMatrix(); score.setMatrixAt(i, pose.matrix);
-        score.setColorAt(i, colour.set(colourOf(orderedSources[i % orderedSources.length].soundId)));
+        score.setColorAt(i, colour.set(authorMark(orderedSources[i % orderedSources.length].byId).color));
       }
       if (work.variant === "habitat") {
         const leafGeometry = new THREE.SphereGeometry(.33, 9, 5); leafGeometry.scale(1.85, .11, .75); resources.geometries.add(leafGeometry);
-        for (let i = 0; i < 4; i++) {
-          const rib = new THREE.Group(); rib.name = "chorus-canopy-rib"; rib.userData.restAngle = i / 4 * TAU + Math.PI / 4;
+        const ribs = Math.min(6, Math.max(3, orderedSources.length + 2));
+        for (let i = 0; i < ribs; i++) {
+          const rib = new THREE.Group(); rib.name = "chorus-canopy-rib"; rib.userData.restAngle = i / ribs * TAU + Math.PI / 4 + turn;
           rib.rotation.y = rib.userData.restAngle; surround.add(rib); item.canopy.push(rib);
           const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 1.55, 0), new THREE.Vector3(.7, 2.65, 0),
             new THREE.Vector3(1.55, 3.1, 0), new THREE.Vector3(2.2, 2.85, 0)]);
@@ -369,15 +441,17 @@ export class ChorusGarden {
         const garland = new THREE.Group(); garland.name = "chorus-answer-garland"; surround.add(garland);
         const cord = new THREE.CatmullRomCurve3([new THREE.Vector3(-2.3, 2.75, -1.1), new THREE.Vector3(0, 2.28, -1.3), new THREE.Vector3(2.3, 2.75, -1.1)]);
         add(new THREE.TubeGeometry(cord, 24, .018, 4, false), dark, garland);
-        for (let i = 0; i < 7; i++) {
-          const point = cord.getPoint((i + 1) / 8), source = orderedSources[i % orderedSources.length];
-          const paperColour = material(colourOf(source.soundId), work.variant === "lantern");
+        for (let i = 0; i < orderedSources.length; i++) {
+          const point = cord.getPoint((i + 1) / (orderedSources.length + 1)), source = orderedSources[i];
+          const paperColour = material(authorMark(source.byId).color, work.variant === "lantern");
           if (work.variant === "ensemble") {
             const flag = add(new THREE.ConeGeometry(.22, .44, 3), paperColour, garland); flag.position.copy(point).add(new THREE.Vector3(0, -.2, 0));
             flag.rotation.z = Math.PI; flag.scale.z = .12; flag.name = "chorus-answer-pennant";
+            flag.userData = { sourceId: source.id, authorId: source.byId };
           } else {
             const lantern = add(new THREE.IcosahedronGeometry(.22, 0), paperColour, garland);
             lantern.position.copy(point).add(new THREE.Vector3(0, -.23, 0)); lantern.scale.set(.8, 1.1, .8); lantern.name = "chorus-answer-lantern";
+            lantern.userData = { sourceId: source.id, authorId: source.byId };
             stem(garland, .22, .013, dark).position.copy(point).add(new THREE.Vector3(0, -.22, 0));
           }
         }

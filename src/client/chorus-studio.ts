@@ -2,6 +2,8 @@ import { chorusPlaceAt, recommendedSounds, VARIANT_COPY, type ChorusWork } from 
 import { PLANET_PLACES, planetDistance } from "../shared/planet.js";
 import { findSound } from "../shared/sounds.js";
 import type { Person, SoundReference } from "../shared/protocol.js";
+import { choiceConsequence, nextSource, soundName, workNextStep, workResult } from "../shared/chorus-guidance.js";
+import { authorMark } from "../shared/chorus-signature.js";
 
 interface Options {
   at: () => { x: number; z: number };
@@ -21,6 +23,9 @@ interface Options {
   sound: (on: boolean) => void;
   listening?: () => boolean;
   minimise?: () => void;
+  invite?: (work: ChorusWork) => void;
+  availability?: (id: string) => { allowed: boolean; reason: string };
+  makeRoom?: (id: string, parent: SoundReference | null) => void;
   focus: (id: string | null) => void;
 }
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] => {
@@ -29,6 +34,18 @@ const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, clas
 const action = (text: string, run: () => void, primary = false): HTMLButtonElement => {
   const b = node("button", text, primary ? "btn primary" : "btn ghost");b.type = "button";b.onclick = run;return b;
 };
+function author(id: string, name: string): HTMLElement {
+  const wrapper = node("span", undefined, "chorus-source-author"), signature = authorMark(id);
+  const mark = node("i", undefined, "chorus-author-mark");mark.setAttribute("aria-hidden", "true");mark.dataset.shape = signature.shape;mark.style.setProperty("--author-color", signature.color);
+  wrapper.dataset.author = id;wrapper.title = `${name}'s ${signature.label} mark`;wrapper.append(mark, document.createTextNode(name));return wrapper;
+}
+function authors(work: ChorusWork): HTMLElement {
+  const line = node("p", "Made by ", "chorus-authors");
+  work.contributors.forEach((person, index) => {
+    if (index) line.append(document.createTextNode(" & "));
+    const label = author(person.id, person.name);label.dataset.active = String(work.liveSources.some(source => source.byId === person.id));line.append(label);
+  });return line;
+}
 function trap(dialog: HTMLDialogElement): void {
   dialog.addEventListener("keydown", e => {
     if (e.key !== "Tab") return;
@@ -68,8 +85,8 @@ export class ChorusStudio {
     this.journal.id = "chorus-journal";this.journal.setAttribute("aria-labelledby", "chorus-journal-title");
     const journalHead = node("div", undefined, "chorus-dialog-heading"), title = node("h2", "What we left here");title.id = "chorus-journal-title";
     journalHead.append(title, action("Back to the world", () => this.journal.close()));
-    const beginning=action("Begin a new work here",()=>{this.journal.close();this.opts.create();});beginning.id="chorus-new-work";
-    this.journal.append(node("p", "OUR LITTLE WORKS", "planet-kicker"), journalHead, node("p", "Every leaf has a source. Every answer keeps its author. Answer a saved ingredient to continue its work; the most recently changed work takes the stage."),beginning, this.records);
+    const beginning=action("Begin a new work here",()=>{this.journal.addEventListener("close",()=>this.opts.create(),{once:true});this.journal.close();});beginning.id="chorus-new-work";
+    this.journal.append(node("p", "OUR LITTLE WORKS", "planet-kicker"), journalHead, node("p", "Find your mark beside each sound and on its leaf in the world. Answer a live sound to keep its work growing; the most recently changed work takes the stage."),beginning, this.records);
     this.journal.addEventListener("close", () => { this.opts.stop();this.opts.resume(); });
     this.welcome.id = "chorus-welcome";this.welcome.setAttribute("aria-labelledby", "chorus-welcome-title");
     const welcomeTitle = node("h2", "A place that remembers your answer.");welcomeTitle.id = "chorus-welcome-title";
@@ -97,7 +114,7 @@ export class ChorusStudio {
     const inCafe = planetDistance(this.opts.at(), cafe) <= 8;
     const place = chorusPlaceAt(this.opts.at()) ?? "green";
     this.title.textContent = parent ? "What would you answer?" : "What will you bring?";
-    this.context.textContent = parent ? `Answering ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"}. Your choice will become another part of this work.` : inCafe ? "Make this café your kind of company. Coffee brings steam, conversation warms the tables, music sets the record spinning. Listen is private; Leave it here is shared." : "Try one of three ingredients. Listen is only for you; Leave it here grows the shared work.";
+    this.context.textContent = parent ? `Answering ${parent.by}'s ${soundName(parent)}. Listen privately, then choose the change you want to bring. Your answer keeps both names.` : inCafe ? "Make this café your kind of company. Coffee brings steam, conversation warms the tables, music sets the record spinning. Listen is private; Leave it here is shared." : "Listen to one ingredient, then leave the one you like. A glowing petal will mark your sound; a friend's answer can open it into a shared place.";
     this.renderChoices(inCafe && !parent ? ["espresso", "cafe-chatter", "cafe-music"] : recommendedSounds(parent, place));this.opts.pause();this.element.showModal();
   }
   close(): void { this.viewRevision++;this.previewRevision++;this.opts.stop();this.element.close(); }
@@ -117,15 +134,47 @@ export class ChorusStudio {
       const leave = action("Leave it here", () => {
         if (this.publishing) return;const view = this.viewRevision;this.publishing = true;leave.disabled = true;this.feedback.textContent = "Bringing your ingredient into the world…";
         void this.opts.publish(id).then(error => {
-          this.publishing = false;leave.disabled = false;
+          this.publishing = false;
+          for (const current of this.choices.querySelectorAll<HTMLElement>("[data-sound]")) this.updateAvailability(current, current.dataset.sound!);
           if (view !== this.viewRevision || !this.element.open) return;
           if (error) this.feedback.textContent = error;else this.close();
         });
       }, true);leave.dataset.leave = id;leave.setAttribute("aria-label", `Leave ${s.label} here`);
-      card.append(symbol, title, node("p", copy), listen, leave);return card;
+      const work = this.parent ? this.works.find(work => work.sources.some(source => source.id === this.parent!.id)) : undefined;
+      const cafe = ["espresso", "cafe-chatter", "cafe-music"].includes(id) && !this.parent;
+      card.append(symbol, title, node("p", copy));
+      if (!cafe) card.append(node("p", choiceConsequence(id, this.parent, work, this.opts.you()?.id), "chorus-choice-outcome"));
+      card.append(listen, leave);
+      if (this.opts.makeRoom) {
+        const reason = node("p", undefined, "chorus-room-reason");
+        const find = action("Find a nearby spot", () => this.opts.makeRoom!(id, this.parent));find.dataset.findRoom=id;find.classList.add("chorus-find-room");find.setAttribute("aria-label",`Find a nearby spot for ${s.label}`);
+        card.append(reason, find);
+      }
+      this.updateAvailability(card, id);return card;
     }));
   }
-  setWorks(works: readonly ChorusWork[]): void { this.works = [...works];if(this.focusId&&!works.some(work=>work.liveSources.some(source=>source.id===this.focusId))){this.focusId=null;this.opts.focus(null);}this.signature = "";this.frame();if (this.journal.open) this.renderRecords(); }
+  private updateAvailability(card: HTMLElement, id: string): void {
+    const availability = this.opts.makeRoom ? this.opts.availability?.(id) : undefined;
+    const blocked = availability?.allowed === false;
+    const leave = card.querySelector<HTMLButtonElement>("[data-leave]");if(leave)leave.disabled=this.publishing || blocked;
+    const reason = card.querySelector<HTMLElement>(".chorus-room-reason");if(reason){reason.hidden=!blocked;reason.textContent=blocked?availability!.reason:"";}
+    const find = card.querySelector<HTMLButtonElement>("[data-find-room]");if(find){find.hidden=!blocked;find.disabled=this.publishing;}
+  }
+  setWorks(works: readonly ChorusWork[]): void {
+    this.works = [...works];
+    if(this.focusId&&!works.some(work=>work.liveSources.some(source=>source.id===this.focusId))){this.focusId=null;this.opts.focus(null);}
+    this.signature = "";this.frame();if (this.journal.open) this.renderRecords();
+    // Remote additions/withdrawals can change a forecast while someone listens.
+    // Update text in place: do not stop their private preview or replace focus.
+    if (this.element.open) {
+      const work = this.parent ? this.works.find(work=>work.sources.some(source=>source.id===this.parent!.id)) : undefined;
+      for (const card of this.choices.querySelectorAll<HTMLElement>("[data-sound]")) {
+        const outcome = card.querySelector(".chorus-choice-outcome");
+        if (outcome) outcome.textContent = choiceConsequence(card.dataset.sound!, this.parent, work, this.opts.you()?.id);
+        this.updateAvailability(card, card.dataset.sound!);
+      }
+    }
+  }
   showJournal(id?: string): void { this.renderRecords();this.opts.pause();this.journal.showModal();if(id)this.records.querySelector<HTMLElement>(`[data-work="${CSS.escape(id)}"]`)?.scrollIntoView({block:"start"}); }
   frame(): void {
     const placeId = chorusPlaceAt(this.opts.at());this.dock.hidden = !placeId || !!document.querySelector("dialog:modal") || !document.getElementById("planet-chat")?.hidden;
@@ -134,7 +183,7 @@ export class ChorusStudio {
     // Match the sculpture's canonical latest work. Looking at an older record
     // is local; only an accepted contribution changes which work takes stage.
     const work = here[0];
-    const signature = JSON.stringify([placeId, work?.id, work?.lastAt, work?.duet, this.opts.ready(), this.focusId, this.collapsed, this.opts.listening?.()]);
+    const signature = JSON.stringify([placeId, work?.id, work?.lastAt, work?.duet, this.opts.you()?.id, this.opts.ready(), this.focusId, this.collapsed, this.opts.listening?.()]);
     if (signature === this.signature) return;this.signature = signature;
     this.dock.dataset.work = work?.id ?? "";this.dock.dataset.variant = work?.variant ?? "dormant";this.dock.dataset.duet = String(work?.duet ?? false);
     this.dock.dataset.collapsed = String(this.collapsed);
@@ -142,19 +191,17 @@ export class ChorusStudio {
       const reopen = action(work ? `Open ${VARIANT_COPY[work.variant].title}` : "Make a little sound", () => {this.collapsed = false;this.signature = "";this.frame();});
       reopen.id = "chorus-reopen";reopen.setAttribute("aria-expanded", "false");this.replaceDock(reopen);return;
     }
-    const place = PLANET_PLACES.find(p => p.id === placeId)!, carrier = placeId === "green" ? "THE CHORUS TREE" : placeId === "stage" ? "THE BEAT FLOWER" : "THE QUIET LIGHTS";
+    const carrier = placeId === "green" ? "THE CHORUS TREE" : placeId === "stage" ? "THE BEAT FLOWER" : "THE QUIET LIGHTS";
     const title = node("strong", work ? VARIANT_COPY[work.variant].title : (placeId === "green" ? "One sound can start this." : placeId === "stage" ? "Leave room for a rhythm." : "A softer kind of together."));
-    const answer = work && [...work.liveSources].reverse().find(s => s.replyToId && work.sources.some(p => p.id === s.replyToId));
-    const parent = answer && work?.sources.find(s => s.id === answer.replyToId);
-    const effect = work?.variant === "habitat" ? "The canopy opened; paper birds follow the water." : work?.variant === "ensemble" ? "The beat flower opened; low harmony joins next bar." : "The lantern opened; light travels between your petals.";
-    const cause = answer && parent ? `${answer.by} answered ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"} with ${findSound(answer.soundId)?.label ?? "a sound"}. ${work!.duet ? effect : "A new leaf is ready. A friend's answer opens the shared form."}` : null;
-    const detail = node("p", cause ?? (work ? VARIANT_COPY[work.variant][work.duet ? "together" : "solo"] : `${place.title}: choose an ingredient, then invite a friend to answer.`));
+    const detail = node("p", work ? workResult(work) : "Listen is just for you. Leave a sound to grow your first petal. Answering a different friend's live sound opens the shared form.");
     detail.id = "chorus-cause";detail.setAttribute("role", "status");
-    const authors = node("p", work ? `Made by ${work.contributors.map(p => p.name).join(" & ")}${work.duet ? " · opened together" : " · ready for another answer"}` : "Your work stays here when you leave.", "chorus-authors");
-    const source = work && ([...work.liveSources].reverse().find(s => s.byId !== this.opts.you()?.id) ?? work.liveSources[0]);
-    const primary = action(source ? `Answer ${source.by}` : "Make a first sound", () => source ? this.opts.respond(source) : this.opts.create(), true);primary.id = "chorus-primary";primary.disabled = !this.opts.ready();
+    const credits = work ? authors(work) : node("p", "Your work stays here when you leave.", "chorus-authors");
+    const step = node("p", workNextStep(work, this.opts.you()?.id), "chorus-step");step.id = "chorus-step";
+    const source = nextSource(work, this.opts.you()?.id);
+    const primary = action(source ? (source.byId === this.opts.you()?.id ? "Add another layer" : `Answer ${source.by}`) : "Make a first sound", () => source ? this.opts.respond(source) : this.opts.create(), true);primary.id = "chorus-primary";primary.disabled = !this.opts.ready();
     const journal = action("Our works", () => this.showJournal());journal.id = "chorus-our-works";
     const buttons = node("div", undefined, "chorus-dock-actions");buttons.append(primary, journal);
+    if (work && this.opts.invite) {const invite = action("Invite a friend", () => this.opts.invite!(work));invite.id = "chorus-invite";buttons.append(invite);}
     if (source) { const focus = action(this.opts.listening?.() === false ? "Enable listening" : this.focusId ? "Hear the whole place" : "Listen closely", () => { if(this.opts.listening?.() === false)this.opts.sound(true);this.focusId = this.focusId ? null : source.id;this.opts.focus(this.focusId);this.signature = ""; });focus.setAttribute("aria-pressed", String(!!this.focusId));focus.id = "chorus-focus";buttons.append(focus); }
     const head = node("div", undefined, "chorus-dock-heading"), close = action("×", () => {this.opts.minimise?.();this.collapsed = true;this.signature = "";this.frame();this.dock.querySelector<HTMLButtonElement>("button")?.focus();});
     close.id = "chorus-minimise";close.setAttribute("aria-label", "Minimise work panel");close.title = "Minimise work panel";head.append(node("span", carrier, "planet-kicker"), close);
@@ -162,7 +209,7 @@ export class ChorusStudio {
     this.explanationOpen = this.dock.querySelector("details")?.open ?? this.explanationOpen;
     explanation.open = this.explanationOpen;explanation.ontoggle = () => {this.explanationOpen = explanation.open;};
     explanation.append(node("summary", "What changed?"), detail);
-    this.replaceDock(head, title, authors, explanation, buttons);
+    this.replaceDock(head, title, step, credits, explanation, buttons);
   }
   private replaceDock(...children: HTMLElement[]): void {
     const active = document.activeElement, focused = active instanceof HTMLElement && this.dock.contains(active) ? active.id : null;
@@ -173,13 +220,14 @@ export class ChorusStudio {
     const focus = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.recordAction : undefined;
     this.records.replaceChildren(...this.works.map(work => {
       const card = node("article", undefined, "chorus-record");card.dataset.work = work.id;card.dataset.duet = String(work.duet);
-      card.append(node("span", `${PLANET_PLACES.find(p => p.id === work.placeId)!.title} · ${work.liveSources.length ? "still growing" : "resting"}`, "planet-kicker"), node("h3", work.title), node("p", `Made by ${work.contributors.map(p => p.name).join(" & ")}`));
+      card.append(node("span", `${PLANET_PLACES.find(p => p.id === work.placeId)!.title} · ${work.liveSources.length ? work.duet ? "opened together" : "ready for a friend" : "resting"}`, "planet-kicker"), node("h3", work.title), authors(work), node("p", `${VARIANT_COPY[work.variant].title}. ${workResult(work)}`, "chorus-record-result"));
       const list = node("ol");
       for (const source of work.sources) {
         const parent = work.sources.find(s => s.id === source.replyToId), item = node("li");item.dataset.source = source.id;
-        const line = node("p", `${source.by} brought ${findSound(source.soundId)?.label ?? "a sound"}${parent ? ` → answering ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"}` : " → began this work"}${source.removedAt ? " · withdrawn, remembered here" : ""}`);
+        const line = node("p");line.append(author(source.byId, source.by), document.createTextNode(` brought ${soundName(source)}${parent ? ` → answering ${parent.by}'s ${soundName(parent)}${parent.removedAt ? " (now withdrawn)" : ""}` : " → began this work"}`));
+        const state = node("span", source.removedAt ? "Withdrawn · remembered here" : "Live · shaping this place", "chorus-source-state");state.dataset.live = String(!source.removedAt);
         const time = node("time", new Date(source.at).toLocaleString("en", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }));time.dateTime = source.at;
-        item.append(line, time);
+        item.append(line, state, time);
         if (!source.removedAt) {
           const reply = action(`Answer ${source.by}`, () => { this.journal.addEventListener("close",()=>this.opts.respond(source),{once:true});this.journal.close(); });reply.dataset.recordAction = `reply:${source.id}`;reply.disabled = !this.opts.ready();item.append(reply);
           const remove = action("Withdraw this sound", () => this.opts.remove(source));remove.disabled = !this.opts.ready() || planetDistance(source, this.opts.at()) > 4;remove.dataset.recordAction = `remove:${source.id}`;item.append(remove);
@@ -187,7 +235,9 @@ export class ChorusStudio {
         list.append(item);
       }
       const visit = action(`Visit ${PLANET_PLACES.find(p=>p.id===work.placeId)!.title}`, () => { this.journal.close();this.opts.visit(work); });visit.dataset.recordAction = `visit:${work.id}`;
-      card.append(node("p", work.liveSources.length ? VARIANT_COPY[work.variant][work.duet ? "together" : "solo"] : "All ingredients have been withdrawn. This record remembers who began and answered; the sculpture is resting."), list, visit);return card;
+      card.append(list, visit);
+      if (work.liveSources.length && this.opts.invite) {const invite = action("Invite a friend to this work", () => this.opts.invite!(work));invite.dataset.recordAction = `invite:${work.id}`;card.append(invite);}
+      return card;
     }));
     if (!this.works.length) this.records.append(node("p", "Your first ingredient will begin a work here. Nothing is pre-filled: this place is waiting for you."));
     if (focus) (this.records.querySelector<HTMLElement>(`[data-record-action="${CSS.escape(focus)}"]`) ?? this.journal.querySelector<HTMLButtonElement>("button"))?.focus();
