@@ -2517,3 +2517,12 @@ h3 {
 }
 
 @media(min-width:621px) { .planet-stage:has(.planet-restroom-card:not([hidden])) .planet-talk { right:390px;bottom:24px; } }
+
+/* Outside the work areas, sharing needs its own touch lane above locomotion. */
+.planet-stage:has(.chorus-dock:not([hidden]))>.planet-place { display:none; }
+@media(max-width:620px) {
+ .planet-page .planet-place { top:116px;bottom:auto;left:12px;right:auto;width:174px;min-height:44px; }
+}
+
+.planet-notice { pointer-events:none; }
+@media(max-width:620px) { .planet-notice { top:174px; } }

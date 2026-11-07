@@ -25,3 +25,10 @@ it("also reopens a dismissed source by selecting its actual world pin",()=>{
   expect(document.getElementById("planet-nearby-sound")!.hidden).toBe(false);
   panel.setAll([]);expect(document.getElementById("planet-nearby-reopen")!.hidden).toBe(true);
 });
+
+it("does not reopen a dismissed panel when a friend's new sound becomes the nearest source",()=>{
+  panel.setAll([{...source,x:1}]);document.getElementById("planet-nearby-close")!.click();
+  panel.setAll([{...source,x:1},{...source,id:"answer",soundId:"cafe-chatter",by:"Bo",byId:"bo",x:0}]);
+  expect(document.getElementById("planet-nearby-sound")!.hidden).toBe(true);
+  expect(document.getElementById("planet-nearby-reopen")!.hidden).toBe(false);
+});

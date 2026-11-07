@@ -20,6 +20,7 @@ interface Options {
   closeDraft: () => void;
   sound: (on: boolean) => void;
   listening?: () => boolean;
+  minimise?: () => void;
   focus: (id: string | null) => void;
 }
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] => {
@@ -155,7 +156,7 @@ export class ChorusStudio {
     const journal = action("Our works", () => this.showJournal());journal.id = "chorus-our-works";
     const buttons = node("div", undefined, "chorus-dock-actions");buttons.append(primary, journal);
     if (source) { const focus = action(this.opts.listening?.() === false ? "Enable listening" : this.focusId ? "Hear the whole place" : "Listen closely", () => { if(this.opts.listening?.() === false)this.opts.sound(true);this.focusId = this.focusId ? null : source.id;this.opts.focus(this.focusId);this.signature = ""; });focus.setAttribute("aria-pressed", String(!!this.focusId));focus.id = "chorus-focus";buttons.append(focus); }
-    const head = node("div", undefined, "chorus-dock-heading"), close = action("×", () => {this.collapsed = true;this.signature = "";this.frame();this.dock.querySelector<HTMLButtonElement>("button")?.focus();});
+    const head = node("div", undefined, "chorus-dock-heading"), close = action("×", () => {this.opts.minimise?.();this.collapsed = true;this.signature = "";this.frame();this.dock.querySelector<HTMLButtonElement>("button")?.focus();});
     close.id = "chorus-minimise";close.setAttribute("aria-label", "Minimise work panel");close.title = "Minimise work panel";head.append(node("span", carrier, "planet-kicker"), close);
     const explanation = node("details", undefined, "chorus-explanation");
     this.explanationOpen = this.dock.querySelector("details")?.open ?? this.explanationOpen;

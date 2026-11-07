@@ -320,6 +320,7 @@ catch {
 const library = new SoundLibrary({ zone: () => ({ id: currentArea.id, title: currentArea.title }), listen: id => audio.preview(id), stop: () => audio.stopPreview(), leave: id => leaveSound(id), cancelReply: () => {draftRevision++; reply = null; operation = null; library.setReply(null); }, close: ()=>{draftRevision++;restore();} });
 stage.append(library.element);
 const studio = new ChorusStudio(stage, {
+    minimise: () => soundInteractions?.dismiss(),
     at: () => here, you: () => snapshot.you, ready: () => boot.joined && connected,
     preview: id => audio.preview(id), stop: () => audio.stopPreview(), publish: id => leaveSound(id),
     respond: source => startReply(source), create: () => {cancelReply();openLibrary();},

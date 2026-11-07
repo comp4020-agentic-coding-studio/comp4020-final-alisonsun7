@@ -15,7 +15,7 @@ export class PlanetSoundInteractions {
   private sounds: PlacedSound[] = [];
   private selected: string | null = null;
   private current: PlacedSound | null = null;
-  private dismissed = new Set<string>();
+  private dismissed = false;
   private reopen = document.createElement("button");
   private pins = new Map<string, HTMLButtonElement>();
   private layer = document.createElement("div");
@@ -46,9 +46,9 @@ export class PlanetSoundInteractions {
     actions.append(this.answer, this.conversation, this.remove);
     this.response.className = "planet-sound-response";
     const close = document.createElement("button");close.type = "button";close.id = "planet-nearby-close";close.className = "planet-card-close";close.textContent = "×";close.setAttribute("aria-label", "Close nearby sound panel");
-    close.onclick = () => {if(this.current)this.dismissed.add(this.current.id);this.last = -Infinity;this.frame();this.reopen.focus();};
+    close.onclick = () => {this.dismissed = true;this.last = -Infinity;this.frame();this.reopen.focus();};
     this.reopen.type = "button";this.reopen.id = "planet-nearby-reopen";this.reopen.className = "planet-nearby-reopen";this.reopen.hidden = true;
-    this.reopen.onclick = () => {if(this.current)this.dismissed.delete(this.current.id);this.last = -Infinity;this.frame();this.answer.focus();};
+    this.reopen.onclick = () => {this.dismissed = false;this.last = -Infinity;this.frame();this.answer.focus();};
     this.card.append(kicker, close, this.title, this.by, this.response, actions);
     this.host.append(this.layer, this.card, this.reopen);
   }
@@ -59,6 +59,7 @@ export class PlanetSoundInteractions {
     this.last = -Infinity;
     this.frame();
   }
+  dismiss(): void {this.dismissed = true;this.last = -Infinity;this.frame();}
   respondNearest(): boolean {
     if (!this.current || this.card.hidden || !this.opts.available() || document.querySelector("dialog:modal") || !document.getElementById("planet-chat")?.hidden) return false;
     this.opts.respond(this.current);return true;
@@ -71,9 +72,9 @@ export class PlanetSoundInteractions {
     const at = this.opts.at(), ordered = [...this.sounds].sort((a, b) => planetDistance(at, a) - planetDistance(at, b) || a.at.localeCompare(b.at) || a.id.localeCompare(b.id));
     const selected = ordered.find(s => s.id === this.selected && planetDistance(at, s) <= 18);
     this.current = selected ?? ordered.find(s => planetDistance(at, s) <= 4) ?? null;
-    for(const id of this.dismissed) if(!this.sounds.some(s=>s.id===id && planetDistance(at,s)<=18))this.dismissed.delete(id);
-    this.card.hidden = !this.current || this.dismissed.has(this.current.id);
-    this.reopen.hidden = !this.current || !this.dismissed.has(this.current.id);
+    if(!this.current)this.dismissed = false;
+    this.card.hidden = !this.current || this.dismissed;
+    this.reopen.hidden = !this.current || !this.dismissed;
     if(this.current)this.reopen.textContent = `Open ${findSound(this.current.soundId)!.label}`;
     if (this.current) {
       const s = this.current, distance = planetDistance(at, s), replies = this.sounds.filter(child => child.replyToId === s.id || child.replyTo?.id === s.id).length;
@@ -106,7 +107,7 @@ export class PlanetSoundInteractions {
         name.textContent = findSound(s.soundId)!.label;author.textContent = "by " + s.by;
         const leader = document.createElement("i");leader.className = "planet-pin-leader";leader.setAttribute("aria-hidden","true");
         pin.append(name, author, leader);
-        pin.onclick = () => { this.selected = s.id;this.dismissed.delete(s.id);this.last = -Infinity;this.frame(); };
+        pin.onclick = () => { this.selected = s.id;this.dismissed = false;this.last = -Infinity;this.frame(); };
         this.pins.set(s.id, pin);this.layer.append(pin);
       }
       pin.hidden = false;pin.setAttribute("aria-pressed", String(this.current?.id === s.id));

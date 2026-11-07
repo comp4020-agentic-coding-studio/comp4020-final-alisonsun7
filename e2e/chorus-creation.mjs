@@ -175,8 +175,27 @@ async function readingArt() {
   check(errors.length === 0, "the targeted real reading flow preserves all existing sources and has no browser errors", errors);
 }
 
+// This suite used to depend on a previous manual fixture. Prepare one real
+// persistent source through the public API when the dedicated world is empty;
+// no direct DB edits, historical-user claims or production-world writes.
+async function prepareReadingFixture() {
+  const html = await (await fetch(base + "/planet")).text();
+  const before = JSON.parse(html.match(/<script\b[^>]*\bid="planet-boot"[^>]*>([\s\S]*?)<\/script>/i)[1]).snapshot;
+  if(before.sounds.some(source => source.soundId === "evening-forest" && source.z > 8 && source.x < -8))return;
+  const joined = await fetch(base + "/join", {method:"POST", headers:{accept:"application/json","content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({nickname:"Fixture Bird",avatar:"cat"})});
+  assert.ok(joined.ok);const cookie=joined.headers.get("set-cookie").split(";")[0], controller=new AbortController();
+  const stream=await fetch(base+"/api/stream?scene=planet&mode=weekday",{headers:{cookie},signal:controller.signal});
+  try {
+    await stream.body.getReader().read();
+    const post=async(path,data)=>await (await fetch(`${base}/api/sessions/${before.sessionId}/${path}`,{method:"POST",headers:{cookie,"content-type":"application/json"},body:JSON.stringify(data)})).json();
+    assert.ok((await post("move",{x:-11.05,z:9.78,yaw:0})).ok);
+    const result=await post("sounds",{soundId:"evening-forest",operationId:crypto.randomUUID()});assert.ok(result.ok,JSON.stringify(result));
+    console.log("fixture  persistent Reading Nook bird prepared through public API: "+result.sound.id);
+  } finally {controller.abort();}
+}
 async function run() {
   if (process.env.CHORUS_READING_ART_ONLY === "1") return readingArt();
+  await prepareReadingFixture();
   const ada = await person("Creation Ada", "cat", true), bo = await person("Creation Bo", "dog", false);
   const a = ada.page, b = bo.page;
   // The friends choose two nearby spots through real controls, rather than
@@ -424,7 +443,7 @@ async function run() {
   await closeDialog(b, "#chorus-journal");
 
   const originalBird = before.sounds.find(source => source.soundId === "evening-forest");
-  assert.ok(originalBird, "This scratch fixture retains its real historical Reading Nook bird sound");
+  assert.ok(originalBird, "The scratch fixture retains its persistent Reading Nook bird sound");
   await journal(a, originalBird.id);
   const travelPosts = ada.posts, farFrom = await at(a);
   await a.locator(`#chorus-journal [data-record-action="reply:${originalBird.id}"]`).click();

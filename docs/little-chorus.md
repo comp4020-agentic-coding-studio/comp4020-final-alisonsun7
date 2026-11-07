@@ -242,3 +242,41 @@ browser success and server persistence do not establish pleasant music, a
 newcomer's understanding, voluntary second combinations, physical-phone
 performance or a real next-day return. Those remaining judgements and the
 [author-review writing packet](submission/README.md) stay explicit.
+
+
+## Neighbours within reach (ADR 027)
+
+The current revision restores scene-level actions that were previously buried
+in Places & friends. **Talk nearby** is available in the world (keyboard **T**);
+it names real friends within twelve metres. Messages appear briefly over their
+speaker and in the accessible log, then disappear; they are not stored.
+
+At **Restrooms**, use **Walk into restroom**, **Flush**, then **Walk outside**.
+The lamp turns red and the door locks during the visit. **Go to shower** reaches
+the other doorway, where **Run shower** continues until exit. **Invite Rowan to
+try the lock** demonstrates an actual NPC reservation and flush; the NPC never
+counts as a player. These controls can be dismissed and reopened.
+
+**Tide & Coffee** is the original tea destination at its original coordinates.
+Its open-front counter, patio and regulars offer a social setting for ordinary
+contributions. The three starting choices are espresso, conversation and café
+music; dishes remain in the complete library. Real nearby public sources bring
+steam, table gestures or a spinning record. These are source-driven responses,
+not a background soundtrack or a fabricated human contribution.
+
+Work cards now have **Minimise work panel** and an explicit reopen button;
+**What changed?** expands the longer causal account. Individual source cards
+also close and reopen, including by selecting the actual world pin. An incoming
+shared update does not force either card open or discard keyboard focus.
+
+A fresh visit stays silent until an explicit listening action. **Sound off ·
+Tap to listen** and **Audio paused · Tap to resume** distinguish local preference
+from a browser-paused context. **Enable listening** recovers a zeroed local
+volume deliberately. Musical near-field gain has been increased without
+widening the 6/14/18-metre area boundaries; source coordinates remain exact.
+Grounded folded buds mark those actual positions. Shared works now grow larger
+floor and overhead forms, with the same real authors and withdrawal semantics.
+
+See `docs/evidence/neighbours-2026-11-07.json` for the final verified scope.
+Automated output measurement does not replace hardware listening, and the
+unfamiliar-pair study remains a separate human activity.

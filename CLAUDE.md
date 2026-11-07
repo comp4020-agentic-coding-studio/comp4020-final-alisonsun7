@@ -126,6 +126,19 @@ after other dialogs close. No interaction automatically publishes a sound.
 The land loop remains continuous; water has a genuine walking boundary.
 Preserve existing source positions and access when authoring shorelines.
 
+ADR 027 restores discoverability without replacing the reliable state model.
+`client/planet-social.ts` exposes nearby Talk, transient speech bubbles and
+contextual room entry/stay/exit actions. Private rooms still use actual walking
+and authoritative admission. Work and source cards are dismissible; shared
+refreshes must preserve dismissal, keyboard focus and an expanded explanation.
+A ground bud marks a real contribution, not proof this listener enabled audio.
+The Sound control reports actual context state; only explicit local actions may
+resume listening or restore a zero volume. Tide & Coffee keeps the existing
+`tea` ID/coordinates; its steam, record and table gestures follow actual live
+public sources, and its regulars are NPCs. Wider shared forms still derive only
+from the canonical work. Do not regress source withdrawal, reduced motion or
+shortened indoor-camera body clearance while changing their presentation.
+
 ## Product invariants
 
 - **The standard (Wen):** suits people playing together; keeps what they do,
