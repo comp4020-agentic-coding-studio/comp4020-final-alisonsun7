@@ -84,21 +84,27 @@ export class PlanetSoundInteractions {
       if (count >= 4 || planetDistance(at, s) > 16) break;
       const point = this.opts.project(s.x, s.z, .75);
       if (!point.visible || point.y < 190 || point.y > this.host.clientHeight - 250) continue;
-      let y = point.y;
-      for (let i = 0; i < 4 && occupied.some(p => Math.abs(point.x - p.x) < 185 && Math.abs(y - p.y) < 49); i++) y -= 50;
-      if (y < 190) continue;
+      const width = this.host.clientWidth < 620 ? 166 : 180;
+      const candidates = [[0,0],[0,-52],[0,52],[-width-12,0],[width+12,0],[0,-104],[0,104]];
+      const placement = candidates.map(([dx,dy]) => ({ x: Math.max(width/2+12,Math.min(this.host.clientWidth-width/2-12,point.x+dx)), y: point.y+dy }))
+        .find(p => p.y >= 190 && p.y <= this.host.clientHeight-250 && !occupied.some(other => Math.abs(p.x-other.x)<width+8 && Math.abs(p.y-other.y)<49));
+      if (!placement) continue;
+      const {x,y} = placement;
       let pin = this.pins.get(s.id);
       if (!pin) {
         pin = document.createElement("button");pin.type = "button";pin.className = "planet-sound-pin";pin.dataset.id = s.id;
         const name = document.createElement("strong"), author = document.createElement("span");
         name.textContent = findSound(s.soundId)!.label;author.textContent = "by " + s.by;
-        pin.append(name, author);
+        const leader = document.createElement("i");leader.className = "planet-pin-leader";leader.setAttribute("aria-hidden","true");
+        pin.append(name, author, leader);
         pin.onclick = () => { this.selected = s.id;this.last = -Infinity;this.frame(); };
         this.pins.set(s.id, pin);this.layer.append(pin);
       }
       pin.hidden = false;pin.setAttribute("aria-pressed", String(this.current?.id === s.id));
-      pin.style.left = `${Math.max(95, Math.min(this.host.clientWidth - 95, point.x))}px`;pin.style.top = `${y}px`;
-      occupied.push({ x: point.x, y });count++;
+      pin.style.left = `${x}px`;pin.style.top = `${y}px`;
+      const dx=point.x-x,dy=point.y-y,offset=Math.hypot(dx,dy),leader=pin.querySelector<HTMLElement>(".planet-pin-leader")!;
+      pin.classList.toggle("is-offset",offset>1);leader.hidden=offset<=1;leader.style.width=offset+"px";leader.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+      occupied.push({x,y});count++;
     }
   }
   dispose(): void { this.layer.remove();this.card.remove();this.pins.clear();this.sounds = []; }

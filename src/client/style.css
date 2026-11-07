@@ -2139,7 +2139,7 @@ h3 {
   .scene-page .guide-target { animation: none; }
 }
 
-/* Soundfolk: the two editions share one paper-and-sage frame. */
+/* Little Chorus: both editions share one paper-and-sage frame. */
 .hero-editions { max-width: 48ch; margin: 14px 0 22px; color: var(--ink-soft); font-size: 13px; line-height: 1.7; }
 .hero-editions a { white-space: nowrap; text-underline-offset: 3px; }
 .explore-planet-invite { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 22px 0 28px; }
@@ -2302,4 +2302,52 @@ h3 {
 }
 @media (prefers-reduced-motion: reduce) {
   .planet-page *, .planet-page *::before, .planet-page *::after { scroll-behavior: auto; transition: none; }
+}
+
+/* Play and the sound-response loop remain reachable in the actual world. */
+.planet-page [hidden] { display: none !important; }
+.planet-play-controls { position: absolute; z-index: 13; right: 18px; bottom: 26px; display: flex; gap: 8px; }
+.planet-play-controls button, .planet-interact { min-height: 44px; padding: 9px 14px; border: 1px solid #789387; border-radius: 12px; color: #244e49; background: #faf7ebee; box-shadow: 0 4px 18px #223f3220; font: 500 13px var(--font); cursor: pointer; }
+.planet-play-controls button[aria-pressed="true"] { color: #fff9e8; background: #315e59; }
+.planet-play-controls kbd { margin-left: 7px; padding: 3px 5px; color: inherit; background: #82958420; border-radius: 4px; font: 10px var(--font); }
+.planet-interact { position: absolute; z-index: 13; top: 310px; right: 18px; max-width: 205px; }
+.planet-sound-pins { position: absolute; inset: 0; z-index: 9; pointer-events: none; }
+.planet-sound-pin { position: absolute; display: grid; gap: 2px; width: 180px; min-height: 46px; padding: 7px 12px; color: #31594e; background: #fffbedee; border: 1px solid #789c8e; border-radius: 12px; box-shadow: 0 4px 18px #294a3c24; text-align: left; transform: translate(-50%,-100%); cursor: pointer; pointer-events: auto; }
+.planet-sound-pin::after { content: ''; position: absolute; left: calc(50% - 5px); bottom: -6px; width: 9px; height: 9px; background: #fffbed; border: solid #789c8e; border-width: 0 1px 1px 0; transform: rotate(45deg); }
+.planet-sound-pin strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 12px/1.3 var(--font); }
+.planet-sound-pin span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 11px/1.3 var(--font); }
+.planet-pin-leader { position: absolute; top: 100%; left: 50%; height: 1px; background: #658a7a; transform-origin: 0 0; pointer-events: none; opacity: .65; }
+.planet-sound-pin.is-offset::after { display: none; }
+.planet-sound-pin:hover, .planet-sound-pin[aria-pressed="true"] { border-color: #3b6d61; background: #f4f2d9; }
+.planet-nearby-sound { position: absolute; z-index: 14; bottom: 112px; left: 50%; width: min(460px,calc(100% - 32px)); padding: 14px 17px; border: 1px solid #8ba398; border-left: 4px solid var(--family,#6a9c84); border-radius: 14px; background: #faf8eff2; box-shadow: 0 9px 30px #203e3429; transform: translateX(-50%); }
+.planet-nearby-sound > strong { display: block; margin-top: 5px; color: #2d5349; font: 400 23px/1.15 var(--quiet-serif); }
+.planet-nearby-sound > p { margin: 6px 0; color: #526b5c; font: 12px/1.45 var(--font); overflow-wrap: anywhere; }
+.planet-nearby-sound .planet-sound-response { color: #365f55; font-size: 11px; }
+.planet-nearby-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.planet-nearby-actions button { min-height: 44px !important; padding: 8px 12px; font-size: 12px; }
+.planet-reply-intent { position: absolute; z-index: 15; bottom: 112px; left: 50%; display: flex; flex-wrap: wrap; gap: 7px; width: min(460px,calc(100% - 32px)); padding: 12px 14px; border: 1px solid #92ac9a; border-radius: 14px; background: #faf5e8f5; box-shadow: 0 6px 26px #203e3429; transform: translateX(-50%); }
+.planet-reply-intent p { flex-basis: 100%; margin: 0; color: #3d5a49; font: 12px/1.5 var(--font); }
+.planet-reply-intent button { min-height: 44px !important; font-size: 12px; }
+.planet-stage:has(.planet-reply-intent:not([hidden])) .planet-nearby-sound { display: none; }
+.planet-stage:has(.planet-nearby-sound:not([hidden])), .planet-stage:has(.planet-reply-intent:not([hidden])) { --sound-card-open: 1; }
+.planet-stage:has(.planet-nearby-sound:not([hidden])) .planet-movement, .planet-stage:has(.planet-reply-intent:not([hidden])) .planet-movement { display: none; }
+.planet-page :is(.planet-sound-pin,.planet-play-controls button,.planet-interact):focus-visible { outline: 3px solid #477c91; outline-offset: 3px; }
+.planet-page .sound-conversation-panel { color: #344f43; background: var(--quiet-paper); }
+@media (max-width: 620px) {
+  .planet-brand { font-size: 23px; gap: 5px; }
+  .planet-play-controls { right: 12px; bottom: max(85px,calc(env(safe-area-inset-bottom) + 85px)); gap: 7px; }
+  .planet-play-controls button { min-width: 78px; padding: 8px 12px; }
+  .planet-play-controls kbd { display: none; }
+  .planet-interact { top: 195px; right: 12px; max-width: 175px; padding: 9px 12px; }
+  .planet-nearby-sound, .planet-reply-intent { bottom: max(153px,calc(env(safe-area-inset-bottom) + 153px)); width: calc(100% - 24px); padding: 11px 12px; }
+  .planet-nearby-sound > strong { font-size: 21px; }
+  .planet-nearby-actions { gap: 6px; }
+  .planet-nearby-actions button { padding: 8px 10px; font-size: 11px; }
+  .planet-sound-pin { width: 166px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .planet-play-controls { right: 12px; bottom: 68px; }
+  .planet-interact { top: 160px; right: 12px; }
+  .planet-nearby-sound, .planet-reply-intent { bottom: 12px; left: 180px; width: min(370px,calc(100% - 390px)); padding: 8px 10px; transform: none; }
+  .planet-nearby-actions { gap: 4px; }
 }

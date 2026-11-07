@@ -1,13 +1,15 @@
-// The playable Soundfolk edition: cookie identity, real SSE, durable sounds,
+// Little Chorus: cookie identity, real SSE, durable sounds,
 // ephemeral nearby words and authoritative shared restroom routines.
 import { PlanetWorld } from "./planet-world.js";
 import { PlanetAudio } from "./planet-audio.js";
 import { RoutineAudio } from "./routine-audio.js";
 import { SoundLibrary } from "./sound-library.js";
 import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
+import { PlanetSoundInteractions } from "./planet-sound-interactions.js";
+import { SoundConversations } from "./sound-conversations.js";
 import { loadLookMode } from "./look-settings.js";
 import { findScene } from "../shared/catalog.js";
-import { PLANET_PLACES, PLANET_HUTS, planetDistance, planetStep, sceneHutAt } from "../shared/planet.js";
+import { PLANET_PLACES, PLANET_HUTS, planetDistance, sceneHutAt } from "../shared/planet.js";
 import { findSound, FAMILIES } from "../shared/sounds.js";
 import { privateSound } from "../shared/huts.js";
 import { minuteAt, WEATHER_LABELS, formatTime } from "../shared/environment.js";
@@ -30,6 +32,8 @@ let draftRevision=0,audioRevision=0,npcTime=Date.parse(snapshot.serverNow);
 let movePending: Promise<boolean> | null = null, lastMove = 0, lastSent = "", disposed = false;
 let here: Position = { x: 0, z: 3, yaw: Math.PI };
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
+let soundInteractions: PlanetSoundInteractions | undefined;
+let walkingReply: string | null = null;
 function say(text: string): void { notice.textContent = text; notice.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => notice.hidden = true, 8000); }
 const audio = new PlanetAudio(count => stage.dataset.voices = String(count));
 const routineAudio = new RoutineAudio({ distanceBetween: planetDistance, report: count => stage.dataset.npcFlushVoices = String(count) });
@@ -38,9 +42,13 @@ const world = new PlanetWorld(stage, { listen: l => {
         here = { x: l.x, z: l.z, yaw: l.yaw };
         audio.frame(here, l.camera, l.serverNow);
         routineAudio.frame(npcs, here, audio.on, l.serverNow);
+        soundInteractions?.frame();
+        updateReplyIntent();
+        const run = $("planet-run"), pressed = String(world.runEnabled);if (run.getAttribute("aria-pressed") !== pressed) run.setAttribute("aria-pressed", pressed);
         if (boot.joined && connected && performance.now() - lastMove > 180)
             void reportMove();
-    }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description; }, wait: say });
+    }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description; }, wait: say,
+    interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } });
 world.setSelf(snapshot.you);
 world.setNpcs(npcs);
 world.setEnvironment(snapshot.environment, snapshot.serverNow);
@@ -54,7 +62,7 @@ function updateView(): void { const button = $("planet-view"); button.querySelec
 $("planet-view").onclick = () => { world.setViewMode(world.viewMode === "third" ? "first" : "third"); updateView(); world.focus(); };
 updateView();
 const zoomControls=document.createElement("div");zoomControls.className="planet-zoom";zoomControls.setAttribute("aria-label","Camera distance");
-for(const [id,label,text,delta]of [["planet-zoom-in","Camera closer","+",-3],["planet-zoom-out","See more of the world","−",3]] as const){const b=document.createElement("button");b.type="button";b.id=id;b.setAttribute("aria-label",label);b.title=label;b.textContent=text;b.onclick=()=>{world.setViewMode("third");world.setCameraDistance(world.cameraDistance+delta);updateView();world.focus();};zoomControls.append(b);}stage.append(zoomControls);
+for(const [id,label,text,delta]of [["planet-zoom-in","Camera closer","+",-2],["planet-zoom-out","See more of the world","−",2]] as const){const b=document.createElement("button");b.type="button";b.id=id;b.setAttribute("aria-label",label);b.title=label;b.textContent=text;b.onclick=()=>{world.setViewMode("third");world.setCameraDistance(world.cameraDistance+delta);updateView();world.focus();};zoomControls.append(b);}stage.append(zoomControls);
 const setLook = (value: string): void => { const mode = value === "scene" ? "scene" : "follow"; world.setLookMode(mode); try {
     localStorage.setItem("soac-look-mode", mode);
 }
@@ -68,11 +76,18 @@ $("planet-sound").onclick = () => setSound(!audio.on);
 stage.dataset.voices = "0";
 stage.dataset.npcFlushVoices = "0";
 stage.dataset.soundOn = "false";
-function restore(): void { const modal = !!document.querySelector("dialog:modal"); world.setPaused(modal); if (!modal)
+function restore(): void { const modal = !!document.querySelector("dialog:modal") || !$("planet-chat").hidden; world.setPaused(modal); if (!modal)
     world.focus(); }
 function show(d: HTMLDialogElement): void { world.setPaused(true); d.hidden = false; d.showModal(); d.scrollTop = 0; }
 function hide(d: HTMLDialogElement): void { if (d.open)
     d.close(); }
+function afterDialogClose(dialog: HTMLDialogElement, action: () => void): void {
+    const resume = (): void => { if (!document.querySelector("dialog:modal") && $("planet-chat").hidden) { world.setPaused(false);world.focus();action(); } };
+    // close() queues its event. Existing close handlers restore movement first;
+    // only then may a new walking intent be created.
+    if (dialog.hidden) resume();
+    else { dialog.addEventListener("close", resume, {once:true});hide(dialog); }
+}
 function native(d: HTMLDialogElement, opener: HTMLElement): void { d.addEventListener("close", () => { if (d.open)
     return; d.hidden = true; restore(); if (!document.querySelector("dialog:modal"))
     opener.focus(); }); }
@@ -148,7 +163,7 @@ native(shared, $("planet-shared"));
 containFocus(shared);
 $("planet-shared").onclick = () => { renderShared(); show(shared); };
 function publicSounds(): PlacedSound[] { return [...sounds.values()].filter(s => !s.whileIn && !s.removedAt && !ended.has(s.id)); }
-function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list); renderShared(); renderPeople(); }
+function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list); soundInteractions?.setAll(list);conversations.changed();renderShared(); renderPeople(); }
 function record(kind: string, s: PlacedSound, by = s.by): void { if (s.whileIn)
     return; const id = s.id + ":" + kind; if (events.has(id))
     return; events.add(id); activity.unshift(by + (kind === "removed" ? " removed " : " left ") + (findSound(s.soundId)?.label ?? "a sound")); activity.splice(4); $("planet-activity").replaceChildren(...activity.map(text => { const p = document.createElement("p"); p.textContent = text; return p; })); }
@@ -168,14 +183,15 @@ function renderShared(): void {
         h.textContent = kind?.label ?? "Sound";
         const p = document.createElement("p");
         p.textContent = `Left by ${s.by} · ${Math.round(planetDistance(s, here))} m away` + (s.replyTo ? ` · answering ${s.replyTo.by}'s ${findSound(s.replyTo.soundId)?.label ?? "sound"}` : "");
-        const face = button("Visit this sound", () => { hide(shared); world.correctPosition(planetStep({...s,yaw:Math.PI},1,0,2)); say("Walk closer, listen and leave an answer."); });
-        const answer = button("Reply with a sound", () => {draftRevision++; reply = { ...s }; operation = null; hide(shared); library.setReply(reply); openLibrary(); });
+        const face = button("Walk toward this sound", () => afterDialogClose(shared, () => { if (!sounds.has(s.id) || ended.has(s.id)) return say("That sound has been removed.");world.walkToward(s, 2.4);say("Walking toward the sound. Use any movement key to cancel."); }));
+        const view = button("Conversation", () => { hide(shared);conversations.open(s.id); });
+        const answer = button("Respond to sound", () => { hide(shared);startReply(s); });
         answer.dataset.planetReply = "";
         answer.disabled = !boot.joined || planetDistance(s, here) > 4;
         const remove = button("Remove", () => void removeSound(s));
         remove.dataset.planetRemove = "";
         remove.disabled = !boot.joined || planetDistance(s, here) > 4;
-        card.append(h, p, face, answer, remove);
+        card.append(h, p, face, answer, view, remove);
         return card;
     });
     if (!rows.length) {
@@ -287,7 +303,55 @@ function openLibrary(): void { if (!boot.joined) {
     show(arrival);
     return;
 } world.setPaused(true); library.setReply(reply); library.open(); }
-$("planet-place").onclick = () => {draftRevision++; reply = null; operation = null; library.setReply(null); openLibrary(); };
+$("planet-place").onclick = () => {cancelReply();openLibrary();};
+const conversations = new SoundConversations({
+    visitLabel: "Walk toward sound",
+    load: async (id, after) => { const r = await fetch(`/api/sessions/${snapshot.sessionId}/sounds/${encodeURIComponent(id)}/replies${after ? "?after=" + encodeURIComponent(after) : ""}`);return r.ok ? await r.json() as import("../shared/protocol.js").SoundReplies : null; },
+    face: sound => afterDialogClose(conversations.element, () => { if (!sounds.has(sound.id) || ended.has(sound.id)) return say("That sound has been removed.");world.walkToward(sound, 2.4); }),
+    reply: sound => startReply(sound),
+    canReply: sound => boot.joined && connected && !sound.removedAt && sounds.has(sound.id) && planetDistance(here, sound) <= 4,
+    joined: () => boot.joined,open: () => world.setPaused(true),close: restore,
+});
+stage.append(conversations.element);containFocus(conversations.element);
+const replyIntent = document.createElement("aside");replyIntent.id = "planet-reply-intent";replyIntent.className = "planet-reply-intent";replyIntent.hidden = true;
+const replyText = document.createElement("p"), chooseReply = button("Choose a response", () => { if (reply) startReply(reply); }), cancelReplyButton = button("Cancel", cancelReply);
+chooseReply.id = "planet-reply-choose";cancelReplyButton.id = "planet-reply-cancel";replyIntent.append(replyText, chooseReply, cancelReplyButton);stage.append(replyIntent);
+function cancelReply(): void { draftRevision++;reply = null;operation = null;walkingReply = null;world.cancelWalkingIntent();library.setReply(null);replyIntent.hidden = true; }
+function startReply(reference: SoundReference): void {
+    if (!boot.joined) { show(arrival);return; }
+    if (!connected) return say("Reconnect before responding. Your sounds have not changed.");
+    const source = sounds.get(reference.id);
+    if (!source || source.removedAt || source.whileIn || ended.has(source.id)) return say("That sound has been removed. Choose another sound to answer.");
+    draftRevision++;reply = { ...source };operation = null;library.setReply(reply);
+    if (planetDistance(here, source) <= 4) { walkingReply = null;openLibrary(); }
+    else { walkingReply = source.id;if (!world.walkToward(source, 2.4)) walkingReply = null;world.focus();say("Walk closer to answer. Nothing is shared until you choose Leave it here."); }
+    updateReplyIntent();
+}
+function updateReplyIntent(): void {
+    // The view's first animation frame runs after the module is initialized.
+    if (typeof replyIntent === "undefined") return;
+    replyIntent.hidden = !reply || !!document.querySelector("dialog:modal");
+    if (!reply) return;
+    replyIntent.dataset.target = reply.id;
+    const removed = !!reply.removedAt || ended.has(reply.id) || !sounds.has(reply.id);
+    if (removed && walkingReply) { walkingReply = null;world.cancelWalkingIntent(); }
+    const distance = planetDistance(here, reply);
+    replyText.textContent = removed ? "The sound you were answering was removed. Your response was not sent." : `${distance > 4 ? "Approaching" : "Answering"} ${reply.by}'s ${findSound(reply.soundId)?.label ?? "sound"} · ${Math.round(distance)} m`;
+    chooseReply.disabled = removed || !connected;
+    chooseReply.textContent = distance > 4 ? "Walk closer" : "Choose a response";
+    if (walkingReply && !world.walkingIntent) walkingReply = null;
+    else if (walkingReply && distance <= 3.8) { walkingReply = null;world.cancelWalkingIntent();openLibrary(); }
+}
+soundInteractions = new PlanetSoundInteractions(stage, {
+    at: () => here,project: (x,z,height) => world.project(x,z,height),available: () => boot.joined && connected,
+    respond: source => startReply(source),conversation: id => conversations.open(id),remove: source => void removeSound(source),
+    reaction: id => world.responses.filter(r => r.sourceId === id).map(r => r.label + " · " + r.behavior).join(" · "),
+});
+soundInteractions.setAll([...sounds.values()]);
+document.addEventListener("keydown", event => { if (event.key.toLowerCase() !== "e" || event.repeat || event.altKey || event.ctrlKey || event.metaKey || document.querySelector("dialog:modal") || !(event.target instanceof HTMLCanvasElement)) return;if (soundInteractions?.respondNearest()) { event.preventDefault();event.stopImmediatePropagation(); } }, {capture:true});
+$("planet-run").onclick = () => { world.setRunning(!world.runEnabled);$("planet-run").setAttribute("aria-pressed", String(world.runEnabled));world.focus(); };
+$("planet-jump").onclick = () => { world.jump();world.focus(); };
+$("planet-interact").onclick = () => { world.interact();world.focus(); };
 const privateButton = button("Flush for this stay", () => { const h = sceneHutAt("planet", here.x, here.z), sound = h && privateSound(h); if (sound)
     void leaveSound(sound, true).then(error => error && say(error)); });
 privateButton.id = "planet-private-sound";
@@ -441,4 +505,4 @@ renderPeople();
 renderShared();
 renderOccupancy();
 window.addEventListener("pagehide", e => { if (e.persisted || disposed)
-    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); audio.dispose(); routineAudio.dispose(); world.dispose(); }, { once: false });
+    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();world.dispose(); }, { once: false });

@@ -4,6 +4,7 @@ import type { SoundReference, SoundReplies } from "../shared/protocol.js";
 import { FAMILIES, findSound } from "../shared/sounds.js";
 
 interface Options {
+  visitLabel?: string;
   load: (id: string, after?: string) => Promise<SoundReplies | null>;
   face: (sound: SoundReference) => void;
   reply: (sound: SoundReference) => void;
@@ -154,7 +155,7 @@ export class SoundConversations {
       const face = document.createElement("button");
       face.type = "button";
       face.className = "btn ghost";
-      face.textContent = "Face sound";
+      face.textContent = this.opts.visitLabel ?? "Face sound";
       face.onclick = () => { this.close(); this.opts.face(sound); };
       actions.append(face);
       const reply = document.createElement("button");

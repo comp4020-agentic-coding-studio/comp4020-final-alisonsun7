@@ -156,6 +156,7 @@ try {
     "actual world clocks stay aligned to server time despite the other visitor's one-hour clock skew");
 
   await a.waitForFunction(() => document.getElementById("planet-stage").dataset.view === "third");
+  assert.equal(Number(await a.locator("#planet-stage").getAttribute("data-camera-distance")),16,"The reviewed coastal framing is the authored initial camera");
   const beforeView = await at(a), viewPosts = ada.posts;
   check(await a.locator("#planet-stage").getAttribute("data-self-visible") === "true", "third person shows the actual local character");
   await a.locator("#planet-view").click();
@@ -169,11 +170,11 @@ try {
   await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.cameraDistance)>=24);
   check(samePosition(beforeView,await at(a))&&ada.posts===viewPosts,"zooming out reveals more of the real world without moving the visitor or publishing");
   await shot(a,"planet-whole-world-overview");
-  for(let i=0;i<6;i++)await a.getByRole("button",{name:"Camera closer",exact:true}).click();
+  for(let i=0;i<14&&Number(await a.locator("#planet-stage").getAttribute("data-camera-distance"))>6;i++)await a.getByRole("button",{name:"Camera closer",exact:true}).click();
   await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.cameraDistance)<=6);
   check(await a.locator("#planet-stage").getAttribute("data-self-visible")==="true"&&samePosition(beforeView,await at(a)),"camera controls bring the visitor's actual character closer while keeping third person");
   await shot(a,"planet-close-character");
-  for(let i=0;i<2;i++)await a.getByRole("button",{name:"See more of the world",exact:true}).click();
+  for(let i=0;i<8&&Number(await a.locator("#planet-stage").getAttribute("data-camera-distance"))<12;i++)await a.getByRole("button",{name:"See more of the world",exact:true}).click();
   await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.cameraDistance)===12);
   check(Math.abs(Number(await a.locator("#planet-stage").getAttribute("data-surface-radius"))-PLANET_RADIUS)<.001,
     "the running visitor stands on the actual spherical surface");
