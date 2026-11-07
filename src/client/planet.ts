@@ -34,6 +34,7 @@ let here: Position = { x: 0, z: 3, yaw: Math.PI };
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
 let soundInteractions: PlanetSoundInteractions | undefined;
 let walkingReply: string | null = null;
+let walkingReplyRevision = 0;
 function say(text: string): void { notice.textContent = text; notice.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => notice.hidden = true, 8000); }
 const audio = new PlanetAudio(count => stage.dataset.voices = String(count));
 const routineAudio = new RoutineAudio({ distanceBetween: planetDistance, report: count => stage.dataset.npcFlushVoices = String(count) });
@@ -316,7 +317,7 @@ stage.append(conversations.element);containFocus(conversations.element);
 const replyIntent = document.createElement("aside");replyIntent.id = "planet-reply-intent";replyIntent.className = "planet-reply-intent";replyIntent.hidden = true;
 const replyText = document.createElement("p"), chooseReply = button("Choose a response", () => { if (reply) startReply(reply); }), cancelReplyButton = button("Cancel", cancelReply);
 chooseReply.id = "planet-reply-choose";cancelReplyButton.id = "planet-reply-cancel";replyIntent.append(replyText, chooseReply, cancelReplyButton);stage.append(replyIntent);
-function cancelReply(): void { draftRevision++;reply = null;operation = null;walkingReply = null;world.cancelWalkingIntent();library.setReply(null);replyIntent.hidden = true; }
+function cancelReply(): void { draftRevision++;reply = null;operation = null;walkingReply = null;world.cancelWalkingIntent();library.setReply(null);replyIntent.hidden = true;world.focus(); }
 function startReply(reference: SoundReference): void {
     if (!boot.joined) { show(arrival);return; }
     if (!connected) return say("Reconnect before responding. Your sounds have not changed.");
@@ -324,7 +325,7 @@ function startReply(reference: SoundReference): void {
     if (!source || source.removedAt || source.whileIn || ended.has(source.id)) return say("That sound has been removed. Choose another sound to answer.");
     draftRevision++;reply = { ...source };operation = null;library.setReply(reply);
     if (planetDistance(here, source) <= 4) { walkingReply = null;openLibrary(); }
-    else { walkingReply = source.id;if (!world.walkToward(source, 2.4)) walkingReply = null;world.focus();say("Walk closer to answer. Nothing is shared until you choose Leave it here."); }
+    else { walkingReply = source.id;if (!world.walkToward(source, 2.4)) walkingReply = null;walkingReplyRevision = world.walkingIntentRevision;world.focus();say("Walk closer to answer. Nothing is shared until you choose Leave it here."); }
     updateReplyIntent();
 }
 function updateReplyIntent(): void {
@@ -339,7 +340,7 @@ function updateReplyIntent(): void {
     replyText.textContent = removed ? "The sound you were answering was removed. Your response was not sent." : `${distance > 4 ? "Approaching" : "Answering"} ${reply.by}'s ${findSound(reply.soundId)?.label ?? "sound"} · ${Math.round(distance)} m`;
     chooseReply.disabled = removed || !connected;
     chooseReply.textContent = distance > 4 ? "Walk closer" : "Choose a response";
-    if (walkingReply && !world.walkingIntent) walkingReply = null;
+    if (walkingReply && (!world.walkingIntent || world.walkingIntentRevision !== walkingReplyRevision)) walkingReply = null;
     else if (walkingReply && distance <= 3.8) { walkingReply = null;world.cancelWalkingIntent();openLibrary(); }
 }
 soundInteractions = new PlanetSoundInteractions(stage, {

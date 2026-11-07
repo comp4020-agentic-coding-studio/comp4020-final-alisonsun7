@@ -52,6 +52,8 @@ export class PlanetWorld {
     private keys = new Set<string>();
     private paused = false;
     private runRequested = false;
+    private walkingRevision = 0;
+    private labelWidths = new WeakMap<HTMLElement, number>();
     private _running = false;
     private jumpStarted: number | null = null;
     private jumpOffset = 0;
@@ -145,6 +147,7 @@ export class PlanetWorld {
     get runEnabled(): boolean { return this.runRequested; }
     get grounded(): boolean { return this.jumpStarted === null; }
     get walkingIntent(): boolean { return this.walkingTarget !== null; }
+    get walkingIntentRevision(): number { return this.walkingRevision; }
     get serverNow(): number { return this.serverSample.server + Math.max(0, performance.now() - this.serverSample.received); }
     get responses() { return this.residents.responses.map(r => { const figure = this.residents.figures.find(f => f.userData.soundResident?.id === r.residentId), p = figure && this.residentPos.get(figure); return p ? { ...r, x: p.x, z: p.z } : r; }); }
     get area(): PlanetPlace { return [...PLANET_PLACES].sort((a, b) => planetDistance(this.position, a) - planetDistance(this.position, b))[0]; }
@@ -178,10 +181,11 @@ export class PlanetWorld {
     }
     walkToward(target: Pick<Position, "x" | "z">, stopDistance = 2.5): boolean {
         if (this.paused || ![target.x, target.z, stopDistance].every(Number.isFinite)) return false;
+        this.walkingRevision++;
         this.walkingTarget = { x: target.x, z: target.z, stopDistance: Math.max(.15, Math.min(10, stopDistance)) };
         return true;
     }
-    cancelWalkingIntent(): void { this.walkingTarget = null; }
+    cancelWalkingIntent(): void { if (this.walkingTarget) this.walkingRevision++;this.walkingTarget = null; }
     project(x: number, z: number, height = 0): { x: number; y: number; visible: boolean } {
         const p = planetPoint(x, z, this.built.heightAt(x, z) + height), point = new THREE.Vector3(p.x, p.y, p.z);
         const delta = point.clone().sub(this.camera.position), length = delta.length();
@@ -275,7 +279,7 @@ export class PlanetWorld {
             this.cues.set(s.id, cue);
         }
     }
-    private makeLabel(text: string, role: "player" | "npc"): HTMLSpanElement { const e = document.createElement("span"); e.className = "planet-person-label " + role; e.textContent = text; Object.assign(e.style, { position: "absolute", padding: "3px 8px", borderRadius: "12px", background: role === "player" ? "#e4f0f5" : "#f3e1bb", color: "#294a43", font: "600 12px system-ui", whiteSpace: "nowrap", border: role === "player" ? "1px solid #6196ad" : "1px solid #b89450" }); this.overlay.append(e); return e; }
+    private makeLabel(text: string, role: "player" | "npc"): HTMLSpanElement { const e = document.createElement("span"); e.className = "planet-person-label " + role; e.textContent = text; Object.assign(e.style, { position: "absolute", padding: "3px 8px", borderRadius: "12px", background: role === "player" ? "#e4f0f5" : "#f3e1bb", color: "#294a43", font: "600 12px system-ui", whiteSpace: "nowrap", border: role === "player" ? "1px solid #6196ad" : "1px solid #b89450" }); this.overlay.append(e);this.labelWidths.set(e,e.offsetWidth); return e; }
     private actor(p: Person & Position, role: "player" | "npc", label: string): Actor { const f = new AnimalFigure({ avatar: p.avatar, seed: p.id, role }); this.scene.add(f); return { figure: f, name: p.name, label: this.makeLabel(label, role), at: { x: p.x, z: p.z, yaw: p.yaw }, target: { x: p.x, z: p.z, yaw: p.yaw, motion: p.motion } }; }
     private locked(): Set<string> { const locked = new Set(this.npcFrames.filter(n => n.occupying).map(n => n.hutId)); for (const a of this.others.values()) {
         const h = sceneHutAt("planet", a.target.x, a.target.z);
@@ -288,6 +292,7 @@ export class PlanetWorld {
             return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(e.key.toLowerCase())) {
             e.preventDefault();
             this.keys.add(e.key.toLowerCase());
+            if (e.key.toLowerCase() !== "shift") this.cancelWalkingIntent();
         } if (e.code === "Space") { e.preventDefault(); if (!e.repeat) this.jump(); }
         if (e.key.toLowerCase() === "e" && !e.repeat && !e.defaultPrevented) { if (this.interact()) e.preventDefault(); }
         if (e.key.toLowerCase() === "v")
@@ -320,6 +325,7 @@ export class PlanetWorld {
             b.setAttribute("aria-label", "Move " + name);
             b.textContent = label;
             b.addEventListener("pointerdown", e => { e.preventDefault(); if (!this.paused) {
+                this.cancelWalkingIntent();
                 this.keys.add(key);
                 b.setPointerCapture(e.pointerId);
             } }, { signal });
@@ -470,6 +476,7 @@ export class PlanetWorld {
             onPlanet(f, p.x, p.z, this.built.heightAt(p.x, p.z), p.yaw);
             this.label(this.residentLabels.get(f)!, f, p);
         }
+        this.arrangeLabels();
         for (const door of this.built.doors) {
             const n = this.npcFrames.find(n => n.hutId === door.id && n.occupying), taken = locked.has(door.id) || (own === door.id), h = PLANET_HUTS.find(h => h.id === door.id)!;
             const near = planetDistance(this.position, { x: (h.door.x0 + h.door.x1) / 2, z: h.z1 }) < 2.4, passing = n && ["entering", "leaving"].includes(n.phase);
@@ -540,6 +547,17 @@ export class PlanetWorld {
         if (action === this.lastInteraction) return;
         this.lastInteraction = action;
         this.opts.interaction?.(action ? { kind: "kangaroo", label: "Kangaroo companion", action } : null);
+    }
+    private arrangeLabels(): void {
+        // Cache widths at creation; avoid measuring layout in the render loop.
+        const labels = [...this.overlay.querySelectorAll<HTMLElement>(".planet-person-label")].filter(e => !e.hidden).sort((a,b) => Number(b.classList.contains("player"))-Number(a.classList.contains("player")));
+        const placed: {x:number;y:number;width:number}[] = [];
+        for (const e of labels) {
+            const x=parseFloat(e.style.left), width=this.labelWidths.get(e)??120;
+            let y=parseFloat(e.style.top);
+            for(let i=0;i<8&&placed.some(p=>Math.abs(x-p.x)<(width+p.width)/2+4&&Math.abs(y-p.y)<25);i++) y-=26;
+            e.style.top=Math.max(25,y)+"px";placed.push({x,y:Math.max(25,y),width});
+        }
     }
     private label(e: HTMLSpanElement, f: AnimalFigure, at: {
         x: number;
