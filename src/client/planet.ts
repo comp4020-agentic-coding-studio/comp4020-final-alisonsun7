@@ -31,7 +31,7 @@ let reply: SoundReference | null = null, operation: {
     signature: string;
     id: string;
 } | null = null;
-let draftRevision=0,audioRevision=0,npcTime=Date.parse(snapshot.serverNow);
+let draftRevision=0,npcTime=Date.parse(snapshot.serverNow);
 let movePending: Promise<boolean> | null = null, lastMove = 0, lastSent = "", disposed = false;
 let here: Position = { x: 0, z: 3, yaw: Math.PI };
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -78,7 +78,7 @@ catch { } for (const id of ["planet-look", "planet-look-settings"])
 setLook(loadLookMode());
 for (const id of ["planet-look", "planet-look-settings"])
     $<HTMLSelectElement>(id).onchange = e => setLook((e.target as HTMLSelectElement).value);
-function setSound(on: boolean,explicit=true): void {if(disposed)return;if(explicit)audioRevision++;audio.setOn(on); const b = $("planet-sound"); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? "Sound on; turn off" : "Sound off; turn on"); b.querySelector("span")!.textContent = on ? "Sound on" : "Sound off"; stage.dataset.soundOn = String(on); routineAudio.frame(npcs, here, on, world.serverNow); }
+function setSound(on: boolean): void {if(disposed)return;audio.setOn(on); const b = $("planet-sound"); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? "Sound on; turn off" : "Sound off; turn on"); b.querySelector("span")!.textContent = on ? "Sound on" : "Sound off"; stage.dataset.soundOn = String(on); routineAudio.frame(npcs, here, on, world.serverNow); }
 $("planet-sound").onclick = () => setSound(!audio.on);
 stage.dataset.voices = "0";
 stage.dataset.npcFlushVoices = "0";
@@ -255,7 +255,7 @@ async function leaveSound(id: string, stay = false): Promise<string | null> {
         return "Connection lost. Your choice was not sent.";
     if (!boot.joined)
         return "Enter with a name first.";
-    const context=draftRevision,choice=audioRevision,parent=stay?null:reply?{...reply}:null;
+    const context=draftRevision,parent=stay?null:reply?{...reply}:null;
     if (!await settledMove())
         return "Your position could not be confirmed. Reconnect and try again.";
     if(disposed||context!==draftRevision)return "Your selection changed before sending. Choose Leave again when ready.";
@@ -271,17 +271,15 @@ async function leaveSound(id: string, stay = false): Promise<string | null> {
         const s = result.sound as PlacedSound;
         const active=!s.removedAt&&!ended.has(s.id);
         if(!active){ended.add(s.id);sounds.delete(s.id);audio.remove(s.id);refreshWorld();}
-        if (active) {
-            sounds.set(s.id, s);
-            record("left", s);
-            refreshWorld();
-        }
+        // Only the canonical stream/snapshot owns live sources. An original
+        // HTTP acknowledgement may predate a removal missed while offline;
+        // replaying it here would revive a source absent from the new snapshot.
         const current=context===draftRevision&&operation?.id===requestId;
         if(current){operation=null;reply=null;library.setReply(null);if(!stay&&active)library.close();}
         if(!active)return "That contribution was removed before confirmation. It will not play.";
         // A contribution never overrides a chosen quiet visit. Private Listen
         // is explicit; shared playback is controlled only by the Sound button.
-        if(current)say(stay ? "Playing for your stay. It ends when you come out." : "Your sound is here for the next visitor.");
+        if(current)say(stay ? "Your stay sound was accepted. It ends when you come out." : "Your sound was left here. The world keeps your contribution.");
         return null;
     }
     catch {
@@ -317,6 +315,9 @@ const studio = new ChorusStudio(stage, {
     pause: () => world.setPaused(true), resume: restore, closeDraft: () => {draftRevision++;}, sound: on => setSound(on), focus: id => audio.setFocus(id),
 });
 function receiveChorus(works: readonly ChorusWork[]): void {
+    for (const work of works) for (const source of work.sources) if (source.removedAt) {
+        ended.add(source.id);sounds.delete(source.id);audio.remove(source.id);
+    }
     chorus = [...works];world.setWorks(chorus);audio.setWorks(chorus);studio.setWorks(chorus);
     stage.dataset.chorus = JSON.stringify(chorus.map(w=>({id:w.id,placeId:w.placeId,variant:w.variant,duet:w.duet,sources:w.sources.map(s=>({id:s.id,byId:s.byId,replyToId:s.replyToId,removedAt:s.removedAt})),live:w.liveSources.map(s=>s.id)})));
 }

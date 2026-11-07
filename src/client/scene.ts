@@ -500,8 +500,8 @@ chat.onsubmit = async (e) => {
 
 const soundName = (id: string): string => findSound(id)?.label ?? "A sound";
 const zoneTitle = (x: number, z: number): string => findZone(scene, world.zoneAt(x, z))?.title ?? "the place";
-// Your own changes are told when the server answers; others' as they
-// arrive, whichever comes first.
+// Only canonical stream/snapshot state presents live sounds. A placement's
+// HTTP response acknowledges a command; it cannot restore a missing source.
 function soundLeft(sound: PlacedSound): void {
   if (sound.removedAt) removedSounds.add(sound.id);
   if (removedSounds.has(sound.id)) return;
@@ -645,15 +645,25 @@ async function leaveSound(soundId: string, whileInside = false): Promise<string 
     return error;
   }
   if (operation === request) operation = null;
-  soundLeft(result.sound);
+  // A retried command can return an already removed row. Remember that
+  // tombstone without fabricating a remover or publishing an activity event.
+  if (result.sound.removedAt) {
+    removedSounds.add(result.sound.id);
+    contributions.delete(result.sound.id);
+    soundscape.remove(result.sound.id);
+    trail.remove(result.sound.id);
+    world.setContributions([...contributions.values()].filter(sound => !sound.whileIn && !sound.removedAt));
+    conversations.changed(result.sound.id);
+    renderSharedPlace();
+  }
   if (revision === replyRevision) {
     if (!whileInside) cancelReply();
     if (library.element.open) library.close();
   }
   say(result.sound.removedAt || removedSounds.has(result.sound.id) ? "That sound was already left, then removed. It wasn't placed again."
-    : whileInside ? `${soundName(soundId)} is playing. It stops when you come out.`
+    : whileInside ? `${soundName(soundId)} was left for your stay. It ends when you come out.`
     : target ? `You answered ${target.by}'s ${soundName(target.soundId)} with ${soundName(soundId)}.`
-    : `You left ${soundName(soundId)} here. Everyone in the place can hear it now.`);
+    : `You left ${soundName(soundId)} here.`);
   return null;
 }
 
