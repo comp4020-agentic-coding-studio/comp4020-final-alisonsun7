@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme, renderScene, renderPlanet } from "./html.js";
+import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme, renderProjectNote, renderScene, renderPlanet } from "./html.js";
 import { log } from "./log.js";
 import * as sessions from "./sessions.js";
 import { SCENES, findMode, findScene, findZone, liveMode } from "./shared/catalog.js";
@@ -62,6 +62,10 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/shared/sound-response.js": js("/shared/sound-response.js"),
   "/shared/planet.js": js("/shared/planet.js"),
   "/shared/chorus.js": js("/shared/chorus.js"),
+  "/shared/chorus-guidance.js": js("/shared/chorus-guidance.js"),
+  "/shared/chorus-signature.js": js("/shared/chorus-signature.js"),
+  "/shared/chorus-placement.js": js("/shared/chorus-placement.js"),
+  "/shared/chorus-invitation.js": js("/shared/chorus-invitation.js"),
   "/shared/npc-routines.js": js("/shared/npc-routines.js"),
   "/shared/huts.js": js("/shared/huts.js"),
   "/shared/environment.js": js("/shared/environment.js"),
@@ -163,6 +167,14 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
 
   if (method === "GET" && pathname === "/") return html(res, renderLanding(user));
   if (method === "GET" && pathname === "/readme/") return html(res, renderReadme());
+  const projectNote = method === "GET" && pathname.match(/^\/project-notes\/([a-z-]+)$/);
+  if (projectNote) {
+    const body = renderProjectNote(projectNote[1]);
+    return html(res, body ?? renderNotFound("That project note is not published here."), body === null ? 404 : 200);
+  }
+  if (method === "GET" && pathname === "/assets-manifest.json") {
+    return send(res, 200, await readFile(new URL("assets-manifest.json", PUBLIC_DIR), "utf8"), "application/json; charset=utf-8");
+  }
   if (method === "GET" && pathname === "/about") return html(res, renderAbout());
   if(method === "GET" && ["/2d", "/2.5d"].includes(pathname)) {
     const target = new URLSearchParams({view:pathname.slice(1)});if(url.searchParams.get("zone"))target.set("zone",url.searchParams.get("zone")!);
@@ -170,7 +182,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   }
   if (method === "GET" && pathname === "/planet") {
     const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
-    return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view"))));
+    return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view")), url.searchParams.get("work")));
   }
   if (method === "GET" && pathname === "/explore") {
     const places = SCENES.flatMap((s) => s.modes.map((m) => ({ sceneId: s.id, mode: m.id, ...sessions.placeSummary(s.id, m.id) })));
@@ -192,7 +204,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
     if (scene.id === "planet") {
       const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
-      return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view"))));
+      return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view")), url.searchParams.get("work")));
     }
     // ?zone= (or the older ?shot=) picks where you arrive
     const zoneAsked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";

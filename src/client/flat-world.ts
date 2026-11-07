@@ -136,6 +136,7 @@ export class FlatWorld {
     get grounded(): boolean { return this.jumpingAt === null; }
     get walkingIntent(): boolean { return this.walkingTarget !== null; }
     get walkingIntentRevision(): number { return this.walkingRevision; }
+    canPlaceAt(x: number, z: number): boolean { return !sceneHutAt("planet", x, z) && canStandFlat(x, z, this.locked()); }
     get serverNow(): number { return this.serverSample.server + Math.max(0, performance.now() - this.serverSample.received); }
     get cameraDistance(): number { return this.zoom; }
     get area(): PlanetPlace { return [...PLANET_PLACES].sort((a,b) => planetDistance(this.position,a) - planetDistance(this.position,b))[0]; }

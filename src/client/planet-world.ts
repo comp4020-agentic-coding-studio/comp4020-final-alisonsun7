@@ -140,7 +140,7 @@ export class PlanetWorld {
         area: (p: PlanetPlace) => void;
         wait: (text: string) => void;
         interaction?: (cue: PlanetInteraction | null) => void;
-        work?: (workId: string | null, placeId: ChorusPlace) => void;
+        work?: (workId: string | null, placeId: ChorusPlace, sourceId?: string) => void;
     }) {
         const canvas = this.renderer.domElement;
         canvas.className = "planet-canvas";
@@ -203,6 +203,9 @@ export class PlanetWorld {
     get grounded(): boolean { return this.jumpStarted === null; }
     get walkingIntent(): boolean { return this.walkingTarget !== null; }
     get walkingIntentRevision(): number { return this.walkingRevision; }
+    canPlaceAt(x: number, z: number): boolean {
+        return !sceneHutAt("planet", x, z) && this.garden.canStand(x, z) && this.built.canStand(x, z, this.locked());
+    }
     get serverNow(): number { return this.serverSample.server + Math.max(0, performance.now() - this.serverSample.received); }
     get responses() { return this.residents.responses.map(r => { const figure = this.residents.figures.find(f => f.userData.soundResident?.id === r.residentId), p = figure && this.residentPos.get(figure); return p ? { ...r, x: p.x, z: p.z } : r; }); }
     get area(): PlanetPlace { return [...PLANET_PLACES].sort((a, b) => planetDistance(this.position, a) - planetDistance(this.position, b))[0]; }
@@ -359,7 +362,7 @@ export class PlanetWorld {
                 const wall = ray.intersectObjects(this.built.solids, false)[0];
                 const ground = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(), R - .03), new THREE.Vector3());
                 if ((!wall || wall.distance >= sculpture.distance - .05) && (!ground || ray.ray.origin.distanceTo(ground) >= sculpture.distance - .05)) {
-                    this.opts.work!(sculpture.workId, sculpture.placeId); return;
+                    this.opts.work!(sculpture.workId, sculpture.placeId, sculpture.sourceId); return;
                 }
             }
             const hit = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(), R), new THREE.Vector3()); if (hit) {

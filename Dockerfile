@@ -27,6 +27,9 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=build /app/dist ./dist
 COPY public ./public
 COPY README.md ./README.md
+# Exactly the four public notes linked by README; never the whole work folder.
+COPY docs/chorus-audio.md docs/little-chorus.md ./docs/
+COPY docs/submission/promise-evidence-map.md docs/submission/human-playtest.md ./docs/submission/
 
 EXPOSE 8080
 CMD ["node", "dist/server.js"]

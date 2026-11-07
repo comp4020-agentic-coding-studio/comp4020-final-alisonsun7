@@ -2,6 +2,15 @@
 
 # Little Chorus agent rules
 
+ADR030 makes the first shared creation the current quality priority. Explain
+predicted effects from the whole live work, preserve true author marks and
+withdrawn history, and treat a work invitation as a public reference only.
+Blocked placement must keep private listening available and require an explicit
+safe walk followed by a separate Leave action. Never solve density by silently
+moving old sources, publishing a draft, or weakening authoritative room limits.
+Judge the complete experience and evidence; assertion counts alone are not a
+quality or grade claim.
+
 The design pack in `design/sound-of-a-city/` (start with its `CLAUDE.md` and
 `START_HERE.md`) was the starting point. The decisions in `docs/decisions/`
 record where the build went from there: 004 to 007 the walkable place, the
@@ -319,5 +328,6 @@ A green spec is not proof the page works: look at the screenshots before
 calling UI work done. Commit continually as you develop (Wen's rule): each
 verified step gets its own commit, never one large commit at the end, so
 the history shows the work as it grew. Log prompts, failures and
-corrections in `docs/evidence-log.md`. Report what wasn't run as not run
-(Docker isn't installed locally). Keep secrets out of git and logs.
+corrections in `docs/evidence-log.md`. Report what wasn't run as not run.
+A local Docker executable exists; report an image/daemon check only when it
+actually ran. Keep secrets out of git and logs.

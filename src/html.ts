@@ -1,3 +1,4 @@
+import { invitationHref } from "./shared/chorus-invitation.js";
 import { readFileSync } from "node:fs";
 import { marked } from "marked";
 import { SCENES, findZone, type Mode, type Scene } from "./shared/catalog.js";
@@ -7,6 +8,41 @@ import { PRESENTATIONS, presentationHref, presentationLabel, type Presentation }
 import type { User } from "./users.js";
 
 const readmeSource = readFileSync(new URL("../README.md", import.meta.url), "utf8");
+
+// Public supporting notes are deliberately enumerated, never a filesystem route.
+const PROJECT_NOTES = {
+  "chorus-audio": { file: "docs/chorus-audio.md", title: "Sound and listening notes" },
+  "promise-evidence-map": { file: "docs/submission/promise-evidence-map.md", title: "Product promises and evidence" },
+  "human-playtest": { file: "docs/submission/human-playtest.md", title: "Two-pair playtest protocol" },
+  "little-chorus": { file: "docs/little-chorus.md", title: "Little Chorus walkthrough" },
+} as const;
+const REPOSITORY = "https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/blob/main/";
+
+function projectDocumentHref(href: string, sourcePath: string): string {
+  const localPlanet = href.match(/^http:\/\/localhost:18861(\/planet(?:[?#].*)?)$/);
+  if (localPlanet) return localPlanet[1];
+  if (!href || href.startsWith("#") || href.startsWith("/") || /^[A-Za-z][A-Za-z0-9+.-]*:/.test(href)) return href;
+  // Resolve only link text. The resulting path is never used to read a file.
+  const target = new URL(href, `https://project.invalid/${sourcePath}`);
+  const path = target.pathname.slice(1);
+  const suffix = target.search + target.hash;
+  if (path === "README.md") return "/readme/" + suffix;
+  if (path === "public/assets-manifest.json") return "/assets-manifest.json" + suffix;
+  for (const [slug, note] of Object.entries(PROJECT_NOTES)) {
+    if (path === note.file) return `/project-notes/${slug}${suffix}`;
+  }
+  // Unpublished supporting files remain repository references, not local routes.
+  return REPOSITORY + path + suffix;
+}
+
+function renderProjectMarkdown(source: string, sourcePath: string): string {
+  return marked.parse(source, {
+    async: false,
+    walkTokens(token) {
+      if (token.type === "link" || token.type === "image") token.href = projectDocumentHref(token.href, sourcePath);
+    },
+  });
+}
 
 export const NOT_AFFILIATED = "Independent student creative project. Not affiliated with or endorsed by ANU or LAB ANU.";
 
@@ -205,7 +241,7 @@ ${modeNav}
 
 // A separate playable edition. The server supplies this world's real room;
 // the new page never maps old coastal contributions onto planet coordinates.
-export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null = null, view: Presentation = "3d"): string {
+export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null = null, view: Presentation = "3d", work: unknown = null): string {
   const identity = user?.nickname ?? snap.you?.name ?? "Just looking around";
   const flat = view !== "3d";
   const viewLinks = PRESENTATIONS.map(item=>`<a href="${presentationHref(item)}" data-presentation="${item}" title="${presentationLabel(item)}"${item===view?' aria-current="page"':""}>${item === "3d" ? "3D" : item === "2d" ? "2D" : "2.5D"}</a>`).join("");
@@ -260,7 +296,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   <p class="planet-kicker">Welcome to Little Chorus</p><h2 id="planet-join-title">A little room for you.</h2>
   <p>Bring a friend, leave a sound, and see what this world becomes. A quiet nook or a lively gathering is yours to make together.</p>
   <form id="planet-join-form" method="post" action="/join">
-    <input type="hidden" name="next" value="${presentationHref(view)}"/>
+    <input type="hidden" name="next" value="${escapeHtml(invitationHref(work, presentationHref(view)))}"/>
     <label class="planet-name" for="planet-nickname">Your name here<input id="planet-nickname" name="nickname" maxlength="24" autocomplete="nickname" required value="${escapeHtml(user?.nickname ?? "")}" placeholder="A nickname is fine"/></label>
     <fieldset class="planet-avatars"><legend>Come as</legend><label><input type="radio" name="avatar" value="cat"${avatar === "cat" ? " checked" : ""}/>${avatarMark("cat")} A cat</label><label><input type="radio" name="avatar" value="dog"${avatar === "dog" ? " checked" : ""}/>${avatarMark("dog")} A dog</label></fieldset>
     <details${flat ? " hidden" : ""}><summary>Look direction</summary><label class="planet-look" for="planet-look">Mouse or trackpad<select id="planet-look" name="look-mode"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label>
@@ -318,7 +354,23 @@ export function renderReadme(): string {
     "about",
     `${nav}
 <main class="prose readme">
-${marked.parse(readmeSource, { async: false })}
+${renderProjectMarkdown(readmeSource, "README.md")}
+</main>
+${footer}`,
+  );
+}
+
+export function renderProjectNote(slug: string): string | null {
+  if (!Object.hasOwn(PROJECT_NOTES, slug)) return null;
+  const note = PROJECT_NOTES[slug as keyof typeof PROJECT_NOTES];
+  const source = readFileSync(new URL(`../${note.file}`, import.meta.url), "utf8");
+  return page(
+    `${note.title} — Little Chorus`,
+    "about",
+    `${nav}
+<main class="prose readme project-note">
+<p><a href="/readme/">← About Little Chorus</a></p>
+${renderProjectMarkdown(source, note.file)}
 </main>
 ${footer}`,
   );

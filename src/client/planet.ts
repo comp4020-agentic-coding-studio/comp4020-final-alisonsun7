@@ -8,7 +8,9 @@ import { PlanetSocial } from "./planet-social.js";
 import { PlanetAudio } from "./planet-audio.js";
 import { RoutineAudio } from "./routine-audio.js";
 import { ChorusStudio } from "./chorus-studio.js";
-import type { ChorusWork } from "../shared/chorus.js";
+import { chorusPlaceAt, type ChorusWork } from "../shared/chorus.js";
+import { invitationHref, invitationWork } from "../shared/chorus-invitation.js";
+import { placementAvailability, findNearbyPlan } from "../shared/chorus-placement.js";
 import { SoundLibrary } from "./sound-library.js";
 import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
 import { PlanetSoundInteractions } from "./planet-sound-interactions.js";
@@ -45,6 +47,8 @@ let soundInteractions: PlanetSoundInteractions | undefined;
 let social: PlanetSocial | undefined;
 let walkingReply: string | null = null;
 let walkingReplyRevision = 0;
+let placementPlan: { soundId: string; parent: SoundReference | null; target: Position; revision: number } | null = null;
+const invitedWork = invitationWork(new URLSearchParams(location.search).get("work"));
 function say(text: string): void { notice.textContent = text; notice.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => notice.hidden = true, 8000); }
 const audio = new PlanetAudio(count => stage.dataset.voices = String(count));
 audio.setVolume(.7);
@@ -58,12 +62,16 @@ const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l =
         studio.frame();
         social?.frame();
         updateReplyIntent();
+        updatePlacementPlan();
         updateView();
         const run = $("planet-run"), pressed = String(world.runEnabled);if (run.getAttribute("aria-pressed") !== pressed) run.setAttribute("aria-pressed", pressed);
         if (boot.joined && connected && performance.now() - lastMove > 180)
             void reportMove();
     }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description;document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b => b.setAttribute("aria-pressed",String(b.dataset.place === p.id))); }, wait: say,
-    work: (id) => id ? studio.showJournal(id) : openLibrary(),
+    work: (id, _place, sourceId) => {
+        if(sourceId){studio.dock.querySelector<HTMLButtonElement>("#chorus-minimise")?.click();soundInteractions?.select(sourceId);}
+        else if(id)studio.showJournal(id);else openLibrary();
+    },
     interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } };
 const world = flat ? new FlatWorld(stage, worldOptions, visualView) : new PlanetWorld(stage, worldOptions);
 world.setSelf(snapshot.you);
@@ -339,6 +347,8 @@ const studio = new ChorusStudio(stage, {
     minimise: () => soundInteractions?.dismiss(),
     at: () => here, you: () => snapshot.you, ready: () => boot.joined && connected,
     preview: id => audio.preview(id), stop: () => audio.stopPreview(), publish: id => leaveSound(id),
+    availability: id => placementAvailability(id, here, reply, [...sounds.values()], (x,z)=>world.canPlaceAt(x,z)),
+    makeRoom: (id,parent) => makeRoom(id,parent), invite: work => inviteTo(work),
     respond: source => startReply(source), create: () => {cancelReply();openLibrary();},
     remove: source => {const sound = sounds.get(source.id);if(sound)void removeSound(sound);},
     visit: work => afterDialogClose(studio.journal, () => {world.goTo(work.placeId);world.focusWork(work.id);lastSent="";}),
@@ -353,6 +363,43 @@ function receiveChorus(works: readonly ChorusWork[]): void {
     stage.dataset.chorus = JSON.stringify(chorus.map(w=>({id:w.id,placeId:w.placeId,variant:w.variant,duet:w.duet,sources:w.sources.map(s=>({id:s.id,byId:s.byId,replyToId:s.replyToId,removedAt:s.removedAt})),live:w.liveSources.map(s=>s.id)})));
 }
 receiveChorus(chorus);
+const placementIntent = document.createElement("aside");placementIntent.className="chorus-placement-intent";placementIntent.hidden=true;
+const placementText=document.createElement("p"), stopPlacing=button("Cancel walk",()=>{cancelPlacement();world.focus();});stopPlacing.id="chorus-walk-cancel";placementIntent.append(placementText,stopPlacing);stage.append(placementIntent);
+function cancelPlacement(): void { if(placementPlan)world.cancelWalkingIntent();placementPlan=null;placementIntent.hidden=true; }
+function makeRoom(soundId: string, parent: SoundReference | null): void {
+    const place=chorusPlaceAt(here);
+    const target=findNearbyPlan(soundId,here,parent,[...sounds.values()],(x,z)=>world.canPlaceAt(x,z) && (!!parent || !place || chorusPlaceAt({x,z})===place));
+    if(!target){const feedback=studio.element.querySelector<HTMLElement>(".chorus-feedback");if(feedback)feedback.textContent="There is no safe space beside this sound. Cancel and try Pocket Jam or Reading Nook, or withdraw a sound beside you. Nothing has been shared.";return;}
+    afterDialogClose(studio.element,()=>{
+        cancelPlacement();walkingReply=null;
+        if(!world.walkToward(target,.15))return say("Choose a spot again when you are back in the world.");
+        placementPlan={soundId,parent,target,revision:world.walkingIntentRevision};placementIntent.hidden=false;
+        placementText.textContent=`Finding room for ${findSound(soundId)?.label ?? "your sound"}. You will choose Leave when you arrive.`;
+        world.focus();
+    });
+}
+function updatePlacementPlan(): void {
+    const plan=placementPlan;if(!plan)return;
+    if(plan.parent&&(!sounds.has(plan.parent.id)||ended.has(plan.parent.id))){cancelPlacement();say("That sound was withdrawn. Your answer was not sent.");return;}
+    const arrived=planetDistance(here,plan.target)<.34;
+    if(arrived){
+        cancelPlacement();reply=plan.parent;library.setReply(reply);openLibrary();
+        studio.element.querySelector<HTMLButtonElement>(`[data-leave="${CSS.escape(plan.soundId)}"]`)?.focus();
+    }else if(!world.walkingIntent||world.walkingIntentRevision!==plan.revision){cancelPlacement();say("Walk cancelled. Nothing was shared.");}
+}
+const invitation=document.createElement("dialog");invitation.id="chorus-invite-dialog";invitation.className="chorus-dialog chorus-invite-dialog";invitation.hidden=true;invitation.setAttribute("aria-labelledby","chorus-invite-title");
+const invitationTitle=document.createElement("h2");invitationTitle.id="chorus-invite-title";invitationTitle.textContent="Meet me at our work.";
+const invitationCopy=document.createElement("p");invitationCopy.textContent="Send this link to a friend, or keep it for tomorrow. The work remembers each person's sounds and answers.";
+const invitationLabel=document.createElement("label");invitationLabel.htmlFor="chorus-invite-url";invitationLabel.textContent="Link to this work";
+const invitationUrl=document.createElement("input");invitationUrl.id="chorus-invite-url";invitationUrl.type="url";invitationUrl.readOnly=true;invitationUrl.onclick=()=>invitationUrl.select();
+const invitationStatus=document.createElement("p");invitationStatus.setAttribute("role","status");
+const copyInvitation=button("Copy link",()=>void(async()=>{try{await navigator.clipboard.writeText(invitationUrl.value);invitationStatus.textContent="Link copied. Your friend can join with their own name.";}catch{invitationUrl.focus();invitationUrl.select();invitationStatus.textContent="Select and copy this link to share it.";}})());copyInvitation.className="btn primary";
+const closeInvitation=button("Back to the world",()=>hide(invitation));closeInvitation.className="btn ghost";
+invitation.append(invitationTitle,invitationCopy,invitationLabel,invitationUrl,copyInvitation,closeInvitation,invitationStatus);stage.append(invitation);containFocus(invitation);native(invitation,$("planet-place"));
+function inviteTo(work: ChorusWork): void {
+    const open=()=>{invitationUrl.value=new URL(invitationHref(work.id),location.origin).href;invitationStatus.textContent="";show(invitation);invitationUrl.focus();invitationUrl.select();};
+    if(studio.journal.open)afterDialogClose(studio.journal,open);else open();
+}
 function openLibrary(full = false): void { if (!boot.joined) {
     show(arrival);
     return;
@@ -370,8 +417,9 @@ stage.append(conversations.element);containFocus(conversations.element);
 const replyIntent = document.createElement("aside");replyIntent.id = "planet-reply-intent";replyIntent.className = "planet-reply-intent";replyIntent.hidden = true;
 const replyText = document.createElement("p"), chooseReply = button("Choose a response", () => { if (reply) startReply(reply); }), cancelReplyButton = button("Cancel", cancelReply);
 chooseReply.id = "planet-reply-choose";cancelReplyButton.id = "planet-reply-cancel";replyIntent.append(replyText, chooseReply, cancelReplyButton);stage.append(replyIntent);
-function cancelReply(): void { draftRevision++;reply = null;operation = null;walkingReply = null;world.cancelWalkingIntent();library.setReply(null);replyIntent.hidden = true;world.focus(); }
+function cancelReply(): void { cancelPlacement();draftRevision++;reply = null;operation = null;walkingReply = null;world.cancelWalkingIntent();library.setReply(null);replyIntent.hidden = true;world.focus(); }
 function startReply(reference: SoundReference): void {
+    cancelPlacement();
     if (!boot.joined) { show(arrival);return; }
     if (!connected) return say("Reconnect before responding. Your sounds have not changed.");
     const source = sounds.get(reference.id);
@@ -531,7 +579,7 @@ $<HTMLFormElement>("planet-join-form").onsubmit = async (e) => {
             error.textContent = data.error ?? "Choose a name and character.";
             return;
         }
-        location.assign(presentationHref(visualView));
+        location.assign(invitationHref(invitedWork, presentationHref(visualView)));
     }
     catch {
         const error = $("planet-join-error");
@@ -564,6 +612,11 @@ try {const handoff=enterPresentation(sessionStorage,visualView,snapshot.you?.id?
 const startPlace = new URLSearchParams(location.search).get("zone");
 if (startPlace)
     world.goTo(startPlace);
+if(invitedWork){
+    const follow=():void=>{const work=chorus.find(work=>work.id===invitedWork);if(work){world.goTo(work.placeId);world.focusWork(work.id);studio.showJournal(work.id);}else say("This work is not available here. You can still begin a little sound of your own.");};
+    const entry=arrival.open?arrival:studio.welcome.open?studio.welcome:null;
+    if(entry)entry.addEventListener("close",()=>setTimeout(follow,0),{once:true});else follow();
+}
 renderPeople();
 renderShared();
 renderOccupancy();

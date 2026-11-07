@@ -60,6 +60,10 @@ export class PlanetSoundInteractions {
     this.frame();
   }
   dismiss(): void {this.dismissed = true;this.last = -Infinity;this.frame();}
+  select(id: string): boolean {
+    if (!this.sounds.some(sound => sound.id === id)) return false;
+    this.selected = id;this.dismissed = false;this.last = -Infinity;this.frame();this.answer.focus({preventScroll:true});return true;
+  }
   respondNearest(): boolean {
     if (!this.current || this.card.hidden || !this.opts.available() || document.querySelector("dialog:modal") || !document.getElementById("planet-chat")?.hidden) return false;
     this.opts.respond(this.current);return true;
