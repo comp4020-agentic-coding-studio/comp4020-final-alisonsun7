@@ -2706,3 +2706,61 @@ for the original-preview switch; the actual 18861 all-table comparison,
 listener/served-byte verification and release tag must come from that switch's
 record. Human listening, two uncoached pairs, voluntary recombination, real
 next-day return and public deployment are still not claimed.
+
+
+### The actual local preview switch preserves current work
+
+Application `28f1e5860b4d28ac46e53a658702e84885206c44` is now serving the original
+`http://localhost:18861/planet` preview, including final runtime `26805fb`.
+The tracked utility stopped only the recorded old process and retained its
+compiled output (`06c1ca9`). The new listener is PID 65055, parent 1, no TTY.
+It uses the same original `/private/tmp/soac-polish-review/review-final.db`.
+Every row in all twelve persistent tables is exactly unchanged; no metadata
+allowance, schema mutation, coordinate rewrite or historical DB restoration
+was needed. The preserved counts include 25 users, 24 participants, 23 sounds,
+seven operation records, one reply and both scenes/sessions/environment rows.
+
+All 47 served client/shared modules and styles match the installed candidate
+bytes with no-cache headers. Independent readback also verifies the actual
+bytes/SHA-256 of all three original score derivatives, and all eight original
+live sound IDs/coordinates: five coastal and three planetary. The previous
+compiled application remains available for `python3 scripts/local-preview.py
+--rollback`, which keeps the current database. No writing test targeted the
+original preview. `/planet`, the original coast and `/readme/` return 200.
+The structured record includes the actual switch and independent readback,
+separate from the isolated 20-check utility fixture.
+
+An already-open tab needs a refresh for the new client. Fresh-profile GET-only
+main-preview smoke and the final annotated `chorus-garden-2026-11-07` tag are
+still being completed by integration; no target hash is invented inside its
+own evidence commit. This is local preview promotion only. No main push,
+public deployment or access change occurred, and the human/listening/next-day
+limitations remain unchanged.
+
+
+The final original-preview entry smoke passes all **seven read-only checks**
+in a fresh empty-cookie context. Its guard blocks every non-GET/HEAD request;
+none was attempted. The actual nickname invitation and 1920×1020 world canvas
+render, with no join, contribution, AudioContext, voice or playback start, and
+no page/static/request errors. The root agent reviewed the unretouched
+[promoted entry capture](screenshots/26-chorus-promoted-entry.png). A fresh
+read-only SQLite recomparison after the browser closed matches every count
+and SHA-256 in all twelve promotion tables. The original listener remains
+PID 65055; owned review listeners on 18884/18885/18887/18890 were stopped after
+verifying their recorded identity, while scratch databases/logs are retained.
+
+The first smoke attempt waited for networkidle on the persistent-SSE page and
+then hit an encoded-URL-path artifact write in the Chinese directory. The
+harness now waits for DOMContentLoaded plus actual visible canvas/join state
+and uses fileURLToPath. This correction and its first failure log are retained;
+it is not relabelled as an application bug or concealed by the final pass.
+
+No engineering acceptance gate remains open for the local candidate. The
+final evidence commit and annotated `chorus-garden-2026-11-07` tag are release
+orchestration; their target is resolved from Git after creation, not invented
+inside a self-referential document. Application commit `28f1e58` includes code
+`26805fb`. Public deployment/main push, human listening, two uncoached pairs,
+voluntary recombination, physical-phone performance and real next-day return
+remain unperformed and are not implied by the local release.
+
+The final local release is identified by the annotated tag `chorus-garden-2026-11-07`; resolve its target with Git. Application `28f1e58` serves runtime `26805fb`, and the final evidence commit changes documentation only. The source rollback tag is `before-chorus-garden-2026-11-07`; the tracked preview utility switches compiled application files while retaining the current database. No main push or public deployment was performed.

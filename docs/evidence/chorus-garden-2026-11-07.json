@@ -1,7 +1,7 @@
 {
   "date": "2026-11-07",
   "product": "Little Chorus / 小小合鸣",
-  "status": "Technical local candidate verified; original18861 promotion/final release record pending, with human/artistic/deployment limits explicit",
+  "status": "Local playable candidate and original-preview promotion verified; final annotated tag is release orchestration, while human/artistic/public-deployment limits remain explicit",
   "request": "A complete, memorable first shared creation for two to six friends without musical training, centred on Listening Green with distinct Pocket Jam and Reading Nook uses.",
   "branch": "codex/chorus-garden",
   "source": {
@@ -11,19 +11,24 @@
     "compatibleScoreAndAudio": "8c96213c3375792eed20339f9ec90d62b36b2f4f",
     "playableGardenRuntime": "51cb210600d34bd5083c29229bf6b4f2e6db5766",
     "initialPreviewUtility": "af8fd98e095fcde83061aad2dec8437c1470fae3",
-    "finalReleaseCommit": null,
-    "scope": "Canonical shared/audio guards and Reading carrier shift at2c2f587 pass190 source tests,43 integrated browser checks and15 unchanged coastal suites. Later portrait-only camera source26805fb passes8 focused actual desktop/phone/touch checks. The runs retain separate source scopes. Preview utilitya3d6cf6 passes20 lifecycle checks. Original18861 cutover and final release/tag fields await their own record.",
+    "scope": "The original18861 preview now serves application28f1e58, including final runtime26805fb. Canonical state/audio logic at2c2f587 has190 source tests,43 integrated browser checks and15 unchanged coastal suites; later portrait composition26805fb has8 focused actual touch/render checks. Preview utilitya3d6cf6 passes20 lifecycle checks. The actual promotion preserves every row of all12 current tables and verifies47 served modules/styles plus all3 score derivatives. No full-suite result is relabelled as including the later camera-only patch.",
     "previewUtilityRestartCorrection": "a3d6cf6ff691682c5243da792e4ed8a2d1625c0d",
     "finalLateAcknowledgementGuardCommit": "92d706b1ffbd5f1f84f54fb88dbf499d0b423011",
     "readingDisplayOffset": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
     "guardedRuntime": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
-    "finalRuntimeCandidateCommit": "26805fb9de720657347ce737755a0bed77617663"
+    "finalRuntimeCandidateCommit": "26805fb9de720657347ce737755a0bed77617663",
+    "applicationCommit": "28f1e5860b4d28ac46e53a658702e84885206c44",
+    "finalReleaseTag": "chorus-garden-2026-11-07"
   },
   "rollback": {
     "tag": "before-chorus-garden-2026-11-07",
     "dataRule": "Switch application files while retaining the same current database. Never restore a historical database for visual rollback.",
     "script": "scripts/local-preview.py",
-    "compatibilityLimit": "An older catalogue may omit score choices and effects introduced by this edition. Their database sources/replies remain intact and become available again under the newer application; rollback is data-preserving, not a promise of identical feature support."
+    "compatibilityLimit": "An older catalogue may omit score choices and effects introduced by this edition. Their database sources/replies remain intact and become available again under the newer application; rollback is data-preserving, not a promise of identical feature support.",
+    "retainedPreviousApplicationCommit": "06c1ca90714332b5906314f50c934566b379a6e0",
+    "retainedPreviousCompiledOutput": ".cache/preview-switch-_gwwkkk4/old-dist",
+    "originalDatabase": "/private/tmp/soac-polish-review/review-final.db",
+    "localCommand": "python3 scripts/local-preview.py --rollback"
   },
   "implementation": {
     "runtimeDependenciesAdded": 0,
@@ -1727,6 +1732,319 @@
       },
       "browserErrors": [],
       "cleanupErrors": []
+    },
+    "previewPromotion": {
+      "artifact": ".cache/chorus-garden-promotion.json",
+      "sha256": "eb952b2ee76bff86a12ec734ec253c3ef8142808c143eda736e3148ebe6680df",
+      "report": {
+        "applicationCommit": "28f1e5860b4d28ac46e53a658702e84885206c44",
+        "pid": 65055,
+        "port": 18861,
+        "previousCommit": "06c1ca90714332b5906314f50c934566b379a6e0",
+        "database": "/private/tmp/soac-polish-review/review-final.db",
+        "allRowsPreserved": true,
+        "tables": {
+          "memories": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "participants": {
+            "rows": 24,
+            "sha256": "db131fb5a4ea14be04ed4aea3a223bee49f25bc348fdf805e04b21153c174c54"
+          },
+          "placed_sounds": {
+            "rows": 23,
+            "sha256": "4d4adc92822249aa980986c3ffee8a63e3985d45ef3207b5fe7b814b8c755ffc"
+          },
+          "placements": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "scenes": {
+            "rows": 2,
+            "sha256": "840269eb592f274c692d94a12e0bba4bd86086e5a8cb5e742bdbb2a65ca68658"
+          },
+          "session_environments": {
+            "rows": 2,
+            "sha256": "f051254a97e25f3adf91778929d3ff310da6e92af7af619de02b4832d7340920"
+          },
+          "session_events": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "sessions": {
+            "rows": 2,
+            "sha256": "5f1e05ba49b15fc80216defef830b83b9a004744b49b3ac92e5db949b168c73f"
+          },
+          "sound_assets": {
+            "rows": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "sound_operations": {
+            "rows": 7,
+            "sha256": "efb31dcbc2362ec2e44b99006f5bc674ebd83ba9f697b2b967a6d614e4759037"
+          },
+          "sound_replies": {
+            "rows": 1,
+            "sha256": "6843c00953058e313535e09d760f2c051efa5b86613376bb8a93ccd13925f9e1"
+          },
+          "users": {
+            "rows": 25,
+            "sha256": "85a2004647360fa9cc71b33ff03112cd7c6500eb18e9f40147c3120715512896"
+          }
+        },
+        "served": {
+          "/client/scene.js": "6cf0eff42799d54150c705f91872e18555e327bdff79c9eb28478e6768d216c1",
+          "/client/figures.js": "a672f99ce98d3d543ac69096c600c06cc916afe436b1f274225acfb7e5d28386",
+          "/client/characters.js": "8cbe158b4d32fe1f1b26a90f7b6d22ed205fbc27b0a1fc1c08c89306f5c42ca8",
+          "/client/coastal-renderer.js": "5d48223777f6d20b488293450366e75097ed82a9fa0fe312fdda21846ffea826",
+          "/client/d-pines.js": "2a98aa3718d57e21f61ff9f0c654352278e5bb7323c20c7e405a6f1c82a70b79",
+          "/client/world.js": "429397ff7aed0ed7d3d47d07d688ab01c7d83741fd0b7bb98240bc8e0955297f",
+          "/client/world-build.js": "6cab2fb6ee376d48f49b4e1f6a150f002acc9ae65667cac54ba4a796762b007e",
+          "/client/sky.js": "ec8e1f446b908b1300cbc175d6a2b6c06546cd697e6669872f6da5f83d35723c",
+          "/client/cafe.js": "ea9b61e4158c46f5c80cf47809b2d2e095df28cb8d5d47e0f92e634191f0b8ad",
+          "/client/seaside.js": "011b7acc4b39e77cc4b1b549c0f027e86781d26b09f38188a8ad2de270150dfb",
+          "/client/huts.js": "5b0d254a528d9dc69239edfa0c04508210c6fb2d6b291f6fa933191af7b0390a",
+          "/client/guide.js": "bbe34ba005b02a32a8e634296d6aca887cf9af8a778a5a26980c908a6b066a2e",
+          "/client/sound-library.js": "2bd7ac7ea502c02d797d35142e1484f90acaf59ecda6b15272214c019b54ea28",
+          "/client/listening-trail.js": "d113c9e2f59346d2a095e5941ac128782144765679e9fd606ce736508106f5f8",
+          "/client/look-settings.js": "74a8d2ffa87882b15f0ede080aaaa81650e1c4048f2e64a454f29d0d1b2b5741",
+          "/client/sound-conversations.js": "e9d448773e0880608cf60043eccd5f36f99fe71e1e924a97a216dc8e3e582ff3",
+          "/client/shared-sound-place.js": "7cb84965ed7e9b7f92258e0d4882d2e10aea952be619689d62d744ab70207e77",
+          "/client/sound-connections.js": "b7d38890612d7d43d450fd2a8c9251a2c3c57d4cfdb19df409315b1335b85d9b",
+          "/client/sound-residents.js": "ca291a1a1eca189fe3734fafb834a74c318ee15fed08ee5124b35df37043aee1",
+          "/client/view-mode.js": "6a10a1089aa9d1b261eedef321bc7018394d0dbed287fb42cb4a9a1ad8661eca",
+          "/client/planet.js": "e3173ee8b9abed990c8891132eb625d53cb1097e45ae3adddba89b31d14c3551",
+          "/client/chorus-studio.js": "2ffa1784fb6aced392803002a5856baea949bb8c367246ffd3bde2cf1035eaaa",
+          "/client/chorus-garden.js": "ca1e178472351467f4998e7328b6712f7e57d0defc9b2473e7514e0f1e5119ab",
+          "/client/chorus-instrument.js": "231ffa5d5c52a3619127ebb726d037a48c530427dec2007b72bd57a36f505592",
+          "/client/planet-world.js": "bb457b3d58f0a7e4f3486a97ac83c533588ce88b3140c1b07a649331194865dd",
+          "/client/planet-build.js": "480ecbcfd69576cae25ea617ac7327e1453062a2cce3e48b44c322f309623632",
+          "/client/planet-audio.js": "86cd5fad681793f4faf8855c5627c178205553103f917c97db1514075348d3c7",
+          "/client/planet-connections.js": "61f5071df1ccce7487081ec21f376a510c5622f63d117fbb2b61dda1a8af579a",
+          "/client/planet-sound-interactions.js": "c2b13599f0b78d4c005a83d05fe486264e351158dfca0549e9fbe65ce631efb1",
+          "/client/planet-locomotion.js": "13ff26f442148d54f28a125358efffb98a8c20015f565b2a8962170f7134adfd",
+          "/client/planet-wildlife.js": "73015278406491ee3d16742797b7af36f9966ea03396296274cee03a500f22cf",
+          "/client/planet-coast.js": "f928e6bbccb55886346584e31d5f92e3ab3673ec7015bc53abf9db85efa4a10a",
+          "/client/routine-audio.js": "5611411c45cee1438a3ab9d2b4504e983155e92534cc74bf16c663344ce7579b",
+          "/client/environment-panel.js": "450aa0887817c23770ffe161c0c69dac5ba51a862ff9a760d11ff193b9de6683",
+          "/client/places.js": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+          "/shared/catalog.js": "b62d042e25e3c25f3b913247ae548241501e811f2c35be9ea99c9c8e7e433fd2",
+          "/shared/protocol.js": "764ca473e2976086396b4233fd06bfe5a37ccc3d7ed74b8af784d3501587e0b3",
+          "/shared/sounds.js": "2c7f6fa9606569099e2f172ed7fc9924d6ce04d67c73b1278b3a6671890c8d32",
+          "/shared/sound-response.js": "659159d03f2d4c5df50e714f8118973324b4f487d21504df2f336aa14c3b8d34",
+          "/shared/planet.js": "5830c71f783410405c14242785b9eb581fc02e2dd636fabb051b47996e24a5d2",
+          "/shared/chorus.js": "bc74806055231a8834e8a4d111abd79a2c83770a6803838b338267ff527bfde1",
+          "/shared/npc-routines.js": "8447f8d27b55c48567c1971c15d4608033050e1a193b91ba7da48f64036ca1e2",
+          "/shared/huts.js": "7f0a0dee675ef17173e317e8cba4b5dd46828d17569115d75ae31b4905b5a33d",
+          "/shared/environment.js": "074e77e3fb5af1c186f1608163f68faa8965676d0f60caffb9707b4040b2d3cb",
+          "/shared/landscapes.js": "0b81ba04a0d402a71d1fdc80d31cb3441956b293c482063784c4a619a63488cc",
+          "/client/soundscape.js": "e61cf00908766b420a8e3b95dbef910e2e61e287f268c46aaf146100802d0f0a",
+          "/client/style.css": "766583f983a9c9a9e8975637531c04fccf5f479f435fee932d6e75e5207b0993"
+        },
+        "previousDist": ".cache/preview-switch-_gwwkkk4/old-dist",
+        "backupIsNotForVisualRollback": ".cache/preview-switch-_gwwkkk4/before.db"
+      },
+      "passed": true,
+      "url": "http://localhost:18861/planet",
+      "allPersistentRowsExactlyPreserved": true,
+      "tablesCompared": 12,
+      "sameOriginalDatabase": true,
+      "ordinaryLiveSoundsPreserved": {
+        "total": 8,
+        "seaside": 5,
+        "planet": 3
+      },
+      "verifiedModulesAndStyles": 47,
+      "cacheControl": "no-cache",
+      "process": {
+        "pid": 65055,
+        "parentPid": 1,
+        "tty": "??"
+      },
+      "health": {
+        "/planet": 200,
+        "/scene/seaside?mode=weekday": 200,
+        "/readme/": 200
+      },
+      "independentReadback": {
+        "artifact": ".cache/ensemble/promotion-verification.json",
+        "sha256": "8b93abdccb0f2a0fb8f8b34687217f67c759dbd6ab885c323040db98299a6904",
+        "report": {
+          "applicationCommit": "28f1e5860b4d28ac46e53a658702e84885206c44",
+          "pid": 65055,
+          "port": 18861,
+          "allTablesPreserved": true,
+          "verifiedModulesAndCss": 47,
+          "verifiedScoreFiles": {
+            "/assets/sounds/chorus-chords.mp3": {
+              "bytes": 54333,
+              "sha256": "7b1a311be7163ef1966db19da0d2ce6d83b1e8976a83be00873adf8921cf3f7a"
+            },
+            "/assets/sounds/chorus-pulse.mp3": {
+              "bytes": 54333,
+              "sha256": "84c6a4f194cf29074e0eb892bf9006303dc1caff06c3e351161c78468819823a"
+            },
+            "/assets/sounds/chorus-bells.mp3": {
+              "bytes": 54333,
+              "sha256": "2d2d7dd1d7360575480bdc56cf2c7ca060f64af339ce2885c248c660a94f6d27"
+            }
+          },
+          "preservedLiveSources": [
+            {
+              "id": "snd_1be557b4936c23d0",
+              "sound_id": "trickle",
+              "x": -3.77,
+              "z": 10.8,
+              "scene_id": "planet"
+            },
+            {
+              "id": "snd_2dce186004f3623c",
+              "sound_id": "evening-forest",
+              "x": -11.05,
+              "z": 9.78,
+              "scene_id": "planet"
+            },
+            {
+              "id": "snd_2f6f3db110bd16f5",
+              "sound_id": "beach-waves",
+              "x": -0.01,
+              "z": 10.92,
+              "scene_id": "seaside"
+            },
+            {
+              "id": "snd_603cd0bfc4133ee7",
+              "sound_id": "beach-waves",
+              "x": -6.4,
+              "z": 12.53,
+              "scene_id": "planet"
+            },
+            {
+              "id": "snd_a9002b4dfbecf381",
+              "sound_id": "cafe-chatter",
+              "x": -15.8,
+              "z": -9.4,
+              "scene_id": "seaside"
+            },
+            {
+              "id": "snd_b6139146d927bb97",
+              "sound_id": "espresso",
+              "x": -20.67,
+              "z": -10.87,
+              "scene_id": "seaside"
+            },
+            {
+              "id": "snd_cb29e82daff9dcc2",
+              "sound_id": "coastal-gulls",
+              "x": 35.14,
+              "z": 17.5,
+              "scene_id": "seaside"
+            },
+            {
+              "id": "snd_cdabcfbcf711c84c",
+              "sound_id": "children-playing",
+              "x": 3.7,
+              "z": 10.95,
+              "scene_id": "seaside"
+            }
+          ],
+          "oldApplicationRetained": true,
+          "previousCommit": "06c1ca90714332b5906314f50c934566b379a6e0",
+          "sameDatabase": true
+        }
+      },
+      "scope": "Actual original local preview switch, not a scratch fixture. Before/after comparison uses the same continuously preserved original database; no schema change, catalogue exception, coordinate rewrite or data restoration. Test writes occurred only on isolated scratch ports/databases. Existing original identities, source authors/coordinates/time/tombstones/relations and both rooms remain intact."
+    },
+    "promotedReadOnlyBrowser": {
+      "artifact": ".cache/ensemble/promotion-readonly/results.json",
+      "sha256": "50fb05d965bbb7cd9877bbd463e6447a02913a770173e5fdc9d0175eaaf4a02e",
+      "report": {
+        "type": "read-only promoted build smoke; no join or contribution",
+        "base": "http://localhost:18861",
+        "checks": [
+          {
+            "label": "fresh independent browser context has no cookie identity"
+          },
+          {
+            "label": "promoted /planet serves HTTP200"
+          },
+          {
+            "label": "first entry shows actual Little Chorus join invitation, without joining",
+            "detail": {
+              "title": "Little Chorus — The little world",
+              "heading": "A little room for you.",
+              "invitation": "WELCOME TO LITTLE CHORUS\n\nA little room for you.\n\nBring a friend, leave a sound, and see what this world becomes. A quiet nook or a lively gathering is yours to make together.\n\nYour name here\nCome as\nA cat\nA dog\nLook direction\nFind my place\nJust look around first\n\nYour name is visible to people you meet. No account or email.",
+              "joinOpen": true,
+              "modal": true,
+              "joined": false,
+              "nickname": "",
+              "avatarChoices": 2,
+              "submit": "Find my place",
+              "canvas": {
+                "width": 1920,
+                "height": 1020
+              },
+              "stage": {
+                "at": "1.800,2.200",
+                "soundOn": "false",
+                "voices": "0"
+              },
+              "audio": {
+                "contexts": 0,
+                "bufferStarts": 0,
+                "oscillatorStarts": 0,
+                "mediaPlayCalls": 0
+              }
+            }
+          },
+          {
+            "label": "actual world canvas renders behind the join form",
+            "detail": {
+              "width": 1920,
+              "height": 1020
+            }
+          },
+          {
+            "label": "first entry does not autostart audio",
+            "detail": {
+              "contexts": 0,
+              "bufferStarts": 0,
+              "oscillatorStarts": 0,
+              "mediaPlayCalls": 0
+            }
+          },
+          {
+            "label": "no non-GET/HEAD request attempted; write guard stayed armed"
+          },
+          {
+            "label": "no page errors, missing static responses or failed requests"
+          }
+        ],
+        "unexpectedWrites": [],
+        "pageErrors": [],
+        "badResponses": [],
+        "requestFailures": [],
+        "failed": false,
+        "closed": true
+      },
+      "passed": true,
+      "checks": 7,
+      "applicationCommit": "28f1e5860b4d28ac46e53a658702e84885206c44",
+      "scope": "Actual original18861 entry in a new empty-cookie Chrome context, with every non-GET/HEAD request blocked. No join or contribution. The real1920x1020 canvas renders behind the nickname invitation;0 AudioContexts/voices/starts, no page errors, bad responses or failed requests. The context/browser closed afterward.",
+      "databaseRecheckAfterSmoke": {
+        "allTwelveTableCountsAndSha256ExactlyMatchPromotion": true,
+        "method": "Root read-only SQLite recomparison against the actual promotion snapshot after the browser closed."
+      }
+    },
+    "scratchProcessCleanup": {
+      "portsStopped": [
+        18884,
+        18885,
+        18887,
+        18890
+      ],
+      "method": "Own recorded listener metadata/command verified before stopping; current18861 PID65055 remains running. Scratch databases and logs retained.",
+      "scope": "Owned review processes for this task, not a claim about unrelated services."
     }
   },
   "failuresAndCorrections": [
@@ -1790,17 +2108,17 @@
       "correction": "Run the original unchanged15-suite coastal regression on a dedicated empty database at18890 with a frozen compiled application. Preserve the earlier partial attempt and the original world.",
       "classification": "Fresh-world fixture assumption, not proof that the app failed to remove its owned source; no assertion is weakened.",
       "status": "Verified correction to the test environment: all15 original suites exit0 on18890/frozen2c2f587. Initial two-pass/third-failed clone attempt and five-source audit retained separately; no assertion or original source was removed."
+    },
+    {
+      "observed": "The first read-only smoke awaited networkidle against the persistent-SSE page, then its error-path result write used an encoded URL pathname for the Chinese project directory.",
+      "correction": "Wait for DOMContentLoaded and actual visible canvas/join state; use fileURLToPath for the local artifact directory.",
+      "classification": "Smoke harness/Unicode-path correction, not a production rendering defect or weakened application assertion.",
+      "artifact": ".cache/ensemble/promotion-readonly/first-attempt.log",
+      "sha256": "ba75c66c7c32a337f102daca3c2cd91f4333b836ab3c730d1dc160ffe235212a",
+      "status": "Corrected smoke passes all seven checks with no attempted writes or runtime errors."
     }
   ],
   "pending": {
-    "previewPromotion": {
-      "status": "pending",
-      "port": 18861,
-      "required": "Fresh all-table preservation comparison, verified listener identity, served candidate bytes and current-data rollback metadata."
-    },
-    "finalReleaseCommitAndTag": {
-      "status": "pending"
-    },
     "publicDeployment": {
       "status": "not authorized or performed in this turn",
       "note": "Local promotion and deployment preparation do not authorize main push or public access changes."
@@ -2129,5 +2447,26 @@
       "kind": "actual unretouched running UI capture",
       "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
     }
-  ]
+  ],
+  "engineeringVerificationComplete": true,
+  "promotedEntryScreenshot": {
+    "file": "docs/screenshots/26-chorus-promoted-entry.png",
+    "sourceArtifact": ".cache/ensemble/promotion-readonly/entry.png",
+    "sha256": "8379b6fadfa729801a9f01988a45c83c9fdeee2dbc06985173f01a9a217c8cd1",
+    "pixelWidth": 1920,
+    "pixelHeight": 1080,
+    "kind": "Actual unretouched original18861 running entry after promotion; no join/write",
+    "reviewedBy": "root agent"
+  },
+  "release": {
+    "tag": "chorus-garden-2026-11-07",
+    "tagTarget": "Resolve chorus-garden-2026-11-07^{commit} in Git; the tag identifies this final evidence commit without a circular embedded hash.",
+    "applicationCommit": "28f1e5860b4d28ac46e53a658702e84885206c44",
+    "runtimeCommit": "26805fb9de720657347ce737755a0bed77617663",
+    "localPreview": "http://localhost:18861/planet",
+    "sourceRollbackTag": "before-chorus-garden-2026-11-07",
+    "applicationRollbackCommand": "python3 scripts/local-preview.py --rollback",
+    "rollbackPreservesCurrentDatabase": true,
+    "publiclyPushedOrDeployed": false
+  }
 }

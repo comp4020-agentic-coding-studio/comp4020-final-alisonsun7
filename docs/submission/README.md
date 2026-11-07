@@ -6,8 +6,9 @@ direction recorded in ADR026 / `5d696e5`. These are
 not a replacement for the author's account, evidence of a playtest, or a claim
 that this turn's proposed interaction already works. The root materials have
 now adopted reviewed structural versions with explicit
-author-review notices. Final candidate evidence and the author’s own judgement
-still require completion; adoption is not author sign-off.
+author-review notices. Technical candidate checks and the actual local cutover
+are verified; the author’s own judgement, unfamiliar-pair study and any public
+deployment remain separate. Adoption is not author sign-off.
 
 ## Start here
 

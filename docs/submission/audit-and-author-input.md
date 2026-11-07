@@ -37,9 +37,15 @@ shared-state projection is committed in `b3ad39c`, compatible score and audio
 lifecycles in `8c96213`, and integrated activity camera, studio, source-derived
 sculptures and journal corrections in `51cb210`. Current release evidence is
 being consolidated in [the candidate record](../evidence/chorus-garden-2026-11-07.json).
-The final three-area browser repeat, full specs, local preview promotion and
-public deployment must each be reported from their own results, not inferred
-from these commits.
+The current record now contains the 43-check three-area path, 190-test source
+run, fifteen coastal suites and a separate eight-check final portrait path.
+Application `28f1e58` has been switched into the original 18861 preview with
+all twelve tables exactly unchanged, 47 module/style bytes verified, and all
+eight original live sound IDs/coordinates preserved. This is a verified local
+cutover, not a public deployment or author sign-off. The fresh-profile promoted-entry smoke passes seven GET-only checks without
+joining, starting audio or changing any table hash. The final annotated tag
+`chorus-garden-2026-11-07` is applied by integration after its last evidence
+commit; resolve its target from Git rather than a self-referential hash.
 
 ## Current rules versus historical decisions
 

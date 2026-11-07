@@ -171,12 +171,19 @@ Those exploration features support the world without replacing its core work.
 ## Run, verify and roll back
 
 The candidate is reviewed on isolated port 18885, with separate data for HTTP
-restart checks and other tests. The working preview is
-`http://localhost:18861/planet`; confirm the promotion entry in the
-[release record](evidence/chorus-garden-2026-11-07.json) before assuming it serves
-this candidate. That record distinguishes the completed two-browser creation
-path, HTTP/process checks and isolated preview-utility fixture from pending
-final integration checks. Historical release numbers in
+restart checks and other tests. The working preview at
+`http://localhost:18861/planet` now serves application `28f1e58`, including the
+final portrait camera. Refresh an already-open tab to load its new client. The
+[release record](evidence/chorus-garden-2026-11-07.json) confirms the actual
+switch: all rows in twelve original tables are exactly preserved, all 47
+application modules/styles and three score derivatives match, and all eight
+old live sources retain their IDs and coordinates. It separates this cutover
+from the browser creation path, HTTP/process checks and scratch lifecycle fixture.
+A final fresh-profile check of the actual promoted page passes seven read-only
+checks: no join or write attempted, no audio started, the real canvas/invitation
+rendered and no page/static/request errors occurred. All twelve table hashes
+remain identical after it. The [promoted entry](screenshots/26-chorus-promoted-entry.png)
+is an actual unretouched capture. Historical release numbers in
 [little-chorus-play](evidence/little-chorus-play-2026-11-07.json) describe the
 previous version only.
 
@@ -228,7 +235,7 @@ checkout if the compiled backup is unavailable. Never restore an older database
 for a visual rollback. An older catalogue can omit the new score choices and
 their display effects; their stored sources and replies remain for the newer
 application to read again. The script's startup/switch/rollback fixture is separate
-from an actual 18861 promotion, and neither authorizes a public push/deploy.
+from the completed 18861 promotion, and neither authorizes a public push/deploy.
 
 The core ambition is understandable, enjoyable shared authorship. Automated
 browser success and server persistence do not establish pleasant music, a
