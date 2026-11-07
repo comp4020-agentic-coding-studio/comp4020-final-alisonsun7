@@ -2,8 +2,9 @@
 // where. Shared by server (validation) and client (drawing, playing), so the
 // two can't disagree.
 //
-// Each is a recording from Wikimedia Commons, CC0 or public domain, cut into
-// a loop by scripts/fetch-sounds.mjs and listed in public/assets-manifest.json.
+// Recordings are Wikimedia Commons CC0/public domain derivatives. The three
+// chorus-* parts are original project scores rendered without sampled music.
+// Both forms are listed in public/assets-manifest.json.
 
 // What makes a sound, after Bernie Krause: the land and water, animals, or
 // people. Each family has a colour, so a place with many kinds of sound is
@@ -43,6 +44,9 @@ export const SOUNDS: SoundKind[] = [
   { id: "harbour-boat", label: "Boat by the pier", family: "anthrophony", zones: ["pier", "beach"] },
   { id: "rainstick", label: "A softly turning rainstick", family: "anthrophony", zones: ["forest", "creek", "window", "beach"] },
   { id: "hand-claps", label: "Hand-clap rhythm", family: "anthrophony", zones: ["boardwalk", "beach", "tables", "pier"] },
+  { id: "chorus-chords", label: "Warm chords", family: "anthrophony", zones: ["green", "stage"] },
+  { id: "chorus-pulse", label: "Soft pulse", family: "anthrophony", zones: ["green", "stage"] },
+  { id: "chorus-bells", label: "Little bell notes", family: "anthrophony", zones: ["green", "stage", "reading"] },
 ];
 
 export const findSound = (id: unknown): SoundKind | undefined => SOUNDS.find((s) => s.id === id);

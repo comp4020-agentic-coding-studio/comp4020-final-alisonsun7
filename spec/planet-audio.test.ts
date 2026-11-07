@@ -138,10 +138,12 @@ describe("the new planet's optional shared recording playback", () => {
   it("keeps the nearest-eight budget when a pending recording loses its selected place", async () => {
     const waiting = deferred<AudioBuffer>(); decode.mockReturnValue(waiting.promise);
     const report = vi.fn(), instance = audio(report);
-    const old = sound("old-farther", { soundId: "beach-waves", x: 0, z: 17 });
+    // ADR026 deliberately narrows the ordinary hearing field to14m. Keep
+    // every budget fixture audible here, away from the quiet nook's boundary.
+    const old = sound("old-farther", { soundId: "beach-waves", x: 0, z: 13 });
     instance.setAll([old]); instance.setOn(true); instance.frame(listener, camera, at);
     await settle();
-    const nearer = Array.from({ length: 8 }, (_, i) => sound("near-" + i, { x: Math.cos(i * Math.PI / 4) * 15, z: Math.sin(i * Math.PI / 4) * 15 }));
+    const nearer = Array.from({ length: 8 }, (_, i) => sound("near-" + i, { x: Math.cos(i * Math.PI / 4) * 8, z: Math.sin(i * Math.PI / 4) * 8 }));
     instance.setAll([old, ...nearer]); instance.frame(listener, camera, at + 1000);
     await settle(); waiting.resolve(decoded); await settle();
     expect(sources.filter(source => source.start.mock.calls.length)).toHaveLength(8);

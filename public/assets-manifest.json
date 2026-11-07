@@ -904,7 +904,7 @@
       "measuredAudio": {
         "integratedLufs": -20.58,
         "truePeakDbTP": -2.03,
-        "dcOffset": -6e-06,
+        "dcOffset": -0.000006,
         "targetLufs": -20,
         "truePeakCeilingDbTP": -2
       },
@@ -922,12 +922,87 @@
       "measuredAudio": {
         "integratedLufs": -24.04,
         "truePeakDbTP": -2.16,
-        "dcOffset": -1.3e-05,
+        "dcOffset": -0.000013,
         "targetLufs": -20,
         "truePeakCeilingDbTP": -2
       },
       "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
       "processing": "mono, 12 s from 12 s, last 2 s crossfaded into the start, -20 LUFS target, -2 dBTP ceiling; measured -24.04 LUFS, -2.16 dBTP, DC offset -0.000013, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "original-chorus-chords",
+      "path": "public/assets/sounds/chorus-chords.mp3",
+      "usage": "sound",
+      "publicAllowed": true,
+      "source": "Original Little Chorus procedural score, authored in src/client/chorus-instrument.ts with coding-agent assistance; no samples or third-party composition",
+      "rights": "Original project-generated sound; not a third-party CC0 asset",
+      "sha256": "7b1a311be7163ef1966db19da0d2ce6d83b1e8976a83be00873adf8921cf3f7a",
+      "score": {
+        "bpm": 72,
+        "beatsPerBar": 4,
+        "pitchSet": "C major pentatonic (C,D,E,G,A)",
+        "role": "harmony"
+      },
+      "measuredPcm": {
+        "sampleRate": 44100,
+        "samples": 147000,
+        "peakDbFS": -11.303386826777032,
+        "rmsDbFS": -22.289291235022453,
+        "start": 0,
+        "end": 0
+      },
+      "processing": "Deterministic mono PCM from renderChorusPart; bounded envelopes, short zero-ended seam, 128 kbps MP3 fallback for the legacy coast. Planet uses PCM directly with exact-bar playback-rate correction. Reproduce after build: node scripts/render-chorus-sounds.mjs",
+      "listeningStatus": "Numerical and lifecycle checks only; musical comfort and blend still require human listening."
+    },
+    {
+      "id": "original-chorus-pulse",
+      "path": "public/assets/sounds/chorus-pulse.mp3",
+      "usage": "sound",
+      "publicAllowed": true,
+      "source": "Original Little Chorus procedural score, authored in src/client/chorus-instrument.ts with coding-agent assistance; no samples or third-party composition",
+      "rights": "Original project-generated sound; not a third-party CC0 asset",
+      "sha256": "84c6a4f194cf29074e0eb892bf9006303dc1caff06c3e351161c78468819823a",
+      "score": {
+        "bpm": 72,
+        "beatsPerBar": 4,
+        "pitchSet": "C major pentatonic (C,D,E,G,A)",
+        "role": "rhythm"
+      },
+      "measuredPcm": {
+        "sampleRate": 44100,
+        "samples": 147000,
+        "peakDbFS": -11.002075842169099,
+        "rmsDbFS": -31.943623535173508,
+        "start": 0,
+        "end": 0
+      },
+      "processing": "Deterministic mono PCM from renderChorusPart; bounded envelopes, short zero-ended seam, 128 kbps MP3 fallback for the legacy coast. Planet uses PCM directly with exact-bar playback-rate correction. Reproduce after build: node scripts/render-chorus-sounds.mjs",
+      "listeningStatus": "Numerical and lifecycle checks only; musical comfort and blend still require human listening."
+    },
+    {
+      "id": "original-chorus-bells",
+      "path": "public/assets/sounds/chorus-bells.mp3",
+      "usage": "sound",
+      "publicAllowed": true,
+      "source": "Original Little Chorus procedural score, authored in src/client/chorus-instrument.ts with coding-agent assistance; no samples or third-party composition",
+      "rights": "Original project-generated sound; not a third-party CC0 asset",
+      "sha256": "2d2d7dd1d7360575480bdc56cf2c7ca060f64af339ce2885c248c660a94f6d27",
+      "score": {
+        "bpm": 72,
+        "beatsPerBar": 4,
+        "pitchSet": "C major pentatonic (C,D,E,G,A)",
+        "role": "sparse upper melody"
+      },
+      "measuredPcm": {
+        "sampleRate": 44100,
+        "samples": 147000,
+        "peakDbFS": -13.963674238712231,
+        "rmsDbFS": -27.06266524439794,
+        "start": 0,
+        "end": 0
+      },
+      "processing": "Deterministic mono PCM from renderChorusPart; bounded envelopes, short zero-ended seam, 128 kbps MP3 fallback for the legacy coast. Planet uses PCM directly with exact-bar playback-rate correction. Reproduce after build: node scripts/render-chorus-sounds.mjs",
+      "listeningStatus": "Numerical and lifecycle checks only; musical comfort and blend still require human listening."
     }
   ],
   "notUsed": [
