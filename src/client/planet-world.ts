@@ -37,7 +37,7 @@ export class PlanetWorld {
     private routines = new Map<string, Actor>();
     private npcFrames: NpcRoutineFrame[] = [];
     private publicSounds: PlacedSound[] = [];
-    private cues = new Map<string, THREE.Mesh>();
+    private cues = new PlanetSourceCues(this.scene);
     private residentPos = new Map<AnimalFigure, Position>();
     private residents: SoundResidents;
     private connections: PlanetSoundConnections;
@@ -135,7 +135,10 @@ export class PlanetWorld {
         this.rain.frustumCulled = false;
         this.scene.add(this.rain);
         this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
-        const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" }] as const;
+        const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" },
+            { id: "coffee-barista", x: -9.1, z: -7.55, avatar: "cat", preference: "lively" },
+            { id: "coffee-reader", x: -12.9, z: -4.5, avatar: "dog", preference: "cozy" },
+            { id: "coffee-company", x: -5.1, z: -4.5, avatar: "cat", preference: "lively" }] as const;
         for (const h of homes) {
             const f = new AnimalFigure({ avatar: h.avatar, seed: h.id, role: "npc" });
             this.residents.add({ ...h, label: h.id.replace("-", " ") + " · NPC", facing: 0 }, f, true);
@@ -269,29 +272,9 @@ export class PlanetWorld {
     setContributions(sounds: readonly PlacedSound[]): void {
         this.publicSounds = sounds.filter(s => !s.removedAt && !s.whileIn).map(s => ({ ...s })).sort((a,b)=>a.at.localeCompare(b.at)||a.id.localeCompare(b.id));
         this.residents.setContributions(this.publicSounds);
+        this.built.setContributions(this.publicSounds);
         this.connections.setAll(this.publicSounds);
-        for (const [id, cue] of this.cues)
-            if (!this.publicSounds.some(s => s.id === id)) {
-                cue.geometry.dispose();
-                (cue.material as THREE.Material).dispose();
-                cue.parent?.removeFromParent();
-                this.cues.delete(id);
-            }
-        for (const s of this.publicSounds) {
-            if (this.cues.has(s.id))
-                continue;
-            const family = findSound(s.soundId)?.family;
-            if (!family)
-                continue;
-            const m = new THREE.MeshStandardMaterial({ color: FAMILIES[family].colour, emissive: FAMILIES[family].colour, emissiveIntensity: .35, roughness: .6 });
-            const cue = new THREE.Mesh(new THREE.TorusGeometry(.38, .055, 6, 32), m);
-            cue.rotation.x = -Math.PI / 2;
-            const g = new THREE.Group();
-            g.add(cue);
-            onPlanet(g, s.x, s.z, this.built.heightAt(s.x, s.z) + .08);
-            this.scene.add(g);
-            this.cues.set(s.id, cue);
-        }
+        this.cues.setAll(this.publicSounds, (x, z) => this.built.heightAt(x, z));
     }
     setWorks(works: readonly ChorusWork[]): void {
         this.works = works.map(work => ({ ...work, liveSources: work.liveSources.map(source => ({ ...source })),
@@ -448,6 +431,7 @@ export class PlanetWorld {
         if(this.self&&this.selfLabel)this.label(this.selfLabel,this.self,this.position);
         this.built.animate?.(this.serverNow / 1000, this.reduced.matches);
         this.garden.frame(this.serverNow, this.reduced.matches);
+        this.cues.frame(this.serverNow, this.reduced.matches);
         this.kangaroo.frame(dt, this.position, this.jumpOffset, (x, z) => this.garden.canStand(x, z) && !sceneHutAt("planet", x, z) && this.built.canStand(x, z, locked), this.reduced.matches);
         const companionWork = this.garden.workNear(this.kangaroo.at, 7, false);
         const companionBeat = this.serverNow / (60_000 / CHORUS_BPM) * Math.PI * 2;
@@ -523,8 +507,8 @@ export class PlanetWorld {
         this.arrangeLabels();
         for (const door of this.built.doors) {
             const n = this.npcFrames.find(n => n.hutId === door.id && n.occupying), taken = locked.has(door.id) || (own === door.id), h = PLANET_HUTS.find(h => h.id === door.id)!;
-            const near = planetDistance(this.position, { x: (h.door.x0 + h.door.x1) / 2, z: h.z1 }) < 2.4, passing = n && ["entering", "leaving"].includes(n.phase);
-            const target = passing || (!taken && near) || (own === door.id && near) ? -Math.PI * .49 : 0;
+            const doorDistance = planetDistance(this.position, { x: (h.door.x0 + h.door.x1) / 2, z: h.z1 }), near = doorDistance < 2.4, passing = n && ["entering", "leaving"].includes(n.phase);
+            const target = passing || (!taken && near) || (own === door.id && doorDistance <= .8) ? -Math.PI * .49 : 0;
             door.group.rotation.y += (target - door.group.rotation.y) * Math.min(1, dt * 8);
             const m = door.signal.material as THREE.MeshStandardMaterial;
             m.color.setHex(taken ? 0xc5725b : 0x6da781);
@@ -582,6 +566,8 @@ export class PlanetWorld {
             this.host.dataset.triangles = String(this.renderer.info.render.triangles);
             this.host.dataset.calls = String(this.renderer.info.render.calls);
             this.host.dataset.chorusGardens = JSON.stringify(this.garden.state);
+            this.host.dataset.cafe = JSON.stringify(this.built.cafeState);
+            this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
                 id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,
                 variant: figure.userData.chorusVariant ?? null, npc: true })));
@@ -654,9 +640,84 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); for (const cue of this.cues.values()) {
-        cue.geometry.dispose();
-        (cue.material as THREE.Material).dispose();
-        cue.parent?.removeFromParent();
-    } this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+        a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+}
+
+/** Grounded paper/glass buds mark real contributions. Their shimmer means
+ * "a sound lives here", not a promise that this visitor has enabled audio.
+ * Geometry is pooled per world, while each ended source releases its own
+ * animated material and instance buffer immediately. No point light is added. */
+export class PlanetSourceCues {
+    readonly root = new THREE.Group();
+    private cues = new Map<string, { source: PlacedSound; group: THREE.Group; petals: THREE.InstancedMesh; crystal: THREE.Mesh; ring: THREE.Mesh }>();
+    private geometries: THREE.BufferGeometry[] = [];
+    private materials = new Map<string, { paper: THREE.MeshStandardMaterial; glass: THREE.MeshStandardMaterial; glow: THREE.ShaderMaterial }>();
+    private disposed = false;
+    private petal = new THREE.BufferGeometry();
+    private seed = new THREE.IcosahedronGeometry(.13, 0);
+    private disc = new THREE.CircleGeometry(.64, 32);
+    private ring = new THREE.RingGeometry(.49, .515, 40);
+    constructor(parent: THREE.Object3D) {
+        this.root.name = "planet-contribution-buds"; parent.add(this.root);
+        this.petal.setAttribute("position", new THREE.Float32BufferAttribute([-.13, 0, 0, 0, .48, .035, 0, .17, -.05, 0, .17, -.05, 0, .48, .035, .13, 0, 0], 3));
+        this.petal.computeVertexNormals(); this.geometries.push(this.petal, this.seed, this.disc, this.ring);
+    }
+    get state() { return [...this.cues.values()].map(cue => ({ id: cue.source.id, authorId: cue.source.byId, soundId: cue.source.soundId, x: cue.source.x, z: cue.source.z, kind: "paper-glass-bud" })); }
+    setAll(sounds: readonly PlacedSound[], heightAt: (x: number, z: number) => number = () => 0): void {
+        if (this.disposed) return;
+        const ended = new Set(sounds.filter(source => source.removedAt || source.whileIn).map(source => source.id));
+        const live = [...new Map(sounds.filter(source => !ended.has(source.id) && !!findSound(source.soundId)).map(source => [source.id, source])).values()]
+            .sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id));
+        const keep = new Set(live.map(source => source.id));
+        for (const [id, cue] of this.cues) if (!keep.has(id)) {
+            cue.group.removeFromParent(); cue.petals.dispose(); (cue.ring.material as THREE.Material).dispose(); this.cues.delete(id);
+        }
+        for (const source of live) {
+            if (this.cues.has(source.id)) continue;
+            const family = findSound(source.soundId)!.family, colour = new THREE.Color(FAMILIES[family].colour);
+            let materials = this.materials.get(family);
+            if (!materials) {
+                materials = {
+                    paper: new THREE.MeshStandardMaterial({ color: colour.clone().lerp(new THREE.Color(0xf6e5c6), .32), roughness: .85, side: THREE.DoubleSide }),
+                    glass: new THREE.MeshStandardMaterial({ color: colour, emissive: colour, emissiveIntensity: .42, roughness: .35, transparent: true, opacity: .86 }),
+                    glow: new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
+                        uniforms: { tint: { value: colour } },
+                        vertexShader: "varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
+                        fragmentShader: "uniform vec3 tint; varying vec2 vUv; void main(){float r=length((vUv-.5)*2.0);float a=(1.0-smoothstep(.12,1.0,r))*.28;gl_FragColor=vec4(tint,a);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}" }),
+                }; this.materials.set(family, materials);
+            }
+            const group = new THREE.Group(); group.name = "planet-sound-bud"; group.userData.sourceId = source.id; group.userData.authorId = source.byId;
+            onPlanet(group, source.x, source.z, heightAt(source.x, source.z) + .055); this.root.add(group);
+            const glow = new THREE.Mesh(this.disc, materials.glow); glow.name = "source-soft-ground-glow"; glow.rotation.x = -Math.PI / 2; glow.renderOrder = 1; group.add(glow);
+            const petals = new THREE.InstancedMesh(this.petal, materials.paper, 4); petals.name = "source-paper-petals"; petals.castShadow = true; petals.receiveShadow = true; group.add(petals);
+            const crystal = new THREE.Mesh(this.seed, materials.glass); crystal.position.y = .24; crystal.name = "source-glass-heart"; crystal.castShadow = true; group.add(crystal);
+            const ringMaterial = new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: .24, side: THREE.DoubleSide, depthWrite: false });
+            const ring = new THREE.Mesh(this.ring, ringMaterial); ring.rotation.x = -Math.PI / 2; ring.position.y = .015; ring.name = "source-listening-ripple"; group.add(ring);
+            this.cues.set(source.id, { source: { ...source }, group, petals, crystal, ring });
+        }
+    }
+    frame(serverNow: number, reducedMotion = false): void {
+        if (this.disposed || !Number.isFinite(serverNow)) return;
+        const pose = new THREE.Object3D();
+        for (const cue of this.cues.values()) {
+            let seed = 0; for (const char of cue.source.id) seed = (Math.imul(seed, 31) + char.charCodeAt(0)) >>> 0;
+            const phase = seed % 997 / 997 * Math.PI * 2, time = reducedMotion ? phase : serverNow / 1600 + phase;
+            for (let i = 0; i < cue.petals.count; i++) {
+                pose.position.set(0, .06, 0); pose.rotation.set(0, i * Math.PI / 2 + phase, -.88 - Math.sin(time + i) * .06 * Number(!reducedMotion));
+                pose.updateMatrix(); cue.petals.setMatrixAt(i, pose.matrix);
+            }
+            cue.petals.instanceMatrix.needsUpdate = true;
+            cue.crystal.rotation.y = reducedMotion ? phase : time * .35;
+            const progress = reducedMotion ? .4 : ((serverNow / 3300 + phase / (Math.PI * 2)) % 1 + 1) % 1;
+            cue.ring.scale.setScalar(.8 + progress * .7);
+            (cue.ring.material as THREE.MeshBasicMaterial).opacity = .06 + (1 - progress) * .25;
+        }
+    }
+    dispose(): void {
+        if (this.disposed) return; this.disposed = true;
+        for (const cue of this.cues.values()) { cue.petals.dispose(); (cue.ring.material as THREE.Material).dispose(); }
+        this.cues.clear(); for (const geometry of this.geometries) geometry.dispose();
+        for (const material of this.materials.values()) { material.paper.dispose(); material.glass.dispose(); material.glow.dispose(); }
+        this.materials.clear(); this.root.removeFromParent();
+    }
 }

@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, planetBasis, planetPoint, planetDistance, planetLocal, type PlanetPlace } from "../shared/planet.js";
 import { coastlineAt, createPlanetCoast, planetPierHeightAt } from "./planet-coast.js";
+import type { PlacedSound } from "../shared/protocol.js";
 export interface PlanetDoor {
     id: string;
     group: THREE.Group;
@@ -24,6 +25,8 @@ export interface PlanetBuild {
         x: number;
         z: number;
     }[];
+    cafeState: { sourceIds: string[]; steam: boolean; music: boolean; company: boolean };
+    setContributions(sounds: readonly PlacedSound[]): void;
     heightAt(x: number, z: number): number;
     inside(x: number, z: number): boolean;
     canStand(x: number, z: number, locked: ReadonlySet<string>, ownHut?: string): boolean;
@@ -46,6 +49,11 @@ export function onPlanet(object: THREE.Object3D, x: number, z: number, height = 
 export function buildPlanet(): PlanetBuild {
     const root = new THREE.Group(), solids: THREE.Object3D[] = [], doors: PlanetDoor[] = [], lamps: THREE.PointLight[] = [];
     const lanterns: PlanetBuild["lanterns"] = [], blossoms: PlanetBuild["blossoms"] = [];
+    const cafeState: PlanetBuild["cafeState"] = { sourceIds: [], steam: false, music: false, company: false };
+    const cafeSteam: THREE.Mesh[] = [], cafeCups: THREE.Group[] = [], cafeWindows: THREE.Mesh[] = [];
+    const cafeCupParts: { mesh: THREE.InstancedMesh; offset: THREE.Matrix4 }[] = [];
+    let cafeCupParent: THREE.Group | null = null;
+    let cafeRecord: THREE.Mesh | null = null;
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
     const mat = (colour: number, emissive = 0): THREE.MeshStandardMaterial => {
         const m = new THREE.MeshStandardMaterial({ color: colour, roughness: .93, metalness: 0, emissive, emissiveIntensity: .35 });
@@ -117,7 +125,7 @@ export function buildPlanet(): PlanetBuild {
     patch(0, 0, 5.6, stone);
     for (const p of PLANET_PLACES)
         if (p.kind !== "pool" && p.kind !== "restrooms")
-            patch(p.x, p.z, 3.5, paper);
+            patch(p.x, p.z, p.kind === "tea" ? 4.85 : 3.5, paper);
     // Continuous ribbons replace a necklace of overlapping discs. Branches
     // arrive at the actual doors and porches, leaving the meeting green open.
     function path(points: [number, number][], width = 1.2, title = "village-path"): void {
@@ -247,7 +255,7 @@ export function buildPlanet(): PlanetBuild {
             strut(g, [x, .04, 2.65], [x, 2.95, 2.65], .075, dark);
             box(.28, .1, .28, cream, g, x, .08, 2.65);
         }
-        sign(g, p.kind === "tea" ? "Tide & tea" : p.title, 2.69);
+        sign(g, p.kind === "tea" ? "Coffee & company" : p.title, 2.69);
         lamp(g, -1.7, -.6);
         lamp(g, 1.7, -.6);
         return g;
@@ -273,15 +281,95 @@ export function buildPlanet(): PlanetBuild {
             lamp(g, 4, 3);
         }
         else if (p.kind === "tea") {
-            const g = house(p, sage);
-            for (const x of [-1.25, 1.25]) {
-                const top = mesh(new THREE.CylinderGeometry(.65, .65, .12, 20), timber, g);
-                top.position.set(x, .92, .1);
-                box(.12, .9, .12, dark, g, x, .45, .1);
-                bench(g, x, -.7);
-                ball(.11, cream, g, x, .99, .1);
+            const g = house(p, sage, true); g.name = "village-coffee-house";
+            cafeCupParent = g;
+            // The open front and furnished patio explain what belongs here
+            // from the path. Keep the original place ID and coordinates.
+            const cup = (parent: THREE.Object3D, x: number, y: number, z: number): THREE.Group => {
+                const group = new THREE.Group(); parent.add(group); group.position.set(x, y, z); cafeCups.push(group);
+                return group;
+            };
+            for (const [x, z] of [[-1.25, .1], [1.25, .1], [-3.5, 1.4], [3.5, 1.4]]) {
+                const table = new THREE.Group(); g.add(table); table.position.set(x, 0, z); table.name = "cafe-company-table";
+                const top = mesh(new THREE.CylinderGeometry(.59, .59, .1, 18), timber, table); top.position.y = .84;
+                box(.12, .8, .12, dark, table, 0, .4, 0);
+                box(.64, .07, .12, dark, table, 0, .1, 0);
+                cup(table, -.2, .9, 0); cup(table, .2, .9, .1);
+                const vase = ball(.085, terra, table, 0, .99, -.18); vase.scale.y = 1.4;
+                strut(table, [0, 1.02, -.18], [.02, 1.25, -.18], .01, sage);
+                ball(.075, rose, table, .02, 1.27, -.18);
+                for (const side of [-1, 1]) {
+                    const chair = new THREE.Group(); table.add(chair); chair.position.set(side * .88, 0, .18); chair.rotation.y = side * Math.PI / 2;
+                    box(.46, .08, .46, terra, chair, 0, .44, 0);
+                    box(.46, .49, .065, terra, chair, 0, .72, -.2);
+                    for (const xx of [-.16, .16]) for (const zz of [-.16, .16]) box(.045, .4, .045, dark, chair, xx, .2, zz);
+                }
             }
-            box(4, .9, .7, cream, g, 0, .55, -1.35);
+            const counter = box(4, .91, .7, cream, g, 0, .6, -1.35); counter.name = "cafe-coffee-counter";
+            box(4.15, .1, .82, timber, g, 0, 1.1, -1.35);
+            for (let i = 0; i < 6; i++) box(.54, .57, .04, sage, g, -1.65 + i * .66, .62, -.975);
+            const machine = box(.84, .58, .44, terra, g, -.6, 1.44, -1.3); machine.name = "cafe-espresso-machine";
+            box(.72, .17, .06, dark, machine, 0, .01, .245);
+            for (const x of [-.2, .2]) {
+                const dial = mesh(new THREE.CylinderGeometry(.065, .065, .027, 10), cream, machine); dial.rotation.x = Math.PI / 2; dial.position.set(x, .1, .25);
+                box(.045, .18, .045, gold, machine, x, -.14, .28);
+            }
+            cup(g, -.8, 1.15, -.99); cup(g, -.4, 1.15, -.99);
+            for (let i = 0; i < 6; i++) {
+                const m = new THREE.MeshBasicMaterial({ color: 0xf9efd9, transparent: true, opacity: .2, depthWrite: false }); materials.add(m);
+                const steam = mesh(new THREE.SphereGeometry(.09, 7, 5), m, g); steam.castShadow = false; steam.receiveShadow = false;
+                steam.name = "cafe-source-steam"; steam.visible = false; cafeSteam.push(steam);
+            }
+            const cake = mesh(new THREE.CylinderGeometry(.25, .27, .14, 16), rose, g); cake.position.set(1.25, 1.24, -1.25);
+            ball(.045, terra, g, 1.25, 1.34, -1.25);
+            const glass = new THREE.MeshStandardMaterial({ color: 0xc2dbcb, transparent: true, opacity: .18, roughness: .3, depthWrite: false }); materials.add(glass);
+            box(.82, .44, .62, glass, g, 1.25, 1.34, -1.25);
+            // A small record player makes a musical choice visible, without
+            // fabricating a background soundtrack before somebody leaves one.
+            box(.63, .1, .48, timber, g, -1.5, 1.2, -1.36);
+            cafeRecord = mesh(new THREE.CylinderGeometry(.2, .2, .015, 24), dark, g); cafeRecord.position.set(-1.5, 1.27, -1.36); cafeRecord.name = "cafe-source-record";
+            const label = mesh(new THREE.CylinderGeometry(.065, .065, .017, 16), gold, cafeRecord);
+            const notch = box(.04, .019, .08, cream, cafeRecord, .12, .015, 0); notch.castShadow = false;
+            box(.025, .025, .23, gold, g, -1.27, 1.31, -1.35);
+            for (const x of [-1.45, 1.45]) {
+                const window = box(.43, .1, .025, mat(0xe6bd83, 0xf2b35e), g, x, 2.24, -1.9);
+                window.name = "cafe-source-warmth"; cafeWindows.push(window);
+            }
+            // Two striped side parasols frame the porch without extending a
+            // solid roof over the arrival camera or blocking the central path.
+            const canopyGeometry = new THREE.ConeGeometry(1.1, .46, 8, 1, true).toNonIndexed();
+            const canopyPositions = canopyGeometry.getAttribute("position"), canopyColours: number[] = [];
+            for (let i = 0; i < canopyPositions.count; i += 3) {
+                let x = 0, z = 0;
+                for (let j = 0; j < 3; j++) { x += canopyPositions.getX(i + j); z += canopyPositions.getZ(i + j); }
+                const side = Math.floor(((Math.atan2(x, z) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI / 4));
+                const colour = new THREE.Color(side % 2 ? 0xeee3c9 : 0xba7a60);
+                for (let j = 0; j < 3; j++) canopyColours.push(colour.r, colour.g, colour.b);
+            }
+            canopyGeometry.setAttribute("color", new THREE.Float32BufferAttribute(canopyColours, 3));
+            const canopyFabric = mat(0xffffff); canopyFabric.side = THREE.DoubleSide; canopyFabric.vertexColors = true;
+            for (const x of [-3.5, 3.5]) {
+                const canopy = new THREE.Group(); g.add(canopy); canopy.position.set(x, 2.45, 1.4);
+                mesh(canopyGeometry, canopyFabric, canopy);
+                box(.055, 2.2, .055, timber, g, x, 1.3, 1.4);
+            }
+            const menu = new THREE.Group(); g.add(menu); menu.position.set(-1.65, 0, 2.58); menu.rotation.y = -.12;
+            box(.7, .95, .08, dark, menu, 0, .62, 0);
+            for (const y of [.91, .68, .48]) box(.43, .025, .018, cream, menu, 0, y, .055);
+            const bean = ball(.075, gold, menu, 0, .96, .065); bean.scale.set(1.6, .8, .25);
+            for (const x of [-.27, .27]) box(.05, .28, .4, timber, menu, x, .14, 0);
+            // Ten detailed cups cost four draw calls, with a shared geometry
+            // and the same small company gesture as their actual group frames.
+            for (const [geometry, material, position] of [
+                [new THREE.CylinderGeometry(.16, .16, .025, 12), cream, [0, .015, 0]],
+                [new THREE.CylinderGeometry(.095, .07, .13, 12), cream, [0, .085, 0]],
+                [new THREE.CylinderGeometry(.081, .081, .009, 12), dark, [0, .153, 0]],
+                [new THREE.TorusGeometry(.055, .014, 4, 10), cream, [.1, .09, 0]],
+            ] as const) {
+                geometries.add(geometry); const part = new THREE.InstancedMesh(geometry, material, cafeCups.length);
+                part.castShadow = true; part.receiveShadow = true; g.add(part);
+                cafeCupParts.push({ mesh: part, offset: new THREE.Matrix4().makeTranslation(position[0], position[1], position[2]) });
+            }
         }
         else if (p.kind === "reading") {
             const g = house(p, cream, true);
@@ -534,8 +622,6 @@ export function buildPlanet(): PlanetBuild {
                 continue;
             if (Math.abs(dx) > 2.15 || dz < -1.75)
                 return false;
-            if (p.kind === "tea" && dz > 1.65 && Math.abs(dx) > .65)
-                return false;
         }
         for (const h of PLANET_HUTS) {
             if (x < h.x0 - .25 || x > h.x1 + .25 || z < h.z0 - .25 || z > h.z1 + .25)
@@ -550,9 +636,39 @@ export function buildPlanet(): PlanetBuild {
         return true;
     }
     const inside = (x: number, z: number): boolean => buildings.some(p => { const local = planetLocal({ x, z }, p); return Math.abs(local.x) < 2.3 && Math.abs(local.z) < 1.95; });
-    return { root, solids, doors, lamps, lanterns, blossoms, heightAt, inside, canStand, animate: coast.animate, dispose: () => {
+    function setContributions(sounds: readonly PlacedSound[]): void {
+        const cafe = PLANET_PLACES.find(place => place.kind === "tea")!;
+        const live = sounds.filter(source => !source.removedAt && !source.whileIn && planetDistance(source, cafe) <= 8)
+            .sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id));
+        cafeState.sourceIds = [...new Set(live.map(source => source.id))];
+        cafeState.steam = live.some(source => source.soundId === "espresso");
+        cafeState.music = live.some(source => ["cafe-music", "guitar", "chorus-chords", "chorus-pulse", "chorus-bells"].includes(source.soundId));
+        cafeState.company = live.some(source => ["cafe-chatter", "cafe-dishes"].includes(source.soundId));
+    }
+    function animate(seconds: number, reducedMotion: boolean): void {
+        coast.animate(seconds, reducedMotion);
+        for (let i = 0; i < cafeSteam.length; i++) {
+            const steam = cafeSteam[i], progress = reducedMotion ? (i + 1) / 7 : ((seconds * .35 + i / cafeSteam.length) % 1 + 1) % 1;
+            steam.visible = cafeState.steam;
+            steam.position.set(-.6 + Math.sin(i * 2.4 + progress * 2) * .12, 1.78 + progress * .95, -1.3 + Math.cos(i * 2.4) * .07);
+            steam.scale.setScalar(.35 + progress * 1.6);
+            (steam.material as THREE.MeshBasicMaterial).opacity = (1 - progress) * .35;
+        }
+        if (cafeRecord) cafeRecord.rotation.y = cafeState.music && !reducedMotion ? seconds * .9 : 0;
+        for (let i = 0; i < cafeCups.length; i++) cafeCups[i].rotation.z = cafeState.company && !reducedMotion ? Math.sin(seconds * 1.5 + i) * .025 : 0;
+        if (cafeCupParent) {
+            cafeCupParent.updateWorldMatrix(true, true);
+            const inverse = cafeCupParent.matrixWorld.clone().invert();
+            for (const part of cafeCupParts) {
+                for (let i = 0; i < cafeCups.length; i++) part.mesh.setMatrixAt(i, inverse.clone().multiply(cafeCups[i].matrixWorld).multiply(part.offset));
+                part.mesh.instanceMatrix.needsUpdate = true;
+            }
+        }
+        for (const window of cafeWindows) (window.material as THREE.MeshStandardMaterial).emissiveIntensity = cafeState.company ? .9 : .12;
+    }
+    return { root, solids, doors, lamps, lanterns, blossoms, cafeState, setContributions, heightAt, inside, canStand, animate, dispose: () => {
             coast.dispose();
-            root.traverse(o => { const t = o.userData.signTexture as THREE.Texture | undefined; t?.dispose(); });
+            root.traverse(o => { const t = o.userData.signTexture as THREE.Texture | undefined; t?.dispose(); if (o instanceof THREE.InstancedMesh) o.dispose(); });
             for (const g of geometries)
                 g.dispose();
             for (const m of materials)

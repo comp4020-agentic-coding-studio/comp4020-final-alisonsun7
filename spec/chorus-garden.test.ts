@@ -142,4 +142,44 @@ describe("real source-born Chorus sculptures", () => {
       expect(garden.canStand(2, 2)).toBe(true);
     } finally { garden.dispose(); }
   });
+
+  it("changes the whole gathering space for a real duet, keeps its canopy above walking heads, and withdraws it with the last source", () => {
+    const garden = new ChorusGarden(new THREE.Scene());
+    try {
+      garden.setWorks([work({ duet: false })]); garden.frame(1_800_000_000_000);
+      expect(named(garden.root, "chorus-shared-place")).toHaveLength(0);
+      garden.setWorks([work()]); garden.frame(1_800_000_000_000);
+      garden.root.updateMatrixWorld(true);
+      const place = garden.root.getObjectByName("chorus-garden-green")!;
+      const floor = garden.root.getObjectByName("chorus-place-score") as THREE.InstancedMesh;
+      expect(floor).toBeInstanceOf(THREE.InstancedMesh);
+      const inverse = place.matrixWorld.clone().invert(), vertex = new THREE.Vector3(), instance = new THREE.Matrix4();
+      const floorBounds = new THREE.Box3();
+      for (let i = 0; i < floor.count; i++) {
+        floor.getMatrixAt(i, instance);
+        const transform = inverse.clone().multiply(floor.matrixWorld).multiply(instance);
+        const position = floor.geometry.getAttribute("position");
+        for (let j = 0; j < position.count; j++) floorBounds.expandByPoint(vertex.fromBufferAttribute(position, j).applyMatrix4(transform));
+      }
+      expect(floorBounds.getSize(new THREE.Vector3()).x).toBeGreaterThan(4.5);
+      expect(floorBounds.getSize(new THREE.Vector3()).z).toBeGreaterThan(4.5);
+      const leaves = named(garden.root, "chorus-canopy-leaves") as THREE.InstancedMesh[];
+      expect(leaves.length).toBeGreaterThan(0);
+      for (const leaf of leaves) for (let i = 0; i < leaf.count; i++) {
+        leaf.getMatrixAt(i, instance);
+        const transform = inverse.clone().multiply(leaf.matrixWorld).multiply(instance), positions = leaf.geometry.getAttribute("position");
+        for (let j = 0; j < positions.count; j++) {
+          vertex.fromBufferAttribute(positions, j).applyMatrix4(transform);
+          // Green's physical base is already guarded. Outside it, no new
+          // opaque canopy leaf should pass through a standing player's head.
+          if (Math.hypot(vertex.x, vertex.z) > 1.05) expect(vertex.y).toBeGreaterThan(2.1);
+        }
+      }
+      let released = false; floor.addEventListener("dispose", () => { released = true; });
+      garden.setWorks([work({ liveSources: [], duet: false })]);
+      expect(released).toBe(true);
+      expect(named(garden.root, "chorus-shared-place")).toHaveLength(0);
+      expect(named(garden.root, "chorus-place-score")).toHaveLength(0);
+    } finally { garden.dispose(); }
+  });
 });
