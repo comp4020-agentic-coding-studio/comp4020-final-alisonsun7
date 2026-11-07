@@ -212,4 +212,26 @@ describe("local listening and the shared musical consequence", () => {
     const instance = audio(); instance.setAll(rows); instance.setWorks(deriveChorusWorks(rows)); instance.setOn(true);
     instance.frame(listener, camera, origin); await settle(); expect(sources).toHaveLength(8);
   });
+  it.each([false, true])("reserves a place for the explicit in-range focus inside a crowded mix, duet=%s", async duet => {
+    const root = sound("root", "chorus-chords", { x: .1 });
+    const friend = sound("friend", "chorus-pulse", { x: .2, replyToId: root.id, byId: duet ? "b" : root.byId });
+    const target = sound("focus-bell", "bicycle-bell", { x: 4 });
+    const rows = [root, friend, ...Array.from({ length: 6 }, (_, i) => sound("near-" + i, "chorus-bells", { x: .3 + i * .1 })), target];
+    const bell = buffer(12000 * 2, 12000); decode.mockResolvedValueOnce(bell);
+    const instance = audio(); instance.setAll(rows); instance.setWorks(deriveChorusWorks(rows)); instance.setFocus(target.id); instance.setOn(true);
+    instance.frame(listener, camera, origin); await settle();
+    expect(sources).toHaveLength(8);
+    expect(sources.some(source => source.buffer === bell)).toBe(true);
+    if (duet) {
+      const harmony = renderChorusPart("chorus-harmony", 12000);
+      expect(sources.some(source => source.buffer?.getChannelData(0)[1000] === harmony[1000] && source.buffer?.getChannelData(0)[5000] === harmony[5000])).toBe(true);
+    }
+    instance.remove(target.id); expect(sources.find(source => source.buffer === bell)!.stop).toHaveBeenCalledOnce();
+  });
+  it("never brings an explicitly focused source beyond the quiet nook's hearing boundary", async () => {
+    const position = { x: -13, z: 7, yaw: 0 }, instance = audio();
+    instance.setAll([sound("quiet-bell", "bicycle-bell", position)]); instance.setFocus("quiet-bell"); instance.setOn(true);
+    instance.frame(planetStep(position, 1, 0, 6.1), camera, origin); await settle();
+    expect(sources).toHaveLength(0); expect(fetcher).not.toHaveBeenCalled();
+  });
 });

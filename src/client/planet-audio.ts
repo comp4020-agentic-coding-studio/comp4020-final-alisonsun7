@@ -149,7 +149,11 @@ export class PlanetAudio {
             .sort((a, b) => a.distance - b.distance || a.sound.id.localeCompare(b.sound.id));
         // A real duet's low answer occupies one seat inside the eight-voice cap.
         const support = nearby.find(item => item.sound.derived);
-        const selected = nearby.filter(item => !item.sound.derived).slice(0, support ? 7 : 8);
+        const ordinary = nearby.filter(item => !item.sound.derived);
+        const focused = ordinary.find(item => item.sound.id === this.focus);
+        // An explicit listening choice must reach the mix before other voices
+        // are ducked. It still has to pass the same spatial boundary above.
+        const selected = (focused ? [focused, ...ordinary.filter(item => item !== focused)] : ordinary).slice(0, support ? 7 : 8);
         if (support) selected.push(support);
         this.wanted = new Set(selected.map(item => item.sound.id));
         for (const [id] of this.voices) if (!this.wanted.has(id)) this.stop(id);
