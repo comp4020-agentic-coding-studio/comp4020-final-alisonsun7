@@ -28,6 +28,14 @@ UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
 checks, never draft them.
 
+ADR 024 records the explicitly requested Soundfolk planet edition. Its `/planet`
+route has one new `planet:morning` room, spherical movement and distances, while
+the original `seaside:morning` room and its entire history remain unchanged.
+Camera modes and mood filters never create rooms. The product-facing title is
+Soundfolk; existing storage paths, cookie/account setup and deployment identity
+are retained. NPC restroom visits use the same authoritative occupancy gate as
+players, but never create users, presence counts or ordinary sound rows.
+
 ## What it is
 
 Sound of a City. One imagined place you walk through in first person, From
