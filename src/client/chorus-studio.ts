@@ -19,6 +19,7 @@ interface Options {
   resume: () => void;
   closeDraft: () => void;
   sound: (on: boolean) => void;
+  listening?: () => boolean;
   focus: (id: string | null) => void;
 }
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] => {
@@ -43,6 +44,7 @@ export class ChorusStudio {
   private works: ChorusWork[] = [];
   private focusId: string | null = null;
   private signature = "";
+  private collapsed = false;
   private previewRevision = 0;
   private previewTimer: ReturnType<typeof setTimeout> | undefined;
   private publishing = false;
@@ -89,10 +91,12 @@ export class ChorusStudio {
   open(parent: SoundReference | null): void {
     this.viewRevision++;
     this.parent = parent;this.previewRevision++;this.opts.stop();this.feedback.textContent = "";
+    const cafe = PLANET_PLACES.find(p => p.id === "tea")!;
+    const inCafe = planetDistance(this.opts.at(), cafe) <= 8;
     const place = chorusPlaceAt(this.opts.at()) ?? "green";
     this.title.textContent = parent ? "What would you answer?" : "What will you bring?";
-    this.context.textContent = parent ? `Answering ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"}. Your choice will become another part of this work.` : "Try one of three ingredients. Listen is only for you; Leave it here grows the shared work.";
-    this.renderChoices(recommendedSounds(parent, place));this.opts.pause();this.element.showModal();
+    this.context.textContent = parent ? `Answering ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"}. Your choice will become another part of this work.` : inCafe ? "Make this café your kind of company. Coffee brings steam, conversation warms the tables, music sets the record spinning. Listen is private; Leave it here is shared." : "Try one of three ingredients. Listen is only for you; Leave it here grows the shared work.";
+    this.renderChoices(inCafe && !parent ? ["espresso", "cafe-chatter", "cafe-music"] : recommendedSounds(parent, place));this.opts.pause();this.element.showModal();
   }
   close(): void { this.viewRevision++;this.previewRevision++;this.opts.stop();this.element.close(); }
   private renderChoices(ids: string[]): void {
@@ -100,7 +104,7 @@ export class ChorusStudio {
       const s = findSound(id)!;const card = node("article", undefined, "chorus-choice");card.dataset.sound = id;
       const symbol = node("span", undefined, `chorus-tone ${id.includes("pulse") ? "pulse" : id.includes("trickle") ? "water" : id.includes("forest") ? "bird" : "notes"}`);symbol.setAttribute("aria-hidden", "true");
       const title = node("h3", s.label);
-      const copy = id === "chorus-pulse" ? "A soft steady heartbeat. Give a melody somewhere to land." : id === "chorus-chords" ? "Warm, unhurried harmony. A little room for a friend's rhythm." : id === "chorus-bells" ? "A few bright notes with space between them." : id === "trickle" ? "A small stream. A bird's answer can open a canopy." : id === "evening-forest" ? "A bird call. Let it settle beside water." : "A quiet texture with room for another voice.";
+      const copy = id === "espresso" ? "A short burst of coffee-making; the machine comes to life." : id === "cafe-chatter" ? "Soft company at the tables. Residents gather around conversation." : id === "cafe-music" ? "An easy café tune; watch the record turn." : id === "chorus-pulse" ? "A soft steady heartbeat. Give a melody somewhere to land." : id === "chorus-chords" ? "Warm, unhurried harmony. A little room for a friend's rhythm." : id === "chorus-bells" ? "A few bright notes with space between them." : id === "trickle" ? "A small stream. A bird's answer can open a canopy." : id === "evening-forest" ? "A bird call. Let it settle beside water." : "A quiet texture with room for another voice.";
       const listen = action("Listen", () => {
         if(listen.getAttribute("aria-pressed")==="true"){this.previewRevision++;clearTimeout(this.previewTimer);this.opts.stop();listen.setAttribute("aria-pressed","false");listen.textContent="Listen";this.feedback.textContent="Private listen stopped.";return;}
         const revision = ++this.previewRevision;this.opts.stop();
@@ -128,9 +132,14 @@ export class ChorusStudio {
     // Match the sculpture's canonical latest work. Looking at an older record
     // is local; only an accepted contribution changes which work takes stage.
     const work = here[0];
-    const signature = JSON.stringify([placeId, work?.id, work?.lastAt, work?.duet, this.opts.ready(), this.focusId]);
+    const signature = JSON.stringify([placeId, work?.id, work?.lastAt, work?.duet, this.opts.ready(), this.focusId, this.collapsed, this.opts.listening?.()]);
     if (signature === this.signature) return;this.signature = signature;
     this.dock.dataset.work = work?.id ?? "";this.dock.dataset.variant = work?.variant ?? "dormant";this.dock.dataset.duet = String(work?.duet ?? false);
+    this.dock.dataset.collapsed = String(this.collapsed);
+    if (this.collapsed) {
+      const reopen = action(work ? `Open ${VARIANT_COPY[work.variant].title}` : "Make a little sound", () => {this.collapsed = false;this.signature = "";this.frame();});
+      reopen.id = "chorus-reopen";reopen.setAttribute("aria-expanded", "false");this.dock.replaceChildren(reopen);return;
+    }
     const place = PLANET_PLACES.find(p => p.id === placeId)!, carrier = placeId === "green" ? "THE CHORUS TREE" : placeId === "stage" ? "THE BEAT FLOWER" : "THE QUIET LIGHTS";
     const title = node("strong", work ? VARIANT_COPY[work.variant].title : (placeId === "green" ? "One sound can start this." : placeId === "stage" ? "Leave room for a rhythm." : "A softer kind of together."));
     const answer = work && [...work.liveSources].reverse().find(s => s.replyToId && work.sources.some(p => p.id === s.replyToId));
@@ -144,8 +153,11 @@ export class ChorusStudio {
     const primary = action(source ? `Answer ${source.by}` : "Make a first sound", () => source ? this.opts.respond(source) : this.opts.create(), true);primary.id = "chorus-primary";primary.disabled = !this.opts.ready();
     const journal = action("Our works", () => this.showJournal());journal.id = "chorus-our-works";
     const buttons = node("div", undefined, "chorus-dock-actions");buttons.append(primary, journal);
-    if (source) { const focus = action(this.focusId ? "Hear the whole place" : "Listen closely", () => { this.focusId = this.focusId ? null : source.id;this.opts.focus(this.focusId);this.signature = ""; });focus.setAttribute("aria-pressed", String(!!this.focusId));focus.id = "chorus-focus";buttons.append(focus); }
-    this.dock.replaceChildren(node("span", carrier, "planet-kicker"), title, detail, authors, buttons);
+    if (source) { const focus = action(this.opts.listening?.() === false ? "Enable listening" : this.focusId ? "Hear the whole place" : "Listen closely", () => { if(this.opts.listening?.() === false)this.opts.sound(true);this.focusId = this.focusId ? null : source.id;this.opts.focus(this.focusId);this.signature = ""; });focus.setAttribute("aria-pressed", String(!!this.focusId));focus.id = "chorus-focus";buttons.append(focus); }
+    const head = node("div", undefined, "chorus-dock-heading"), close = action("×", () => {this.collapsed = true;this.signature = "";this.frame();this.dock.querySelector<HTMLButtonElement>("button")?.focus();});
+    close.id = "chorus-minimise";close.setAttribute("aria-label", "Minimise work panel");close.title = "Minimise work panel";head.append(node("span", carrier, "planet-kicker"), close);
+    const explanation = node("details", undefined, "chorus-explanation");explanation.append(node("summary", "What changed?"), detail);
+    this.dock.replaceChildren(head, title, authors, explanation, buttons);
   }
   private renderRecords(): void {
     const focus = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.recordAction : undefined;

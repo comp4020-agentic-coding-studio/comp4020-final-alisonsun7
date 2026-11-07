@@ -220,7 +220,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   </nav>
 </header>
 <main id="planet-stage" class="planet-stage" aria-label="A little world made through sound">
-  <nav id="chorus-travel" class="chorus-travel" aria-label="Little places"><button type="button" data-place="green" aria-pressed="true">Listening Green</button><button type="button" data-place="stage" aria-pressed="false">Pocket Jam</button><button type="button" data-place="reading" aria-pressed="false">Reading Nook</button></nav>
+  <nav id="chorus-travel" class="chorus-travel" aria-label="Little places"><button type="button" data-place="green" aria-pressed="true">Listening Green</button><button type="button" data-place="stage" aria-pressed="false">Pocket Jam</button><button type="button" data-place="reading" aria-pressed="false">Reading Nook</button><button type="button" data-place="tea" aria-pressed="false">Tide &amp; Coffee</button></nav>
   <aside class="planet-corner" aria-label="Where you are">
     <button type="button" id="planet-shared" aria-haspopup="dialog" aria-label="Our soundscape: sounds and responses"><span class="planet-corner-kicker">Our soundscape · sounds &amp; responses</span><strong id="planet-area">Listening Green</strong><span id="planet-presence">Connecting to the world…</span></button>
     <p id="planet-guide">A place for what you make together.</p>

@@ -2374,9 +2374,9 @@ h3 {
 .chorus-dock-actions { display:flex;gap:8px;flex-wrap:wrap;margin-top:15px; }
 .chorus-dock-actions .btn { padding:10px 13px;min-height:44px;font-size:12px; }
 .chorus-dock-actions #chorus-focus { border:0;padding:2px 0;min-height:44px;color:#385448;background:none;flex-basis:100%;text-align:left;justify-content:flex-start; }
-.planet-stage:has(.chorus-dock:not([hidden])) .planet-nearby-sound,
-.planet-stage:has(.chorus-dock:not([hidden])) .planet-sound-pins,
-.planet-stage:has(.chorus-dock:not([hidden]))>.planet-place { display:none; }
+.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-nearby-sound,
+.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-nearby-reopen,
+.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden]))>.planet-place { display:none; }
 .planet-page .planet-sound-response { display:none; }
 .planet-page .planet-zoom { top:96px;right:22px; }
 .planet-page .planet-sound-pin { max-width:152px;font-size:12px; }
@@ -2462,3 +2462,58 @@ h3 {
  .chorus-welcome-mark { margin:8px auto 16px; }
 }
 @media (prefers-reduced-motion:reduce) { .chorus-dialog *, .chorus-dock * { scroll-behavior:auto;transition:none!important;animation:none!important; } }
+
+/* Neighbours: small, dismissible world controls leave the stage to the world. */
+.planet-listen-hint { position:absolute;left:22px;top:76px;z-index:13;min-height:44px;padding:8px 14px;border:1px solid #9ba88e;border-radius:24px;background:#fbf8eaf2;color:#3e5b4a;font:12px var(--font);cursor:pointer;box-shadow:0 3px 12px #233c3212; }
+.planet-talk,.planet-restroom-reopen,.planet-nearby-reopen { position:absolute;z-index:21;right:22px;bottom:91px;min-height:44px;max-width:calc(100% - 24px);padding:10px 16px;border:1px solid #8ea28a;border-radius:24px;background:#fff9eaf2;color:#345747;font:13px var(--font);cursor:pointer;box-shadow:0 4px 20px #264d3320; }
+.planet-nearby-reopen { right:auto;left:22px;bottom:26px; }
+.planet-restroom-reopen { bottom:145px; }
+.planet-speech { position:absolute;z-index:16;max-width:220px;max-height:110px;overflow:auto;margin:0;padding:10px 14px;border:1px solid #b5b795;border-radius:16px 16px 16px 3px;background:#fffbedf7;color:#345443;font:13px/1.4 var(--font);box-shadow:0 5px 20px #233d3320;transform:translate(-50%,-100%);pointer-events:none;overflow-wrap:anywhere; }
+.planet-restroom-card { position:absolute;right:22px;bottom:24px;z-index:22;width:min(350px,calc(100% - 24px));padding:14px 16px;background:#faf7ebf5;border:1px solid #9eab8c;border-radius:5px 22px 22px;box-shadow:0 10px 32px #243d3222;color:#365347; }
+.planet-restroom-heading { display:flex;align-items:center;justify-content:space-between;gap:8px; }
+.planet-restroom-heading strong { font:24px/1.1 var(--font-display); }
+.planet-restroom-card button { min-height:44px;padding:9px 12px;border:1px solid #a3b295;border-radius:10px;background:#fffbed;color:#365347;font:12px var(--font);cursor:pointer; }
+.planet-restroom-heading button { border:0;background:transparent;text-decoration:underline; }
+.planet-restroom-card p { margin:8px 0;font:12px/1.45 var(--font); }
+.planet-restroom-actions { display:flex;gap:8px;flex-wrap:wrap; }
+.planet-restroom-actions #planet-stay-action,.planet-restroom-actions #planet-enter-room { color:#fffbed;background:#375d4c;border-color:#375d4c; }
+.planet-restroom-card button:disabled { opacity:.55;cursor:default; }
+.planet-stage:has(.planet-restroom-card:not([hidden])) .planet-nearby-sound,.planet-stage:has(.planet-restroom-card:not([hidden]))>.planet-place { display:none; }
+.chorus-dock { width:min(330px,calc(100% - 44px));padding:12px 16px; }
+.chorus-dock-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px; }
+.chorus-dock-heading button,.planet-card-close { min-width:44px;min-height:44px;padding:0;border:0;background:transparent;color:#4b6253;font:24px var(--font);cursor:pointer;border-radius:50%; }
+.chorus-dock>strong { font-size:24px;margin:0 0 8px; }
+.chorus-dock .chorus-authors { margin:0;padding:0;border:0;font-size:11px; }
+.chorus-explanation { margin:8px 0;color:#4b6253;font:12px/1.45 var(--font); }
+.chorus-explanation summary { cursor:pointer;min-height:32px;padding-top:7px; }
+.chorus-explanation p { margin:4px 0 8px; }
+.chorus-dock-actions { margin-top:4px;gap:6px; }
+.chorus-dock-actions .btn { font-size:12px;padding:8px 12px; }
+.chorus-dock-actions #chorus-focus { flex-basis:auto;margin:0;min-height:44px;padding:0 6px; }
+.chorus-dock[data-collapsed="true"] { width:auto;padding:0;border-radius:24px; }
+#chorus-reopen { min-height:44px;border:0;padding:10px 16px; }
+.planet-card-close { position:absolute;right:4px;top:3px; }
+.planet-nearby-sound { padding-right:46px; }
+.planet-nearby-sound>.planet-kicker { display:block;padding-right:8px; }
+.planet-nearby-sound>strong { font-size:21px; }
+.planet-stage:has(.planet-chat:not([hidden])) .planet-nearby-reopen { display:none; }
+@media(max-width:620px) {
+ .chorus-travel { gap:3px; }
+ .chorus-travel button { padding:8px 6px;font-size:10px;min-width:0; }
+ .planet-listen-hint { top:66px;left:12px;padding:6px 12px;font-size:11px; }
+ .planet-talk { right:12px;bottom:87px;padding:9px 13px;font-size:12px; }
+ .chorus-dock { left:12px;bottom:140px;width:calc(100% - 24px);padding:8px 13px; }
+ .chorus-dock>strong { font-size:22px;margin:0 0 5px; }
+ .chorus-dock-heading { min-height:30px; }
+ .chorus-dock-heading button { min-height:44px; }
+ .chorus-explanation { margin:3px 0; }
+ .chorus-dock[data-collapsed="true"] { top:116px;bottom:auto;max-width:calc(100% - 80px); }
+ #chorus-reopen { font-size:12px; }
+ .planet-nearby-reopen { left:12px;bottom:auto;top:168px;max-width:calc(100% - 80px);font-size:12px; }
+ .planet-restroom-card { right:12px;bottom:140px;width:calc(100% - 24px);padding:11px 13px; }
+ .planet-restroom-heading strong { font-size:22px; }
+ .planet-restroom-reopen { right:12px;bottom:140px;font-size:12px; }
+ .planet-speech { max-width:190px;font-size:12px; }
+}
+
+@media(min-width:621px) { .planet-stage:has(.planet-restroom-card:not([hidden])) .planet-talk { right:390px;bottom:24px; } }

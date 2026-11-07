@@ -1,6 +1,7 @@
 // Little Chorus: cookie identity, real SSE, durable sounds,
 // ephemeral nearby words and authoritative shared restroom routines.
 import { PlanetWorld } from "./planet-world.js";
+import { PlanetSocial } from "./planet-social.js";
 import { PlanetAudio } from "./planet-audio.js";
 import { RoutineAudio } from "./routine-audio.js";
 import { ChorusStudio } from "./chorus-studio.js";
@@ -36,6 +37,7 @@ let movePending: Promise<boolean> | null = null, lastMove = 0, lastSent = "", di
 let here: Position = { x: 0, z: 3, yaw: Math.PI };
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
 let soundInteractions: PlanetSoundInteractions | undefined;
+let social: PlanetSocial | undefined;
 let walkingReply: string | null = null;
 let walkingReplyRevision = 0;
 function say(text: string): void { notice.textContent = text; notice.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => notice.hidden = true, 8000); }
@@ -49,6 +51,7 @@ const world = new PlanetWorld(stage, { listen: l => {
         routineAudio.frame(npcs, here, audio.on, l.serverNow);
         soundInteractions?.frame();
         studio.frame();
+        social?.frame();
         updateReplyIntent();
         const run = $("planet-run"), pressed = String(world.runEnabled);if (run.getAttribute("aria-pressed") !== pressed) run.setAttribute("aria-pressed", pressed);
         if (boot.joined && connected && performance.now() - lastMove > 180)
@@ -78,8 +81,18 @@ catch { } for (const id of ["planet-look", "planet-look-settings"])
 setLook(loadLookMode());
 for (const id of ["planet-look", "planet-look-settings"])
     $<HTMLSelectElement>(id).onchange = e => setLook((e.target as HTMLSelectElement).value);
-function setSound(on: boolean): void {if(disposed)return;audio.setOn(on); const b = $("planet-sound"); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? "Sound on; turn off" : "Sound off; turn on"); b.querySelector("span")!.textContent = on ? "Sound on" : "Sound off"; stage.dataset.soundOn = String(on); routineAudio.frame(npcs, here, on, world.serverNow); }
-$("planet-sound").onclick = () => setSound(!audio.on);
+const listenHint = document.createElement("button");listenHint.id = "planet-listen-hint";listenHint.type = "button";listenHint.className = "planet-listen-hint";stage.append(listenHint);
+function updateSoundControl(): void {
+    const running = audio.playbackState === "running", on = audio.on, silent = audio.volumeLevel === 0;
+    const label = !on ? "Sound off; turn on" : !running ? "Audio paused; tap to resume" : "Sound on; turn off";
+    const b = $("planet-sound");b.setAttribute("aria-pressed", String(on));b.setAttribute("aria-label", label);b.title = label;b.querySelector("span")!.textContent = !on ? "Sound off" : running ? "Sound on" : "Resume sound";
+    stage.dataset.soundOn = String(on);stage.dataset.audioState = audio.playbackState;
+    listenHint.hidden = running && !silent || !!document.querySelector("dialog:modal") || !$("planet-chat").hidden;
+    listenHint.textContent = !on ? "Sound off · Tap to listen" : !running ? "Audio paused · Tap to resume" : "Volume is zero · Restore sound";
+}
+function setSound(on: boolean): void {if(disposed)return;audio.setOn(on);updateSoundControl();routineAudio.frame(npcs, here, on, world.serverNow);}
+listenHint.onclick = () => {if(audio.volumeLevel===0){audio.setVolume(.7);$<HTMLInputElement>("chorus-volume").value="70";}setSound(true);world.focus();};
+$("planet-sound").onclick = () => setSound(audio.on && audio.playbackState === "running" ? false : true);
 stage.dataset.voices = "0";
 stage.dataset.npcFlushVoices = "0";
 stage.dataset.soundOn = "false";
@@ -312,7 +325,7 @@ const studio = new ChorusStudio(stage, {
     remove: source => {const sound = sounds.get(source.id);if(sound)void removeSound(sound);},
     visit: work => afterDialogClose(studio.journal, () => {world.goTo(work.placeId);world.focusWork(work.id);lastSent="";}),
     full: () => afterDialogClose(studio.element, () => openLibrary(true)),
-    pause: () => world.setPaused(true), resume: restore, closeDraft: () => {draftRevision++;}, sound: on => setSound(on), focus: id => audio.setFocus(id),
+    pause: () => world.setPaused(true), resume: restore, closeDraft: () => {draftRevision++;}, sound: on => setSound(on), listening: () => audio.on && audio.playbackState === "running" && audio.volumeLevel > 0, focus: id => audio.setFocus(id),
 });
 function receiveChorus(works: readonly ChorusWork[]): void {
     for (const work of works) for (const source of work.sources) if (source.removedAt) {
@@ -384,7 +397,7 @@ function renderOccupancy(): void { const parts = PLANET_HUTS.map(h => { const n 
 $("planet-test-restroom").onclick = async () => {
     if (!boot.joined)
         return say("Enter with a name first.");
-    hide(tools);
+    afterDialogClose(tools, () => {void (async () => {
     world.correctPosition({ x: 13.5, z: 9.1, yaw: Math.PI });
     world.setViewMode("third");
     updateView();
@@ -403,26 +416,40 @@ $("planet-test-restroom").onclick = async () => {
     catch {
         say("Connection interrupted. Invite again when connected.");
     }
+    })();});
 };
 function renderPeople(): void {environmentPanel.setAvailability({joined:boot.joined,connected}); $("planet-presence").textContent = `${snapshot.online.length} here · ${publicSounds().length} shared sounds` + (connected ? "" : " · reconnecting"); $("planet-people").replaceChildren(...snapshot.online.map(p => { const e = document.createElement("p"); e.textContent = p.name + (p.id === snapshot.you?.id ? " (you)" : " · player"); return e; })); stage.dataset.people = String(snapshot.online.length); }
 function receiveNpcs(frames:readonly NpcRoutineFrame[],serverNow:string):void{const time=Date.parse(serverNow);if(!Number.isFinite(time)||time<npcTime||disposed)return;npcTime=time;npcs=frames.map(n=>({...n}));world.setNpcs(npcs);renderOccupancy();}
 const chat = $<HTMLFormElement>("planet-chat");
 $("planet-chat-toggle").onclick = () => { if (!boot.joined)
-    return say("Enter with a name first."); hide(tools); chat.hidden = false; world.setPaused(true); $("planet-chat-input").focus(); };
+    return say("Enter with a name first.");
+    if (!chat.hidden) return $("planet-chat-input").focus();
+    afterDialogClose(tools, () => {chat.hidden = false;world.setPaused(true);$("planet-chat-input").focus();});
+};
 $("planet-chat-close").onclick = () => { chat.hidden = true; restore(); };
-chat.onsubmit = async (e) => { e.preventDefault(); const input = $<HTMLInputElement>("planet-chat-input"); try {
-    const result = await api("say", "POST", { text: input.value });
-    if (result.ok) {
-        input.value = "";
-        if (result.heard === 0)
-            say("No friend was within twelve metres to hear that. Meet at the green or invite them closer.");
-    }
-    else
-        say(errors[String(result.code)] ?? "Those words could not be sent.");
-}
-catch {
-    say("Connection interrupted. Your words were not sent.");
-} };
+let sendingWords = false;
+chat.onsubmit = async (e) => {
+    e.preventDefault();if(sendingWords)return;
+    const input = $<HTMLInputElement>("planet-chat-input"), submit = $<HTMLButtonElement>("planet-chat-submit"), text = input.value;
+    if(!text.trim())return;
+    sendingWords = true;submit.disabled = true;
+    try {
+        if(!connected || !await settledMove()){say("Reconnect before sending. Your words are still here.");return;}
+        const result = await api("say", "POST", { text });
+        if (result.ok) {
+            if(input.value===text)input.value = "";
+            if (result.heard === 0)say("No friend was within twelve metres to hear that. Invite them closer.");
+        } else say(errors[String(result.code)] ?? "Those words could not be sent.");
+    } catch {say("Connection interrupted. Your words were not sent.");}
+    finally {sendingWords = false;submit.disabled = false;if(!chat.hidden)input.focus();}
+};
+social = new PlanetSocial(stage, {
+    at: () => here, you: () => snapshot.you, people: () => people, npcs: () => npcs, sounds: () => [...sounds.values()],
+    joined: () => boot.joined, connected: () => connected, project: (x,z,height) => world.project(x,z,height),
+    openChat: () => $("planet-chat-toggle").click(), closeChat: () => $("planet-chat-close").click(),
+    walk: target => {world.walkToward(target,.12);world.focus();}, stay: id => leaveSound(id,true),
+    invite: () => $("planet-test-restroom").click(), notice: say,
+});
 function receiveWords(name: string, text: string): void { const p = document.createElement("p"); p.textContent = name + ": " + text; $("planet-chat-log").append(p); setTimeout(() => p.remove(), 8000); }
 const stream = new EventSource("/api/stream?scene=planet&mode=weekday");
 stream.onopen = () => { connected = true; renderPeople(); };
@@ -487,13 +514,15 @@ stream.onmessage = e => {
         }
         refreshWorld();
     }
-    else if (msg.type === "said")
-        receiveWords(msg.name, msg.text);
+    else if (msg.type === "said") {
+        receiveWords(msg.name, msg.text);social?.receiveWords(msg.by, msg.name, msg.text);
+    }
     else if (msg.type === "environment")
         receiveEnvironment(msg.environment, msg.serverNow);
 };
 const clock = setInterval(() => { environmentReadout.textContent = `${WEATHER_LABELS[snapshot.environment.weather]} · ${formatTime(minuteAt(snapshot.environment, world.serverNow))}`; renderOccupancy(); updateView();
   if(shared.open){const responses=world.responses.filter(r=>sounds.has(r.sourceId)&&planetDistance(r,here)<=18);sharedReactions.replaceChildren(...responses.map(r=>{const p=document.createElement("p"),s=sounds.get(r.sourceId)!;p.dataset.source=r.sourceId;p.dataset.behavior=r.behavior;p.textContent=r.label+": "+r.behavior+" · "+s.by+"'s "+(findSound(s.soundId)?.label??"sound");return p;}));}
+  updateSoundControl();
 }, 700);
 $<HTMLFormElement>("planet-join-form").onsubmit = async (e) => {
     e.preventDefault();
@@ -538,4 +567,4 @@ renderPeople();
 renderShared();
 renderOccupancy();
 window.addEventListener("pagehide", e => { if (e.persisted || disposed)
-    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); studio.dispose();audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();world.dispose(); }, { once: false });
+    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); studio.dispose();audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();social?.dispose();world.dispose(); }, { once: false });

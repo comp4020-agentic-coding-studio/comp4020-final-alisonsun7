@@ -94,6 +94,30 @@ describe("studio dialog handoffs and interrupted choices", () => {
     expect(document.getElementById("chorus-focus")!.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("keeps the work panel minimised through shared updates until explicitly reopened", () => {
+    opts.at = () => ({ x: 0, z: 0 });
+    studio.setWorks([work([source("a")])]);
+    document.getElementById("chorus-minimise")!.click();
+    expect(document.getElementById("chorus-primary")).toBeNull();
+    studio.setWorks([work([source("a"), source("b", {by: "Bo", byId: "bo", replyToId: "a"})])]);
+    expect(document.getElementById("chorus-primary")).toBeNull();
+    expect(document.getElementById("chorus-reopen")).not.toBeNull();
+    document.getElementById("chorus-reopen")!.click();
+    expect(document.getElementById("chorus-primary")!.textContent).toContain("Answer");
+    expect(opts.publish).not.toHaveBeenCalled();
+  });
+
+  it("makes enabling sound an explicit local action before focusing a nearby work", () => {
+    opts.at = () => ({ x: 0, z: 0 });opts.listening = () => false;
+    studio.setWorks([work([source("a")])]);
+    expect(opts.sound).not.toHaveBeenCalled();
+    expect(document.getElementById("chorus-focus")!.textContent).toBe("Enable listening");
+    document.getElementById("chorus-focus")!.click();
+    expect(opts.sound).toHaveBeenCalledExactlyOnceWith(true);
+    expect(opts.focus).toHaveBeenCalledExactlyOnceWith("a");
+    expect(opts.publish).not.toHaveBeenCalled();
+  });
+
   it("does not close or publish a newer chooser when an older explicit publication finishes", async () => {
     const pending = deferred<string | null>();
     opts.publish = vi.fn(() => pending.promise);

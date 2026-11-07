@@ -2764,3 +2764,15 @@ voluntary recombination, physical-phone performance and real next-day return
 remain unperformed and are not implied by the local release.
 
 The final local release is identified by the annotated tag `chorus-garden-2026-11-07`; resolve its target with Git. Application `28f1e58` serves runtime `26805fb`, and the final evidence commit changes documentation only. The source rollback tag is `before-chorus-garden-2026-11-07`; the tracked preview utility switches compiled application files while retaining the current database. No main push or public deployment was performed.
+
+
+## 2026-11-07 — Neighbours revision started (ADR 027)
+
+- User reports seven concrete defects: fresh-profile nearby silence, hidden chat/private-room actions, unappealing source lighting, small shared changes, missing café and an undismissible card.
+- Read-only observation of the live preview was followed by an isolated SQLite backup on port 18891. The original port 18861 and current database were left running during implementation. A manual browser visit on that clone entered the welcome, auditioned a recommended ingredient, cancelled without publishing, travelled to Restrooms and physically walked inside. No in-world Flush/exit action appeared; chat and room actions were buried in the tools drawer. This is developer self-test, not a novice study or an ear-based sound verdict.
+- Actual destination audio probe: running context, one Reading Nook bell voice, four metres, -62.78 dBFS RMS before the fix. Explicit off returned exact zero. No autoplay bypass or database writes. Ignored raw artifacts: `.cache/neighbours/audio-output-before.json` and `audio-output-probe.mjs`. The near-field negative check fails with old attenuation. Nick's exact browser/device remains unobserved.
+- Verified audio step committed as `6940d01`; 25 focused tests cover near-field, unchanged range, lifecycle and eight-part PCM headroom. Shared-work surrounds and café lifecycle have real geometry/filter/removal negative controls. Integration focused run: seven files, 41 checks passed; this is not artistic acceptance.
+- In progress: integrate social actions, close/reopen panels, actual shared surrounds and café; then measure browser output and run independent-identity/phone paths before switching the player's preview. Rollback boundary: `before-chorus-neighbours-2026-11-07` at `a2bb8ad`; no database rollback.
+
+- Integrated candidate compiles with TypeScript. Complete checks against a dedicated fresh database on port 18892: 32 files / 207 tests passed in 61.73 s. Browser candidate uses a different cloned database on 18891. No writing test targets 18861.
+- Post-fix actual destination probe (trusted click, no autoplay bypass): Reading bells at four metres -43.78 dBFS RMS, +19.00 dB from baseline; explicit off exact zero. Six parts/default 70% volume: peak -9.28 dBFS; eight parts/maximum volume: peak -5.38 dBFS. These are sampled WebAudio outputs, not a hardware listening or musical-quality verdict. Raw `.cache/neighbours/audio-output-after.json` will be indexed in the final durable evidence.

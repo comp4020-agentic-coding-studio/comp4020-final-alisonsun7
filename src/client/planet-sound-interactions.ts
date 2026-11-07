@@ -15,6 +15,8 @@ export class PlanetSoundInteractions {
   private sounds: PlacedSound[] = [];
   private selected: string | null = null;
   private current: PlacedSound | null = null;
+  private dismissed = new Set<string>();
+  private reopen = document.createElement("button");
   private pins = new Map<string, HTMLButtonElement>();
   private layer = document.createElement("div");
   private card = document.createElement("aside");
@@ -43,8 +45,12 @@ export class PlanetSoundInteractions {
     this.remove.onclick = () => { if (this.current) this.opts.remove(this.current); };
     actions.append(this.answer, this.conversation, this.remove);
     this.response.className = "planet-sound-response";
-    this.card.append(kicker, this.title, this.by, this.response, actions);
-    this.host.append(this.layer, this.card);
+    const close = document.createElement("button");close.type = "button";close.id = "planet-nearby-close";close.className = "planet-card-close";close.textContent = "×";close.setAttribute("aria-label", "Close nearby sound panel");
+    close.onclick = () => {if(this.current)this.dismissed.add(this.current.id);this.last = -Infinity;this.frame();this.reopen.focus();};
+    this.reopen.type = "button";this.reopen.id = "planet-nearby-reopen";this.reopen.className = "planet-nearby-reopen";this.reopen.hidden = true;
+    this.reopen.onclick = () => {if(this.current)this.dismissed.delete(this.current.id);this.last = -Infinity;this.frame();this.answer.focus();};
+    this.card.append(kicker, close, this.title, this.by, this.response, actions);
+    this.host.append(this.layer, this.card, this.reopen);
   }
   setAll(sounds: readonly PlacedSound[]): void {
     this.sounds = sounds.filter(s => !s.whileIn && !s.removedAt && findSound(s.soundId));
@@ -60,12 +66,15 @@ export class PlanetSoundInteractions {
   frame(): void {
     const now = performance.now();if (now - this.last < 90) return;this.last = now;
     const hidden = !!document.querySelector("dialog:modal") || !document.getElementById("planet-chat")?.hidden;
-    this.layer.hidden = hidden;this.card.hidden = hidden;
+    this.layer.hidden = hidden;this.card.hidden = hidden;this.reopen.hidden = true;
     if (hidden) return;
     const at = this.opts.at(), ordered = [...this.sounds].sort((a, b) => planetDistance(at, a) - planetDistance(at, b) || a.at.localeCompare(b.at) || a.id.localeCompare(b.id));
     const selected = ordered.find(s => s.id === this.selected && planetDistance(at, s) <= 18);
     this.current = selected ?? ordered.find(s => planetDistance(at, s) <= 4) ?? null;
-    this.card.hidden = !this.current;
+    for(const id of this.dismissed) if(!this.sounds.some(s=>s.id===id && planetDistance(at,s)<=18))this.dismissed.delete(id);
+    this.card.hidden = !this.current || this.dismissed.has(this.current.id);
+    this.reopen.hidden = !this.current || !this.dismissed.has(this.current.id);
+    if(this.current)this.reopen.textContent = `Open ${findSound(this.current.soundId)!.label}`;
     if (this.current) {
       const s = this.current, distance = planetDistance(at, s), replies = this.sounds.filter(child => child.replyToId === s.id || child.replyTo?.id === s.id).length;
       this.card.dataset.id = s.id;
@@ -97,7 +106,7 @@ export class PlanetSoundInteractions {
         name.textContent = findSound(s.soundId)!.label;author.textContent = "by " + s.by;
         const leader = document.createElement("i");leader.className = "planet-pin-leader";leader.setAttribute("aria-hidden","true");
         pin.append(name, author, leader);
-        pin.onclick = () => { this.selected = s.id;this.last = -Infinity;this.frame(); };
+        pin.onclick = () => { this.selected = s.id;this.dismissed.delete(s.id);this.last = -Infinity;this.frame(); };
         this.pins.set(s.id, pin);this.layer.append(pin);
       }
       pin.hidden = false;pin.setAttribute("aria-pressed", String(this.current?.id === s.id));
@@ -107,5 +116,5 @@ export class PlanetSoundInteractions {
       occupied.push({x,y});count++;
     }
   }
-  dispose(): void { this.layer.remove();this.card.remove();this.pins.clear();this.sounds = []; }
+  dispose(): void { this.layer.remove();this.card.remove();this.reopen.remove();this.pins.clear();this.sounds = []; }
 }

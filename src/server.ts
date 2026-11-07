@@ -40,6 +40,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/planet-build.js": js("/client/planet-build.js"),
   "/client/planet-audio.js": js("/client/planet-audio.js"),
   "/client/planet-connections.js": js("/client/planet-connections.js"),
+  "/client/planet-social.js": js("/client/planet-social.js"),
   "/client/planet-sound-interactions.js": js("/client/planet-sound-interactions.js"),
   "/client/planet-locomotion.js": js("/client/planet-locomotion.js"),
   "/client/planet-wildlife.js": js("/client/planet-wildlife.js"),

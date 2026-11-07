@@ -80,7 +80,7 @@ export interface PlanetPlace extends Point {
 }
 export const PLANET_PLACES: readonly PlanetPlace[] = [
     { id: "green", title: "Listening green", description: "Meet here. Leave a sound, then answer a friend's ingredient.", kind: "green", x: 0, z: 0, sounds: ["gentle-breeze", "cafe-chatter"] },
-    { id: "tea", title: "The little tea house", description: "Gather at a warm table; cups, conversation and music make different company.", kind: "tea", x: -9, z: -7, sounds: ["cafe-dishes", "cafe-chatter", "cafe-music"] },
+    { id: "tea", title: "Tide & Coffee", description: "Meet the café regulars. Coffee brings steam, conversation warms the tables, and music turns the record.", kind: "tea", x: -9, z: -7, sounds: ["espresso", "cafe-dishes", "cafe-chatter", "cafe-music"] },
     { id: "stage", title: "Pocket jam stage", description: "Make a rhythm together. Neighbours join the sounds you choose.", kind: "stage", x: 10, z: -9, sounds: ["guitar", "hand-claps", "cafe-music"] },
     { id: "reading", title: "The reading nook", description: "A small roof, books and a quiet place to listen with a friend.", kind: "reading", x: -13, z: 7, sounds: ["rainstick", "gentle-breeze"] },
     { id: "conservatory", title: "Rain conservatory", description: "Build a soft water-and-bird corner; living sources colour the flower beds.", kind: "conservatory", x: -2, z: 16, sounds: ["rainstick", "trickle", "evening-forest"] },
