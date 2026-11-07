@@ -11,6 +11,9 @@ export interface Position {
   x: number;
   z: number;
   yaw: number;
+  // Optional planet pose, ephemeral like horizontal position. Height never
+  // changes authoritative ground occupancy or contribution coordinates.
+  motion?: { running: boolean; jump: number };
 }
 
 // A private hut is claimed by the first accepted move into it. A rejected
@@ -90,7 +93,7 @@ export interface Presence {
 export interface Moves {
   type: "moves";
   sessionId: string;
-  people: (Person & { x: number; z: number; yaw: number })[];
+  people: (Person & Position)[];
   npcs?: NpcRoutineFrame[];
   serverNow?: string;
 }

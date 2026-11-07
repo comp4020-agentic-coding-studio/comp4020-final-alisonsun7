@@ -139,6 +139,34 @@ describe("shared human and resident hut admission", () => {
     expect(sessions.snapshotFor(room, null).sounds).toEqual([]);
   });
 
+  it("shares bounded planet run/jump poses transiently and lands an abandoned pose", () => {
+    const planet = sessions.openSession("planet", "weekday");
+    const user = users.createUser("Jumping Ada", "cat").user;
+    const stream = watch(user, "planet");
+    const counts = () => ["users", "participants", "placed_sounds", "sound_operations"].map(table => database.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get());
+    const before = counts();
+    expect(sessions.move(user, planet.id, { x: 1, z: 2, yaw: 0, motion: { running: true, jump: .8 } })).toEqual({ ok: true });
+    vi.advanceTimersByTime(200);
+    expect(stream.messages.filter(m => m.type === "moves").at(-1)).toMatchObject({ people: [{ name: "Jumping Ada", motion: { running: true, jump: .8 } }] });
+    vi.advanceTimersByTime(600);
+    expect(stream.messages.filter(m => m.type === "moves").at(-1)).toMatchObject({ people: [{ motion: { running: false, jump: 0 } }] });
+    expect(counts()).toEqual(before);
+  });
+
+  it("rejects malformed jump poses and still locks the room during a jump", () => {
+    const planet = sessions.openSession("planet", "weekday");
+    const user = users.createUser("Jumping Bo", "dog").user;
+    watch(user, "planet");
+    const outside = { x: 13.5, z: 8.2, yaw: Math.PI };
+    for (const motion of [null, { running: "yes", jump: .5 }, { running: true, jump: -1 }, { running: false, jump: 1.41 }, { running: false, jump: Infinity }]) {
+      expect(sessions.move(user, planet.id, { ...outside, motion })).toEqual({ ok: false, code: "bad_request" });
+    }
+    expect(sessions.move(user, planet.id, outside)).toEqual({ ok: true });
+    expect(sessions.inviteNpcRestroom(user, planet.id, {})).toMatchObject({ ok: true });
+    vi.advanceTimersByTime(duration.walking + duration.entering);
+    expect(sessions.move(user, planet.id, { x: 13.5, z: 5, yaw: 0, motion: { running: true, jump: .9 } })).toMatchObject({ ok: false, code: "hut_taken" });
+  });
+
   it("enforces sound spacing, crowding, removal and talk by spherical distance across the planet seam", () => {
     const planet = sessions.openSession("planet", "weekday");
     const ada = users.createUser("Seam Ada", "cat").user;

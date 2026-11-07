@@ -216,6 +216,7 @@ interface Standing {
   x: number;
   z: number;
   yaw: number;
+  motion?: { running: boolean; jump: number };
   at: number;
 }
 
@@ -236,7 +237,7 @@ function sendMoves(key: string): void {
   const session = openSession(sceneId, mode);
   const now = Date.now();
   const msg = frame({ type: "moves", sessionId: session.id, serverNow: new Date(now).toISOString(),
-    people: [...(here?.values() ?? [])].map((s) => ({ ...s.person, x: s.x, z: s.z, yaw: s.yaw })),
+    people: [...(here?.values() ?? [])].map((s) => ({ ...s.person, x: s.x, z: s.z, yaw: s.yaw, ...(s.motion ? { motion: s.motion } : {}) })),
     npcs: advanceNpcs(key, now) });
   for (const res of room.keys()) res.write(msg);
 }
@@ -291,13 +292,20 @@ export function inviteNpcRestroom(user: User, sessionId: string, raw: unknown): 
 setInterval(() => {
   const now = Date.now();
   for (const [key, here] of standing) {
-    for (const [userId, s] of here)
+    for (const [userId, s] of here) {
+      // A disconnected page cannot leave an avatar suspended or running.
+      // Active jumps send fresh samples through the normal move cadence.
+      if (s.motion && now - s.at > 450 && (s.motion.jump > 0 || s.motion.running)) {
+        s.motion = { running: false, jump: 0 };
+        moved.add(key);
+      }
       if (now - s.at > 20_000) {
         here.delete(userId);
         moved.add(key);
         const [sceneId, mode] = key.split(":");
         endHutSounds(sceneId, mode, { id: userId, nickname: s.person.name } as User, "went_quiet");
       }
+    }
   }
   // Periodic visits run only while the room has actual SSE listeners. Active
   // walks send shared positions at the same five-Hz cadence as human moves.
@@ -318,6 +326,13 @@ export function move(user: User, sessionId: string, raw: unknown): MoveResult {
   const o = (raw ?? {}) as Record<string, unknown>;
   if (!finite(o.x, 2000) || !finite(o.z, 2000) || !finite(o.yaw, 1000)) return { ok: false, code: "bad_request" };
   if (session.scene_id === "planet" && !planetCoordsValid(o.x, o.z)) return { ok: false, code: "bad_request" };
+  let motion: Standing["motion"];
+  if (session.scene_id === "planet" && o.motion !== undefined) {
+    const m = o.motion as Record<string, unknown> | null;
+    if (!m || typeof m !== "object" || typeof m.running !== "boolean" || !finite(m.jump, 1.4) || m.jump < 0)
+      return { ok: false, code: "bad_request" };
+    motion = { running: m.running, jump: m.jump };
+  }
   // at most ten a second; more are dropped, not refused
   const now = Date.now();
   if (now - (moveTimes.get(user.id) ?? 0) < 90) return { ok: true };
@@ -348,7 +363,7 @@ export function move(user: User, sessionId: string, raw: unknown): MoveResult {
       position: previous ? { x: previous.x, z: previous.z, yaw: previous.yaw } : { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 1, yaw: o.yaw },
     };
   }
-  here.set(user.id, { person: ensureParticipant(session, user), x: o.x, z: o.z, yaw: o.yaw, at: now });
+  here.set(user.id, { person: ensureParticipant(session, user), x: o.x, z: o.z, yaw: o.yaw, at: now, ...(motion ? { motion } : {}) });
   moved.add(key);
   // out of the toilet or shower: whatever they left there for while they
   // were in goes (ADR 013)
