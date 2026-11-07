@@ -12,6 +12,8 @@ import { FAMILIES, findSound } from "../shared/sounds.js";
 import { WALK_SPEED, RUN_SPEED, JUMP_DURATION, jumpHeight, bearingToward, moveOnPlanet } from "./planet-locomotion.js";
 import { KangarooCompanion } from "./planet-wildlife.js";
 import { PlanetSoundConnections } from "./planet-connections.js";
+import { ChorusGarden } from "./chorus-garden.js";
+import { CHORUS_BPM, type ChorusPlace, type ChorusWork } from "../shared/chorus.js";
 export type PlanetInteraction = { kind: "kangaroo"; label: string; action: string };
 type Actor = {
     figure: AnimalFigure;
@@ -39,6 +41,10 @@ export class PlanetWorld {
     private residentPos = new Map<AnimalFigure, Position>();
     private residents: SoundResidents;
     private connections: PlanetSoundConnections;
+    private garden: ChorusGarden;
+    private works: ChorusWork[] = [];
+    private focusedWork: string | null = null;
+    private gestureRigs = new WeakMap<AnimalFigure, { body?: THREE.Object3D; head?: THREE.Object3D; left?: THREE.Object3D; right?: THREE.Object3D }>();
     private kangaroo = new KangarooCompanion();
     private kangarooLabel: HTMLSpanElement;
     private lastInteraction: string | null = null;
@@ -59,7 +65,7 @@ export class PlanetWorld {
     private jumpOffset = 0;
     private _viewMode: "first" | "third" = "third";
     private pitch = .12;
-    private zoom = 16;
+    private zoom = 8;
     private walkingTarget: {
         x: number;
         z: number;
@@ -91,6 +97,7 @@ export class PlanetWorld {
         area: (p: PlanetPlace) => void;
         wait: (text: string) => void;
         interaction?: (cue: PlanetInteraction | null) => void;
+        work?: (workId: string | null, placeId: ChorusPlace) => void;
     }) {
         const canvas = this.renderer.domElement;
         canvas.className = "planet-canvas";
@@ -109,6 +116,7 @@ export class PlanetWorld {
         host.append(this.overlay);
         this.scene.add(this.built.root, this.hemi, this.sun);
         this.connections = new PlanetSoundConnections(this.scene, (x, z) => this.built.heightAt(x, z));
+        this.garden = new ChorusGarden(this.scene);
         this.scene.add(this.kangaroo.figure);
         this.kangarooLabel = this.makeLabel("Kangaroo · companion", "npc");
         this.sun.position.set(-28, 45, 55);
@@ -126,7 +134,7 @@ export class PlanetWorld {
         this.rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xbadadd, size: .065, transparent: true, opacity: .65 }));
         this.rain.frustumCulled = false;
         this.scene.add(this.rain);
-        this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
+        this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
         const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" }] as const;
         for (const h of homes) {
             const f = new AnimalFigure({ avatar: h.avatar, seed: h.id, role: "npc" });
@@ -203,8 +211,14 @@ export class PlanetWorld {
         this.walkingTarget = null;
         this.jumpStarted = null; this.jumpOffset = 0;
     } }
-    goTo(id: string): void { const p = PLANET_PLACES.find(p => p.id === id); if (!p)
-        return; this.position = { x: p.x, z: p.z + (p.kind === "tea" ? 3 : 0), yaw: Math.PI }; this.selfYaw = Math.PI; this.keys.clear(); this.cancelWalkingIntent(); this.jumpStarted = null; this.jumpOffset = 0; this.opts.area(p); }
+    goTo(id: string): void {
+        const p = PLANET_PLACES.find(p => p.id === id); if (!p) return;
+        // Explicit visits arrive where the person can see and approach the
+        // work, outside the real base and roofs. Stored sounds never move.
+        const green = p.kind === "green", front = p.kind === "tea" ? 3 : p.kind === "stage" || p.kind === "reading" ? 4 : 0;
+        this.position = { x: p.x + (green ? 1.8 : 0), z: p.z + (green ? 2.2 : front), yaw: Math.PI };
+        this.selfYaw = Math.PI; this.keys.clear(); this.cancelWalkingIntent(); this.jumpStarted = null; this.jumpOffset = 0; this.opts.area(p);
+    }
     setEnvironment(environment: Environment, serverNow: string): void {
         const server = Date.parse(serverNow);
         if (!Number.isFinite(server) || (this.hasEnvironment&&environment.revision < this.environment.revision))
@@ -279,6 +293,13 @@ export class PlanetWorld {
             this.cues.set(s.id, cue);
         }
     }
+    setWorks(works: readonly ChorusWork[]): void {
+        this.works = works.map(work => ({ ...work, liveSources: work.liveSources.map(source => ({ ...source })),
+            sources: work.sources.map(source => ({ ...source })), contributors: work.contributors.map(person => ({ ...person })) }));
+        this.garden.setWorks(this.works);
+    }
+    /** Selecting a record only highlights its real sculpture; travel is explicit. */
+    focusWork(workId: string | null): void { this.focusedWork = workId; this.garden.focusWork(workId); }
     private makeLabel(text: string, role: "player" | "npc"): HTMLSpanElement { const e = document.createElement("span"); e.className = "planet-person-label " + role; e.textContent = text; Object.assign(e.style, { position: "absolute", padding: "3px 8px", borderRadius: "12px", background: role === "player" ? "#e4f0f5" : "#f3e1bb", color: "#294a43", font: "600 12px system-ui", whiteSpace: "nowrap", border: role === "player" ? "1px solid #6196ad" : "1px solid #b89450" }); this.overlay.append(e);this.labelWidths.set(e,e.offsetWidth); return e; }
     private actor(p: Person & Position, role: "player" | "npc", label: string): Actor { const f = new AnimalFigure({ avatar: p.avatar, seed: p.id, role }); this.scene.add(f); return { figure: f, name: p.name, label: this.makeLabel(label, role), at: { x: p.x, z: p.z, yaw: p.yaw }, target: { x: p.x, z: p.z, yaw: p.yaw, motion: p.motion } }; }
     private locked(): Set<string> { const locked = new Set(this.npcFrames.filter(n => n.occupying).map(n => n.hutId)); for (const a of this.others.values()) {
@@ -306,6 +327,14 @@ export class PlanetWorld {
         canvas.addEventListener("pointerup", e => { if (this.paused || this.dragTravel > 6 || this.drag?.id !== e.pointerId)
             return; const rect = canvas.getBoundingClientRect(), ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), this.camera);
             if (this.kangarooIsNear() && ray.intersectObject(this.kangaroo.figure, true).length) { this.interact(); return; }
+            const sculpture = this.opts.work && this.garden.pick(ray, this.position);
+            if (sculpture) {
+                const wall = ray.intersectObjects(this.built.solids, false)[0];
+                const ground = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(), R - .03), new THREE.Vector3());
+                if ((!wall || wall.distance >= sculpture.distance - .05) && (!ground || ray.ray.origin.distanceTo(ground) >= sculpture.distance - .05)) {
+                    this.opts.work!(sculpture.workId, sculpture.placeId); return;
+                }
+            }
             const hit = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(), R), new THREE.Vector3()); if (hit) {
             hit.normalize();
             this.walkToward({ x: Math.atan2(hit.x, hit.z) * R, z: -Math.asin(hit.y) * R }, .25);
@@ -361,7 +390,7 @@ export class PlanetWorld {
         if (wantsWalk) {
             const run = this.runRequested || this.keys.has("shift"), speed = run ? RUN_SPEED : WALK_SPEED;
             const available = this.walkingTarget ? Math.max(0, planetDistance(this.position, this.walkingTarget) - this.walkingTarget.stopDistance) : Infinity;
-            const movement = moveOnPlanet(this.position, forward, right, Math.min(dt * speed, available), (x, z) => this.built.canStand(x, z, locked, own));
+            const movement = moveOnPlanet(this.position, forward, right, Math.min(dt * speed, available), (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, locked, own));
             if (movement.distance > 0) {
                 this.position = movement.position;
                 this.selfYaw = this.position.yaw - Math.atan2(right, forward);
@@ -413,10 +442,19 @@ export class PlanetWorld {
         this.camera.updateMatrixWorld();
         if(this.self&&this.selfLabel)this.label(this.selfLabel,this.self,this.position);
         this.built.animate?.(this.serverNow / 1000, this.reduced.matches);
-        this.kangaroo.frame(dt, this.position, this.jumpOffset, (x, z) => !sceneHutAt("planet", x, z) && this.built.canStand(x, z, locked), this.reduced.matches);
-        onPlanet(this.kangaroo.figure, this.kangaroo.at.x, this.kangaroo.at.z, this.built.heightAt(this.kangaroo.at.x, this.kangaroo.at.z) + this.kangaroo.height, this.kangaroo.at.yaw);
-        const companionLabel = this.project(this.kangaroo.at.x, this.kangaroo.at.z, 2.1 + this.kangaroo.height);
-        this.kangarooLabel.hidden = !companionLabel.visible || planetDistance(this.position, this.kangaroo.at) > 14;
+        this.garden.frame(this.serverNow, this.reduced.matches);
+        this.kangaroo.frame(dt, this.position, this.jumpOffset, (x, z) => this.garden.canStand(x, z) && !sceneHutAt("planet", x, z) && this.built.canStand(x, z, locked), this.reduced.matches);
+        const companionWork = this.garden.workNear(this.kangaroo.at, 7, false);
+        const companionBeat = this.serverNow / (60_000 / CHORUS_BPM) * Math.PI * 2;
+        // This is a local companion reacting to a real shared work. It does
+        // not add a participant, contribution or invented server event.
+        const companionHop = companionWork?.duet && companionWork.variant === "ensemble" && !this.reduced.matches ? Math.max(0, Math.sin(companionBeat)) * .14 : 0;
+        const companionYaw = companionWork && this.kangaroo.phase === "resting" ? bearingToward(this.kangaroo.at, PLANET_PLACES.find(place => place.id === companionWork.placeId)!) : this.kangaroo.at.yaw;
+        this.kangaroo.figure.userData.soundWorkId = companionWork?.id ?? null;
+        this.kangaroo.figure.userData.localOnly = true;
+        onPlanet(this.kangaroo.figure, this.kangaroo.at.x, this.kangaroo.at.z, this.built.heightAt(this.kangaroo.at.x, this.kangaroo.at.z) + this.kangaroo.height + companionHop, companionYaw);
+        const companionLabel = this.project(this.kangaroo.at.x, this.kangaroo.at.z, 2.1 + this.kangaroo.height + companionHop);
+        this.kangarooLabel.hidden = !companionLabel.visible || planetDistance(this.position, this.kangaroo.at) > 3.4;
         if (!this.kangarooLabel.hidden) Object.assign(this.kangarooLabel.style, { left: companionLabel.x + "px", top: companionLabel.y + "px", transform: "translate(-50%,-100%)" });
         this.publishInteraction();
         this.host.dataset.replyThreads = String(this.connections.frame(this.position));
@@ -473,6 +511,7 @@ export class PlanetWorld {
             const p = { x: f.position.x, z: f.position.z, yaw: f.rotation.y };
             this.residentPos.set(f, p);
             f.setInteriorLight(fill(p.x, p.z));
+            this.sharedWorkGesture(f, p);
             onPlanet(f, p.x, p.z, this.built.heightAt(p.x, p.z), p.yaw);
             this.label(this.residentLabels.get(f)!, f, p);
         }
@@ -517,7 +556,7 @@ export class PlanetWorld {
         this.host.dataset.grounded = String(this.grounded);
         this.host.dataset.walkingIntent = String(this.walkingIntent);
         this.host.dataset.renderedSelfRadius = String(this.self?.position.length() ?? R + this.built.heightAt(this.position.x, this.position.z) + this.jumpOffset);
-        this.host.dataset.kangaroo = JSON.stringify({ id: this.kangaroo.id, ...this.kangaroo.at, phase: this.kangaroo.phase, height: this.kangaroo.height, nearby: this.kangarooIsNear(), action: this.kangaroo.action });
+        this.host.dataset.kangaroo = JSON.stringify({ id: this.kangaroo.id, ...this.kangaroo.at, phase: this.kangaroo.phase, height: this.kangaroo.height + companionHop, nearby: this.kangarooIsNear(), action: this.kangaroo.action, localOnly: true, soundWorkId: companionWork?.id ?? null });
         this.host.dataset.players = JSON.stringify([...this.others.entries()].map(([id, a]) => ({ id, name: a.name, x: a.at.x, z: a.at.z, running: a.at.motion?.running ?? false, jump: a.at.motion?.jump ?? 0, radius: a.figure.position.length() })));
         if (this.frameNumber++ % 12 === 0) {
             const area = this.area;
@@ -537,10 +576,42 @@ export class PlanetWorld {
             this.host.dataset.sea = String(this.built.root.getObjectByName("soundfolk-ocean")?.visible ?? false);
             this.host.dataset.triangles = String(this.renderer.info.render.triangles);
             this.host.dataset.calls = String(this.renderer.info.render.calls);
+            this.host.dataset.chorusGardens = JSON.stringify(this.garden.state);
+            this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
+                id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,
+                variant: figure.userData.chorusVariant ?? null, npc: true })));
         }
     };
     private kangarooIsNear(): boolean {
         return !this.paused && planetDistance(this.position, this.kangaroo.at) <= 3.2 && this.project(this.kangaroo.at.x, this.kangaroo.at.z, 1.2).visible;
+    }
+    private sharedWorkGesture(figure: AnimalFigure, position: Position): void {
+        const work = this.garden.workNear(position, 6);
+        figure.userData.chorusWorkId = work?.id ?? null;
+        figure.userData.chorusVariant = work?.variant ?? null;
+        if (!work) return;
+        let rig = this.gestureRigs.get(figure);
+        if (!rig) {
+            rig = { body: figure.getObjectByName("upper-body-rig"), head: figure.getObjectByName("head-rig"),
+                left: figure.getObjectByName("left-shoulder"), right: figure.getObjectByName("right-shoulder") };
+            this.gestureRigs.set(figure, rig);
+        }
+        const phase = this.reduced.matches ? 0 : this.serverNow / (60_000 / CHORUS_BPM) * Math.PI * 2;
+        const anchor = PLANET_PLACES.find(place => place.id === work.placeId)!;
+        position.yaw = bearingToward(position, anchor);
+        figure.setPose("stand"); figure.setMotion(0, false);
+        if (work.variant === "ensemble") {
+            if (rig.body) rig.body.rotation.z = Math.sin(phase) * .08;
+            if (rig.head) rig.head.rotation.x = .05 + Math.sin(phase) * .05;
+            if (rig.left) rig.left.rotation.set(-.85 - Math.max(0, Math.sin(phase)) * .18, 0, -.18);
+            if (rig.right) rig.right.rotation.set(-.85 - Math.max(0, Math.sin(phase)) * .18, 0, .18);
+        } else if (work.variant === "habitat") {
+            if (rig.head) rig.head.rotation.set(-.16, Math.sin(phase / 8) * .12, -.1);
+            if (rig.body) rig.body.rotation.z = Math.sin(phase / 8) * .025;
+        } else {
+            if (rig.head) rig.head.rotation.set(-.12, 0, .08);
+            if (rig.right) rig.right.rotation.set(-1.7, 0, .35 + Math.sin(phase / 4) * .07);
+        }
     }
     private publishInteraction(): void {
         const action = this.kangarooIsNear() ? this.kangaroo.action : null;
@@ -563,7 +634,11 @@ export class PlanetWorld {
         x: number;
         z: number;
     }): void {
-        const head = f.headAnchor.getWorldPosition(new THREE.Vector3()).addScaledVector(f.position.clone().normalize(), .2), distance = planetDistance(at, this.position), visible = f.visible && distance < (e.classList.contains("npc")?12:20) && f.position.clone().normalize().dot(this.camera.position.clone().sub(f.position)) > 0;
+        const head = f.headAnchor.getWorldPosition(new THREE.Vector3()).addScaledVector(f.position.clone().normalize(), .2), distance = planetDistance(at, this.position);
+        const focused = this.works.find(work => work.id === this.focusedWork);
+        const focusedNpc = e.classList.contains("npc") && distance <= 8 && !!focused?.liveSources.some(source => source.id === f.userData.soundResident?.sourceId);
+        const near = e === this.selfLabel || distance <= (e.classList.contains("npc") ? 3 : 8) || focusedNpc;
+        const visible = f.visible && near && f.position.clone().normalize().dot(this.camera.position.clone().sub(f.position)) > 0;
         const v = head.project(this.camera);
         e.hidden = !visible || v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1;
         if (!e.hidden) {
@@ -574,7 +649,7 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); for (const cue of this.cues.values()) {
+        a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); for (const cue of this.cues.values()) {
         cue.geometry.dispose();
         (cue.material as THREE.Material).dispose();
         cue.parent?.removeFromParent();

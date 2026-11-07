@@ -120,16 +120,29 @@ describe("sounds people leave (ADR 011)", () => {
     }
   };
 
-  it("every sound on offer is served, and is recorded as CC0 or public domain", async () => {
-    const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8")) as { assets: { id: string; path: string; rights: string; source: string }[] };
+  it("every sound is served with verified licensed-recording or original-score provenance", async () => {
+    const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8")) as { assets: { id: string; path: string; rights: string; source: string; sha256?: string; score?: { bpm: number; beatsPerBar: number }; publicAllowed?: boolean }[] };
+    const { createHash } = await import("node:crypto");
     for (const kind of SOUNDS) {
-      const entry = manifest.assets.find((a) => a.id === `commons-${kind.id}`);
+      // ADR026 adds exactly three original project scores. Never relabel them
+      // as Commons/CC0 or relax the license requirement for other recordings.
+      const original = ["chorus-chords", "chorus-pulse", "chorus-bells"].includes(kind.id);
+      const entry = manifest.assets.find((a) => a.id === `${original ? "original" : "commons"}-${kind.id}`);
       expect(entry, kind.id).toBeDefined();
-      expect(entry!.rights).toMatch(/^(CC0|Public domain)/);
-      expect(entry!.source).toMatch(/commons\.wikimedia\.org/);
+      if(original){
+        expect(entry!.rights).toBe("Original project-generated sound; not a third-party CC0 asset");
+        expect(entry!.source).toContain("src/client/chorus-instrument.ts");
+        expect(entry!.score).toMatchObject({bpm:72,beatsPerBar:4});
+        expect(entry!.publicAllowed).toBe(true);
+        expect(createHash("sha256").update(readFileSync(entry!.path)).digest("hex")).toBe(entry!.sha256);
+      }else{
+        expect(entry!.rights).toMatch(/^(CC0|Public domain)/);
+        expect(entry!.source).toMatch(/commons\.wikimedia\.org/);
+      }
       const res = await fetch(new URL(soundUrl(kind.id), baseUrl));
       expect(res.status, kind.id).toBe(200);
       expect(res.headers.get("content-type")).toBe("audio/mpeg");
+      if(original)expect(createHash("sha256").update(new Uint8Array(await res.arrayBuffer())).digest("hex")).toBe(entry!.sha256);
     }
     expect((await fetch(new URL("/assets/sounds/../../package.json", baseUrl))).status).toBe(404);
   });

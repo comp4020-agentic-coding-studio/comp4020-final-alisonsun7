@@ -67,13 +67,13 @@ export function renderLanding(user: User | null): string {
     `<main class="hero">
   <div class="hero-photo sound-field" aria-hidden="true"><span class="field-ring field-water"></span><span class="field-ring field-animal"></span><span class="field-ring field-people"></span></div>
   <div class="hero-text">
-    <p class="kicker">Find your people. Make your atmosphere.</p>
+    <p class="kicker">A place that remembers your answer.</p>
     <h1>Little Chorus</h1>
     <p class="subtitle">A little world, made together through sound.</p>
-    <p class="lede">A quiet reading nook, a lively jam, tea with a friend. Wander a little planet, leave sounds for each other, and watch its residents join in.</p>
-    <p class="hero-promise">The sounds we leave stay here after we go, until someone beside them removes them.</p>
+    <p class="lede">Bring a little water, a melody or a pulse. Answer a friend, and watch your sounds become a canopy, a beat flower or a lantern. No musical knowledge needed.</p>
+    <p class="hero-promise">Your ingredients stay after you leave. Your work remembers who began it, who answered, and what you changed together.</p>
     <p class="actions">
-      <a class="btn primary" href="/planet">Enter the little world</a>
+      <a class="btn primary" href="/planet">Start at Listening Green</a>
       <a class="btn ghost" href="/scene/seaside">Visit the coast</a>
     </p>
     <p class="hero-editions">The coastal world is still here, with everything you left in it. <a href="/about#how">How it works</a></p>
@@ -220,6 +220,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   </nav>
 </header>
 <main id="planet-stage" class="planet-stage" aria-label="A little world made through sound">
+  <nav id="chorus-travel" class="chorus-travel" aria-label="Little places"><button type="button" data-place="green" aria-pressed="true">Listening Green</button><button type="button" data-place="stage" aria-pressed="false">Pocket Jam</button><button type="button" data-place="reading" aria-pressed="false">Reading Nook</button></nav>
   <aside class="planet-corner" aria-label="Where you are">
     <button type="button" id="planet-shared" aria-haspopup="dialog" aria-label="Our soundscape: sounds and responses"><span class="planet-corner-kicker">Our soundscape · sounds &amp; responses</span><strong id="planet-area">Listening Green</strong><span id="planet-presence">Connecting to the world…</span></button>
     <p id="planet-guide">A place for what you make together.</p>
@@ -243,6 +244,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   <section class="planet-panel-section" aria-labelledby="planet-friends-title"><h3 id="planet-friends-title">Here together</h3><div id="planet-people" class="planet-people"></div><button type="button" id="planet-chat-toggle" class="btn ghost">Talk nearby</button></section>
   <section class="planet-panel-section" aria-labelledby="planet-activity-title"><h3 id="planet-activity-title">Made while you’re here</h3><div id="planet-activity" class="planet-activity"><p>Shared changes appear here as they happen during this visit.</p></div></section>
   <section id="planet-environment" class="planet-panel-section" aria-label="Weather and light"></section>
+  <section class="planet-panel-section"><h3>Your listening</h3><label for="chorus-volume">Work volume <input id="chorus-volume" type="range" min="0" max="100" value="70"/></label><p>Work volume and Listen closely change only your mix of contributions. Sound off also silences residents. Adding, answering and withdrawing change the shared work.</p><button type="button" id="chorus-notebook" class="btn ghost">Our works</button><button type="button" id="chorus-welcome-again" class="btn ghost">Show the invitation again</button><button type="button" id="chorus-overview" class="btn ghost" aria-pressed="false">World overview</button></section>
   <details id="planet-help" class="planet-help"><summary>Moving, listening &amp; looking</summary><p>Walk with W A S D or the arrows. Hold Shift to run; Space jumps. Drag to look; click the ground to walk there. On a phone, use the arrows and Run / Jump buttons.</p><p>First person brings you close to the little details. Third person lets you see your character and the people you meet.</p><label class="planet-look" for="planet-look-settings">Look direction<select id="planet-look-settings"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label><p class="planet-form-note">Follow pointer: down looks down, left looks left. Drag the scene reverses both directions. Saved in this browser.</p><p>Choose a sound, listen privately, then share it where you stand. Click its named marker or press E beside it to Respond to sound. Real replies form threads around the globe. Meet the kangaroo at the green: invite it along, then jump and play together.</p><a href="/about#how">How sounds and privacy work</a></details>
   <details class="planet-restroom"><summary>Restrooms &amp; doors</summary><p>A red lamp means someone is in. Occupied doors stay locked. Sounds left for a stay end when that visitor comes out.</p><button type="button" id="planet-test-restroom" class="btn ghost">Test with a resident</button><p>Rowan will walk in, lock the door, flush and come back out. Open another browser with a different nickname to try the occupied door together.</p><p id="planet-occupancy" role="status" aria-live="polite">Walk to the restrooms to see the shared door state.</p></details>
   <a class="planet-coast-link" href="/scene/seaside">Visit the coastal world <span aria-hidden="true">↗</span></a>
@@ -256,8 +258,8 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
     <input type="hidden" name="next" value="/planet"/>
     <label class="planet-name" for="planet-nickname">Your name here<input id="planet-nickname" name="nickname" maxlength="24" autocomplete="nickname" required value="${escapeHtml(user?.nickname ?? "")}" placeholder="A nickname is fine"/></label>
     <fieldset class="planet-avatars"><legend>Come as</legend><label><input type="radio" name="avatar" value="cat"${avatar === "cat" ? " checked" : ""}/>${avatarMark("cat")} A cat</label><label><input type="radio" name="avatar" value="dog"${avatar === "dog" ? " checked" : ""}/>${avatarMark("dog")} A dog</label></fieldset>
-    <label class="planet-look" for="planet-look">Look direction<select id="planet-look" name="look-mode"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label>
-    <p id="planet-look-hint" class="planet-form-note">Follow pointer: drag down to look down, left to look left. You can change this later.</p>
+    <details><summary>Look direction</summary><label class="planet-look" for="planet-look">Mouse or trackpad<select id="planet-look" name="look-mode"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label>
+    <p id="planet-look-hint" class="planet-form-note">Follow pointer: drag down to look down, left to look left. You can change this later.</p></details>
     <p id="planet-join-error" class="planet-form-error" role="alert" hidden></p>
     <button type="submit" id="planet-enter" class="btn primary">Find my place</button>
     <button type="button" id="planet-observe" class="planet-observe">Just look around first</button>
@@ -291,13 +293,14 @@ export function renderAbout(): string {
 
   <h2>Where the place comes from</h2>
   <p>It's imagined, not a real location. Surface grain, furniture, food, plants and skies use free CC0 (public domain) assets from <a href="https://polyhaven.com">Poly Haven</a>, brought into the same painted palette. Each external asset and its author is recorded in <code>public/assets-manifest.json</code>. Trees, buildings, water and animal people use original three-dimensional geometry. The café's coastal mural is original AI-generated artwork, recorded separately from external CC0 assets. Earlier material studies remain documented in the manifest.</p>
-  <p>The sounds are recordings from <a href="https://commons.wikimedia.org">Wikimedia Commons</a> that are CC0 or in the public domain, cut into loops; each is listed with its author and what was done to it in <code>public/assets-manifest.json</code>.</p>
+  <p>Nature and everyday recordings come from <a href="https://commons.wikimedia.org">Wikimedia Commons</a>, with CC0 or public-domain permissions. Warm chords, Soft pulse and Little bell notes are original Little Chorus scores made with coding-agent assistance, with no sampled music. In the little world they share a gentle 72 BPM pulse; natural textures keep their own rhythm and short events have quiet intervals. Each source and processing step is recorded separately in <code>public/assets-manifest.json</code>.</p>
 
   <h2>What is stored</h2>
   <ul>
     <li>Your nickname, cat-or-dog choice, and a random session token (the server keeps only its hash). No email, no account, no location.</li>
     <li>Where you stand and what you say are never stored: they go to the people in the place as they happen, and are gone.</li>
     <li>Sounds you leave are stored with your nickname, where and when, and stay public until someone removes them; who removed one is stored too.</li>
+    <li>Withdrawing stops an ingredient from playing. Its author and response relationships remain visible in the work's history. Local volume, focused listening and Sound off change only your listening.</li>
   </ul>
 </main>
 ${footer}`,

@@ -3,6 +3,8 @@
 import { PlanetWorld } from "./planet-world.js";
 import { PlanetAudio } from "./planet-audio.js";
 import { RoutineAudio } from "./routine-audio.js";
+import { ChorusStudio } from "./chorus-studio.js";
+import type { ChorusWork } from "../shared/chorus.js";
 import { SoundLibrary } from "./sound-library.js";
 import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
 import { PlanetSoundInteractions } from "./planet-sound-interactions.js";
@@ -21,6 +23,7 @@ const boot = JSON.parse($("planet-boot").textContent!) as {
     joined: boolean;
 };
 let snapshot = boot.snapshot, connected = false;
+let chorus: ChorusWork[] = snapshot.chorus ?? [];
 const stage = $("planet-stage"), notice = $("planet-notice"), tools = $<HTMLDialogElement>("planet-tools-panel"), arrival = $<HTMLDialogElement>("planet-join");
 const sounds = new Map(snapshot.sounds.map(s => [s.id, s])), ended = new Set<string>(), events = new Set<string>(), activity: string[] = [];
 let people: Moves["people"] = [], npcs: NpcRoutineFrame[] = snapshot.npcs ?? [];
@@ -37,6 +40,7 @@ let walkingReply: string | null = null;
 let walkingReplyRevision = 0;
 function say(text: string): void { notice.textContent = text; notice.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => notice.hidden = true, 8000); }
 const audio = new PlanetAudio(count => stage.dataset.voices = String(count));
+audio.setVolume(.7);
 const routineAudio = new RoutineAudio({ distanceBetween: planetDistance, report: count => stage.dataset.npcFlushVoices = String(count) });
 let currentArea = PLANET_PLACES[0];
 const world = new PlanetWorld(stage, { listen: l => {
@@ -44,11 +48,13 @@ const world = new PlanetWorld(stage, { listen: l => {
         audio.frame(here, l.camera, l.serverNow);
         routineAudio.frame(npcs, here, audio.on, l.serverNow);
         soundInteractions?.frame();
+        studio.frame();
         updateReplyIntent();
         const run = $("planet-run"), pressed = String(world.runEnabled);if (run.getAttribute("aria-pressed") !== pressed) run.setAttribute("aria-pressed", pressed);
         if (boot.joined && connected && performance.now() - lastMove > 180)
             void reportMove();
-    }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description; }, wait: say,
+    }, area: p => { currentArea = p; $("planet-area").textContent = p.title; $("planet-guide").textContent = p.description;document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b => b.setAttribute("aria-pressed",String(b.dataset.place === p.id))); }, wait: say,
+    work: (id) => id ? studio.showJournal(id) : openLibrary(),
     interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } });
 world.setSelf(snapshot.you);
 world.setNpcs(npcs);
@@ -273,7 +279,8 @@ async function leaveSound(id: string, stay = false): Promise<string | null> {
         const current=context===draftRevision&&operation?.id===requestId;
         if(current){operation=null;reply=null;library.setReply(null);if(!stay&&active)library.close();}
         if(!active)return "That contribution was removed before confirmation. It will not play.";
-        if(current&&choice===audioRevision&&!audio.on)setSound(true,false);
+        // A contribution never overrides a chosen quiet visit. Private Listen
+        // is explicit; shared playback is controlled only by the Sound button.
         if(current)say(stay ? "Playing for your stay. It ends when you come out." : "Your sound is here for the next visitor.");
         return null;
     }
@@ -300,10 +307,24 @@ catch {
 } }
 const library = new SoundLibrary({ zone: () => ({ id: currentArea.id, title: currentArea.title }), listen: id => audio.preview(id), stop: () => audio.stopPreview(), leave: id => leaveSound(id), cancelReply: () => {draftRevision++; reply = null; operation = null; library.setReply(null); }, close: ()=>{draftRevision++;restore();} });
 stage.append(library.element);
-function openLibrary(): void { if (!boot.joined) {
+const studio = new ChorusStudio(stage, {
+    at: () => here, you: () => snapshot.you, ready: () => boot.joined && connected,
+    preview: id => audio.preview(id), stop: () => audio.stopPreview(), publish: id => leaveSound(id),
+    respond: source => startReply(source), create: () => {cancelReply();openLibrary();},
+    remove: source => {const sound = sounds.get(source.id);if(sound)void removeSound(sound);},
+    visit: work => afterDialogClose(studio.journal, () => {world.goTo(work.placeId);world.focusWork(work.id);lastSent="";}),
+    full: () => afterDialogClose(studio.element, () => openLibrary(true)),
+    pause: () => world.setPaused(true), resume: restore, closeDraft: () => {draftRevision++;}, sound: on => setSound(on), focus: id => audio.setFocus(id),
+});
+function receiveChorus(works: readonly ChorusWork[]): void {
+    chorus = [...works];world.setWorks(chorus);audio.setWorks(chorus);studio.setWorks(chorus);
+    stage.dataset.chorus = JSON.stringify(chorus.map(w=>({id:w.id,placeId:w.placeId,variant:w.variant,duet:w.duet,sources:w.sources.map(s=>({id:s.id,byId:s.byId,replyToId:s.replyToId,removedAt:s.removedAt})),live:w.liveSources.map(s=>s.id)})));
+}
+receiveChorus(chorus);
+function openLibrary(full = false): void { if (!boot.joined) {
     show(arrival);
     return;
-} world.setPaused(true); library.setReply(reply); library.open(); }
+} world.setPaused(true);if(full){library.setReply(reply);library.open();}else studio.open(reply); }
 $("planet-place").onclick = () => {cancelReply();openLibrary();};
 const conversations = new SoundConversations({
     visitLabel: "Walk toward sound",
@@ -349,7 +370,7 @@ soundInteractions = new PlanetSoundInteractions(stage, {
     reaction: id => world.responses.filter(r => r.sourceId === id).map(r => r.label + " · " + r.behavior).join(" · "),
 });
 soundInteractions.setAll([...sounds.values()]);
-document.addEventListener("keydown", event => { if (event.key.toLowerCase() !== "e" || event.repeat || event.altKey || event.ctrlKey || event.metaKey || document.querySelector("dialog:modal") || !(event.target instanceof HTMLCanvasElement)) return;if (soundInteractions?.respondNearest()) { event.preventDefault();event.stopImmediatePropagation(); } }, {capture:true});
+document.addEventListener("keydown", event => { if (event.key.toLowerCase() !== "e" || event.repeat || event.altKey || event.ctrlKey || event.metaKey || document.querySelector("dialog:modal") || !(event.target instanceof HTMLCanvasElement)) return;const primary=$<HTMLButtonElement>("chorus-primary");if(!studio.dock.hidden&&primary&&!primary.disabled){event.preventDefault();event.stopImmediatePropagation();primary.click();return;}if (soundInteractions?.respondNearest()) { event.preventDefault();event.stopImmediatePropagation(); } }, {capture:true});
 $("planet-run").onclick = () => { world.setRunning(!world.runEnabled);$("planet-run").setAttribute("aria-pressed", String(world.runEnabled));world.focus(); };
 $("planet-jump").onclick = () => { world.jump();world.focus(); };
 $("planet-interact").onclick = () => { world.interact();world.focus(); };
@@ -419,6 +440,7 @@ stream.onmessage = e => {
             if (!msg.sounds.some(s => s.id === id))
                 ended.add(id);
         snapshot = msg;
+        receiveChorus(msg.chorus ?? []);
         sounds.clear();
         for (const s of msg.sounds)
             if (!ended.has(s.id))
@@ -442,6 +464,7 @@ stream.onmessage = e => {
         }
     }
     else if (msg.type === "sound-left") {
+        if(msg.chorus)receiveChorus(msg.chorus);
         if (!ended.has(msg.sound.id) && !msg.sound.removedAt) {
             sounds.set(msg.sound.id, msg.sound);
             record("left", msg.sound);
@@ -449,6 +472,7 @@ stream.onmessage = e => {
         }
     }
     else if (msg.type === "sound-removed") {
+        if(msg.chorus)receiveChorus(msg.chorus);
         const s = sounds.get(msg.id);
         ended.add(msg.id);
         sounds.delete(msg.id);
@@ -497,8 +521,15 @@ $<HTMLFormElement>("planet-join-form").onsubmit = async (e) => {
 $("planet-observe").onclick = () => hide(arrival);
 if (!boot.joined)
     show(arrival);
-else
-    world.focus();
+else {
+    let welcomed = false;try {welcomed = localStorage.getItem("chorus-welcome-v1") === "seen";}catch{}
+    if(!welcomed)studio.showWelcome();else world.focus();
+}
+$("chorus-welcome-again").onclick = () => afterDialogClose(tools, () => studio.showWelcome());
+$("chorus-notebook").onclick = () => afterDialogClose(tools, () => studio.showJournal());
+$<HTMLInputElement>("chorus-volume").oninput = e => audio.setVolume(Number((e.target as HTMLInputElement).value)/100);
+$("chorus-overview").onclick = () => {const overview=world.cameraDistance<20;world.setViewMode("third");world.setCameraDistance(overview?26:8);$("chorus-overview").setAttribute("aria-pressed",String(overview));$("chorus-overview").textContent=overview?"Back to my place":"World overview";world.focus();};
+document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b=>b.onclick=()=>{cancelReply();world.goTo(b.dataset.place!);world.setCameraDistance(8);lastSent="";world.focus();});
 const startPlace = new URLSearchParams(location.search).get("zone");
 if (startPlace)
     world.goTo(startPlace);
@@ -506,4 +537,4 @@ renderPeople();
 renderShared();
 renderOccupancy();
 window.addEventListener("pagehide", e => { if (e.persisted || disposed)
-    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();world.dispose(); }, { once: false });
+    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); studio.dispose();audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();world.dispose(); }, { once: false });

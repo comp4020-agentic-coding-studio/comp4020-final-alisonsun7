@@ -102,10 +102,12 @@ export class PlanetAudio {
     setAll(sounds: readonly PlacedSound[]): void {
         for (const source of sounds) if (source.removedAt) this.seenRemoved.add(source.id);
         this.sources = sounds.filter(source => !source.removedAt && !this.seenRemoved.has(source.id) && !!findSound(source.soundId)).map(source => ({ ...source }));
+        if(this.focus && !this.sources.some(source=>source.id===this.focus))this.focus=null;
         const live = new Set(this.audibles().map(source => source.id));
         for (const [id] of this.voices) if (!live.has(id)) this.stop(id);
     }
     remove(id: string): void {
+        if(this.focus===id)this.focus=null;
         this.seenRemoved.add(id); this.sources = this.sources.filter(source => source.id !== id); this.stop(id);
         // Silence the derived answer before the next work snapshot arrives.
         for (const work of this.works) if (work.liveSources.some(source => source.id === id)) this.stop("@chorus:" + work.id);

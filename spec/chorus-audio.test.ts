@@ -131,6 +131,18 @@ describe("local listening and the shared musical consequence", () => {
     instance.stopPreview(); expect(gains[1].gain.value).toBe(1); expect(instance.on).toBe(true);
     instance.setVolume(0); expect(gains[0].gain.value).toBe(0); expect(rows).toEqual([sound("a", "guitar"), sound("b", "trickle", { x: 2 })]);
   });
+  it.each(["removal event", "reconnect snapshot"])("releases a withdrawn local focus through a %s without leaving all remaining voices ducked", async mode => {
+    const instance = audio(), rows = [sound("a", "guitar"), sound("b", "trickle", { x: 2 })];
+    instance.setAll(rows); instance.setOn(true); instance.frame(listener, camera, origin); await settle();
+    const normal = gains[3].gain.value;
+    instance.setFocus("a"); instance.frame(listener, camera, origin + 10);
+    expect(gains[3].gain.value).toBeCloseTo(normal * .12);
+    if (mode === "removal event") instance.remove("a");
+    else instance.setAll([rows[1]]);
+    instance.frame(listener, camera, origin + 20);
+    expect(gains[3].gain.value).toBeCloseTo(normal);
+    expect(instance.on).toBe(true);
+  });
   it("schedules a bell as a bounded one-shot after its quiet interval", async () => {
     const instance = audio(); instance.setAll([sound("bell", "bicycle-bell")]); instance.setOn(true);
     instance.frame(listener, camera, origin + 5000); await settle(); expect(sources).toHaveLength(1);

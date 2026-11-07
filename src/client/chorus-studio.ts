@@ -1,0 +1,174 @@
+import { chorusPlaceAt, recommendedSounds, VARIANT_COPY, type ChorusWork } from "../shared/chorus.js";
+import { PLANET_PLACES, planetDistance } from "../shared/planet.js";
+import { findSound } from "../shared/sounds.js";
+import type { Person, SoundReference } from "../shared/protocol.js";
+
+interface Options {
+  at: () => { x: number; z: number };
+  you: () => Person | null;
+  ready: () => boolean;
+  preview: (id: string) => Promise<boolean>;
+  stop: () => void;
+  publish: (id: string) => Promise<string | null>;
+  respond: (sound: SoundReference) => void;
+  create: () => void;
+  remove: (sound: SoundReference) => void;
+  visit: (work: ChorusWork) => void;
+  full: () => void;
+  pause: () => void;
+  resume: () => void;
+  closeDraft: () => void;
+  sound: (on: boolean) => void;
+  focus: (id: string | null) => void;
+}
+const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] => {
+  const e = document.createElement(tag);if (text) e.textContent = text;if (className) e.className = className;return e;
+};
+const action = (text: string, run: () => void, primary = false): HTMLButtonElement => {
+  const b = node("button", text, primary ? "btn primary" : "btn ghost");b.type = "button";b.onclick = run;return b;
+};
+function trap(dialog: HTMLDialogElement): void {
+  dialog.addEventListener("keydown", e => {
+    if (e.key !== "Tab") return;
+    const targets = [...dialog.querySelectorAll<HTMLElement>("button,input,select,a[href]")].filter(b => !b.matches(":disabled") && b.getClientRects().length);
+    if (e.shiftKey && document.activeElement === targets[0]) { e.preventDefault();targets.at(-1)?.focus(); }
+    else if (!e.shiftKey && document.activeElement === targets.at(-1)) { e.preventDefault();targets[0]?.focus(); }
+  });
+}
+export class ChorusStudio {
+  readonly element = node("dialog", undefined, "chorus-dialog chorus-studio");
+  readonly journal = node("dialog", undefined, "chorus-dialog chorus-journal");
+  readonly welcome = node("dialog", undefined, "chorus-dialog chorus-welcome");
+  readonly dock = node("aside", undefined, "chorus-dock");
+  private works: ChorusWork[] = [];
+  private focusId: string | null = null;
+  private signature = "";
+  private previewRevision = 0;
+  private previewTimer: ReturnType<typeof setTimeout> | undefined;
+  private publishing = false;
+  private viewRevision = 0;
+  private parent: SoundReference | null = null;
+  private title = node("h2");
+  private context = node("p", undefined, "chorus-context");
+  private choices = node("div", undefined, "chorus-choices");
+  private feedback = node("p", undefined, "chorus-feedback");
+  private records = node("div", undefined, "chorus-records");
+  constructor(private host: HTMLElement, private opts: Options) {
+    this.element.id = "chorus-studio";this.title.id = "chorus-studio-title";this.element.setAttribute("aria-labelledby", this.title.id);
+    const head = node("div", undefined, "chorus-dialog-heading");head.append(this.title, action("Cancel", () => this.close()));
+    this.context.id = "chorus-answering";this.feedback.setAttribute("role", "status");
+    this.element.append(node("p", "A LITTLE INGREDIENT, A DIFFERENT WORLD", "planet-kicker"), head, this.context, this.choices, this.feedback,
+      action("Explore every sound", () => { this.close();this.opts.full(); }));
+    this.element.addEventListener("close", () => { this.previewRevision++;this.opts.stop();this.opts.closeDraft();this.opts.resume(); });
+    this.element.addEventListener("cancel", () => this.opts.stop());
+    this.journal.id = "chorus-journal";this.journal.setAttribute("aria-labelledby", "chorus-journal-title");
+    const journalHead = node("div", undefined, "chorus-dialog-heading"), title = node("h2", "What we left here");title.id = "chorus-journal-title";
+    journalHead.append(title, action("Back to the world", () => this.journal.close()));
+    const beginning=action("Begin a new work here",()=>{this.journal.close();this.opts.create();});beginning.id="chorus-new-work";
+    this.journal.append(node("p", "OUR LITTLE WORKS", "planet-kicker"), journalHead, node("p", "Every leaf has a source. Every answer keeps its author. Answer a saved ingredient to continue its work; the most recently changed work takes the stage."),beginning, this.records);
+    this.journal.addEventListener("close", () => { this.opts.stop();this.opts.resume(); });
+    this.welcome.id = "chorus-welcome";this.welcome.setAttribute("aria-labelledby", "chorus-welcome-title");
+    const welcomeTitle = node("h2", "A place that remembers your answer.");welcomeTitle.id = "chorus-welcome-title";
+    const mark = node("div", undefined, "chorus-welcome-mark");mark.setAttribute("aria-hidden", "true");for (let i = 0; i < 5; i++) mark.append(node("i"));
+    this.welcome.append(node("p", "LITTLE CHORUS", "planet-kicker"), mark, welcomeTitle,
+      node("p", "Leave a little sound. Answer a friend. Grow something neither of you could make alone."),
+      node("p", "Start at the Listening Green. Water and birds grow a canopy; melody and rhythm turn a beat flower. Other pairings make their own light.", "chorus-welcome-note"),
+      action("Enter with sound", () => this.arrive(true), true), action("Explore quietly", () => this.arrive(false)),
+      node("p", "No musical knowledge needed. Listening is private; leaving a sound changes the shared place.", "chorus-welcome-note"));
+    this.welcome.addEventListener("cancel", () => this.arrive(false));
+    this.welcome.addEventListener("close", () => this.opts.resume());
+    this.dock.id = "chorus-work";this.dock.setAttribute("aria-label", "The work in this place");
+    this.host.append(this.element, this.journal, this.welcome, this.dock);
+    [this.element, this.journal, this.welcome].forEach(trap);
+  }
+  private arrive(sound: boolean): void {
+    try { localStorage.setItem("chorus-welcome-v1", "seen"); } catch { }
+    this.opts.sound(sound);this.welcome.close();this.opts.resume();
+  }
+  showWelcome(): void { this.opts.pause();this.welcome.showModal(); }
+  open(parent: SoundReference | null): void {
+    this.viewRevision++;
+    this.parent = parent;this.previewRevision++;this.opts.stop();this.feedback.textContent = "";
+    const place = chorusPlaceAt(this.opts.at()) ?? "green";
+    this.title.textContent = parent ? "What would you answer?" : "What will you bring?";
+    this.context.textContent = parent ? `Answering ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"}. Your choice will become another part of this work.` : "Try one of three ingredients. Listen is only for you; Leave it here grows the shared work.";
+    this.renderChoices(recommendedSounds(parent, place));this.opts.pause();this.element.showModal();
+  }
+  close(): void { this.viewRevision++;this.previewRevision++;this.opts.stop();this.element.close(); }
+  private renderChoices(ids: string[]): void {
+    this.choices.replaceChildren(...ids.map(id => {
+      const s = findSound(id)!;const card = node("article", undefined, "chorus-choice");card.dataset.sound = id;
+      const symbol = node("span", undefined, `chorus-tone ${id.includes("pulse") ? "pulse" : id.includes("trickle") ? "water" : id.includes("forest") ? "bird" : "notes"}`);symbol.setAttribute("aria-hidden", "true");
+      const title = node("h3", s.label);
+      const copy = id === "chorus-pulse" ? "A soft steady heartbeat. Give a melody somewhere to land." : id === "chorus-chords" ? "Warm, unhurried harmony. A little room for a friend's rhythm." : id === "chorus-bells" ? "A few bright notes with space between them." : id === "trickle" ? "A small stream. A bird's answer can open a canopy." : id === "evening-forest" ? "A bird call. Let it settle beside water." : "A quiet texture with room for another voice.";
+      const listen = action("Listen", () => {
+        if(listen.getAttribute("aria-pressed")==="true"){this.previewRevision++;clearTimeout(this.previewTimer);this.opts.stop();listen.setAttribute("aria-pressed","false");listen.textContent="Listen";this.feedback.textContent="Private listen stopped.";return;}
+        const revision = ++this.previewRevision;this.opts.stop();
+        clearTimeout(this.previewTimer);this.choices.querySelectorAll("[aria-pressed]").forEach(b => {b.setAttribute("aria-pressed", "false");b.textContent="Listen";});
+        listen.setAttribute("aria-pressed", "true");this.feedback.textContent = "Loading your private listen…";
+        void this.opts.preview(id).then(ok => { if (revision !== this.previewRevision || !this.element.open) return;this.feedback.textContent = ok ? "Just you, listening. Nothing has been shared." : "This sound could not load. Try Listen again.";listen.textContent=ok?"Stop":"Listen";listen.setAttribute("aria-pressed", String(ok));if(ok)this.previewTimer=setTimeout(()=>{listen.setAttribute("aria-pressed","false");listen.textContent="Listen";},5000); });
+      });listen.setAttribute("aria-label", `Listen to ${s.label}`);listen.setAttribute("aria-pressed", "false");listen.dataset.listen = id;
+      const leave = action("Leave it here", () => {
+        if (this.publishing) return;const view = this.viewRevision;this.publishing = true;leave.disabled = true;this.feedback.textContent = "Bringing your ingredient into the world…";
+        void this.opts.publish(id).then(error => {
+          this.publishing = false;leave.disabled = false;
+          if (view !== this.viewRevision || !this.element.open) return;
+          if (error) this.feedback.textContent = error;else this.close();
+        });
+      }, true);leave.dataset.leave = id;leave.setAttribute("aria-label", `Leave ${s.label} here`);
+      card.append(symbol, title, node("p", copy), listen, leave);return card;
+    }));
+  }
+  setWorks(works: readonly ChorusWork[]): void { this.works = [...works];if(this.focusId&&!works.some(work=>work.liveSources.some(source=>source.id===this.focusId))){this.focusId=null;this.opts.focus(null);}this.signature = "";this.frame();if (this.journal.open) this.renderRecords(); }
+  showJournal(id?: string): void { this.renderRecords();this.opts.pause();this.journal.showModal();if(id)this.records.querySelector<HTMLElement>(`[data-work="${CSS.escape(id)}"]`)?.scrollIntoView({block:"start"}); }
+  frame(): void {
+    const placeId = chorusPlaceAt(this.opts.at());this.dock.hidden = !placeId || !!document.querySelector("dialog:modal") || !document.getElementById("planet-chat")?.hidden;
+    if (!placeId) return;
+    const here = this.works.filter(w => w.placeId === placeId && w.liveSources.length);
+    // Match the sculpture's canonical latest work. Looking at an older record
+    // is local; only an accepted contribution changes which work takes stage.
+    const work = here[0];
+    const signature = JSON.stringify([placeId, work?.id, work?.lastAt, work?.duet, this.opts.ready(), this.focusId]);
+    if (signature === this.signature) return;this.signature = signature;
+    this.dock.dataset.work = work?.id ?? "";this.dock.dataset.variant = work?.variant ?? "dormant";this.dock.dataset.duet = String(work?.duet ?? false);
+    const place = PLANET_PLACES.find(p => p.id === placeId)!, carrier = placeId === "green" ? "THE CHORUS TREE" : placeId === "stage" ? "THE BEAT FLOWER" : "THE QUIET LIGHTS";
+    const title = node("strong", work ? VARIANT_COPY[work.variant].title : (placeId === "green" ? "One sound can start this." : placeId === "stage" ? "Leave room for a rhythm." : "A softer kind of together."));
+    const answer = work && [...work.liveSources].reverse().find(s => s.replyToId && work.sources.some(p => p.id === s.replyToId));
+    const parent = answer && work?.sources.find(s => s.id === answer.replyToId);
+    const effect = work?.variant === "habitat" ? "The canopy opened; paper birds follow the water." : work?.variant === "ensemble" ? "The beat flower opened; low harmony joins next bar." : "The lantern opened; light travels between your petals.";
+    const cause = answer && parent ? `${answer.by} answered ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"} with ${findSound(answer.soundId)?.label ?? "a sound"}. ${work!.duet ? effect : "A new leaf is ready. A friend's answer opens the shared form."}` : null;
+    const detail = node("p", cause ?? (work ? VARIANT_COPY[work.variant][work.duet ? "together" : "solo"] : `${place.title}: choose an ingredient, then invite a friend to answer.`));
+    detail.id = "chorus-cause";detail.setAttribute("role", "status");
+    const authors = node("p", work ? `Made by ${work.contributors.map(p => p.name).join(" & ")}${work.duet ? " · opened together" : " · ready for another answer"}` : "Your work stays here when you leave.", "chorus-authors");
+    const source = work && ([...work.liveSources].reverse().find(s => s.byId !== this.opts.you()?.id) ?? work.liveSources[0]);
+    const primary = action(source ? `Answer ${source.by}` : "Make a first sound", () => source ? this.opts.respond(source) : this.opts.create(), true);primary.id = "chorus-primary";primary.disabled = !this.opts.ready();
+    const journal = action("Our works", () => this.showJournal());journal.id = "chorus-our-works";
+    const buttons = node("div", undefined, "chorus-dock-actions");buttons.append(primary, journal);
+    if (source) { const focus = action(this.focusId ? "Hear the whole place" : "Listen closely", () => { this.focusId = this.focusId ? null : source.id;this.opts.focus(this.focusId);this.signature = ""; });focus.setAttribute("aria-pressed", String(!!this.focusId));focus.id = "chorus-focus";buttons.append(focus); }
+    this.dock.replaceChildren(node("span", carrier, "planet-kicker"), title, detail, authors, buttons);
+  }
+  private renderRecords(): void {
+    const focus = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.recordAction : undefined;
+    this.records.replaceChildren(...this.works.map(work => {
+      const card = node("article", undefined, "chorus-record");card.dataset.work = work.id;card.dataset.duet = String(work.duet);
+      card.append(node("span", `${PLANET_PLACES.find(p => p.id === work.placeId)!.title} · ${work.liveSources.length ? "still growing" : "resting"}`, "planet-kicker"), node("h3", work.title), node("p", `Made by ${work.contributors.map(p => p.name).join(" & ")}`));
+      const list = node("ol");
+      for (const source of work.sources) {
+        const parent = work.sources.find(s => s.id === source.replyToId), item = node("li");item.dataset.source = source.id;
+        const line = node("p", `${source.by} brought ${findSound(source.soundId)?.label ?? "a sound"}${parent ? ` → answering ${parent.by}'s ${findSound(parent.soundId)?.label ?? "sound"}` : " → began this work"}${source.removedAt ? " · withdrawn, remembered here" : ""}`);
+        const time = node("time", new Date(source.at).toLocaleString("en", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }));time.dateTime = source.at;
+        item.append(line, time);
+        if (!source.removedAt) {
+          const reply = action(`Answer ${source.by}`, () => { this.journal.addEventListener("close",()=>this.opts.respond(source),{once:true});this.journal.close(); });reply.dataset.recordAction = `reply:${source.id}`;reply.disabled = !this.opts.ready();item.append(reply);
+          const remove = action("Withdraw this sound", () => this.opts.remove(source));remove.disabled = !this.opts.ready() || planetDistance(source, this.opts.at()) > 4;remove.dataset.recordAction = `remove:${source.id}`;item.append(remove);
+        }
+        list.append(item);
+      }
+      const visit = action(`Visit ${PLANET_PLACES.find(p=>p.id===work.placeId)!.title}`, () => { this.journal.close();this.opts.visit(work); });visit.dataset.recordAction = `visit:${work.id}`;
+      card.append(node("p", work.liveSources.length ? VARIANT_COPY[work.variant][work.duet ? "together" : "solo"] : "All ingredients have been withdrawn. This record remembers who began and answered; the sculpture is resting."), list, visit);return card;
+    }));
+    if (!this.works.length) this.records.append(node("p", "Your first ingredient will begin a work here. Nothing is pre-filled: this place is waiting for you."));
+    if (focus) (this.records.querySelector<HTMLElement>(`[data-record-action="${CSS.escape(focus)}"]`) ?? this.journal.querySelector<HTMLButtonElement>("button"))?.focus();
+  }
+  dispose(): void { this.opts.stop();this.element.remove();this.journal.remove();this.welcome.remove();this.dock.remove(); }
+}
