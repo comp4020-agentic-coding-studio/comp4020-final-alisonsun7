@@ -182,7 +182,10 @@ describe("sounds people leave (ADR 011)", () => {
     expect(await remove(ben, id)).toMatchObject({ status: 409, code: "gone" });
     expect((await snapshot("weekday")).sounds.some((s) => s.id === id)).toBe(false);
     watcher.close();
-  });
+    // Four authoritative changes deliberately wait 1050 ms each, plus three
+    // 120 ms moves: 4.56 s before HTTP overhead. Keep each SSE assertion at
+    // 1000 ms, but do not squeeze the complete workflow into Vitest's 5 s.
+  }, 10_000);
 
   it("needs room between two of the same sound, and keeps any spot from crowding", async () => {
     const cy = await join(baseUrl, "Cy");

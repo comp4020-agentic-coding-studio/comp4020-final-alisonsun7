@@ -345,9 +345,9 @@ const library = new SoundLibrary({ zone: () => ({ id: currentArea.id, title: cur
 stage.append(library.element);
 const studio = new ChorusStudio(stage, {
     minimise: () => soundInteractions?.dismiss(),
-    at: () => here, you: () => snapshot.you, ready: () => boot.joined && connected,
+    at: () => world.at, you: () => snapshot.you, ready: () => boot.joined && connected,
     preview: id => audio.preview(id), stop: () => audio.stopPreview(), publish: id => leaveSound(id),
-    availability: id => placementAvailability(id, here, reply, [...sounds.values()], (x,z)=>world.canPlaceAt(x,z)),
+    availability: id => placementAvailability(id, world.at, reply, [...sounds.values()], (x,z)=>world.canPlaceAt(x,z)),
     makeRoom: (id,parent) => makeRoom(id,parent), invite: work => inviteTo(work),
     respond: source => startReply(source), create: () => {cancelReply();openLibrary();},
     remove: source => {const sound = sounds.get(source.id);if(sound)void removeSound(sound);},
@@ -367,8 +367,10 @@ const placementIntent = document.createElement("aside");placementIntent.classNam
 const placementText=document.createElement("p"), stopPlacing=button("Cancel walk",()=>{cancelPlacement();world.focus();});stopPlacing.id="chorus-walk-cancel";placementIntent.append(placementText,stopPlacing);stage.append(placementIntent);
 function cancelPlacement(): void { if(placementPlan)world.cancelWalkingIntent();placementPlan=null;placementIntent.hidden=true; }
 function makeRoom(soundId: string, parent: SoundReference | null): void {
-    const place=chorusPlaceAt(here);
-    const target=findNearbyPlan(soundId,here,parent,[...sounds.values()],(x,z)=>world.canPlaceAt(x,z) && (!!parent || !place || chorusPlaceAt({x,z})===place));
+    const at=world.at, place=chorusPlaceAt(at);
+    // Explicit travel changes the controller synchronously, before its next
+    // animation sample reaches `here`. Use that actual position in dialogs.
+    const target=findNearbyPlan(soundId,at,parent,[...sounds.values()],(x,z)=>world.canPlaceAt(x,z) && (!!parent || !place || chorusPlaceAt({x,z})===place));
     if(!target){
         const feedback=studio.element.querySelector<HTMLElement>(".chorus-feedback");
         if(feedback){
@@ -377,6 +379,11 @@ function makeRoom(soundId: string, parent: SoundReference | null): void {
             const elsewhere=button(`Begin a new work at ${destination.title}`,()=>afterDialogClose(studio.element,()=>{cancelReply();world.goTo(next);world.setCameraDistance(8);lastSent="";openLibrary();}));
             elsewhere.id="chorus-try-another-place";elsewhere.className="btn primary";feedback.append(elsewhere);elsewhere.focus();elsewhere.scrollIntoView({block:"nearest"});
         }return;
+    }
+    if(planetDistance(at,target)<.34){
+        studio.setWorks(chorus);
+        const feedback=studio.element.querySelector<HTMLElement>(".chorus-feedback");if(feedback)feedback.textContent="There is room here now. Choose Leave when you are ready.";
+        studio.element.querySelector<HTMLButtonElement>(`[data-leave="${CSS.escape(soundId)}"]`)?.focus();return;
     }
     afterDialogClose(studio.element,()=>{
         cancelPlacement();walkingReply=null;

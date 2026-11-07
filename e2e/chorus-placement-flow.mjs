@@ -74,10 +74,11 @@ try{
   await page.locator("#chorus-welcome").getByRole("button",{name:"Explore quietly",exact:true}).click();await ready(page);
   const initial=await register(actor);initialPlanet=ordinary(initial);initialCoast=ordinary(await snapshot(actor,"/scene/seaside"));
   const greenIds=new Set(initial.chorus.filter(work=>work.placeId==="green").flatMap(work=>work.liveSources.map(source=>source.id)));
-  check(greenIds.size===9,"The designated fixture really starts with nine historical Green sources",{greenSources:greenIds.size,stageSources:initial.chorus.filter(work=>work.placeId==="stage").flatMap(work=>work.liveSources).map(source=>({id:source.id,soundId:source.soundId}))});
+  check(initialPlanet.length===9&&greenIds.size===5,"The fixture starts with nine historical public sources, including a busy Green",{publicSources:initialPlanet.length,greenSources:greenIds.size,stageSources:initial.chorus.filter(work=>work.placeId==="stage").flatMap(work=>work.liveSources).map(source=>({id:source.id,soundId:source.soundId}))});
   check(await data(page,"soundOn")==="false","Quiet entry does not enable world listening");
-  await page.locator("#chorus-primary").click();await page.locator("#chorus-studio").waitFor({state:"visible"});
-  check(/nick/i.test(await page.locator("#chorus-answering").textContent()),"The first real invitation answers Nick's existing work");
+  const nickSource=initial.sounds.find(source=>source.by.toLowerCase()==="nick"&&source.soundId==="chorus-chords");assert.ok(nickSource,"The actual live historical Warm chords exist");
+  await page.locator("#chorus-our-works").click();await page.locator(`#chorus-journal [data-record-action="reply:${nickSource.id}"]`).click();await page.locator("#chorus-studio").waitFor({state:"visible"});
+  check(/nick/i.test(await page.locator("#chorus-answering").textContent()),"Selecting Nick's actual live chord in the record names that historical parent");
   const pulse=page.locator('#chorus-studio [data-leave="chorus-pulse"]');
   check(await pulse.isDisabled(),"The crowded historical corner explains its blocked Leave before a failed publication");
   const beforeListen=actor.posts;
@@ -146,7 +147,7 @@ try{
       await moveApi(who,sound);const removed=await who.context.request.delete(`${base}/api/sessions/${who.sessionId}/sounds/${sound.id}`), result=await removed.json();assert.ok((removed.ok()&&result.ok)||result.code==="gone",`Cleanup only own fixture ${sound.id}: ${JSON.stringify(result)}`);
     }catch(error){cleanupErrors.push(`${sound.id}: ${error.message}`);}
   }
-  if(people[0]&&initialPlanet&&initialCoast)try{assert.deepEqual(ordinary(await snapshot(people[0])),initialPlanet);assert.deepEqual(ordinary(await snapshot(people[0],"/scene/seaside")),initialCoast);check(true,"Cleanup preserves all nine historical Green sources and every pre-existing coastal source exactly");}catch(error){cleanupErrors.push(error.message);}
+  if(people[0]&&initialPlanet&&initialCoast)try{assert.deepEqual(ordinary(await snapshot(people[0])),initialPlanet);assert.deepEqual(ordinary(await snapshot(people[0],"/scene/seaside")),initialCoast);check(true,"Cleanup preserves all nine historical planet sources and every pre-existing coastal source exactly");}catch(error){cleanupErrors.push(error.message);}
   if(cleanupErrors.length){failed=true;process.exitCode=1;console.error("Cleanup",cleanupErrors);}
   writeFileSync(`${out}/results.json`,JSON.stringify({kind:"automated-developer-placement-flow",base,failed,failure,checks,pageErrors,consoleErrors,cleanupErrors,made:[...made.values()].map(({sound})=>({id:sound.id,byId:sound.byId,soundId:sound.soundId,x:sound.x,z:sound.z,replyToId:sound.replyToId})),realUnfamiliarPairs:false,humanListening:false,physicalPhone:false,nextDayReturn:false,remotePeerUsesAuthenticatedHttp:true},null,2)+"\n");
   await browser.close();if(!cleanupErrors.length)rmSync(recoveryPath,{force:true});
