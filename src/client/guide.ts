@@ -38,10 +38,10 @@ interface Step {
 }
 
 const TOUR: Step[] = [
-  { target: "#shared-sound-toggle", text: "This is a place we make by listening. Open Our soundscape to find what people have left, see who is here, and follow their sound conversations." },
+  { target: "#shared-sound-toggle", text: "Make this world feel like you and your friends: cozy, lively, or a mix of both. Our soundscape shows what people have left and the nearby residents responding to it." },
   { text: "Walk with W A S D or the arrow keys, drag to look around, or click the floor to walk there. On a phone, use the stick." },
   { target: "#zones", text: "In Tools, Go to takes you straight to any part of the place, from the forest trail to the end of the pier." },
-  { target: "#leave-sound", text: "Leave a sound where you stand, for everyone to hear. It stays after you go, until someone beside it removes it. Beside another person's sound, choose Reply with a sound to leave an answer.", joinedOnly: true },
+  { target: "#leave-sound", text: "Choose an idea, listen privately, then leave one sound where you stand. It stays until someone beside it removes it. Beside a friend's sound, choose Reply with a sound to make something together.", joinedOnly: true },
   { target: "#sound-switch", text: "Turn the sound on or off here." },
   { text: "Other people here are cats and dogs with their names over them. Walk up to someone to talk." },
 ];

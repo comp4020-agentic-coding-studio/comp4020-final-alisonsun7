@@ -2,6 +2,17 @@
 // native Tools drawer owns focus; this view never moves or publishes a sound.
 import type { Person, PlacedSound } from "../shared/protocol.js";
 import { FAMILIES, REACH, findSound } from "../shared/sounds.js";
+import { soundResponseFor } from "../shared/sound-response.js";
+
+interface ResidentResponse {
+  residentId: string;
+  label: string;
+  sourceId: string;
+  soundId: string;
+  behavior: string;
+  x: number;
+  z: number;
+}
 
 interface Options {
   open: () => void;
@@ -11,6 +22,7 @@ interface Options {
   conversation: (sound: PlacedSound) => void;
   toggleSound: () => void;
   zone: (x: number, z: number) => string;
+  responses: () => readonly ResidentResponse[];
 }
 
 interface State {
@@ -41,6 +53,11 @@ export class SharedSoundPlace {
   private list = node("div", "shared-sound-list");
   private empty = node("p", "shared-sound-empty");
   private more = node("button", "btn ghost shared-show-all", "Show all sounds");
+  private corner = node("section", "shared-corner");
+  private cornerSummary = node("p", "shared-corner-summary");
+  private ingredients = node("ul", "shared-corner-ingredients");
+  private residents = node("ul", "shared-resident-responses");
+  private residentEmpty = node("p", "shared-resident-empty");
   private changes = node("ol", "shared-changes");
   private changeEmpty = node("p", "shared-changes-empty", "New sounds and replies will appear here while you explore.");
   private sounds = new Map<string, PlacedSound>();
@@ -65,7 +82,7 @@ export class SharedSoundPlace {
     this.trigger.onclick = () => this.opts.open();
 
     this.element.setAttribute("aria-label", "Sounds made together");
-    const intro = node("p", "shared-sound-intro", "Leave a sound for everyone, or answer someone else's. Sounds stay until someone removes them.");
+    const intro = node("p", "shared-sound-intro", "Make a cozy corner or bring this place to life, together. Leave a sound, hear a friend's answer, and see nearby residents respond. Sounds stay until someone removes them.");
     const actions = node("div", "shared-sound-main-actions");
     this.add.type = this.listen.type = this.more.type = "button";
     this.add.onclick = () => this.opts.add();
@@ -82,10 +99,17 @@ export class SharedSoundPlace {
       legend.append(item);
     }
     const heading = node("h3", "shared-sound-list-heading", "Sounds left here");
+    const cornerHeading = node("h3", "shared-corner-heading", "This corner, made together");
+    cornerHeading.id = "shared-corner-title";
+    this.corner.setAttribute("aria-labelledby", cornerHeading.id);
+    this.ingredients.setAttribute("aria-label", "Nearby sound ingredients");
+    this.residents.setAttribute("aria-label", "Residents responding nearby");
+    this.residentEmpty.textContent = "No resident is responding nearby yet. Try a sound beside one of the small locals; they are marked NPC.";
+    this.corner.append(cornerHeading, this.cornerSummary, this.ingredients, this.residentEmpty, this.residents);
     this.more.onclick = () => { this.expanded = !this.expanded; this.renderList(); };
     const changesHeading = node("h3", "shared-changes-heading", "While you’re here");
     this.changes.setAttribute("aria-label", "Shared changes during this visit");
-    this.element.append(intro, this.stats, this.note, actions, legend, heading,
+    this.element.append(intro, this.stats, this.note, actions, this.corner, legend, heading,
       this.empty, this.list, this.more, changesHeading, this.changeEmpty, this.changes);
     this.setState(this.state);
   }
@@ -116,6 +140,7 @@ export class SharedSoundPlace {
       [...this.sounds.values()].map(sound => [sound.id, sound.replyTo?.removedAt])]);
     if (signature !== this.signature) { this.signature = signature; this.renderList(); }
     else this.updateDistances();
+    this.renderCorner();
   }
 
   frame(x: number, z: number): void {
@@ -124,6 +149,7 @@ export class SharedSoundPlace {
     if (now - this.lastFrame < 400 || !this.element.closest("dialog[open]")) return;
     this.lastFrame = now;
     this.updateDistances();
+    this.renderCorner();
   }
 
   // This is activity received in this visit, never an invented historical feed.
@@ -193,6 +219,44 @@ export class SharedSoundPlace {
   }
 
   private distance(sound: PlacedSound): number { return Math.hypot(sound.x - this.x, sound.z - this.z); }
+
+  private renderCorner(): void {
+    const nearby = [...this.sounds.values()].filter(sound => this.distance(sound) <= 18);
+    const contributors = new Set(nearby.map(sound => sound.byId)).size;
+    this.cornerSummary.textContent = nearby.length
+      ? `${nearby.length} public ${nearby.length === 1 ? "sound" : "sounds"} within 18 m · made by ${contributors} ${contributors === 1 ? "person" : "people"}`
+      : "There are no public sounds within 18 m. What would you and a friend make here?";
+    this.corner.dataset.sounds = String(nearby.length);
+    this.ingredients.replaceChildren();
+    for (const [mood, title] of [["cozy", "Cozy"], ["lively", "Lively"], ["wild", "Wildlife"]] as const) {
+      const count = nearby.filter(sound => soundResponseFor(sound.soundId)?.mood === mood).length;
+      if (!count) continue;
+      const item = node("li", "", `${title} · ${count}`);
+      item.dataset.mood = mood;
+      this.ingredients.append(item);
+    }
+    this.ingredients.hidden = !this.ingredients.children.length;
+    this.residents.replaceChildren();
+    const verbs: Record<string, string> = {
+      sway: "swaying to", chat: "chatting beside", play: "playing beside",
+      listen: "pausing to listen to", watch: "looking toward", wave: "waving beside",
+    };
+    // The world controller reports its actual selected source after settling.
+    // We do not infer a resident response merely because a sound was placed.
+    for (const response of this.opts.responses()) {
+      const source = this.sounds.get(response.sourceId);
+      if (!source || Math.hypot(response.x - this.x, response.z - this.z) > 28) continue;
+      const row = node("li", "shared-resident-response");
+      row.dataset.resident = response.residentId;
+      row.dataset.source = response.sourceId;
+      row.dataset.behavior = response.behavior;
+      row.append(node("strong", "", response.label), node("span", "",
+        `${verbs[response.behavior] ?? "responding to"} ${source.by}'s ${label(source.soundId)}.`));
+      this.residents.append(row);
+    }
+    this.residentEmpty.hidden = this.residents.children.length > 0;
+    this.residents.hidden = !this.residents.children.length;
+  }
 
   private updateDistances(): void {
     for (const row of this.list.querySelectorAll<HTMLElement>(".shared-sound-card")) {

@@ -210,6 +210,7 @@ const soundscape = new Soundscape(world, stage, {
   onConversation: (sound) => conversations.open(sound.id),
 });
 soundscape.setAll(snapshot.sounds);
+world.setContributions(snapshot.sounds.filter(sound => !sound.whileIn && !sound.removedAt));
 const trail = new ListeningTrail((sound) => {
   world.faceSound(sound.x, sound.z);
   closeWorldTools(true);
@@ -242,6 +243,7 @@ function connect(): void {
       trail.setAll(msg.sounds);
       contributions.clear();
       for (const sound of msg.sounds) contributions.set(sound.id, sound);
+      world.setContributions(msg.sounds.filter(sound => !sound.whileIn && !sound.removedAt));
       if (replyTarget) {
         const current = contributions.get(replyTarget.id);
         replyTarget = current ?? { ...replyTarget, removedAt: replyTarget.removedAt ?? msg.serverNow };
@@ -396,6 +398,7 @@ function soundLeft(sound: PlacedSound): void {
   if (removedSounds.has(sound.id)) return;
   if (soundscape.has(sound.id)) return;
   contributions.set(sound.id, sound);
+  world.setContributions([...contributions.values()].filter(sound => !sound.whileIn && !sound.removedAt));
   soundscape.add(sound);
   trail.add(sound);
   conversations.changed(sound.id, sound.replyTo?.id);
@@ -415,6 +418,7 @@ function soundRemoved(msg: SoundRemoved): void {
   for (const [id, sound] of contributions) {
     if (sound.replyTo?.id === msg.id) contributions.set(id, { ...sound, replyTo: { ...sound.replyTo, removedAt } });
   }
+  world.setContributions([...contributions.values()].filter(sound => !sound.whileIn && !sound.removedAt));
   if (replyTarget?.id === msg.id) {
     replyTarget = { ...replyTarget, removedAt };
     renderReply();
@@ -689,6 +693,7 @@ sharedPlace = new SharedSoundPlace({
   conversation: sound => { closeWorldTools(); conversations.open(sound.id); },
   toggleSound: () => setSound(!soundscape.on),
   zone: (x, z) => zoneTitle(x, z),
+  responses: () => world.residentResponses,
 });
 stage.append(sharedPlace.trigger);
 $("shared-sound-place").append(sharedPlace.element);
@@ -762,7 +767,7 @@ const you = snapshot.you;
 const art = (a: "cat" | "dog"): string => figureSvg(a, "stand", "preview");
 enter.innerHTML = `<form class="enter-box">
     <h2></h2>
-    <p class="enter-intro">A place made of the sounds we leave. Listen, add your own, or answer someone else. Your sounds stay for the next visitor, until someone removes them.</p>
+    <p class="enter-intro">A world you and your friends shape through sound. Make a cozy corner, a lively gathering, or something of your own. Nearby residents respond to the sounds you leave; your sounds stay until someone removes them.</p>
     <p class="enter-movement">Walk with W A S D, drag to look. Meet a named visitor to talk.</p>
     ${
       you

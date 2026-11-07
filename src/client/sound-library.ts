@@ -1,7 +1,16 @@
 // A small library for shaping the shared place: find, privately audition,
 // then leave a sound at your feet. Nothing is placed by browsing or listening.
 import { FAMILIES, SOUNDS, type Family, type SoundKind } from "../shared/sounds.js";
+import { soundResponseFor } from "../shared/sound-response.js";
 import type { SoundReference } from "../shared/protocol.js";
+
+type Intention = "all" | "cozy" | "lively" | "wild";
+const INTENTIONS: { id: Intention; label: string; note: string }[] = [
+  { id: "all", label: "Every possibility", note: "Mix a quiet corner, a lively gathering, or something unexpected. Listen privately, then leave one sound where you stand." },
+  { id: "cozy", label: "A cozy corner", note: "Try a gentle sound beside a friend's contribution. Nearby residents may pause, listen or sway; each card explains its response." },
+  { id: "lively", label: "Bring it to life", note: "Try music, conversation or play. Nearby residents respond to one shared sound at a time; adding more does not make them louder." },
+  { id: "wild", label: "Wild company", note: "Make room for birds, insects and the shore. Layer a wildlife sound beside water or a friend's answer." },
+];
 
 interface Options {
   zone: () => { id: string; title: string };
@@ -19,6 +28,9 @@ export class SoundLibrary {
   private result = document.createElement("p");
   private feedback = document.createElement("p");
   private filters = document.createElement("div");
+  private intentions = document.createElement("div");
+  private intentionNote = document.createElement("p");
+  private intention: Intention = "all";
   private family: Family | "all" = "all";
   private zone = { id: "", title: "" };
   private request = 0;
@@ -43,7 +55,7 @@ export class SoundLibrary {
     const heading = document.createElement("div");
     const kicker = document.createElement("p");
     kicker.className = "library-kicker";
-    kicker.textContent = "Make this place sound like life";
+    kicker.textContent = "A world we shape together";
     const title = this.title;
     title.id = "sound-library-title";
     title.textContent = "Leave a little sound";
@@ -57,6 +69,33 @@ export class SoundLibrary {
     this.replyCard.id = "sound-library-reply";
     this.replyCard.className = "library-reply";
     this.replyCard.hidden = true;
+
+    const ideas = document.createElement("section");
+    ideas.className = "library-ideas";
+    ideas.setAttribute("aria-labelledby", "library-ideas-title");
+    const ideasTitle = document.createElement("h3");
+    ideasTitle.id = "library-ideas-title";
+    ideasTitle.textContent = "What would you make here?";
+    this.intentions.className = "library-intentions";
+    this.intentions.setAttribute("role", "group");
+    this.intentions.setAttribute("aria-label", "Sound ideas");
+    for (const idea of INTENTIONS) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.intention = idea.id;
+      button.textContent = idea.label;
+      button.setAttribute("aria-pressed", String(idea.id === this.intention));
+      button.onclick = () => {
+        this.intention = idea.id;
+        this.family = "all";
+        this.search.value = "";
+        this.updateFilters();
+        this.render();
+      };
+      this.intentions.append(button);
+    }
+    this.intentionNote.className = "library-intention-note";
+    ideas.append(ideasTitle, this.intentions, this.intentionNote);
 
     const label = document.createElement("label");
     label.className = "library-search";
@@ -78,7 +117,9 @@ export class SoundLibrary {
       if (id !== "all") button.style.setProperty("--family", FAMILIES[id].colour);
       button.onclick = () => {
         this.family = id;
-        for (const b of this.filters.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b === button));
+        // Families are another way in, rather than an invisible second filter.
+        this.intention = "all";
+        this.updateFilters();
         this.render();
       };
       this.filters.append(button);
@@ -92,7 +133,7 @@ export class SoundLibrary {
     note.className = "palette-note";
     note.id = "sound-library-note";
     note.textContent = "Listen is just for you. Leave it here shares a sound at your feet, until someone beside it removes it.";
-    dialog.append(head, this.replyCard, label, this.filters, this.result, this.list, this.feedback, note);
+    dialog.append(head, this.replyCard, ideas, label, this.filters, this.result, this.list, this.feedback, note);
     dialog.addEventListener("cancel", (event) => {
       event.preventDefault();
       this.close();
@@ -110,7 +151,8 @@ export class SoundLibrary {
     this.feedback.textContent = "";
     this.search.value = "";
     this.family = "all";
-    for (const b of this.filters.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.family === "all"));
+    this.intention = "all";
+    this.updateFilters();
     this.render();
     this.element.hidden = false;
     this.element.showModal();
@@ -225,6 +267,12 @@ export class SoundLibrary {
     }
   }
 
+  private updateFilters(): void {
+    for (const button of this.filters.querySelectorAll("button")) button.setAttribute("aria-pressed", String(button.dataset.family === this.family));
+    for (const button of this.intentions.querySelectorAll("button")) button.setAttribute("aria-pressed", String(button.dataset.intention === this.intention));
+    this.intentionNote.textContent = INTENTIONS.find(idea => idea.id === this.intention)!.note;
+  }
+
   private render(): void {
     // Filtering cancels the private preview rather than hiding a playing control.
     this.stopPreview();
@@ -232,7 +280,8 @@ export class SoundLibrary {
     this.list.replaceChildren();
     const query = this.search.value.trim().toLocaleLowerCase();
     const kinds = SOUNDS.filter((kind) => (this.family === "all" || kind.family === this.family)
-      && (kind.label + " " + FAMILIES[kind.family].label).toLocaleLowerCase().includes(query))
+      && (this.intention === "all" || soundResponseFor(kind.id)?.mood === this.intention)
+      && (kind.label + " " + FAMILIES[kind.family].label + " " + (soundResponseFor(kind.id)?.label ?? "")).toLocaleLowerCase().includes(query))
       .sort((a, b) => Number(b.zones.includes(this.zone.id)) - Number(a.zones.includes(this.zone.id)));
     this.result.textContent = kinds.length + (kinds.length === 1 ? " sound" : " sounds") + " · suited to " + this.zone.title + " first";
     for (const kind of kinds) {
@@ -246,6 +295,13 @@ export class SoundLibrary {
       family.className = "palette-family";
       family.textContent = FAMILIES[kind.family].label + (kind.zones.includes(this.zone.id) ? " · suits here" : "");
       text.append(name, family);
+      const response = soundResponseFor(kind.id);
+      if (response) {
+        const hint = document.createElement("span");
+        hint.className = "palette-response";
+        hint.textContent = response.hint;
+        text.append(hint);
+      }
       const listen = document.createElement("button");
       listen.type = "button";
       listen.className = "btn ghost library-listen";
@@ -268,7 +324,7 @@ export class SoundLibrary {
     if (kinds.length === 0) {
       const empty = document.createElement("li");
       empty.className = "library-empty";
-      empty.textContent = "No sounds match yet. Try another word or sound family.";
+      empty.textContent = "No sounds match yet. Try another word, sound family, or Every possibility.";
       this.list.append(empty);
     }
   }
