@@ -105,6 +105,16 @@ async function closeSounds(page) {
   await page.waitForTimeout(100);
 }
 
+// The diagnostic DOM sample updates every twelve frames. Confirm each native
+// zoom click before deciding on the next; stale samples otherwise over-click
+// past six metres into the 4.2m clamp and cannot return to exactly twelve.
+async function zoomStep(page, delta) {
+  const before = Number(await page.locator("#planet-stage").getAttribute("data-camera-distance"));
+  const expected = Math.max(4.2, Math.min(28, before + delta));
+  await page.getByRole("button", { name: delta < 0 ? "Camera closer" : "See more of the world", exact: true }).click();
+  await page.waitForFunction(expected => Number(document.getElementById("planet-stage").dataset.cameraDistance) === expected, expected);
+}
+
 async function place(who, soundId, open = true) {
   if (open) await who.page.locator("#planet-place").click();
   const response = who.page.waitForResponse(res => res.request().method() === "POST" && new URL(res.url()).pathname === `/api/sessions/${who.sessionId}/sounds`);
@@ -166,15 +176,15 @@ try {
   await a.locator("#planet-view").click();
   await a.waitForFunction(() => document.getElementById("planet-stage").dataset.view === "third");
   check(samePosition(beforeView, await at(a)), "returning to third person preserves the same admitted position");
-  for(let i=0;i<4;i++)await a.getByRole("button",{name:"See more of the world",exact:true}).click();
+  for(let i=0;i<4;i++)await zoomStep(a,2);
   await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.cameraDistance)>=24);
   check(samePosition(beforeView,await at(a))&&ada.posts===viewPosts,"zooming out reveals more of the real world without moving the visitor or publishing");
   await shot(a,"planet-whole-world-overview");
-  for(let i=0;i<14&&Number(await a.locator("#planet-stage").getAttribute("data-camera-distance"))>6;i++)await a.getByRole("button",{name:"Camera closer",exact:true}).click();
+  for(let i=0;i<14&&Number(await a.locator("#planet-stage").getAttribute("data-camera-distance"))>6;i++)await zoomStep(a,-2);
   await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.cameraDistance)<=6);
   check(await a.locator("#planet-stage").getAttribute("data-self-visible")==="true"&&samePosition(beforeView,await at(a)),"camera controls bring the visitor's actual character closer while keeping third person");
   await shot(a,"planet-close-character");
-  for(let i=0;i<8&&Number(await a.locator("#planet-stage").getAttribute("data-camera-distance"))<12;i++)await a.getByRole("button",{name:"See more of the world",exact:true}).click();
+  for(let i=0;i<8&&Number(await a.locator("#planet-stage").getAttribute("data-camera-distance"))<12;i++)await zoomStep(a,2);
   await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.cameraDistance)===12);
   check(Math.abs(Number(await a.locator("#planet-stage").getAttribute("data-surface-radius"))-PLANET_RADIUS)<.001,
     "the running visitor stands on the actual spherical surface");
@@ -284,7 +294,7 @@ try {
   check(await b.evaluate(() => document.documentElement.scrollWidth <= innerWidth
     && [...document.querySelectorAll(".library-intentions button")].every(button => button.getBoundingClientRect().height >= 44)),
     "phone sound ideas preserve labels and forty-four-pixel touch controls without horizontal overflow");
-  await b.locator(".library-close").focus();
+  await b.locator("#sound-palette .library-close").focus();
   await b.keyboard.press("Shift+Tab");
   check(await b.evaluate(() => document.activeElement.closest("dialog")?.id === "sound-palette"), "phone library keyboard focus stays in the native dialog");
   await shot(b, "planet-phone-sound-library");
