@@ -187,3 +187,11 @@ row allowance and43 served module/style hashes. Switching applications must
 retain the current DB. The [walkthrough](little-chorus.md) covers the restored
 run/jump controls, source responses, companion and real shoreline. Final
 preview verification and release tag are recorded after the cutover checks.
+
+`little-chorus-play-2026-11-07` marks the verified version. The original18861
+preview serves application commit `06c1ca9`; all43 module/style hashes match
+the reviewed build. All12 tables retain every row, with only the authorized
+planet title changed. Eight live ordinary sounds, all23 placed-sound rows,
+seven operations, one reply and both environment anchors remain unchanged.
+The former compiled application is retained in the promotion record. No
+remote push or deployment took place.

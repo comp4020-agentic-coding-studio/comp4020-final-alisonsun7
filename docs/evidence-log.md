@@ -2431,3 +2431,17 @@ two-person run just before that final planting-only change. A real joined
 selfVisible true and local figure fill0.17. Final globe and narrow viewport
 samples each measured about60fps over2.5seconds with zero page errors on
 M5 Pro/Chrome Metal. This is not a physical-phone performance claim.
+
+Promoted application commit `06c1ca9` to the original18861 preview using its
+current database. Every row in all12 tables is preserved except the explicitly
+requested planet title: `Soundfolk · a little world` becomes
+`Little Chorus · a little world`. There are no new rows or schema changes.
+The unchanged data includes23 placed sounds, seven operations, one reply,
+25 users,24 participants and both shared environment anchors. All eight live
+ordinary sounds remain, including the three planet contributions at their
+original coordinates. All43 served application modules/styles match the
+reviewed candidate and installed files byte for byte, with no-cache headers.
+The detached server has parent1 and no TTY; both editions return200. The old
+compiled output is retained and `little-chorus-play-2026-11-07` marks the
+verified release. Rollback changes application files and retains the current
+database. No remote push or deployment occurred.
