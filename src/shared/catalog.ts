@@ -67,7 +67,7 @@ const SEASIDE: Scene = {
 };
 
 const PLANET: Scene = {
-  id: "planet", title: "Soundfolk · a little world", room: "morning",
+  id: "planet", title: "Little Chorus · a little world", room: "morning",
   summary: "A small spherical world friends shape through sound. Walk around, meet again, and make each corner your own.",
   about: "An original imagined little planet, built from procedural Three.js geometry and original animal figures. Optional recordings are public domain or CC0, with their sources in the asset manifest. This is a separate new version; the coastal world's history is kept in its original room.",
   modes: [{ id: "weekday", label: "Shared planet" }], retiredModes: [],

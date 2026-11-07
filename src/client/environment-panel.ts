@@ -92,7 +92,7 @@ export class EnvironmentPanel {
     const head = document.createElement("div");
     head.className = "environment-heading";
     head.innerHTML = '<div><p class="environment-kicker">From the forest to the sea</p><h2 id="environment-title">A place that changes</h2></div>';
-    if(this.opts.scene.id==="planet")head.querySelector(".environment-kicker")!.textContent="Soundfolk · our little world";
+    if(this.opts.scene.id==="planet")head.querySelector(".environment-kicker")!.textContent="Little Chorus · our little world";
     const close = document.createElement("button");
     close.type = "button";
     close.className = "environment-close";

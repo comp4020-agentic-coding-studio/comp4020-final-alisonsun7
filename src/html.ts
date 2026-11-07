@@ -38,7 +38,7 @@ const footer = `<footer class="site-footer">
 </footer>`;
 
 const nav = `<header class="site-bar">
-  <a class="brand" href="/">Soundfolk</a>
+  <a class="brand" href="/">Little Chorus</a>
   <nav><a href="/planet">Little world</a> <a href="/explore">Places</a> <a href="/about">About</a></nav>
 </header>`;
 
@@ -62,13 +62,13 @@ function joinForm(next: string, error: string | null): string {
 
 export function renderLanding(user: User | null): string {
   return page(
-    "Soundfolk — A little world, made together through sound",
+    "Little Chorus — A little world, made together through sound",
     "landing",
     `<main class="hero">
   <div class="hero-photo sound-field" aria-hidden="true"><span class="field-ring field-water"></span><span class="field-ring field-animal"></span><span class="field-ring field-people"></span></div>
   <div class="hero-text">
     <p class="kicker">Find your people. Make your atmosphere.</p>
-    <h1>Soundfolk</h1>
+    <h1>Little Chorus</h1>
     <p class="subtitle">A little world, made together through sound.</p>
     <p class="lede">A quiet reading nook, a lively jam, tea with a friend. Wander a little planet, leave sounds for each other, and watch its residents join in.</p>
     <p class="hero-promise">The sounds we leave stay here after we go, until someone beside them removes them.</p>
@@ -119,7 +119,7 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
   }).join("\n");
 
   return page(
-    "Our worlds — Soundfolk",
+    "Our worlds — Little Chorus",
     "explore",
     `${nav}
 <main class="explore-main">
@@ -146,11 +146,11 @@ export function renderScene(scene: Scene, mode: Mode, zoneId: string, snap: Snap
     .map((m) => `<a href="/scene/${scene.id}?mode=${m.id}"${m.id === mode.id ? ' aria-current="page"' : ""}>${m.label}</a>`)
     .join("")}</nav>`;
   return page(
-    `${scene.title} — Soundfolk`,
+    `${scene.title} — Little Chorus`,
     `scene-page scene-${scene.id} mode-${mode.id} is-world`,
     `<header class="bar">
   <a class="back" href="/explore" aria-label="Places"><span aria-hidden="true">←</span><span class="back-label">Places</span></a>
-  <div class="where"><h1>Soundfolk <span class="edition-label">· Coast</span></h1></div>
+  <div class="where"><h1>Little Chorus <span class="edition-label">· Coast</span></h1></div>
   <div class="world-actions">
     <button type="button" class="btn ghost controls-switch" id="look-settings" aria-label="Controls" title="Controls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9v6m-3-3h6m5-3h2m-2 6h2"/></svg><span class="world-action-label">Controls</span></button>
     <button type="button" class="btn ghost sound-switch" id="sound-switch" aria-pressed="false" aria-label="Sound off" title="Sound off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m11 4-5 4H2v8h4l5 4Z"/><g class="sound-on-wave"><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></g><path class="sound-off-line" d="m16 9 6 6m0-6-6 6"/></svg><span class="world-action-label">Sound off</span></button>
@@ -208,10 +208,10 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   const identity = user?.nickname ?? snap.you?.name ?? "Just looking around";
   const avatar = user?.avatar ?? snap.you?.avatar ?? "cat";
   return page(
-    "Soundfolk — The little world",
+    "Little Chorus — The little world",
     "scene-page planet-page is-world",
     `<header class="planet-bar">
-  <a class="planet-brand" href="/" aria-label="Soundfolk home"><span class="planet-brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Soundfolk</span></a>
+  <a class="planet-brand" href="/" aria-label="Little Chorus home"><span class="planet-brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Little Chorus</span></a>
   <p id="planet-identity" class="planet-identity">${escapeHtml(identity)}</p>
   <nav class="planet-actions" aria-label="World controls">
     <button type="button" id="planet-view" class="planet-control" aria-pressed="false" title="Change first or third person view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M6 21v-4a6 6 0 0 1 12 0v4M3 7H1m22 0h-2"/></svg><span>Third person</span></button>
@@ -248,7 +248,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   <p class="planet-project-note">${NOT_AFFILIATED} <a href="/about">Sources &amp; privacy</a></p>
 </dialog>
 <dialog id="planet-join" class="planet-dialog planet-arrival" aria-labelledby="planet-join-title" hidden>
-  <p class="planet-kicker">Welcome to Soundfolk</p><h2 id="planet-join-title">A little room for you.</h2>
+  <p class="planet-kicker">Welcome to Little Chorus</p><h2 id="planet-join-title">A little room for you.</h2>
   <p>Bring a friend, leave a sound, and see what this world becomes. A quiet nook or a lively gathering is yours to make together.</p>
   <form id="planet-join-form" method="post" action="/join">
     <input type="hidden" name="next" value="/planet"/>
@@ -270,7 +270,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
 
 export function renderAbout(): string {
   return page(
-    "Sources and privacy — Soundfolk",
+    "Sources and privacy — Little Chorus",
     "about",
     `${nav}
 <main class="prose">
@@ -278,7 +278,7 @@ export function renderAbout(): string {
   <p><strong>${NOT_AFFILIATED}</strong></p>
 
   <h2 id="how">How it works</h2>
-  <p>Soundfolk has two editions: <a href="/planet">the little world</a> and <a href="/scene/seaside">the coast</a>. Each keeps its own sounds and shared sky. Your name and character work in both.</p>
+  <p>Little Chorus has two editions: <a href="/planet">the little world</a> and <a href="/scene/seaside">the coast</a>. Each keeps its own sounds and shared sky. Your name and character work in both.</p>
   <ol>
     <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
     <li>Walk with W A S D or the arrow keys, drag to look, or choose a destination. On the coastal forest trail, a kangaroo points you back if you wander too far.</li>
@@ -304,7 +304,7 @@ ${footer}`,
 
 export function renderReadme(): string {
   return page(
-    "About — Soundfolk",
+    "About — Little Chorus",
     "about",
     `${nav}
 <main class="prose readme">
@@ -316,9 +316,9 @@ ${footer}`,
 
 export function renderNotFound(message: string): string {
   return page(
-    "Not found — Soundfolk",
+    "Not found — Little Chorus",
     "about",
-    `<header class="site-bar"><a class="brand" href="/">Soundfolk</a></header>
+    `<header class="site-bar"><a class="brand" href="/">Little Chorus</a></header>
 <main class="prose"><h1>Not here</h1><p>${escapeHtml(message)}</p><p><a href="/explore">Choose a place</a></p></main>`,
   );
 }
