@@ -91,7 +91,8 @@ function updateSoundControl(): void {
     listenHint.textContent = !on ? "Sound off · Tap to listen" : !running ? "Audio paused · Tap to resume" : "Volume is zero · Restore sound";
 }
 function setSound(on: boolean): void {if(disposed)return;audio.setOn(on);updateSoundControl();routineAudio.frame(npcs, here, on, world.serverNow);}
-listenHint.onclick = () => {if(audio.volumeLevel===0){audio.setVolume(.7);$<HTMLInputElement>("chorus-volume").value="70";}setSound(true);world.focus();};
+function enableListening(): void {if(audio.volumeLevel===0){audio.setVolume(.7);$<HTMLInputElement>("chorus-volume").value="70";}setSound(true);}
+listenHint.onclick = () => {enableListening();world.focus();};
 $("planet-sound").onclick = () => setSound(audio.on && audio.playbackState === "running" ? false : true);
 stage.dataset.voices = "0";
 stage.dataset.npcFlushVoices = "0";
@@ -325,7 +326,7 @@ const studio = new ChorusStudio(stage, {
     remove: source => {const sound = sounds.get(source.id);if(sound)void removeSound(sound);},
     visit: work => afterDialogClose(studio.journal, () => {world.goTo(work.placeId);world.focusWork(work.id);lastSent="";}),
     full: () => afterDialogClose(studio.element, () => openLibrary(true)),
-    pause: () => world.setPaused(true), resume: restore, closeDraft: () => {draftRevision++;}, sound: on => setSound(on), listening: () => audio.on && audio.playbackState === "running" && audio.volumeLevel > 0, focus: id => audio.setFocus(id),
+    pause: () => world.setPaused(true), resume: restore, closeDraft: () => {draftRevision++;}, sound: on => on ? enableListening() : setSound(false), listening: () => audio.on && audio.playbackState === "running" && audio.volumeLevel > 0, focus: id => audio.setFocus(id),
 });
 function receiveChorus(works: readonly ChorusWork[]): void {
     for (const work of works) for (const source of work.sources) if (source.removedAt) {

@@ -118,6 +118,15 @@ describe("studio dialog handoffs and interrupted choices", () => {
     expect(opts.publish).not.toHaveBeenCalled();
   });
 
+  it("keeps keyboard focus and an expanded explanation through local and remote work updates", () => {
+    opts.at = () => ({ x: 0, z: 0 });const a = work([source("a")]);studio.setWorks([a]);
+    const focus = document.getElementById("chorus-focus")!;focus.focus();focus.click();studio.frame();
+    expect(document.activeElement?.id).toBe("chorus-focus");
+    studio.dock.querySelector("details")!.open = true;
+    document.getElementById("chorus-primary")!.focus();studio.setWorks([a]);
+    expect(document.activeElement?.id).toBe("chorus-primary");expect(studio.dock.querySelector("details")!.open).toBe(true);
+  });
+
   it("does not close or publish a newer chooser when an older explicit publication finishes", async () => {
     const pending = deferred<string | null>();
     opts.publish = vi.fn(() => pending.promise);

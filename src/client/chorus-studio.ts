@@ -45,6 +45,7 @@ export class ChorusStudio {
   private focusId: string | null = null;
   private signature = "";
   private collapsed = false;
+  private explanationOpen = false;
   private previewRevision = 0;
   private previewTimer: ReturnType<typeof setTimeout> | undefined;
   private publishing = false;
@@ -138,7 +139,7 @@ export class ChorusStudio {
     this.dock.dataset.collapsed = String(this.collapsed);
     if (this.collapsed) {
       const reopen = action(work ? `Open ${VARIANT_COPY[work.variant].title}` : "Make a little sound", () => {this.collapsed = false;this.signature = "";this.frame();});
-      reopen.id = "chorus-reopen";reopen.setAttribute("aria-expanded", "false");this.dock.replaceChildren(reopen);return;
+      reopen.id = "chorus-reopen";reopen.setAttribute("aria-expanded", "false");this.replaceDock(reopen);return;
     }
     const place = PLANET_PLACES.find(p => p.id === placeId)!, carrier = placeId === "green" ? "THE CHORUS TREE" : placeId === "stage" ? "THE BEAT FLOWER" : "THE QUIET LIGHTS";
     const title = node("strong", work ? VARIANT_COPY[work.variant].title : (placeId === "green" ? "One sound can start this." : placeId === "stage" ? "Leave room for a rhythm." : "A softer kind of together."));
@@ -156,8 +157,16 @@ export class ChorusStudio {
     if (source) { const focus = action(this.opts.listening?.() === false ? "Enable listening" : this.focusId ? "Hear the whole place" : "Listen closely", () => { if(this.opts.listening?.() === false)this.opts.sound(true);this.focusId = this.focusId ? null : source.id;this.opts.focus(this.focusId);this.signature = ""; });focus.setAttribute("aria-pressed", String(!!this.focusId));focus.id = "chorus-focus";buttons.append(focus); }
     const head = node("div", undefined, "chorus-dock-heading"), close = action("×", () => {this.collapsed = true;this.signature = "";this.frame();this.dock.querySelector<HTMLButtonElement>("button")?.focus();});
     close.id = "chorus-minimise";close.setAttribute("aria-label", "Minimise work panel");close.title = "Minimise work panel";head.append(node("span", carrier, "planet-kicker"), close);
-    const explanation = node("details", undefined, "chorus-explanation");explanation.append(node("summary", "What changed?"), detail);
-    this.dock.replaceChildren(head, title, authors, explanation, buttons);
+    const explanation = node("details", undefined, "chorus-explanation");
+    this.explanationOpen = this.dock.querySelector("details")?.open ?? this.explanationOpen;
+    explanation.open = this.explanationOpen;explanation.ontoggle = () => {this.explanationOpen = explanation.open;};
+    explanation.append(node("summary", "What changed?"), detail);
+    this.replaceDock(head, title, authors, explanation, buttons);
+  }
+  private replaceDock(...children: HTMLElement[]): void {
+    const active = document.activeElement, focused = active instanceof HTMLElement && this.dock.contains(active) ? active.id : null;
+    this.dock.replaceChildren(...children);
+    if(focused)(this.dock.querySelector<HTMLElement>(`#${CSS.escape(focused)}`) ?? this.dock.querySelector<HTMLElement>("button"))?.focus({preventScroll:true});
   }
   private renderRecords(): void {
     const focus = document.activeElement instanceof HTMLElement ? document.activeElement.dataset.recordAction : undefined;
