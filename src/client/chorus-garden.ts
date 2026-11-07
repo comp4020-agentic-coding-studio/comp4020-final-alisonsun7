@@ -193,7 +193,7 @@ export class ChorusGarden {
     // the open porch, outside its solid roof; no source coordinates are moved.
     onPlanet(group, anchor.x, anchor.z, placeId === "green" ? .52 : placeId === "stage" ? .24 : .08);
     if (placeId === "reading") {
-      const porch = new THREE.Group(); group.add(porch); porch.position.z = 3.25;
+      const porch = new THREE.Group(); group.add(porch); porch.position.set(-1.35, 0, 3.25);
       porch.add(body); body.scale.setScalar(.72);
     } else group.add(body);
     this.root.add(group);
