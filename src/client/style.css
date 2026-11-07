@@ -2526,3 +2526,6 @@ h3 {
 
 .planet-notice { pointer-events:none; }
 @media(max-width:620px) { .planet-notice { top:174px; } }
+
+/* A minimised work has one reopen action; do not stack a source pill below it. */
+.planet-stage:has(.chorus-dock:not([hidden])) .planet-nearby-reopen { display:none; }

@@ -58,7 +58,7 @@ try {
     await a.locator("#chorus-minimise").waitFor();
     await shot(a, "green-expanded-desktop");
     await a.click("#chorus-minimise");
-    check(await a.locator("#chorus-work").getAttribute("data-collapsed") === "true", "The main work panel minimises to one explicit reopen action");
+    check(await a.locator("#chorus-work").getAttribute("data-collapsed") === "true" && !await a.locator("#planet-nearby-sound").isVisible(), "The main work panel minimises to one reopen action without revealing another large sound card");
     await shot(a, "green-collapsed-desktop");
     await cafe(bo);
     await walk(bo, "a", 500);
@@ -66,6 +66,7 @@ try {
     await state(b, { steam: true });
     await a.waitForFunction(id => JSON.parse(document.getElementById("planet-stage").dataset.soundCues ?? "[]").some(s => s.id === id), espresso.id);
     check(await a.locator("#chorus-work").getAttribute("data-collapsed") === "true" && await a.locator("#chorus-reopen").isVisible(), "An actual friend's SSE contribution does not reopen a minimised work panel");
+    assert.ok(await hit(a,"#chorus-reopen"),"The collapsed work reopen is not covered by a secondary source control");
     await a.click("#chorus-reopen");
     check(await a.locator("#chorus-primary").isVisible(), "The work can be explicitly reopened after a shared update");
     await a.setViewportSize({ width: 390, height: 844 });
@@ -74,7 +75,7 @@ try {
     check(await hit(a, "#chorus-minimise") && await hit(a, "#chorus-primary"), "390×844 expanded work actions fit and are touch reachable");
     await a.locator("#chorus-minimise").tap();
     await shot(a, "green-collapsed-phone");
-    check(await hit(a, "#chorus-reopen") && await a.locator("#planet-stage").getAttribute("data-self-visible") === "true", "The phone's collapsed work leaves a reachable reopen and the actual third-person figure enabled");
+    check(await hit(a, "#chorus-reopen") && await a.locator("#planet-stage").getAttribute("data-self-visible") === "true" && !await a.locator("#planet-nearby-sound").isVisible(), "The phone's collapsed work clears both large cards and leaves its real player and explicit reopen visible");
     await a.setViewportSize({ width: 1920, height: 1080 });
     await cafe(ada);
     await walk(ada, "a", 950);
@@ -109,6 +110,22 @@ try {
     check(await hit(a, '#chorus-studio [data-listen="espresso"]') && await hit(a, '#chorus-studio [data-leave="espresso"]'), "Phone café library opens on useful coffee choices with reachable audition and contribution actions");
     await shot(a, "cafe-library-phone");
     await a.getByRole("button", { name: "Cancel", exact: true }).click();
+    await a.click("#planet-tools");await a.locator('#planet-destinations [data-zone="restrooms"]').click();
+    await a.waitForFunction(()=>!document.getElementById("planet-tools-panel").open&&document.getElementById("planet-restroom-card").dataset.hut==="planet-toilet");
+    await a.locator("#planet-enter-room").tap();
+    await a.waitForFunction(()=>{const s=document.getElementById("planet-stage");return Number(s.dataset.at.split(",")[1])<5.7&&s.dataset.walkingIntent==="false"&&s.dataset.selfVisible==="false";});
+    check(true,"Phone restroom arrival hides the body when its roof shortens the third-person camera");await shot(a,"restroom-interior-phone");
+    await a.locator("#planet-leave-room").tap();
+    await a.waitForFunction(()=>{const s=document.getElementById("planet-stage");return s.dataset.walkingIntent==="false"&&s.dataset.selfVisible==="true"&&Number(s.dataset.at.split(",")[1])>7;});
+    check(true,"Leaving the restroom restores the actual third-person figure");
+    await a.locator("#planet-switch-room").tap();
+    await a.waitForFunction(()=>{const s=document.getElementById("planet-stage"),c=document.getElementById("planet-restroom-card");return c.dataset.hut==="planet-shower"&&Number(s.dataset.at.split(",")[0])>17&&s.dataset.walkingIntent==="false";});
+    await a.locator("#planet-enter-room").tap();
+    await a.waitForFunction(()=>{const s=document.getElementById("planet-stage");return Number(s.dataset.at.split(",")[1])<5.7&&s.dataset.walkingIntent==="false"&&s.dataset.selfVisible==="false";});
+    check(true,"Phone shower arrival hides the cramped body and keeps room actions visible");await shot(a,"shower-interior-phone");
+    await a.locator("#planet-leave-room").tap();
+    await a.waitForFunction(()=>{const s=document.getElementById("planet-stage");return s.dataset.walkingIntent==="false"&&s.dataset.selfVisible==="true"&&Number(s.dataset.at.split(",")[1])>7;});
+    check(true,"Leaving the shower restores its third-person figure");await shot(a,"shower-exit-phone");
     check(errors.length === 0, "No browser page errors");
 }
 catch (error) {
