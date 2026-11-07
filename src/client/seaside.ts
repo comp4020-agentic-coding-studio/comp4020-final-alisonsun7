@@ -6,13 +6,13 @@
 // Metres: x east, y up, z south (the sea is south). The trail runs from
 // z -130 to the boardwalk at z -4; the waterline is at z 31.
 //
-// Ground, sand, bark, planks and the props are CC0 from Poly Haven (see
-// public/assets-manifest.json). Curved original trees carry small CC0
-// Yughues needle-bearing branch cutouts, arranged in three dimensions.
+// Licensed surface grain is painted into a coherent palette. Trees use
+// original sculpted volumetric crowns, and an original generated mural lives
+// on the café wall. Provenance stays in public/assets-manifest.json.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { buildCafeRoom, furnishCafe, prepareLampMaterials, surface } from "./cafe.js";
+import { buildCafeRoom, furnishCafe, paintedSurface, prepareLampMaterials, surface } from "./cafe.js";
 import type { Pose } from "./figures.js";
 import { buildHeroPines, buildPineGrove, HERO_PINES, type GrovePine } from "./d-pines.js";
 import { buildHuts, inHut, SHOPKEEPER, swingDoors, TILL, type Door } from "./huts.js";
@@ -212,7 +212,7 @@ function edgeGrass(b: Builder): void {
     dummy.scale.setScalar((p.coastal ? 0.65 : 0.45) + r() * 0.55);
     dummy.updateMatrix();
     mesh.setMatrixAt(i, dummy.matrix);
-    color.setHSL(p.coastal ? 0.18 : 0.22, 0.12 + r() * 0.10, 0.26 + r() * 0.12);
+    color.setHSL(p.coastal ? 0.22 : 0.29, 0.19 + r() * 0.10, 0.40 + r() * 0.13);
     mesh.setColorAt(i, color);
   });
   mesh.receiveShadow = true;
@@ -620,8 +620,8 @@ vec2 swellD(vec2 p) { return vec2(${slopeX}, ${slopeZ}); }`;
           * sin(vWaterWorld.x * 0.8 - vWaterWorld.z * 1.5 - uTime * 0.5);
         ${ocean ? `float localShore = 3.5 + 27.5 * smoothstep(-10.0, -1.0, vWaterWorld.x);
         float depth = smoothstep(localShore, localShore + 95.0, vWaterWorld.z);
-        vec3 shallow = vec3(0.065, 0.205, 0.290);
-        vec3 deep = vec3(0.035, 0.095, 0.175);
+        vec3 shallow = vec3(0.11, 0.32, 0.31);
+        vec3 deep = vec3(0.045, 0.145, 0.205);
         diffuseColor.rgb = mix(shallow, deep, depth);
         diffuseColor.rgb += (1.0 - depth) * pow(max(0.0, rippleLight), 8.0) * 0.022;` : "diffuseColor.rgb *= 1.0 + rippleLight * 0.09;"}`);
     if (ocean) shader.fragmentShader = shader.fragmentShader.replace("#include <opaque_fragment>", `
@@ -666,7 +666,8 @@ vec2 swellD(vec2 p) { return vec2(${slopeX}, ${slopeZ}); }`;
 // Low coastal headlands give the sea a far shore and an open middle. They
 // live beyond the walkable place: three tiny meshes, no shadows or collision.
 function headlands(b: Builder, bark: THREE.Material): void {
-  const mat = surface("forest_leaves_02", [15, 9], { vertexColors: true, roughness: 1, flatShading: false });
+  const mat = paintedSurface("forest_leaves_02", [15, 9], 0x849a7b);
+  mat.vertexColors = true;
   mat.normalScale.setScalar(0.12);
   const coast = new THREE.Color(0x6f7d60);
   const coastalTrees: GrovePine[] = [], stones: { x: number; y: number; z: number; size: number }[] = [];
@@ -837,26 +838,16 @@ function build(): Built {
   breakers.length = 0;
   rippleMaps.length = 0;
   const b = new Builder();
-  const forestFloor = surface("forest_leaves_02", [40, 40]);
-  forestFloor.color.setHex(0xb7b69b);
-  forestFloor.normalScale.setScalar(0.18);
-  const trailMat = surface("stony_dirt_path", [1, 60]);
-  trailMat.color.setHex(0xc8b89b);
-  trailMat.normalScale.setScalar(0.15);
-  const bark = surface("pine_bark", [1, 3]);
-  bark.color.setHex(0xebd2b2);
-  bark.normalScale.setScalar(0.32);
-  const sand = surface("coast_sand_01", [30, 14]);
-  const wetSand = surface("damp_beach_sand", [40, 3]);
-  const boards = surface("brown_planks_05", [1, 1]);
-  boards.color.setHex(0xbca17a);
-  boards.normalScale.setScalar(0.20);
-  const pierBoards = surface("weathered_planks", [1, 20]);
-  pierBoards.color.setHex(0xbba789);
-  pierBoards.normalScale.setScalar(0.2);
-  const kioskWood = surface("white_planks_clean", [2, 1]);
-  const wood = std(0x7a5a3e, { roughness: 0.7 });
-  const darkWood = std(0x4a3526, { roughness: 0.7 });
+  const forestFloor = paintedSurface("forest_leaves_02", [40, 40], 0x8a9c75);
+  const trailMat = paintedSurface("stony_dirt_path", [1, 60], 0xd2bd95);
+  const bark = paintedSurface("pine_bark", [1, 3], 0x967b5d);
+  const sand = paintedSurface("coast_sand_01", [30, 14], 0xe4d6b2);
+  const wetSand = paintedSurface("damp_beach_sand", [40, 3], 0xbdbb9d);
+  const boards = paintedSurface("brown_planks_05", [1, 1], 0xc39b64, 0.52);
+  const pierBoards = paintedSurface("weathered_planks", [1, 20], 0xb6af8d);
+  const kioskWood = paintedSurface("white_planks_clean", [2, 1], 0xeee4ce);
+  const wood = std(0xa98761, { roughness: 0.96 });
+  const darkWood = std(0x80694e, { roughness: 0.96 });
   const metal = std(0x2a2c2f, { metalness: 0.5, roughness: 0.45 });
   const lampHead = std(0x222222, { emissive: 0xffcf8a, emissiveIntensity: 0 });
   // windows of the huts, lit at dusk
@@ -1119,8 +1110,7 @@ function build(): Built {
       b.solids.push({ x0: a, x1: c, z0: Math.min(aZ, cZ) - 0.05, z1: Math.max(aZ, cZ) + 0.05 });
     }
   }
-  const railTimber = surface("brown_planks_05", [1, 1]);
-  railTimber.color.setHex(0x9a8062); railTimber.roughness = 0.88; railTimber.normalScale.setScalar(0.34);
+  const railTimber = paintedSurface("brown_planks_05", [1, 1], 0xaf956f);
   const railDummy = new THREE.Object3D();
   // Each long member samples a single timber strip. RoundedBox's small
   // eased edge catches warm light; grain runs along each real post or rail.
@@ -1180,17 +1170,15 @@ function build(): Built {
   b.solids.push(...cb.solids.map(shift));
   cafeRoot = cb.root;
   // brick on the outside of its side and back walls
-  const brickSkin = surface("plastered_wall", [3.5, 1.4]);
-  brickSkin.color.setHex(0xe8dfc8);
-  brickSkin.normalScale.setScalar(0.45);
+  const brickSkin = paintedSurface("plastered_wall", [3.5, 1.4], 0xede0c4);
   const C = { x0: CAFE_AT.x, x1: CAFE_AT.x + 14, z0: CAFE_AT.z, z1: CAFE_AT.z + 10 };
   b.box(brickSkin, C.x0 - 0.45, C.x0 - 0.25, 0, 4.04, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
   b.box(brickSkin, C.x1 + 0.25, C.x1 + 0.45, 0, 4.04, C.z0 - 0.45, C.z1 + 0.15, { occludes: true });
   b.box(brickSkin, C.x0 - 0.45, C.x1 + 0.45, 0, 4.04, C.z0 - 0.45, C.z0 - 0.25, { occludes: true });
   // Timber cladding, a sheltered gable and deep window surrounds give the
   // trail-facing side the same scale and joinery as the glazed front.
-  const wallTimber = std(0xa69473, { roughness: 0.96 });
-  const sideTimber = std(0x8c927a, { roughness: 0.98 });
+  const wallTimber = std(0x587e70, { roughness: 0.96 });
+  const sideTimber = std(0x9fb5a0, { roughness: 0.98 });
   const battens = new THREE.InstancedMesh(new THREE.BoxGeometry(0.085, 0.22, 10.52), sideTimber, 16);
   const battenMatrix = new THREE.Matrix4();
   for (let i = 0; i < 16; i++) {
@@ -1256,8 +1244,21 @@ function build(): Built {
     g.font = "20px Georgia, serif";
     g.fillText("FOREST  ·  SEA", 256, 442);
   }, [1, 1]);
-  const wallPlaque = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.85), std(0xffffff, { map: wallMark, roughness: 1 }));
-  wallPlaque.position.set(C.x1 + 0.64, 2.10, C.z0 + 5.0);
+  // Art is a real wall surface in the shared place, never a fake scenery
+  // backdrop. The side wall has a clear bay between its two existing lights.
+  const muralMap = new THREE.TextureLoader().load("/assets/textures/sound_world_mural/mural.png");
+  muralMap.colorSpace = THREE.SRGBColorSpace;
+  muralMap.anisotropy = 4;
+  const muralFrame = new THREE.Mesh(new RoundedBoxGeometry(0.12, 2.16, 3.28, 2, 0.035), std(0xb69a70, { roughness: 0.98 }));
+  muralFrame.position.set(C.x1 + 0.65, 2.13, C.z0 + 5.0);
+  muralFrame.castShadow = muralFrame.receiveShadow = true;
+  const mural = new THREE.Mesh(new THREE.PlaneGeometry(3.12, 2.08), std(0xffffff, { map: muralMap, roughness: 1 }));
+  mural.name = "original-shared-sound-mural";
+  mural.position.set(C.x1 + 0.718, 2.13, C.z0 + 5.0);
+  mural.rotation.y = Math.PI / 2;
+  b.root.add(muralFrame, mural);
+  const wallPlaque = new THREE.Mesh(new THREE.PlaneGeometry(0.33, 0.40), std(0xffffff, { map: wallMark, roughness: 1 }));
+  wallPlaque.position.set(C.x1 + 0.66, 0.70, C.z0 + 5.0);
   wallPlaque.rotation.y = Math.PI / 2;
   b.root.add(wallPlaque);
   b.solids.push({ x0: C.x0 - 0.45, x1: C.x0, z0: C.z0 - 0.45, z1: C.z1 }, { x0: C.x1, x1: C.x1 + 0.45, z0: C.z0 - 0.45, z1: C.z1 }, { x0: C.x0 - 0.45, x1: C.x1 + 0.45, z0: C.z0 - 0.45, z1: C.z0 });

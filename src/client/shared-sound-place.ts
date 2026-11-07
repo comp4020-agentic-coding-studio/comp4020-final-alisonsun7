@@ -104,7 +104,7 @@ export class SharedSoundPlace {
     this.corner.setAttribute("aria-labelledby", cornerHeading.id);
     this.ingredients.setAttribute("aria-label", "Nearby sound ingredients");
     this.residents.setAttribute("aria-label", "Residents responding nearby");
-    this.residentEmpty.textContent = "No resident is responding nearby yet. Try a sound beside one of the small locals; they are marked NPC.";
+    this.residentEmpty.textContent = "No resident is responding nearby yet. Try a sound near the locals outside the café, on the beach, or at the forest edge.";
     this.corner.append(cornerHeading, this.cornerSummary, this.ingredients, this.residentEmpty, this.residents);
     this.more.onclick = () => { this.expanded = !this.expanded; this.renderList(); };
     const changesHeading = node("h3", "shared-changes-heading", "While you’re here");

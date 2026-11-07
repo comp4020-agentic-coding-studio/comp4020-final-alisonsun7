@@ -7,8 +7,8 @@ import type { SoundReference } from "../shared/protocol.js";
 type Intention = "all" | "cozy" | "lively" | "wild";
 const INTENTIONS: { id: Intention; label: string; note: string }[] = [
   { id: "all", label: "Every possibility", note: "Mix a quiet corner, a lively gathering, or something unexpected. Listen privately, then leave one sound where you stand." },
-  { id: "cozy", label: "A cozy corner", note: "Try a gentle sound beside a friend's contribution. Nearby residents may pause, listen or sway; each card explains its response." },
-  { id: "lively", label: "Bring it to life", note: "Try music, conversation or play. Nearby residents respond to one shared sound at a time; adding more does not make them louder." },
+  { id: "cozy", label: "A cozy corner", note: "Try a gentle sound beside a friend's contribution. Nearby residents may pause and listen quietly; each card explains its response." },
+  { id: "lively", label: "Bring it to life", note: "Try music, conversation or play. Leave room for a friend's reply and watch nearby neighbours join in." },
   { id: "wild", label: "Wild company", note: "Make room for birds, insects and the shore. Layer a wildlife sound beside water or a friend's answer." },
 ];
 

@@ -177,5 +177,31 @@
       "beach"
     ],
     "seconds": 26
+  },
+  {
+    "id": "rainstick",
+    "label": "A softly turning rainstick",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "forest",
+      "creek",
+      "window",
+      "beach"
+    ],
+    "seconds": 20
+  },
+  {
+    "id": "hand-claps",
+    "label": "Hand-clap rhythm",
+    "family": "anthrophony",
+    "kind": "loop",
+    "zones": [
+      "boardwalk",
+      "beach",
+      "tables",
+      "pier"
+    ],
+    "seconds": 12
   }
 ]

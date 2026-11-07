@@ -329,6 +329,7 @@ export class WorldView {
     const coastalCat = this.regulars.find((r) => r.sprite.userData.figure?.seed === "quiet-coastal-cat");
     if (coastalCat) this.soundResidents.add({ id: "coastal-neighbour", label: "Coastal neighbour · NPC", x: -16.1, z: -2.55, facing: 1.9, preference: "cozy" }, coastalCat.sprite);
     for (const resident of [
+      { id: "promenade-neighbour", label: "Promenade neighbour · NPC", x: -21.8, z: -2.4, facing: 1.2, preference: "lively" as const, avatar: "dog" as const },
       { id: "beach-neighbour", label: "Beach neighbour · NPC", x: 9.7, z: 8.2, facing: 0.4, preference: "lively" as const, avatar: "dog" as const },
       { id: "trail-neighbour", label: "Trail neighbour · NPC", x: 1, z: -36, facing: 0.2, preference: "wild" as const, avatar: "cat" as const },
     ]) {
@@ -549,10 +550,13 @@ export class WorldView {
     b.windows.emissiveIntensity = l.windowGlow * 0.32;
     b.paving.roughness = 0.8 - l.wetness * 0.58;
     b.paving.metalness = l.wetness * 0.18;
-    b.paving.color.setHex(0xffffff).lerp(new THREE.Color(0x8f8d90), l.wetness);
+    const paintedDryColour: unknown = b.paving.userData.dryColour;
+    if (typeof paintedDryColour === "number") b.paving.color.setHex(paintedDryColour).multiplyScalar(1 - l.wetness * 0.28);
+    else b.paving.color.setHex(0xffffff).lerp(new THREE.Color(0x8f8d90), l.wetness);
     this.renderer.toneMappingExposure = l.exposure;
     for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? [])]) p.sprite.setTint(l.figureTint);
     for (const other of this.others.values()) other.sprite.setTint(l.figureTint);
+    for (const sprite of this.soundResidents?.figures ?? []) sprite.setTint(l.figureTint);
     if (this.roo) (this.roo.sprite.material as THREE.SpriteMaterial).color.setHex(l.figureTint);
   }
 

@@ -69,8 +69,8 @@ export function renderLanding(user: User | null): string {
   <div class="hero-text">
     <p class="kicker">A place we make by listening</p>
     <h1>Sound of a City</h1>
-    <p class="subtitle">Leave a sound. Hear what happens together.</p>
-    <p class="lede">Walk from the forest to the sea. Listen to what others have left, answer with a sound of your own, and meet the people changing this place with you.</p>
+    <p class="subtitle">Your kind of place, made with sound.</p>
+    <p class="lede">Walk from the forest to the sea. With your friends, layer sounds into a cozy corner or a lively gathering. Nearby residents listen, sway and play in response.</p>
     <p class="hero-promise">The sounds we leave stay here after we go, until someone beside them removes them.</p>
     <p class="actions">
       <a class="btn primary" href="/scene/seaside">Enter &amp; listen</a>
@@ -121,7 +121,7 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
     `${nav}
 <main class="explore-main">
   <h1>Our shared place</h1>
-  <p class="lede">Everyone walks in the same world. Leave a sound, answer a contribution, or follow what someone else has made. Shared sounds stay after you leave, until someone beside them removes them.</p>
+  <p class="lede">Everyone walks in the same world. Make a cozy corner with a friend, bring the boardwalk to life, or find your own mix of sounds. Nearby residents respond; shared sounds stay after you leave, until someone beside them removes them.</p>
   ${
     user
       ? `<form method="post" action="/leave" class="you-are">${avatarMark(user.avatar)} You're <strong>${escapeHtml(user.nickname)}</strong>. <button class="link-btn" type="submit">Change</button></form>`
@@ -210,7 +210,7 @@ export function renderAbout(): string {
   </ol>
 
   <h2>Where the place comes from</h2>
-  <p>It's imagined, not a real location. Ground, sand, timber, furniture, food, plants and skies use free CC0 (public domain) models, surfaces and HDR skies from <a href="https://polyhaven.com">Poly Haven</a>. Pine-needle textures are CC0 by Yughues / Nobiax, from <a href="https://opengameart.org/content/branches-textures-pack-02">OpenGameArt</a>. Each external asset and its author is recorded in <code>public/assets-manifest.json</code>. Trees, buildings, water and animal people use original three-dimensional geometry. The short-fur texture is original AI-generated project material, recorded separately from the CC0 assets.</p>
+  <p>It's imagined, not a real location. Surface grain, furniture, food, plants and skies use free CC0 (public domain) assets from <a href="https://polyhaven.com">Poly Haven</a>, brought into the same painted palette. Each external asset and its author is recorded in <code>public/assets-manifest.json</code>. Trees, buildings, water and animal people use original three-dimensional geometry. The café's coastal mural is original AI-generated artwork, recorded separately from external CC0 assets. Earlier material studies remain documented in the manifest.</p>
   <p>The sounds are recordings from <a href="https://commons.wikimedia.org">Wikimedia Commons</a> that are CC0 or in the public domain, cut into loops; each is listed with its author and what was done to it in <code>public/assets-manifest.json</code>.</p>
 
   <h2>What is stored</h2>

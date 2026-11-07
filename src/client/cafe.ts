@@ -40,6 +40,25 @@ export function surface(id: string, repeat: [number, number], more: THREE.MeshSt
   });
 }
 
+// A painted surface keeps a little licensed grain, while its colour and
+// lighting belong to this world instead of the photograph's baked shadows.
+export function paintedSurface(id: string, repeat: [number, number], colour: number, detail = 0.22): THREE.MeshStandardMaterial {
+  const material = surface(id, repeat, { color: colour, roughness: 0.96, metalness: 0 });
+  material.normalScale.setScalar(0.075);
+  material.userData.dryColour = colour;
+  material.aoMap = material.roughnessMap = material.metalnessMap = null;
+  material.onBeforeCompile = shader => {
+    shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", `
+      #ifdef USE_MAP
+        vec3 paintedSample = texture2D(map, vMapUv).rgb;
+        float paintedGrain = dot(paintedSample, vec3(0.2126, 0.7152, 0.0722));
+        diffuseColor.rgb *= ${1 - detail} + paintedGrain * ${detail * 1.6};
+      #endif`);
+  };
+  material.customProgramCacheKey = () => `painted-coast-grain-v2-${detail}`;
+  return material;
+}
+
 // A few millimetres of eased edge catch the sun without changing the box's
 // extents, collision or occlusion. Timber UVs run along the actual member,
 // with the scan's eight boards covering about 2.5 metres across the grain.
@@ -104,21 +123,17 @@ export interface CafeRoom {
 }
 
 export function buildCafeRoom(b: Builder): CafeRoom {
-  const planks = surface("brown_planks_05", [6, 4]);
-  const brick = surface("brick_wall_001", [5, 1.6]);
-  const brickOut = surface("plastered_wall", [3.5, 1.4]);
-  brickOut.color.setHex(0xe8dfc8);
-  brickOut.normalScale.setScalar(0.45);
-  const plaster = surface("plastered_wall", [3, 1]);
-  const wood = surface("brown_planks_05", [1, 1], { color: 0xc6ad88, roughness: 0.78 });
-  const darkWood = std(0x554a38, { roughness: 0.9 });
+  const planks = paintedSurface("brown_planks_05", [6, 4], 0xc8a77c);
+  const brick = paintedSurface("brick_wall_001", [5, 1.6], 0xb57f64);
+  const brickOut = paintedSurface("plastered_wall", [3.5, 1.4], 0xeee2c8);
+  const plaster = paintedSurface("plastered_wall", [3, 1], 0xeee5d0);
+  const wood = paintedSurface("brown_planks_05", [1, 1], 0xc6a478);
+  const darkWood = std(0x8a6c50, { roughness: 0.96 });
   const blackMetal = std(0x1d1e20, { metalness: 0.6, roughness: 0.4 });
-  const ceiling = std(0x575347);
-  const joinery = surface("brown_planks_05", [1, 1], { color: 0xbda07b, roughness: 0.72 });
-  joinery.normalScale.setScalar(0.22);
-  const beamWood = surface("brown_planks_05", [1, 1], { color: 0x8f7455, roughness: 0.82 });
-  const limewash = surface("plastered_wall", [3, 1]);
-  limewash.color.setHex(0xd8ccb5); limewash.normalScale.setScalar(0.1);
+  const ceiling = std(0xc4bda6);
+  const joinery = paintedSurface("brown_planks_05", [1, 1], 0x729584);
+  const beamWood = paintedSurface("brown_planks_05", [1, 1], 0x587b6a);
+  const limewash = paintedSurface("plastered_wall", [3, 1], 0xeee1c7);
   const glass = new THREE.MeshPhysicalMaterial({
     color: 0xe2eee9, transparent: true, opacity: 0.18, roughness: 0.12,
     metalness: 0, transmission: 0, clearcoat: 0.3, clearcoatRoughness: 0.16,
@@ -167,7 +182,9 @@ export function buildCafeRoom(b: Builder): CafeRoom {
   // Low olive canvas has a little sag and stitched hems. The doorway and
   // floor are unchanged; all new supports sit above people's heads.
   const awning = canvasTexture(256, 128, (g) => {
-    g.fillStyle = "#747b5d"; g.fillRect(0, 0, 256, 128);
+    g.fillStyle = "#739588"; g.fillRect(0, 0, 256, 128);
+    g.fillStyle = "#eee1bc";
+    for (let x = 0; x < 256; x += 64) g.fillRect(x, 0, 32, 128);
     const r = (n: number): number => Math.sin(n * 13.7) * 0.5 + 0.5;
     for (let i = 0; i < 1800; i++) {
       g.fillStyle = `rgba(224,219,179,${0.02 + r(i) * 0.035})`;

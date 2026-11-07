@@ -881,6 +881,53 @@
       "sha256": "7b512d47408d253dce7ba98441c7497ad4c3d0c246866168e30d28a95bcb8e8a",
       "processing": "Original generated PNG; no third-party image or character used. Generated as flat diffuse albedo; tiling is visually reviewed, not guaranteed by a source licence.",
       "prompt": "Square seamless fine short cream and pale beige animal fur material; straight-on macro, uniform diffuse albedo, subtle coherent downward growth, no face, anatomy, text, watermark, baked hard light or shadows."
+    },
+    {
+      "id": "original-sound-world-mural-v1",
+      "path": "public/assets/textures/sound_world_mural/mural.png",
+      "source": "Original AI-generated artwork, built-in image_gen tool, 2026-11-07; prompt and provenance in docs/assets/sound-world-mural.md",
+      "usage": "texture",
+      "publicAllowed": true,
+      "rights": "Original AI-generated artwork, not a third-party CC0 asset",
+      "sha256": "27266c8b8156579e8a12b33db11fe89151d92ab576cbbbac42e4325df0dad377",
+      "processing": "Original generated PNG retained without alteration; used as a framed in-world cafe mural, never a scene background."
+    },
+    {
+      "id": "commons-rainstick",
+      "path": "public/assets/sounds/rainstick.mp3",
+      "source": "Wikimedia Commons, \"Rainstick (1).ogg\" by tamanders: https://commons.wikimedia.org/wiki/File:Rainstick_(1).ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "Public domain (as stated on its Commons page)",
+      "sourceSha1": "e94c8fd169c3276b3b0ec30a71bb197ca1900da2",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Rainstick_%281%29.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "measuredAudio": {
+        "integratedLufs": -20.58,
+        "truePeakDbTP": -2.03,
+        "dcOffset": -6e-06,
+        "targetLufs": -20,
+        "truePeakCeilingDbTP": -2
+      },
+      "processing": "mono, source DC cleanup highpass=f=35, 20 s from 1 s, last 2 s crossfaded into the start, -20 LUFS target, -2 dBTP ceiling; measured -20.58 LUFS, -2.03 dBTP, DC offset -0.000006, MP3 96 kbps, metadata removed"
+    },
+    {
+      "id": "commons-hand-claps",
+      "path": "public/assets/sounds/hand-claps.mp3",
+      "source": "Wikimedia Commons, \"Palmas sevillanas (flamenco clapping), 160 BPM.ogg\" by Santiago Sanchez Cifuentes: https://commons.wikimedia.org/wiki/File:Palmas_sevillanas_(flamenco_clapping),_160_BPM.ogg",
+      "usage": "sound",
+      "publicAllowed": true,
+      "rights": "CC0 1.0 (public domain dedication)",
+      "sourceSha1": "bb5b061c43dd2fd6aa17e3e7caeccbd4a14107c3",
+      "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Palmas_sevillanas_%28flamenco_clapping%29%2C_160_BPM.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "measuredAudio": {
+        "integratedLufs": -24.04,
+        "truePeakDbTP": -2.16,
+        "dcOffset": -1.3e-05,
+        "targetLufs": -20,
+        "truePeakCeilingDbTP": -2
+      },
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "processing": "mono, 12 s from 12 s, last 2 s crossfaded into the start, -20 LUFS target, -2 dBTP ceiling; measured -24.04 LUFS, -2.16 dBTP, DC offset -0.000013, MP3 96 kbps, metadata removed"
     }
   ],
   "notUsed": [

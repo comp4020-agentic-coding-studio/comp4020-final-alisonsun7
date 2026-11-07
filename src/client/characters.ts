@@ -1,5 +1,5 @@
-// Original sculpted, skinned animal people. The continuous garment surfaces
-// are generated from signed distances, not articulated tubes or downloaded art.
+// Original soft-toy animal people: broad cheeks, rounded paws and painted matte
+// colours. Continuous garments remain skinned surfaces, never flat billboards.
 import * as THREE from "three";
 import type { Avatar } from "../shared/protocol.js";
 import type { Pose } from "./figures.js";
@@ -17,73 +17,27 @@ const TAU = Math.PI * 2;
 const DOWN = new THREE.Vector3(0, -1, 0);
 const geometries = new Map<string, THREE.BufferGeometry>();
 const materials = new Map<string, THREE.MeshStandardMaterial>();
-let shortFur: THREE.Texture | undefined;
-let shortFurHeight: THREE.Texture | undefined;
-let guitarTimber: { colour: THREE.Texture; normal: THREE.Texture } | undefined;
-
-// A material texture, not a flattened picture of a person. The UVs wrap around
-// the sculpt and the same fine fibres respond to every shared sky and light.
-// Geometry tests deliberately run without an image loader or a browser DOM.
+// One matte material language for residents, visitors and their instruments.
+// Deliberately no fur photographs or woven normal maps on simple geometry.
 function furMaterial(colour: number, face = false): THREE.MeshStandardMaterial {
-  const key = `short-fur:${colour}:${face}`;
+  const key = `painted-coat:${colour}:${face}`;
   let m = materials.get(key);
   if (!m) {
-    if (typeof document !== "undefined" && typeof document.createElementNS === "function" && !shortFur) {
-      shortFur = new THREE.TextureLoader().load("/assets/textures/coastal_fur/diffuse.png", () => {
-        if (shortFurHeight) shortFurHeight.needsUpdate = true;
-      });
-      shortFur.colorSpace = THREE.SRGBColorSpace;
-      shortFur.wrapS = shortFur.wrapT = THREE.RepeatWrapping;
-      shortFur.repeat.set(2.8, 2.2);
-      shortFur.anisotropy = 4;
-      shortFurHeight = shortFur.clone();
-      shortFurHeight.colorSpace = THREE.NoColorSpace;
-    }
-    // The authored swatch is already warm cream; a restrained tint preserves
-    // its light fibres instead of multiplying two dark beige colours.
-    const tint = new THREE.Color(colour).lerp(new THREE.Color(0xffffff), 0.30);
-    m = new THREE.MeshStandardMaterial({ color: tint, map: shortFur ?? null,
-      bumpMap: shortFurHeight ?? null, bumpScale: 0.00035, roughness: 0.93,
+    m = new THREE.MeshStandardMaterial({ color: colour, roughness: 0.94,
       metalness: 0, vertexColors: face });
-    m.name = "Quiet Light / generated directional short fur";
+    m.name = "Soundfolk / matte painted coat";
     materials.set(key, m);
   }
   return m;
 }
 
 function clothMaterial(colour: number, name: string): THREE.MeshStandardMaterial {
-  const key = `woven-cloth:${colour}`;
-  let m = materials.get(key);
-  if (!m) {
-    m = new THREE.MeshPhysicalMaterial({ color: colour, roughness: 0.96,
-      metalness: 0, sheen: 0.35, sheenRoughness: 0.85, sheenColor: 0xb6ad94 });
-    m.name = `Quiet Light / ${name}`;
-    materials.set(key, m);
-  }
-  return m;
+  return material(colour, name, 0.97);
 }
 
 function guitarWood(side: boolean): THREE.MeshStandardMaterial {
-  const key = `guitar-timber:${side}`;
-  let m = materials.get(key);
-  if (!m) {
-    if (typeof document !== "undefined" && typeof document.createElementNS === "function" && !guitarTimber) {
-      const loader = new THREE.TextureLoader();
-      guitarTimber = {
-        colour: loader.load("/assets/textures/brown_planks_05/diffuse.jpg"),
-        normal: loader.load("/assets/textures/brown_planks_05/nor_gl.jpg"),
-      };
-      guitarTimber.colour.colorSpace = THREE.SRGBColorSpace;
-      guitarTimber.normal.colorSpace = THREE.NoColorSpace;
-      for (const map of Object.values(guitarTimber)) map.anisotropy = 4;
-    }
-    m = new THREE.MeshPhysicalMaterial({ color: side ? 0x79523a : 0xcdb18b,
-      map: guitarTimber?.colour ?? null, normalMap: guitarTimber?.normal ?? null,
-      normalScale: new THREE.Vector2(0.15, 0.15), roughness: side ? 0.67 : 0.57,
-      metalness: 0, clearcoat: 0.2, clearcoatRoughness: 0.5 });
-    m.name = side ? "Quiet Light / dark timber guitar sides" : "Quiet Light / fine-grain soundboard";
-    materials.set(key, m);
-  }
+  const m = material(side ? 0x92634a : 0xe0b56f,
+    side ? "warm timber guitar sides" : "painted honey soundboard", 0.92);
   return m;
 }
 
@@ -91,7 +45,7 @@ function geometry(key: string, make: () => THREE.BufferGeometry): THREE.BufferGe
   let g = geometries.get(key);
   if (!g) {
     g = make();
-    g.name = `Quiet Light / ${key}`;
+    g.name = `Soundfolk / ${key}`;
     geometries.set(key, g);
   }
   return g;
@@ -102,7 +56,7 @@ function material(colour: number, name: string, roughness = 0.92, side: THREE.Si
   let m = materials.get(key);
   if (!m) {
     m = new THREE.MeshStandardMaterial({ color: colour, roughness, metalness: 0, side });
-    m.name = `Quiet Light / ${name}`;
+    m.name = `Soundfolk / ${name}`;
     materials.set(key, m);
   }
   return m;
@@ -116,20 +70,20 @@ function hash(seed: string): number {
 
 // Each row is an outfit, so seeded variety never becomes random colour noise.
 const OUTFITS = [
-  { shirt: 0xc8c1a6, trousers: 0x646b53, collar: 0xe4dcc6 },
-  { shirt: 0x76816b, trousers: 0xaba28b, collar: 0xdcd6c4 },
-  { shirt: 0xa59c86, trousers: 0x525d61, collar: 0xe2d8c1 },
-  { shirt: 0x88979a, trousers: 0x686852, collar: 0xe6dec9 },
-  { shirt: 0x9e7961, trousers: 0x5d6658, collar: 0xdfd5bc },
-  { shirt: 0xcfc8b2, trousers: 0x756955, collar: 0xa7aa91 },
+  { shirt: 0xd4a16c, trousers: 0x57796e, collar: 0xf4e7ce },
+  { shirt: 0x7c9b82, trousers: 0x766453, collar: 0xf4e7ce },
+  { shirt: 0xc17b60, trousers: 0x5b7978, collar: 0xf1dfbe },
+  { shirt: 0x89a8aa, trousers: 0x6d795a, collar: 0xf4e7ce },
+  { shirt: 0xe0bb75, trousers: 0x647b70, collar: 0xf6e9ce },
+  { shirt: 0xc2b794, trousers: 0x8c6853, collar: 0xf2e7d1 },
 ];
 const FURS = [
-  { coat: 0xd7c9ad, muzzle: 0xeadfc8, ear: 0xb29a85 },
-  { coat: 0xb79774, muzzle: 0xddd0b7, ear: 0x98775e },
-  { coat: 0x96938a, muzzle: 0xd0cabe, ear: 0x78776e },
-  { coat: 0xeee1c8, muzzle: 0xf1e9d6, ear: 0xcbb29d },
-  { coat: 0x8a7764, muzzle: 0xc2b29a, ear: 0x756352 },
-  { coat: 0xc1ae90, muzzle: 0xe2d7bf, ear: 0xa4917b },
+  { coat: 0xe7c99d, muzzle: 0xf8e6c9, ear: 0xc8977e },
+  { coat: 0xc99b70, muzzle: 0xf1d9b6, ear: 0xa8785e },
+  { coat: 0xa4aaa1, muzzle: 0xe5dfcc, ear: 0x858c82 },
+  { coat: 0xf1dfb8, muzzle: 0xffedcf, ear: 0xd7ae90 },
+  { coat: 0x9b7d65, muzzle: 0xdec5a0, ear: 0x81634f },
+  { coat: 0xcbb38c, muzzle: 0xf1dfbd, ear: 0xab8c6e },
 ];
 
 const ellipsoid = geometry("soft ellipsoid", () => new THREE.SphereGeometry(1, 12, 8));
@@ -281,12 +235,12 @@ function implicit(key: string, field: Field, volumes: Volume[], low: number[], h
 
 function garments(avatar: Avatar, thigh: number, shin: number, step: number): [THREE.BufferGeometry, THREE.BufferGeometry] {
   const body: Field = (x, y, z) => {
-    const width = 0.085 + 0.021 * Math.exp(-(((y - 0.19) / 0.075) ** 2)) + 0.01 * Math.exp(-(((y + 0.015) / 0.05) ** 2));
+    const width = 0.092 + 0.018 * Math.exp(-(((y - 0.16) / 0.10) ** 2)) + 0.008 * Math.exp(-(((y + 0.015) / 0.05) ** 2));
     // The loose shirt/jacket must enclose the trouser seat at the waist;
     // otherwise the trousers hide the hem and leave its pale binding floating
     // across the front of the pants as a visible slit.
     const depth = 0.067 + 0.004 * Math.exp(-(((y - 0.16) / 0.09) ** 2));
-    const folds = 0.000525 * Math.sin(Math.atan2(z, x) * 7 + y * 24) * Math.exp(-(((y - 0.035) / 0.08) ** 2));
+    const folds = 0; // A calm uninterrupted silhouette reads better than tiny cloth noise.
     const radial = (Math.hypot(x / width, z / depth) - 1) * depth - folds;
     const shoulders = 0.276 - 0.25 * Math.abs(x);
     return Math.max(radial, y - shoulders, -0.035 - y);
@@ -353,40 +307,32 @@ function garments(avatar: Avatar, thigh: number, shin: number, step: number): [T
   ];
 }
 
-function sculptedHead(avatar: Avatar, detail = 48): THREE.BufferGeometry {
-  return geometry(`${avatar} anatomical head ${detail}`, () => {
+function sculptedHead(avatar: Avatar, detail = 40): THREE.BufferGeometry {
+  return geometry(`${avatar} soft storybook head ${detail}`, () => {
     const g = new THREE.SphereGeometry(1, detail, Math.round(detail * 0.7));
     const p = g.getAttribute("position"), colours: number[] = [];
-    // Ray-project an indexed sphere onto a continuous anatomical volume. A
-    // skull, jaw, brows and paired cheek/muzzle planes replace the old single
-    // stretched ball. This retains a clean UV seam and smooth, closed topology.
+    // Broad rounded cheeks and a short animal muzzle give a clean silhouette
+    // from the side as well as the front. Ray projection retains wrapped UVs.
     const masses = avatar === "cat" ? [
-      oval(0, 0.010, -0.006, 0.061, 0.073, 0.054),
-      oval(0, -0.037, 0.020, 0.045, 0.037, 0.046),
-      oval(-0.034, -0.015, 0.029, 0.031, 0.034, 0.033),
-      oval(0.034, -0.015, 0.029, 0.031, 0.034, 0.033),
-      oval(-0.016, -0.023, 0.061, 0.023, 0.019, 0.025),
-      oval(0.016, -0.023, 0.061, 0.023, 0.019, 0.025),
-      oval(0, -0.045, 0.049, 0.026, 0.014, 0.024),
-      oval(0, 0.001, 0.046, 0.018, 0.031, 0.022),
+      oval(0, 0.010, -0.007, 0.080, 0.070, 0.063),
+      oval(0, -0.034, 0.015, 0.063, 0.041, 0.052),
+      oval(-0.044, -0.014, 0.030, 0.035, 0.033, 0.035),
+      oval(0.044, -0.014, 0.030, 0.035, 0.033, 0.035),
+      oval(-0.021, -0.023, 0.063, 0.027, 0.021, 0.025),
+      oval(0.021, -0.023, 0.063, 0.027, 0.021, 0.025),
+      oval(0, -0.047, 0.050, 0.034, 0.015, 0.024),
     ] : [
-      oval(0, 0.009, -0.011, 0.059, 0.074, 0.054),
-      oval(0, -0.036, 0.045, 0.041, 0.033, 0.049),
-      oval(-0.032, -0.012, 0.027, 0.026, 0.034, 0.030),
-      oval(0.032, -0.012, 0.027, 0.026, 0.034, 0.030),
-      oval(0, -0.001, 0.061, 0.026, 0.029, 0.046),
-      oval(0, -0.021, 0.100, 0.031, 0.022, 0.032),
-      oval(0, -0.044, 0.090, 0.030, 0.012, 0.032),
+      oval(0, 0.010, -0.010, 0.076, 0.071, 0.061),
+      oval(0, -0.033, 0.027, 0.058, 0.042, 0.052),
+      oval(-0.041, -0.012, 0.029, 0.033, 0.034, 0.033),
+      oval(0.041, -0.012, 0.029, 0.033, 0.034, 0.033),
+      oval(0, -0.006, 0.068, 0.035, 0.028, 0.035),
+      oval(0, -0.024, 0.087, 0.038, 0.025, 0.030),
+      oval(0, -0.047, 0.070, 0.037, 0.014, 0.031),
     ];
     const field: Field = (x, y, z) => {
       let d = masses[0](x, y, z);
-      for (let j = 1; j < masses.length; j++) d = smoothMin(d, masses[j](x, y, z), j < 4 ? 0.014 : 0.007);
-      // A real brow shelf and recessed eye socket receive an eye at their
-      // surface; the eye is never a white bead pasted onto the forehead.
-      for (const side of [-1, 1]) {
-        d = smoothMin(d, oval(side * 0.030, 0.026, 0.042, 0.022, 0.010, 0.017)(x, y, z), 0.005);
-        d = Math.max(d, -oval(side * 0.032, 0.014, 0.054, 0.0135, 0.0095, 0.012)(x, y, z));
-      }
+      for (let j = 1; j < masses.length; j++) d = smoothMin(d, masses[j](x, y, z), j < 4 ? 0.014 : 0.006);
       return d;
     };
     for (let i = 0; i < p.count; i++) {
@@ -399,9 +345,9 @@ function sculptedHead(avatar: Avatar, detail = 48): THREE.BufferGeometry {
       const r = (low + high) * 0.5;
       const x = sx * r, y = sy * r, z = sz * r;
       p.setXYZ(i, x, y, z);
-      const muzzle = Math.exp(-((x / 0.043) ** 4) - (((y + 0.027) / 0.028) ** 4)) * THREE.MathUtils.smoothstep(z, 0.036, 0.073);
-      const light = 0.86 + 0.25 * muzzle;
-      colours.push(light, light * 0.995, light * 0.965);
+      const muzzle = Math.exp(-((x / 0.052) ** 4) - (((y + 0.032) / 0.028) ** 4)) * THREE.MathUtils.smoothstep(z, 0.037, 0.074);
+      const light = 0.96 + 0.14 * muzzle;
+      colours.push(light, light, light * 0.985);
     }
     g.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
     g.computeVertexNormals();
@@ -410,17 +356,10 @@ function sculptedHead(avatar: Avatar, detail = 48): THREE.BufferGeometry {
 }
 
 function handGeometry(side: number): THREE.BufferGeometry {
-  return geometry(`sculpted hand ${side}`, () => {
-    const pieces: THREE.BufferGeometry[] = [new THREE.SphereGeometry(1, 16, 10).scale(0.017, 0.022, 0.010).translate(0, -0.018, 0)];
-    for (let finger = 0; finger < 4; finger++) {
-      const x = (finger - 1.5) * 0.0075;
-      const length = [0.027, 0.034, 0.031, 0.023][finger];
-      const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(x, -0.03, 0), new THREE.Vector3(x, -0.03 - length * 0.6, 0.004), new THREE.Vector3(x, -0.03 - length, 0.014)]);
-      pieces.push(new THREE.TubeGeometry(curve, 7, 0.0043, 6, false));
-    }
-    pieces.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side * -0.013, -0.011, 0.003), new THREE.Vector3(side * -0.025, -0.023, 0.012), new THREE.Vector3(side * -0.02, -0.035, 0.018)]), 7, 0.0053, 6, false));
-    return merge(pieces);
-  });
+  return geometry(`rounded mitten paw ${side}`, () => merge([
+    new THREE.SphereGeometry(1, 16, 10).scale(0.025, 0.034, 0.019).translate(0, -0.025, 0.005),
+    new THREE.SphereGeometry(1, 12, 8).scale(0.013, 0.019, 0.014).rotateZ(side * -0.45).translate(side * -0.019, -0.014, 0.011),
+  ]));
 }
 
 function tapered(key: string, top: number, bottom: number, length: number, segments = 10): THREE.BufferGeometry {
@@ -482,29 +421,10 @@ function catEar(inner: boolean): THREE.BufferGeometry {
   });
 }
 
-function faceTufts(avatar: Avatar): THREE.BufferGeometry {
-  return geometry(`${avatar} directional cheek and ear fibres`, () => {
-    const pieces: THREE.BufferGeometry[] = [];
-    const tuft = (base: THREE.Vector3, tip: THREE.Vector3, radius: number): void => {
-      const direction = tip.clone().sub(base);
-      const g = new THREE.ConeGeometry(radius, direction.length(), 4, 1);
-      g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize()));
-      g.translate(...base.clone().add(tip).multiplyScalar(0.5).toArray());
-      pieces.push(g);
-    };
-    for (const side of [-1, 1]) {
-      for (let j = 0; j < 5; j++) {
-        const y = 0.006 - j * 0.010;
-        const x = (0.059 - j * 0.0015) * side;
-        tuft(new THREE.Vector3(x, y, 0.013), new THREE.Vector3(x + side * (0.007 + j * 0.0005), y - 0.007, 0.010), 0.0035);
-      }
-      if (avatar === "cat") for (let j = 0; j < 3; j++) {
-        tuft(new THREE.Vector3(side * (0.045 + j * 0.005), 0.080 - j * 0.010, 0.006),
-          new THREE.Vector3(side * (0.045 + j * 0.005), 0.089 - j * 0.010, 0.008), 0.002);
-      }
-    }
-    return merge(pieces);
-  });
+function cheekTufts(avatar: Avatar): THREE.BufferGeometry {
+  return geometry(`${avatar} soft cheek scallops`, () => merge([-1, 1].map(side =>
+    new THREE.SphereGeometry(1, 12, 8).scale(0.014, 0.018, 0.018)
+      .rotateZ(side * -0.3).translate(side * 0.072, -0.021, 0.012))));
 }
 
 function torsoGeometry(): THREE.BufferGeometry {
@@ -654,20 +574,20 @@ export class AnimalFigure extends THREE.Group {
     super();
     const { avatar, seed, child = false } = options;
     const h = hash(seed);
-    const outfit = avatar === "cat" ? { shirt: 0xcac2aa, trousers: 0x82836a, collar: 0xe1d9c1 } : { shirt: 0x626e54, trousers: 0xb7ad95, collar: 0xe3dcc9 };
+    const outfit = OUTFITS[(h >>> 8) % OUTFITS.length];
     const fur = FURS[h % FURS.length];
     const furMat = furMaterial(fur.coat);
     const earMat = material(fur.ear, "ear interior");
     const cloth = clothMaterial(outfit.shirt, "linen shirt");
     const trousers = clothMaterial(outfit.trousers, "cotton trousers");
     const collar = clothMaterial(outfit.collar, "open linen collar");
-    const shoes = material(0x68503b, "worn leather shoes", 0.86);
+    const shoes = material(0x80624b, "rounded warm-brown shoes", 0.96);
     this.name = `${avatar}-person-${seed}`;
-    this.userData.figure = { avatar, seed, child, source: "original sculpted geometry with generated short-fur material" };
+    this.userData.figure = { avatar, seed, child, source: "original soft-toy geometry and matte painted materials" };
     this.pose = options.pose ?? "stand";
     this.height = options.height ?? (child ? 1.15 : 1.75);
-    this.thighLength = child ? 0.224 : 0.234;
-    this.shinLength = child ? 0.232 : 0.242;
+    this.thighLength = child ? 0.175 : 0.185;
+    this.shinLength = child ? 0.172 : 0.182;
     this.hipHeight = this.thighLength + this.shinLength + 0.044;
     this.phaseOffset = ((h >>> 16) % 997) / 997 * TAU;
     this.scale.setScalar(this.height);
@@ -703,38 +623,38 @@ export class AnimalFigure extends THREE.Group {
     const neck = this.part(this.upperBody, "neck", tapered("neck", 0.024, 0.026, 0.054), furMat);
     neck.position.y = 0.322;
     this.head.name = "head-rig";
-    this.head.position.set(0, child ? 0.362 : 0.375, 0);
-    this.head.scale.setScalar(child ? 1.14 : 1.1);
+    this.head.position.set(0, child ? 0.348 : 0.354, 0);
+    this.head.scale.set(child ? 1.55 : 1.48, child ? 1.48 : 1.42, child ? 1.55 : 1.48);
     this.upperBody.add(this.head);
     const faceMat = furMaterial(fur.coat, true);
     const headLod = new THREE.LOD();
     headLod.name = "head-detail-levels";
     this.head.add(headLod);
-    for (const [detail, distance] of [[48, 0], [24, 10], [12, 24]]) {
+    for (const [detail, distance] of [[40, 0], [24, 10], [12, 24]]) {
       const headMesh = new THREE.Mesh(sculptedHead(avatar, detail), faceMat);
-      headMesh.name = detail === 48 ? "head-fur" : `head-fur-${detail}`;
+      headMesh.name = detail === 40 ? "head-fur" : `head-fur-${detail}`;
       headMesh.castShadow = true;
       headMesh.receiveShadow = true;
       headLod.addLevel(headMesh, distance);
       headMesh.visible = distance === 0;
     }
     const nose = this.part(this.head, "nose", ellipsoid, material(0x393a34, "nose and eyes", 0.68), false);
-    nose.position.set(0, -0.018, avatar === "dog" ? 0.132 : 0.083);
-    nose.scale.set(avatar === "dog" ? 0.014 : 0.009, avatar === "dog" ? 0.008 : 0.006, 0.008);
+    nose.position.set(0, -0.019, avatar === "dog" ? 0.117 : 0.088);
+    nose.scale.set(avatar === "dog" ? 0.016 : 0.010, avatar === "dog" ? 0.010 : 0.007, 0.007);
     for (const side of [-1, 1]) {
-      const eye = this.part(this.head, side < 0 ? "left-eye" : "right-eye", geometry("recessed almond eye", () => new THREE.SphereGeometry(1, 12, 8)), material(0x8e8268, "restrained warm eye edge", 0.4), false);
-      eye.position.set(side * 0.032, 0.014, 0.050);
-      eye.scale.set(0.012, 0.0075, 0.0045);
-      eye.rotation.z = side * -0.1;
-      const iris = this.part(this.head, side < 0 ? "left-iris" : "right-iris", ellipsoid, material(0x514c35, "iris", 0.38), false);
-      iris.position.set(side * 0.032, 0.014, 0.0543);
-      iris.scale.set(0.009, 0.0066, 0.0018);
+      const eye = this.part(this.head, side < 0 ? "left-eye" : "right-eye", geometry("soft button eye", () => new THREE.SphereGeometry(1, 16, 12)), material(0x443f34, "warm button eye", 0.58), false);
+      eye.position.set(side * 0.034, 0.015, 0.053);
+      eye.scale.set(0.012, 0.014, 0.008);
+      eye.rotation.z = side * -0.045;
+      const iris = this.part(this.head, side < 0 ? "left-iris" : "right-iris", ellipsoid, material(0x2e342c, "dark olive iris", 0.54), false);
+      iris.position.set(side * 0.034, 0.015, 0.060);
+      iris.scale.set(0.009, 0.011, 0.002);
       if (avatar === "cat") {
         const ear = this.part(this.head, side < 0 ? "left-cat-ear" : "right-cat-ear", catEar(false), furMat);
-        ear.position.set(side * 0.042, 0.045, -0.012);
+        ear.position.set(side * 0.052, 0.043, -0.012);
         ear.scale.x = side;
         const inner = this.part(this.head, side < 0 ? "left-inner-ear" : "right-inner-ear", catEar(true), earMat, false);
-        inner.position.set(side * 0.042, 0.045, 0.007);
+        inner.position.set(side * 0.052, 0.043, 0.007);
         inner.scale.x = side;
       } else {
         const ear = this.part(this.head, side < 0 ? "left-dog-ear" : "right-dog-ear", geometry("folded dog ear", () => {
@@ -743,35 +663,30 @@ export class AnimalFigure extends THREE.Group {
           for (let i = 0; i < p.count; i++) p.setZ(i, p.getZ(i) + 0.016 * ((0.055 - p.getY(i)) / 0.11) ** 2);
           g.computeVertexNormals(); return g;
         }), earMat);
-        ear.position.set(side * 0.059, -0.010, -0.014);
-        ear.rotation.set(-0.16, side * -0.2, side * 0.17);
+        ear.position.set(side * 0.070, -0.004, -0.010);
+        ear.rotation.set(-0.16, side * -0.2, side * 0.22);
       }
     }
     const pupils = geometry(`${avatar} dark pupils`, () => merge([-1, 1].map(side =>
-      new THREE.SphereGeometry(1, 10, 6).scale(avatar === "cat" ? 0.0038 : 0.005, 0.0055, 0.0011).translate(side * 0.032, 0.014, 0.056))));
+      new THREE.SphereGeometry(1, 10, 6).scale(0.006, 0.009, 0.0015).translate(side * 0.034, 0.015, 0.062))));
     this.part(this.head, "dark-pupils", pupils, material(0x171b16, "deep pupils", 0.24), false);
     const glints = geometry("small corneal reflections", () => merge([-1, 1].map(side =>
-      new THREE.SphereGeometry(1, 6, 4).scale(0.0015, 0.0017, 0.0006).translate(side * 0.032 - 0.002, 0.0164, 0.0574))));
+      new THREE.SphereGeometry(1, 6, 4).scale(0.0024, 0.0028, 0.001).translate(side * 0.034 - 0.003, 0.019, 0.064))));
     this.part(this.head, "corneal-reflections", glints, material(0xf3edcf, "small moist eye glint", 0.18), false);
-    this.part(this.head, "directional-face-fur", faceTufts(avatar), furMat, false);
+    this.part(this.head, "soft-cheek-tufts", cheekTufts(avatar), furMat, false);
     this.headAnchor.name = "head-label-anchor";
-    this.headAnchor.position.set(0, avatar === "cat" ? 0.115 : 0.086, 0);
+    this.headAnchor.position.set(0, avatar === "cat" ? 0.119 : 0.094, 0);
     this.head.add(this.headAnchor);
 
-    const lids = geometry(`${avatar} sculpted eyelids and mouth`, () => {
-      const pieces: THREE.BufferGeometry[] = [];
-      for (const side of [-1, 1]) {
-        const x = side * 0.032;
-        for (const upper of [false, true]) {
-          const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(x - 0.0125, 0.014, 0.049), new THREE.Vector3(x, upper ? 0.0223 : 0.007, 0.054), new THREE.Vector3(x + 0.0125, 0.014, 0.049)]);
-          pieces.push(new THREE.TubeGeometry(curve, 10, upper ? 0.0025 : 0.0015, 5, false));
-        }
-      }
-      return merge(pieces);
-    });
-    this.part(this.head, "sculpted-eyelids", lids, earMat, false);
+    const brows = geometry(`${avatar} soft eyebrow arcs`, () => merge([-1, 1].map(side =>
+      new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+        new THREE.Vector3(side * 0.025, 0.038, 0.048),
+        new THREE.Vector3(side * 0.034, 0.041, 0.048),
+        new THREE.Vector3(side * 0.045, 0.037, 0.043),
+      ]), 8, 0.0025, 5, false))));
+    this.part(this.head, "soft-brows", brows, earMat, false);
     const mouth = this.part(this.head, "mouth-line", geometry(`${avatar} mouth curve`, () => new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.029, -0.031, avatar === "dog" ? 0.106 : 0.066), new THREE.Vector3(0, -0.040, avatar === "dog" ? 0.127 : 0.078), new THREE.Vector3(0.029, -0.031, avatar === "dog" ? 0.106 : 0.066),
+      new THREE.Vector3(-0.029, -0.031, avatar === "dog" ? 0.100 : 0.075), new THREE.Vector3(0, -0.040, avatar === "dog" ? 0.113 : 0.088), new THREE.Vector3(0.029, -0.031, avatar === "dog" ? 0.100 : 0.075),
     ]), 18, 0.0011, 5, false)), material(0x72634f, "soft mouth line"), false);
     mouth.name = "mouth-line";
 
@@ -791,7 +706,7 @@ export class AnimalFigure extends THREE.Group {
     const headShape = sculptedHead(avatar);
     headShape.computeBoundingBox();
     const outerEar = catEar(false); outerEar.computeBoundingBox();
-    const crown = this.hipHeight + this.head.position.y + Math.max(avatar === "cat" ? 0.045 + outerEar.boundingBox!.max.y : 0, headShape.boundingBox!.max.y) * this.head.scale.y;
+    const crown = this.hipHeight + this.head.position.y + Math.max(avatar === "cat" ? 0.043 + outerEar.boundingBox!.max.y : 0, headShape.boundingBox!.max.y) * this.head.scale.y;
     this.rig.scale.setScalar(1 / crown);
     this.hips.position.y = this.hipHeight;
     this.skeleton = new THREE.Skeleton([this.hips, this.upperBody, this.head, this.arms[0].upper, this.arms[0].fore, this.arms[1].upper, this.arms[1].fore,
@@ -880,7 +795,7 @@ export class AnimalFigure extends THREE.Group {
       tail.translate(0, 0, 0.055);
       return merge([band, tail]);
     });
-    this.part(this.upperBody, "folded-olive-scarf", scarf, material(0x65704b, "woven olive scarf", 1, THREE.DoubleSide));
+    this.part(this.upperBody, "folded-olive-scarf", scarf, material(0x668978, "sea-sage scarf", 1, THREE.DoubleSide));
     const leather = geometry("soft shoulder bag and crossbody strap", () => {
       const s = new THREE.Shape();
       s.moveTo(-0.042, -0.048); s.quadraticCurveTo(-0.05, 0, -0.04, 0.048); s.quadraticCurveTo(0, 0.058, 0.04, 0.048);
@@ -890,7 +805,7 @@ export class AnimalFigure extends THREE.Group {
       const strap = new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0.078, 0.265, -0.015), new THREE.Vector3(0.086, 0.249, 0.057), new THREE.Vector3(0.025, 0.17, 0.084), new THREE.Vector3(-0.065, 0.08, 0.09), new THREE.Vector3(-0.125, 0.025, 0.072)]), 44, 0.006, 6, false);
       return merge([bag, flap, strap]);
     });
-    this.part(this.upperBody, "leather-shoulder-bag-and-strap", leather, material(0x896041, "worn bag leather", 0.86));
+    this.part(this.upperBody, "leather-shoulder-bag-and-strap", leather, material(0xaa7854, "warm clay shoulder bag", 0.96));
   }
 
   setFacing(yaw: number): void {
@@ -914,6 +829,7 @@ export class AnimalFigure extends THREE.Group {
     const seated = this.pose === "sit" || this.pose === "guitar" || this.pose === "strum";
     const strides = walking && !seated;
     this.hips.position.set(0, seated ? this.shinLength + 0.044 : this.hipHeight, 0);
+    this.hips.rotation.set(0, 0, 0);
     this.upperBody.rotation.set(seated ? 0.035 : 0, seated ? -0.025 : 0, this.pose === "lean" ? 0.065 : 0);
     this.head.rotation.set(seated ? 0.035 : 0, this.pose === "talk" ? -0.09 : seated ? 0.12 : 0, 0);
     for (let i = 0; i < 2; i++) {

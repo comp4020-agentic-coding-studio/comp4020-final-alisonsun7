@@ -19,6 +19,10 @@ after the second rejection (003, 008 and 009 are history).
 ADR 022 records Wen's current priority: coherent, harmonious and distinctive
 style serving shared sound-making and playful human interaction. D remains an
 atmosphere reference; cinematic fidelity is no longer the product goal.
+ADR 023 develops the current request: friends shape cozy and lively corners
+through multiple suitable sounds, with deterministic visible NPC responses and
+a cohesive painted world. It authorizes new optional recordings and replaces
+the original design-pack priority for realistic adult character proportions.
 Read them before changing behaviour. Explain progress to Wen in Chinese; the
 UI, code, commits and repo docs are English. README.md, PROCESS.md,
 reflections and the research note are Wen's to write: offer outlines and
@@ -53,14 +57,22 @@ The shared sound entry and public contribution drawer are in
 `client/shared-sound-place.ts` (ADR 022); nearby live public reply threads are
 in `client/sound-connections.ts`. Public counts/activity exclude private stays.
 
+Sound-driven NPC choices are in `shared/sound-response.ts`, their safe movements
+in `client/sound-residents.ts`, and integration in `client/world.ts`. Feed them
+the canonical contribution list; use anchored server time for selection/phase.
+Local sound preference and the viewer's position must never select a different
+resident response. The busker, staff and existing children's game keep their
+roles; reacting residents are clearly NPCs, never counted as joined people.
+
 ## Product invariants
 
 - **The standard (Wen):** suits people playing together; keeps what they do,
   so tomorrow shows today's changes; what others change, you see.
 - **Sound is Wen's design (ADR 011).** Sounds are left where you stand and
   removed from beside them; only the room rules in ADR 011, no owners or
-  quotas; no background bed; nothing fades. Don't add sounds, a bed or new
-  rules on your own: Wen chooses every sound by ear. Wen explicitly requested
+  quotas; no background bed; nothing fades. Wen now explicitly requests more
+  suitable optional sounds and resident responses (ADR 023); keep every sound
+  individually auditionable and explicitly placed. Wen explicitly requested
   restoring Mateo's nearby guitar: that one NPC has local spatial audio,
   respects Sound off, and yields to a nearby player guitar; it never creates
   a contribution or database row. The tables from before

@@ -1,5 +1,5 @@
-// Curved original coastal pine limbs carry small CC0 needle-bearing twigs.
-// Cutout branches are bent and distributed in 3D, never camera-facing trees.
+// Curved original coastal pine limbs carry soft, sculpted green crowns.
+// The grove, hero trees and distant headlands share one painted 3D language.
 import * as THREE from "three";
 import { std } from "./world-build.js";
 
@@ -12,89 +12,41 @@ export const HERO_PINES = [
 
 interface CanopyPad { position: THREE.Vector3; width: number; depth: number; turn: number; tilt: number }
 
-// Nobiax / Yughues, Branches Textures Pack 02, #28, CC0 1.0.
-// A small real needle-bearing twig is bent in three dimensions. Many twigs
-// grow around each woody limb; no card represents a complete tree or crown.
-let sharedBranchGeometry: THREE.BufferGeometry | undefined;
+// Soft sculpted crowns share the original wind-grown trunks and branch
+// positions. Every pad has actual volume from every view; no photographic
+// cutout or camera-facing tree participates in the new painted language.
+let sharedCrownGeometry: THREE.BufferGeometry | undefined;
 let sharedFoliage: THREE.MeshStandardMaterial | undefined;
-function branchGeometry(): THREE.BufferGeometry {
-  if (sharedBranchGeometry) return sharedBranchGeometry;
-  const geometry = new THREE.PlaneGeometry(1, 1, 2, 3);
+function crownGeometry(): THREE.BufferGeometry {
+  if (sharedCrownGeometry) return sharedCrownGeometry;
+  const geometry = new THREE.SphereGeometry(1, 9, 6);
   const p = geometry.attributes.position;
   for (let i = 0; i < p.count; i++) {
-    const x = p.getX(i), along = p.getY(i) + 0.5;
-    p.setXYZ(i, x * (0.78 + 0.22 * along), along,
-      0.23 * Math.sin(along * Math.PI) + x * x * 0.38);
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    const shape = 1 + Math.sin(x * 3.4 + z * 2.2) * 0.055;
+    p.setXYZ(i, x * shape, y + Math.sin(x * 2.8) * 0.04, z * shape);
   }
   geometry.computeVertexNormals();
-  sharedBranchGeometry = geometry; return geometry;
-}
-function foliageMaterial(): THREE.MeshStandardMaterial {
-  if (sharedFoliage) return sharedFoliage;
-  const loader = new THREE.TextureLoader();
-  const map = loader.load("/assets/textures/coastal_pine_28/diffuse.png");
-  map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8;
-  const normalMap = loader.load("/assets/textures/coastal_pine_28/normal.png");
-  normalMap.anisotropy = 8;
-  sharedFoliage = std(0xffffff, { map, normalMap,
-    normalScale: new THREE.Vector2(0.22, -0.22), alphaTest: 0.45,
-    transparent: false, side: THREE.DoubleSide, roughness: 0.94,
-    emissiveMap: map, emissive: 0xffffff, emissiveIntensity: 0.12,
-    flatShading: false });
-  // Thin needles transmit some skylight and direct light through their
-  // underside. Use scene lights so this also dims with shared night/weather.
-  sharedFoliage.onBeforeCompile = (shader) => {
-    // This older atlas contains dark photographic lighting. Normalize its
-    // albedo in linear light before the scene lights shade the fine needles.
-    shader.fragmentShader = shader.fragmentShader
-      .replace("#include <map_fragment>", "#include <map_fragment>\n diffuseColor.rgb *= 3.2;")
-      .replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
-      #if NUM_HEMI_LIGHTS > 0
-        reflectedLight.indirectDiffuse += diffuseColor.rgb * hemisphereLights[0].skyColor * 0.48;
-      #endif
-      #if NUM_DIR_LIGHTS > 0
-        float needleTransmission = pow(max(0.0, dot(-normal, directionalLights[0].direction)), 1.3);
-        reflectedLight.directDiffuse += diffuseColor.rgb * directionalLights[0].color * needleTransmission * 0.28;
-      #endif`);
-  };
-  sharedFoliage.customProgramCacheKey = () => "coastal-needle-transmission-v2";
-  return sharedFoliage;
+  sharedCrownGeometry = geometry;
+  return geometry;
 }
 function addCanopies(root: THREE.Object3D, pads: CanopyPad[], shadows: boolean): void {
   if (!pads.length) return;
-  const material = foliageMaterial(), branchesPerPad = 9;
-  const leaves = new THREE.InstancedMesh(branchGeometry(), material, pads.length * branchesPerPad);
+  sharedFoliage ??= std(0xffffff, { roughness: 1, flatShading: false });
+  const leaves = new THREE.InstancedMesh(crownGeometry(), sharedFoliage, pads.length);
   const dummy = new THREE.Object3D(), colour = new THREE.Color();
-  const up = new THREE.Vector3(0, 1, 0), direction = new THREE.Vector3();
   let seed = 8149;
   const random = (): number => { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 4294967296; };
-  pads.forEach((p, i) => {
-    for (let branch = 0; branch < branchesPerPad; branch++) {
-      // Three staggered depth levels and different local rolls maintain a
-      // fine, porous silhouette from above, below and along the promenade.
-      const angle = p.turn + branch * 2.399 + (random() - 0.5) * 0.6;
-      const radius = Math.sqrt(random()) * 0.68;
-      dummy.position.set(p.position.x + Math.cos(angle) * p.width * radius,
-        p.position.y + (branch % 3 - 1) * p.width * 0.18,
-        p.position.z + Math.sin(angle) * p.depth * radius);
-      direction.set(Math.cos(angle), 0.18 + random() * 0.75, Math.sin(angle)).normalize();
-      dummy.quaternion.setFromUnitVectors(up, direction);
-      dummy.rotateY((random() - 0.5) * Math.PI * 1.6);
-      const length = p.width * (0.90 + random() * 0.62);
-      dummy.scale.set(length * (0.66 + random() * 0.15), length, length);
-      dummy.updateMatrix(); const index = i * branchesPerPad + branch;
-      leaves.setMatrixAt(index, dummy.matrix);
-      colour.setHSL(0.23 + random() * 0.025, 0.06 + random() * 0.04, 0.76 + random() * 0.18);
-      leaves.setColorAt(index, colour);
-    }
+  pads.forEach((pad, i) => {
+    dummy.position.copy(pad.position);
+    dummy.rotation.set(pad.tilt, pad.turn, (random() - 0.5) * 0.18);
+    dummy.scale.set(pad.width * 0.91, pad.width * (0.46 + random() * 0.18), pad.depth * 0.94);
+    dummy.updateMatrix(); leaves.setMatrixAt(i, dummy.matrix);
+    colour.setHSL(0.29 + random() * 0.045, 0.16 + random() * 0.10, 0.34 + random() * 0.10);
+    leaves.setColorAt(i, colour);
   });
-  leaves.name = "cc0-curved-needle-bearing-twigs";
+  leaves.name = "painted-volumetric-pine-crowns";
   leaves.castShadow = shadows; leaves.receiveShadow = true;
-  leaves.userData.skipContactAO = true;
-  leaves.customDepthMaterial = new THREE.MeshDepthMaterial({ map: material.map,
-    alphaTest: 0.45, depthPacking: THREE.RGBADepthPacking, side: THREE.DoubleSide });
-  leaves.customDistanceMaterial = new THREE.MeshDistanceMaterial({ map: material.map,
-    alphaTest: 0.45, side: THREE.DoubleSide });
   leaves.computeBoundingSphere(); root.add(leaves);
 }
 
@@ -163,8 +115,8 @@ export function buildHeroPines(root: THREE.Object3D, bark: THREE.Material): void
 
 export interface GrovePine { x: number; z: number; y?: number; h: number; turn?: number }
 
-// Twenty woody bough clusters, each with nine bent textured twigs, give a
-// full but porous 4–7 m crown at approximately 2.2K foliage triangles/tree.
+// Twenty soft crown lobes sit on the same authored branches. Spatial batches
+// keep the forest and distant headlands inexpensive without flat tree cards.
 export function buildPineGrove(root: THREE.Object3D, bark: THREE.Material, trees: GrovePine[], castShadows = false, spatialBatch = true): void {
   if (!trees.length) return;
   // Instanced bounds are per 24 m cell, so a close forest view does not submit

@@ -52,6 +52,8 @@ const SOUNDS = [
   { id: "bicycle-bell", label: "Bicycle bell", family: "anthrophony", kind: "now-and-then", zones: ["boardwalk", "forest-edge"], file: "Rotating-bicycle-bell.wav", from: 0, seconds: 1.3, pause: 14.7 },
   { id: "cafe-dishes", label: "Cups and dishes", family: "anthrophony", kind: "loop", zones: ["counter", "tables", "window"], file: "Kitchen tidy up.ogg", from: 4, seconds: 32 },
   { id: "harbour-boat", label: "Boat by the pier", family: "anthrophony", kind: "loop", zones: ["pier", "beach"], file: "Boat by a wharf 1.ogg", from: 1, seconds: 26 },
+  { id: "rainstick", label: "A softly turning rainstick", family: "anthrophony", kind: "loop", zones: ["forest", "creek", "window", "beach"], file: "Rainstick (1).ogg", from: 1, seconds: 20, highpassHz: 35, reportMeasurements: true },
+  { id: "hand-claps", label: "Hand-clap rhythm", family: "anthrophony", kind: "loop", zones: ["boardwalk", "beach", "tables", "pier"], file: "Palmas sevillanas (flamenco clapping), 160 BPM.ogg", from: 12, seconds: 12, reportMeasurements: true },
 ];
 
 // A targeted run must neither re-encode existing recordings nor remove their
@@ -114,7 +116,10 @@ function ffmpeg(args) {
 // The cut, before loudness: a loop's tail crossfaded into its head, or a
 // clip with short fades at both ends.
 function cutFilter(s) {
-  const pick = `[0:a]aformat=channel_layouts=mono,atrim=${s.from}:${s.from + s.seconds + (s.kind === "loop" ? XFADE : 0)},asetpts=PTS-STARTPTS`;
+  // This recording has a measured source DC offset. Keep its cleanup explicit
+  // and source-specific; the existing recordings retain their exact filters.
+  const cleanup = s.highpassHz ? `highpass=f=${s.highpassHz},` : "";
+  const pick = `[0:a]aformat=channel_layouts=mono,${cleanup}atrim=${s.from}:${s.from + s.seconds + (s.kind === "loop" ? XFADE : 0)},asetpts=PTS-STARTPTS`;
   if (s.kind !== "loop") {
     return `${pick},afade=t=in:d=0.02,afade=t=out:st=${s.seconds - 0.4}:d=0.4${s.pause ? `,apad=pad_dur=${s.pause}` : ""}`;
   }
@@ -129,12 +134,32 @@ function cutFilter(s) {
   ].join(";");
 }
 
-// loudnorm's first pass prints what it measured as JSON on stderr; the
-// second applies one constant gain from it, so a loop's seam doesn't jump.
+// loudnorm's first pass prints measurements as JSON. The second requests
+// linear gain; FFmpeg can fall back to peak-constrained dynamic normalization
+// when the peak or loudness range prevents that target. New assets report
+// their achieved loudness separately from the requested target.
 function measure(src, cut) {
   const r = spawnSync("ffmpeg", ["-hide_banner", "-nostdin", "-i", src, "-filter_complex", `${cut},loudnorm=I=${LOUDNESS}:TP=-2:print_format=json`, "-f", "null", "-"], { encoding: "utf8" });
   if (r.status !== 0) throw new Error(`${src}: ${r.stderr}`);
   return JSON.parse(r.stderr.slice(r.stderr.lastIndexOf("{"), r.stderr.lastIndexOf("}") + 1));
+}
+
+// New recordings report the achieved result separately from the requested
+// target: a peak ceiling can leave a percussive recording quieter than -20.
+// This never changes the existing recordings' filters or manifest entries.
+function encodedMeasurements(src) {
+  const r = spawnSync("ffmpeg", ["-hide_banner", "-nostdin", "-i", src,
+    "-af", `astats=metadata=0:reset=0,loudnorm=I=${LOUDNESS}:TP=-2:print_format=json`,
+    "-f", "null", "-"], { encoding: "utf8" });
+  if (r.status !== 0) throw new Error(`${src}: ${r.stderr}`);
+  const stats = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf("{"), r.stderr.lastIndexOf("}") + 1));
+  const offsets = [...r.stderr.matchAll(/DC offset: ([^\n]+)/g)];
+  const measured = { integratedLufs: Number(stats.input_i), truePeakDbTP: Number(stats.input_tp),
+    dcOffset: Number(offsets.at(-1)?.[1]), targetLufs: LOUDNESS, truePeakCeilingDbTP: -2 };
+  if (![measured.integratedLufs, measured.truePeakDbTP, measured.dcOffset].every(Number.isFinite)) {
+    throw new Error(`${src}: non-finite encoded measurement`);
+  }
+  return measured;
 }
 
 mkdirSync(OUT, { recursive: true });
@@ -165,6 +190,10 @@ for (const s of selected) {
   const norm = `loudnorm=I=${LOUDNESS}:TP=-2:linear=true:measured_I=${probe.input_i}:measured_TP=${probe.input_tp}:measured_LRA=${probe.input_lra}:measured_thresh=${probe.input_thresh}:offset=${probe.target_offset}`;
   ffmpeg(["-i", src, "-filter_complex", `${cut},${norm},aresample=44100`, "-ac", "1", "-c:a", "libmp3lame", "-b:a", "96k", "-map_metadata", "-1", out]);
 
+  const measuredAudio = s.reportMeasurements ? encodedMeasurements(out) : undefined;
+  const normalization = s.reportMeasurements
+    ? `-20 LUFS target, -2 dBTP ceiling; measured ${measuredAudio.integratedLufs} LUFS, ${measuredAudio.truePeakDbTP} dBTP, DC offset ${measuredAudio.dcOffset}`
+    : `loudness ${LOUDNESS} LUFS`;
   entries.push({
     id: `commons-${s.id}`,
     path: out,
@@ -174,10 +203,11 @@ for (const s of selected) {
     rights: licence.toLowerCase() === "cc0" ? "CC0 1.0 (public domain dedication)" : "Public domain (as stated on its Commons page)",
     sourceSha1: ii.sha1,
     sourceUrl: ii.url,
+    ...(measuredAudio ? { measuredAudio } : {}),
     ...(m.LicenseUrl?.value ? { licenseUrl: m.LicenseUrl.value } : {}),
     processing: s.kind === "loop"
-      ? `mono, ${s.seconds} s from ${s.from} s, last ${XFADE} s crossfaded into the start for a seamless loop, loudness ${LOUDNESS} LUFS, MP3 96 kbps, metadata removed`
-      : `mono, ${s.seconds} s clip from ${s.from} s with short fades${s.pause ? ` and ${s.pause} s quiet interval` : ""}, loudness ${LOUDNESS} LUFS, MP3 96 kbps, metadata removed`,
+      ? `mono, ${s.highpassHz ? `source DC cleanup highpass=f=${s.highpassHz}, ` : ""}${s.seconds} s from ${s.from} s, last ${XFADE} s crossfaded into the start${s.reportMeasurements ? "" : " for a seamless loop"}, ${normalization}, MP3 96 kbps, metadata removed`
+      : `mono, ${s.seconds} s clip from ${s.from} s with short fades${s.pause ? ` and ${s.pause} s quiet interval` : ""}, ${normalization}, MP3 96 kbps, metadata removed`,
   });
   console.log(`${s.kind.padEnd(12)} ${s.id.padEnd(15)} ${licence}`);
 }
@@ -187,5 +217,5 @@ const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const replaced = new Set(entries.map((a) => a.id));
 manifest.assets = [...manifest.assets.filter((a) => !replaced.has(a.id)), ...entries];
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-writeFileSync(join(OUT, "sounds.json"), `${JSON.stringify(SOUNDS.map(({ file, from, ...s }) => s), null, 2)}\n`);
+writeFileSync(join(OUT, "sounds.json"), `${JSON.stringify(SOUNDS.map(({ file, from, highpassHz, reportMeasurements, ...s }) => s), null, 2)}\n`);
 console.log(`${entries.length} sounds`);

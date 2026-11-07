@@ -26,7 +26,7 @@ const behaviors: Readonly<Record<string, SoundBehavior>> = {
   "children-playing": "play", "cafe-chatter": "chat", "espresso": "chat",
   "cafe-music": "sway", "guitar": "sway", "coastal-gulls": "watch",
   "gentle-breeze": "listen", "summer-cicadas": "watch", "bicycle-bell": "wave",
-  "cafe-dishes": "chat", "harbour-boat": "watch", "wind-chimes": "listen",
+  "cafe-dishes": "chat", "harbour-boat": "watch",
   "rainstick": "listen", "hand-claps": "sway",
 };
 

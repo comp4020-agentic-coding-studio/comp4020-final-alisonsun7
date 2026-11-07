@@ -21,7 +21,7 @@ describe("shared sound-driven NPC choices", () => {
     expect(soundResponseFor("bicycle-bell")?.behavior).toBe("wave");
     expect(soundResponseFor("bicycle-bell")?.mood).toBe("lively");
     expect(soundResponseFor("harbour-boat")?.mood).toBe("lively");
-    expect(soundResponseFor("wind-chimes")?.mood).toBe("cozy");
+    expect(soundResponseFor("rainstick")?.mood).toBe("cozy");
     expect(soundResponseFor("rainstick")?.mood).toBe("cozy");
     expect(soundResponseFor("hand-claps")?.behavior).toBe("sway");
     expect(soundResponseFor("toilet-flush")).toBeNull();

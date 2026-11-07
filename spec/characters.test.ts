@@ -11,8 +11,8 @@ const box = (object: THREE.Object3D): THREE.Box3 => {
 const part = (figure: AnimalFigure, name: string): THREE.Mesh => figure.getObjectByName(name) as THREE.Mesh;
 const material = (mesh: THREE.Mesh): THREE.Material => mesh.material as THREE.Material;
 
-describe("the original Quiet Light people", () => {
-  it("sculpts paired feline muzzle pads and a canine bridge, with wrapped UVs and inset dark eyes", () => {
+describe("the original Soundfolk people", () => {
+  it("sculpts paired feline muzzle pads and a short canine bridge, with wrapped UVs and legible dark eyes", () => {
     const cat = new AnimalFigure({ avatar: "cat", seed: "anatomy" });
     const dog = new AnimalFigure({ avatar: "dog", seed: "anatomy" });
     const front = (figure: AnimalFigure, x: number, y: number): number => {
@@ -28,7 +28,8 @@ describe("the original Quiet Light people", () => {
     const lipCentre = front(cat, 0, -0.023);
     expect(front(cat, -0.016, -0.023)).toBeGreaterThan(lipCentre + 0.002);
     expect(front(cat, 0.016, -0.023)).toBeGreaterThan(lipCentre + 0.002);
-    expect(front(dog, 0, -0.023)).toBeGreaterThan(0.12);
+    expect(front(dog, 0, -0.023)).toBeGreaterThan(lipCentre + 0.02);
+    expect(front(dog, 0, -0.023)).toBeLessThan(0.12);
     for (const figure of [cat, dog]) {
       const face = part(figure, "head-fur");
       const uv = face.geometry.getAttribute("uv");
@@ -36,22 +37,32 @@ describe("the original Quiet Light people", () => {
       for (let i = 0; i < uv.count; i++) {
         expect(Number.isFinite(uv.getX(i)) && Number.isFinite(uv.getY(i))).toBe(true);
       }
-      expect((face.material as THREE.MeshStandardMaterial).name).toContain("generated directional short fur");
+      expect((face.material as THREE.MeshStandardMaterial).name).toContain("matte painted coat");
+      for (const name of ["head-fur", "linen-shirt", "continuous-trousers", "left-hand", "left-shoe"]) {
+        const m = part(figure, name).material as THREE.MeshStandardMaterial;
+        expect(m.map, `${name} no photographic texture`).toBeNull();
+        expect(m.bumpMap, `${name} no fur microtexture`).toBeNull();
+        expect(m.roughness, `${name} matte material`).toBeGreaterThanOrEqual(0.9);
+        expect(m.metalness).toBe(0);
+      }
       expect(part(figure, "left-iris").scale.x / part(figure, "left-eye").scale.x).toBeGreaterThan(0.7);
       expect(part(figure, "dark-pupils")).toBeInstanceOf(THREE.Mesh);
-      expect(part(figure, "directional-face-fur")).toBeInstanceOf(THREE.Mesh);
+      expect(part(figure, "soft-cheek-tufts")).toBeInstanceOf(THREE.Mesh);
       figure.dispose();
     }
   });
 
-  it("has grounded three-dimensional adult bodies, a small head, and a finite rig in every pose", () => {
+  it("has grounded three-dimensional storybook bodies, readable broad heads, and a finite rig in every pose", () => {
     for (const avatar of ["cat", "dog"] as const) for (const child of [false, true]) {
       const figure = new AnimalFigure({ avatar, seed: "quiet-light", height: 1, child });
       expect(box(figure).max.y).toBeCloseTo(1, 5);
       expect(box(figure).min.y).toBeCloseTo(0, 5);
       const head = box(part(figure, "head-fur")).getSize(new THREE.Vector3());
       expect(head.z).toBeGreaterThan(0.09);
-      expect(head.y).toBeLessThan(0.19);
+      expect(head.y).toBeGreaterThan(0.22);
+      expect(head.y).toBeLessThan(0.29);
+      expect(head.x).toBeGreaterThan(0.24);
+      expect(head.x / head.y).toBeGreaterThan(0.95);
       let triangles = 0;
       let meshes = 0;
       figure.traverseVisible((object) => {
@@ -61,7 +72,7 @@ describe("the original Quiet Light people", () => {
         expect(object.material).toBeInstanceOf(THREE.MeshStandardMaterial);
       });
       expect(meshes).toBeLessThan(35);
-      // The selected fidelity rebuild explicitly budgets up to 35K per hero.
+      // Keep the existing 35K hero budget while changing the artistic proportions.
       expect(triangles).toBeLessThan(35000);
       for (const pose of POSES) {
         figure.setPose(pose);
@@ -204,7 +215,9 @@ describe("the original Quiet Light people", () => {
       expect(woodUV.getY(i)).toBeGreaterThan(0.18);
       expect(woodUV.getY(i)).toBeLessThan(0.235);
     }
-    expect((soundboard.material as THREE.MeshStandardMaterial).name).toContain("fine-grain soundboard");
+    expect((soundboard.material as THREE.MeshStandardMaterial).roughness).toBeGreaterThanOrEqual(0.9);
+    expect((soundboard.material as THREE.MeshStandardMaterial).map).toBeNull();
+    expect((soundboard.material as THREE.MeshStandardMaterial).name).toContain("painted honey soundboard");
     expect(figure.getObjectByName("guitar-body-detail-levels")).toBeInstanceOf(THREE.LOD);
     let playingTriangles = 0;
     figure.traverseVisible((object) => {
