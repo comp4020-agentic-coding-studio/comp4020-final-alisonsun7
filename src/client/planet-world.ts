@@ -9,11 +9,16 @@ import type { Person, Position, PlacedSound, Moves } from "../shared/protocol.js
 import type { NpcRoutineFrame } from "../shared/npc-routines.js";
 import { minuteAt, type Environment } from "../shared/environment.js";
 import { FAMILIES, findSound } from "../shared/sounds.js";
+import { WALK_SPEED, RUN_SPEED, JUMP_DURATION, jumpHeight, bearingToward, moveOnPlanet } from "./planet-locomotion.js";
+import { KangarooCompanion } from "./planet-wildlife.js";
+import { PlanetSoundConnections } from "./planet-connections.js";
+export type PlanetInteraction = { kind: "kangaroo"; label: string; action: string };
 type Actor = {
     figure: AnimalFigure;
     label: HTMLSpanElement;
     at: Position;
     target: Position;
+    name: string;
 };
 type Listener = Position & {
     camera: THREE.PerspectiveCamera;
@@ -33,6 +38,10 @@ export class PlanetWorld {
     private cues = new Map<string, THREE.Mesh>();
     private residentPos = new Map<AnimalFigure, Position>();
     private residents: SoundResidents;
+    private connections: PlanetSoundConnections;
+    private kangaroo = new KangarooCompanion();
+    private kangarooLabel: HTMLSpanElement;
+    private lastInteraction: string | null = null;
     private residentLabels = new Map<AnimalFigure, HTMLSpanElement>();
     private overlay = document.createElement("div");
     private touch: HTMLElement | null = null;
@@ -42,12 +51,17 @@ export class PlanetWorld {
     private selfYaw = Math.PI;
     private keys = new Set<string>();
     private paused = false;
+    private runRequested = false;
+    private _running = false;
+    private jumpStarted: number | null = null;
+    private jumpOffset = 0;
     private _viewMode: "first" | "third" = "third";
     private pitch = .12;
-    private zoom = 12;
+    private zoom = 16;
     private walkingTarget: {
         x: number;
         z: number;
+        stopDistance: number;
     } | null = null;
     private dragTravel = 0;
     private look: "follow" | "scene" = "follow";
@@ -74,11 +88,12 @@ export class PlanetWorld {
         listen: (l: Listener) => void;
         area: (p: PlanetPlace) => void;
         wait: (text: string) => void;
+        interaction?: (cue: PlanetInteraction | null) => void;
     }) {
         const canvas = this.renderer.domElement;
         canvas.className = "planet-canvas";
         canvas.tabIndex = 0;
-        canvas.setAttribute("aria-label", "Soundfolk little world. Walk with W A S D or arrow keys; drag to look. V changes view.");
+        canvas.setAttribute("aria-label", "Little Chorus. Walk with W A S D or arrows, hold Shift to run, Space to jump, and E to interact. Drag to look. V changes view.");
         this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
         this.renderer.setSize(host.clientWidth, host.clientHeight);
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -91,6 +106,9 @@ export class PlanetWorld {
         host.prepend(canvas);
         host.append(this.overlay);
         this.scene.add(this.built.root, this.hemi, this.sun);
+        this.connections = new PlanetSoundConnections(this.scene, (x, z) => this.built.heightAt(x, z));
+        this.scene.add(this.kangaroo.figure);
+        this.kangarooLabel = this.makeLabel("Kangaroo · companion", "npc");
         this.sun.position.set(-28, 45, 55);
         this.sun.castShadow = true;
         this.sun.shadow.mapSize.set(2048, 2048);
@@ -121,8 +139,12 @@ export class PlanetWorld {
         this.resize();
         this.frameId = requestAnimationFrame(this.frame);
     }
-    get at(): Position { return { ...this.position, yaw: this.selfYaw }; }
+    get at(): Position { return { ...this.position, yaw: this.selfYaw, motion: { running: this._running, jump: this.jumpOffset } }; }
     get viewMode(): "first" | "third" { return this._viewMode; }
+    get running(): boolean { return this._running; }
+    get runEnabled(): boolean { return this.runRequested; }
+    get grounded(): boolean { return this.jumpStarted === null; }
+    get walkingIntent(): boolean { return this.walkingTarget !== null; }
     get serverNow(): number { return this.serverSample.server + Math.max(0, performance.now() - this.serverSample.received); }
     get responses() { return this.residents.responses.map(r => { const figure = this.residents.figures.find(f => f.userData.soundResident?.id === r.residentId), p = figure && this.residentPos.get(figure); return p ? { ...r, x: p.x, z: p.z } : r; }); }
     get area(): PlanetPlace { return [...PLANET_PLACES].sort((a, b) => planetDistance(this.position, a) - planetDistance(this.position, b))[0]; }
@@ -139,16 +161,46 @@ export class PlanetWorld {
     }
     catch { } this.keys.clear(); }
     setLookMode(mode: "follow" | "scene"): void { this.look = mode; }
-    setPaused(paused: boolean): void { this.paused = paused; this.keys.clear(); this.drag = null; this.walkingTarget = null; }
+    setPaused(paused: boolean): void { this.paused = paused; this.keys.clear(); this.runRequested = false; this._running = false; this.drag = null; this.cancelWalkingIntent(); }
+    setRunning(enabled: boolean): void { this.runRequested = !this.paused && enabled; }
+    jump(): boolean {
+        if (this.paused || !this.grounded) return false;
+        this.jumpStarted = this.serverNow;
+        return true;
+    }
+    interact(): boolean {
+        if (this.paused || !this.kangarooIsNear()) return false;
+        const message = this.kangaroo.interact(this.position);
+        if (!message) return false;
+        this.opts.wait(message);
+        this.publishInteraction();
+        return true;
+    }
+    walkToward(target: Pick<Position, "x" | "z">, stopDistance = 2.5): boolean {
+        if (this.paused || ![target.x, target.z, stopDistance].every(Number.isFinite)) return false;
+        this.walkingTarget = { x: target.x, z: target.z, stopDistance: Math.max(.15, Math.min(10, stopDistance)) };
+        return true;
+    }
+    cancelWalkingIntent(): void { this.walkingTarget = null; }
+    project(x: number, z: number, height = 0): { x: number; y: number; visible: boolean } {
+        const p = planetPoint(x, z, this.built.heightAt(x, z) + height), point = new THREE.Vector3(p.x, p.y, p.z);
+        const delta = point.clone().sub(this.camera.position), length = delta.length();
+        const hit = length > 0 ? new THREE.Ray(this.camera.position, delta.clone().normalize()).intersectSphere(new THREE.Sphere(new THREE.Vector3(), R - .03), new THREE.Vector3()) : null;
+        const wall = length > .15 ? new THREE.Raycaster(this.camera.position, delta.clone().normalize(), .1, length - .08).intersectObjects(this.built.solids, false)[0] : undefined;
+        const projected = point.project(this.camera), occluded = !!wall || hit !== null && this.camera.position.distanceTo(hit) < length - .08;
+        return { x: (projected.x * .5 + .5) * this.host.clientWidth, y: (-projected.y * .5 + .5) * this.host.clientHeight,
+            visible: !occluded && projected.z >= -1 && projected.z <= 1 && Math.abs(projected.x) <= 1 && Math.abs(projected.y) <= 1 };
+    }
     focus(): void { this.renderer.domElement.focus({ preventScroll: true }); }
     correctPosition(p: Position): void { if ([p.x, p.z, p.yaw].every(Number.isFinite)) {
         this.position = { ...p };
         this.selfYaw = p.yaw;
         this.keys.clear();
         this.walkingTarget = null;
+        this.jumpStarted = null; this.jumpOffset = 0;
     } }
     goTo(id: string): void { const p = PLANET_PLACES.find(p => p.id === id); if (!p)
-        return; this.position = { x: p.x, z: p.z + (p.kind === "tea" ? 3 : 0), yaw: Math.PI }; this.selfYaw = Math.PI; this.keys.clear(); this.opts.area(p); }
+        return; this.position = { x: p.x, z: p.z + (p.kind === "tea" ? 3 : 0), yaw: Math.PI }; this.selfYaw = Math.PI; this.keys.clear(); this.cancelWalkingIntent(); this.jumpStarted = null; this.jumpOffset = 0; this.opts.area(p); }
     setEnvironment(environment: Environment, serverNow: string): void {
         const server = Date.parse(serverNow);
         if (!Number.isFinite(server) || (this.hasEnvironment&&environment.revision < this.environment.revision))
@@ -168,7 +220,7 @@ export class PlanetWorld {
                 actor = this.actor(p, "player", p.name + " · PLAYER");
                 this.others.set(p.id, actor);
             }
-            actor.target = { x: p.x, z: p.z, yaw: p.yaw };
+            actor.target = { x: p.x, z: p.z, yaw: p.yaw, motion: p.motion };
         }
         for (const [id, actor] of this.others)
             if (!wanted.has(id)) {
@@ -199,6 +251,7 @@ export class PlanetWorld {
     setContributions(sounds: readonly PlacedSound[]): void {
         this.publicSounds = sounds.filter(s => !s.removedAt && !s.whileIn).map(s => ({ ...s })).sort((a,b)=>a.at.localeCompare(b.at)||a.id.localeCompare(b.id));
         this.residents.setContributions(this.publicSounds);
+        this.connections.setAll(this.publicSounds);
         for (const [id, cue] of this.cues)
             if (!this.publicSounds.some(s => s.id === id)) {
                 cue.geometry.dispose();
@@ -223,7 +276,7 @@ export class PlanetWorld {
         }
     }
     private makeLabel(text: string, role: "player" | "npc"): HTMLSpanElement { const e = document.createElement("span"); e.className = "planet-person-label " + role; e.textContent = text; Object.assign(e.style, { position: "absolute", padding: "3px 8px", borderRadius: "12px", background: role === "player" ? "#e4f0f5" : "#f3e1bb", color: "#294a43", font: "600 12px system-ui", whiteSpace: "nowrap", border: role === "player" ? "1px solid #6196ad" : "1px solid #b89450" }); this.overlay.append(e); return e; }
-    private actor(p: Person & Position, role: "player" | "npc", label: string): Actor { const f = new AnimalFigure({ avatar: p.avatar, seed: p.id, role }); this.scene.add(f); return { figure: f, label: this.makeLabel(label, role), at: { x: p.x, z: p.z, yaw: p.yaw }, target: { x: p.x, z: p.z, yaw: p.yaw } }; }
+    private actor(p: Person & Position, role: "player" | "npc", label: string): Actor { const f = new AnimalFigure({ avatar: p.avatar, seed: p.id, role }); this.scene.add(f); return { figure: f, name: p.name, label: this.makeLabel(label, role), at: { x: p.x, z: p.z, yaw: p.yaw }, target: { x: p.x, z: p.z, yaw: p.yaw, motion: p.motion } }; }
     private locked(): Set<string> { const locked = new Set(this.npcFrames.filter(n => n.occupying).map(n => n.hutId)); for (const a of this.others.values()) {
         const h = sceneHutAt("planet", a.target.x, a.target.z);
         if (h)
@@ -232,21 +285,25 @@ export class PlanetWorld {
     private bind(): void {
         const canvas = this.renderer.domElement, signal = this.abort.signal;
         canvas.addEventListener("keydown", e => { if (this.paused || e.altKey || e.ctrlKey || e.metaKey)
-            return; if (["w", "a", "s", "d", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+            return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(e.key.toLowerCase())) {
             e.preventDefault();
             this.keys.add(e.key.toLowerCase());
-        } if (e.key.toLowerCase() === "v")
+        } if (e.code === "Space") { e.preventDefault(); if (!e.repeat) this.jump(); }
+        if (e.key.toLowerCase() === "e" && !e.repeat && !e.defaultPrevented) { if (this.interact()) e.preventDefault(); }
+        if (e.key.toLowerCase() === "v")
             this.setViewMode(this.viewMode === "first" ? "third" : "first"); }, { signal });
         window.addEventListener("keyup", e => this.keys.delete(e.key.toLowerCase()), { signal });
-        window.addEventListener("blur", () => this.keys.clear(), { signal });
+        window.addEventListener("blur", () => { this.keys.clear(); this.runRequested = false; this._running = false; this.cancelWalkingIntent(); }, { signal });
         canvas.addEventListener("pointerdown", e => { if (this.paused)
             return; this.focus(); this.dragTravel = 0; this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); }, { signal });
         canvas.addEventListener("pointermove", e => { if (!this.drag || this.drag.id !== e.pointerId || this.paused)
             return; const dx = e.clientX - this.drag.x, dy = e.clientY - this.drag.y, sign = this.look === "follow" ? 1 : -1; this.dragTravel += Math.hypot(dx, dy); this.position.yaw -= dx * .006 * sign; this.pitch = THREE.MathUtils.clamp(this.pitch + dy * .004 * sign, -.5, .8); this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; }, { signal });
         canvas.addEventListener("pointerup", e => { if (this.paused || this.dragTravel > 6 || this.drag?.id !== e.pointerId)
-            return; const rect = canvas.getBoundingClientRect(), ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), this.camera); const hit = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(), R), new THREE.Vector3()); if (hit) {
+            return; const rect = canvas.getBoundingClientRect(), ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), this.camera);
+            if (this.kangarooIsNear() && ray.intersectObject(this.kangaroo.figure, true).length) { this.interact(); return; }
+            const hit = ray.ray.intersectSphere(new THREE.Sphere(new THREE.Vector3(), R), new THREE.Vector3()); if (hit) {
             hit.normalize();
-            this.walkingTarget = { x: Math.atan2(hit.x, hit.z) * R, z: -Math.asin(hit.y) * R };
+            this.walkToward({ x: Math.atan2(hit.x, hit.z) * R, z: -Math.asin(hit.y) * R }, .25);
         } }, { signal });
         for (const event of ["pointerup", "pointercancel", "lostpointercapture"] as const)
             canvas.addEventListener(event, () => { this.drag = null; }, { signal });
@@ -278,47 +335,61 @@ export class PlanetWorld {
         if (this.disposed)
             return;
         this.frameId = requestAnimationFrame(this.frame);
-        const dt = Math.min(.05, (now - this.last) / 1000);
+        const dt = Math.min(.1, Math.max(0, (now - this.last) / 1000));
         this.last = now;
         let forward = Number(this.keys.has("w") || this.keys.has("arrowup")) - Number(this.keys.has("s") || this.keys.has("arrowdown"));
         const right = Number(this.keys.has("d") || this.keys.has("arrowright")) - Number(this.keys.has("a") || this.keys.has("arrowleft"));
         if (forward || right)
-            this.walkingTarget = null;
+            this.cancelWalkingIntent();
         if (!this.paused && this.walkingTarget) {
-            if (planetDistance(this.position, this.walkingTarget) < .35)
-                this.walkingTarget = null;
+            if (planetDistance(this.position, this.walkingTarget) <= this.walkingTarget.stopDistance + .015)
+                this.cancelWalkingIntent();
             else {
-                const target = planetPoint(this.walkingTarget.x, this.walkingTarget.z), b = planetBasis(this.position.x, this.position.z), direction = new THREE.Vector3(target.x, target.y, target.z).projectOnPlane(new THREE.Vector3(b.up.x, b.up.y, b.up.z));
-                this.position.yaw = Math.atan2(direction.dot(new THREE.Vector3(b.east.x, b.east.y, b.east.z)), direction.dot(new THREE.Vector3(b.south.x, b.south.y, b.south.z)));
+                this.position.yaw = bearingToward(this.position, this.walkingTarget);
                 forward = 1;
             }
         }
-        const walk = !this.paused && (forward !== 0 || right !== 0), locked = this.locked(), own = sceneHutAt("planet", this.position.x, this.position.z)?.id;
-        if (walk) {
-            const target = planetStep(this.position, forward, right, dt * 3.2);
-            if (this.built.canStand(target.x, target.z, locked, own)) {
-                this.position = target;
-                this.selfYaw = target.yaw - Math.atan2(right, forward);
-                this.walking += dt * 1.65;
+        const wantsWalk = !this.paused && (forward !== 0 || right !== 0), locked = this.locked(), own = sceneHutAt("planet", this.position.x, this.position.z)?.id;
+        let walk = false;
+        this._running = false;
+        if (wantsWalk) {
+            const run = this.runRequested || this.keys.has("shift"), speed = run ? RUN_SPEED : WALK_SPEED;
+            const available = this.walkingTarget ? Math.max(0, planetDistance(this.position, this.walkingTarget) - this.walkingTarget.stopDistance) : Infinity;
+            const movement = moveOnPlanet(this.position, forward, right, Math.min(dt * speed, available), (x, z) => this.built.canStand(x, z, locked, own));
+            if (movement.distance > 0) {
+                this.position = movement.position;
+                this.selfYaw = this.position.yaw - Math.atan2(right, forward);
+                this.walking += movement.distance / (run ? 1.35 : 1.94);
+                walk = true; this._running = run;
                 this.lastWait = "";
             }
-            else {
+            if (movement.blocked) {
+                const target = planetStep(this.position, forward, right, .15);
                 const hut = PLANET_HUTS.find(h => locked.has(h.id) && planetDistance(target, { x: (h.x0 + h.x1) / 2, z: h.z1 }) < 3);
                 if (hut && this.lastWait !== hut.id) {
                     this.lastWait = hut.id;
                     this.opts.wait("Someone is using " + hut.name + ". Wait for its green light.");
                 }
+                if (this.walkingTarget) { this.cancelWalkingIntent(); this.opts.wait("The path is blocked here. Walk around the obstacle, then try again."); }
             }
         }
+        this.jumpOffset = this.jumpStarted === null ? 0 : jumpHeight((this.serverNow - this.jumpStarted) / 1000);
+        if (this.jumpStarted !== null && this.serverNow - this.jumpStarted >= JUMP_DURATION * 1000) { this.jumpStarted = null; this.jumpOffset = 0; }
         const b = planetBasis(this.position.x, this.position.z), up = new THREE.Vector3(b.up.x, b.up.y, b.up.z), heading = new THREE.Vector3(b.south.x, b.south.y, b.south.z).multiplyScalar(Math.cos(this.position.yaw)).addScaledVector(new THREE.Vector3(b.east.x, b.east.y, b.east.z), Math.sin(this.position.yaw));
         const p = planetPoint(this.position.x, this.position.z, this.built.heightAt(this.position.x, this.position.z)), feet = new THREE.Vector3(p.x, p.y, p.z);
+        // A roof can shorten the visual jump, but never open a wall/door or
+        // change the server's two-dimensional occupancy admission.
+        if (this.jumpOffset > 0) {
+            const ceiling = new THREE.Raycaster(feet.clone().addScaledVector(up, 1.55), up, .01, this.jumpOffset + .12).intersectObjects(this.built.solids, false)[0];
+            if (ceiling) this.jumpOffset = Math.max(0, Math.min(this.jumpOffset, ceiling.distance - .12));
+        }
         if (this.self) {
             this.self.visible = this.viewMode === "third";
-            this.self.setPose(walk ? "walk" : "stand");
-            this.self.setMotion(this.walking % 1, walk && !this.reduced.matches);
-            onPlanet(this.self, this.position.x, this.position.z, this.built.heightAt(this.position.x, this.position.z), this.selfYaw);
+            this.self.setPose(this.jumpOffset > .05 ? "arms-up" : walk ? "walk" : "stand");
+            this.self.setMotion(this.walking % 1, walk && this.grounded && !this.reduced.matches);
+            onPlanet(this.self, this.position.x, this.position.z, this.built.heightAt(this.position.x, this.position.z) + this.jumpOffset, this.selfYaw);
         }
-        const head = feet.clone().addScaledVector(up, 1.45);
+        const head = feet.clone().addScaledVector(up, 1.45 + this.jumpOffset);
         this.camera.up.copy(up);
         if (this.viewMode === "first") {
             this.camera.position.copy(head);
@@ -335,6 +406,14 @@ export class PlanetWorld {
         }
         this.camera.updateMatrixWorld();
         if(this.self&&this.selfLabel)this.label(this.selfLabel,this.self,this.position);
+        this.built.animate?.(this.serverNow / 1000, this.reduced.matches);
+        this.kangaroo.frame(dt, this.position, this.jumpOffset, (x, z) => !sceneHutAt("planet", x, z) && this.built.canStand(x, z, locked), this.reduced.matches);
+        onPlanet(this.kangaroo.figure, this.kangaroo.at.x, this.kangaroo.at.z, this.built.heightAt(this.kangaroo.at.x, this.kangaroo.at.z) + this.kangaroo.height, this.kangaroo.at.yaw);
+        const companionLabel = this.project(this.kangaroo.at.x, this.kangaroo.at.z, 2.1 + this.kangaroo.height);
+        this.kangarooLabel.hidden = !companionLabel.visible || planetDistance(this.position, this.kangaroo.at) > 14;
+        if (!this.kangarooLabel.hidden) Object.assign(this.kangarooLabel.style, { left: companionLabel.x + "px", top: companionLabel.y + "px", transform: "translate(-50%,-100%)" });
+        this.publishInteraction();
+        this.host.dataset.replyThreads = String(this.connections.frame(this.position));
         const minute = minuteAt(this.environment, this.serverNow), day = Math.max(0, Math.sin((minute - 360) / 1440 * Math.PI * 2)), night = 1 - day;
         this.sun.intensity = .2 + day * 3.2;
         this.hemi.intensity = .8 + day * 1.4;
@@ -363,10 +442,12 @@ export class PlanetWorld {
                 a.at.z += (a.target.z - a.at.z) * Math.min(1, dt * 12);
             }
             a.at.yaw = a.target.yaw;
-            a.figure.setPose(walking ? "walk" : "stand");
-            a.figure.setMotion((this.serverNow / 700) % 1, walking && !this.reduced.matches);
+            a.at.motion = a.target.motion;
+            const jump = a.at.motion?.jump ?? 0, running = a.at.motion?.running ?? false;
+            a.figure.setPose(jump > .05 ? "arms-up" : walking ? "walk" : "stand");
+            a.figure.setMotion((this.serverNow / (running ? 430 : 700)) % 1, walking && jump < .05 && !this.reduced.matches);
             a.figure.setInteriorLight(fill(a.at.x, a.at.z));
-            onPlanet(a.figure, a.at.x, a.at.z, this.built.heightAt(a.at.x, a.at.z), a.at.yaw);
+            onPlanet(a.figure, a.at.x, a.at.z, this.built.heightAt(a.at.x, a.at.z) + jump, a.at.yaw);
             this.label(a.label, a.figure, a.at);
         };
         for (const a of this.others.values())
@@ -423,7 +504,14 @@ export class PlanetWorld {
             this.rain.geometry.getAttribute("position").needsUpdate = true;
         }
         this.renderer.render(this.scene, this.camera);
-        this.opts.listen({ ...this.position, camera: this.camera, serverNow: this.serverNow });
+        this.opts.listen({ ...this.at, camera: this.camera, serverNow: this.serverNow });
+        this.host.dataset.running = String(this._running);
+        this.host.dataset.jumpHeight = this.jumpOffset.toFixed(3);
+        this.host.dataset.grounded = String(this.grounded);
+        this.host.dataset.walkingIntent = String(this.walkingIntent);
+        this.host.dataset.renderedSelfRadius = String(this.self?.position.length() ?? R + this.built.heightAt(this.position.x, this.position.z) + this.jumpOffset);
+        this.host.dataset.kangaroo = JSON.stringify({ id: this.kangaroo.id, ...this.kangaroo.at, phase: this.kangaroo.phase, height: this.kangaroo.height, nearby: this.kangarooIsNear(), action: this.kangaroo.action });
+        this.host.dataset.players = JSON.stringify([...this.others.entries()].map(([id, a]) => ({ id, name: a.name, x: a.at.x, z: a.at.z, running: a.at.motion?.running ?? false, jump: a.at.motion?.jump ?? 0, radius: a.figure.position.length() })));
         if (this.frameNumber++ % 12 === 0) {
             const area = this.area;
             this.opts.area(area);
@@ -439,10 +527,20 @@ export class PlanetWorld {
             this.host.dataset.serverNow=String(this.serverNow);
             this.host.dataset.weather=this.environment.weather;
             this.host.dataset.figureFill=String(this.self?.userData.interiorLight??0);
+            this.host.dataset.sea = String(this.built.root.getObjectByName("soundfolk-ocean")?.visible ?? false);
             this.host.dataset.triangles = String(this.renderer.info.render.triangles);
             this.host.dataset.calls = String(this.renderer.info.render.calls);
         }
     };
+    private kangarooIsNear(): boolean {
+        return !this.paused && planetDistance(this.position, this.kangaroo.at) <= 3.2 && this.project(this.kangaroo.at.x, this.kangaroo.at.z, 1.2).visible;
+    }
+    private publishInteraction(): void {
+        const action = this.kangarooIsNear() ? this.kangaroo.action : null;
+        if (action === this.lastInteraction) return;
+        this.lastInteraction = action;
+        this.opts.interaction?.(action ? { kind: "kangaroo", label: "Kangaroo companion", action } : null);
+    }
     private label(e: HTMLSpanElement, f: AnimalFigure, at: {
         x: number;
         z: number;
@@ -458,7 +556,7 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.residents.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); for (const cue of this.cues.values()) {
+        a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); for (const cue of this.cues.values()) {
         cue.geometry.dispose();
         (cue.material as THREE.Material).dispose();
         cue.parent?.removeFromParent();
