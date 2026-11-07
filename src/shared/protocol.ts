@@ -3,6 +3,7 @@
 // stand, what they say, and the sounds people have left in it (ADR 011).
 import type { Environment } from "./environment.js";
 import type { NpcRoutineFrame } from "./npc-routines.js";
+import type { ChorusWork } from "./chorus.js";
 
 export type Avatar = "cat" | "dog";
 export const AVATARS: Avatar[] = ["cat", "dog"];
@@ -67,6 +68,7 @@ export interface SoundPlacementResult {
   code?: string;
   sound?: PlacedSound;
   replayed?: true;
+  chorus?: ChorusWork[];
 }
 
 // Sent on every (re)connect.
@@ -80,6 +82,7 @@ export interface Snapshot {
   sounds: PlacedSound[];
   environment: Environment;
   npcs?: NpcRoutineFrame[];
+  chorus?: ChorusWork[];
 }
 
 export interface Presence {
@@ -112,6 +115,7 @@ export interface SoundLeft {
   type: "sound-left";
   sessionId: string;
   sound: PlacedSound;
+  chorus?: ChorusWork[];
 }
 
 export interface SoundRemoved {
@@ -122,6 +126,7 @@ export interface SoundRemoved {
   by: string; // the name of whoever removed it
   byId: string;
   removedAt: string;
+  chorus?: ChorusWork[];
   // it went because whoever left it came out of the toilet or shower
   // (ADR 013), rather than because someone removed it
   left?: boolean;

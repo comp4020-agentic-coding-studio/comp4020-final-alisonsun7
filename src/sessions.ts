@@ -18,6 +18,7 @@ import { isPrivate, privateSound } from "./shared/huts.js";
 import { sceneDistance, sceneHutAt, sceneHuts, planetCoordsValid } from "./shared/planet.js";
 import type { NpcRestroomResult, NpcRoutineFrame } from "./shared/npc-routines.js";
 import { NpcRestroomRoutines } from "./npc-routines.js";
+import { deriveChorusWorks, type ChorusWork } from "./shared/chorus.js";
 import type { User } from "./users.js";
 
 const newId = (prefix: string): string => `${prefix}_${randomBytes(8).toString("hex")}`;
@@ -90,6 +91,7 @@ export function snapshotFor(session: SessionRow, user: User | null): Snapshot {
     online: onlineIn(session.scene_id, session.mode, session),
     you: user ? ensureParticipant(session, user) : null,
     sounds: liveSounds(session.id),
+    ...(session.scene_id === "planet" ? { chorus: chorusWorks(session.id) } : {}),
     environment: environmentFor(session),
     npcs: advanceNpcs(roomKey(session.scene_id, session.mode), Date.now()),
   };
@@ -462,6 +464,13 @@ function liveSounds(sessionId: string): PlacedSound[] {
   return rows.map(placedFrom);
 }
 
+// The durable source graph is the work record. Reconstruct on every snapshot
+// and accepted change, including soft-removed endpoints; never reseed history.
+export function chorusWorks(sessionId: string): ChorusWork[] {
+  const rows = db.prepare(`${PLACED_SELECT} WHERE s.session_id = ? AND s.while_in IS NULL ORDER BY s.placed_at, s.id`).all(sessionId) as unknown as PlacedRow[];
+  return deriveChorusWorks(rows.map(referenceFrom));
+}
+
 // One parent and a bounded page of direct answers. Removed endpoints remain
 // readable metadata; this route never restores or plays their recordings.
 export function soundReplies(sessionId: string, id: string, after?: string): SoundReplies | { ok: false; code: string } {
@@ -570,7 +579,8 @@ export function leaveSound(user: User, sessionId: string, raw: unknown): SoundPl
   if (!result.ok) return result;
   soundTimes.set(user.id, now);
   const sound = result.sound!;
-  sendAll(session.scene_id, session.mode, { type: "sound-left", sessionId: session.id, sound });
+  if (session.scene_id === "planet") result.chorus = chorusWorks(session.id);
+  sendAll(session.scene_id, session.mode, { type: "sound-left", sessionId: session.id, sound, ...(result.chorus ? { chorus: result.chorus } : {}) });
   log("sound_left", { user: user.id, nickname: user.nickname, session: session.id, sound: sound.soundId, id: sound.id, x: sound.x, z: sound.z, ...(hut ? { while_in: hut.id } : {}), ...(parentId ? { reply_to: parentId } : {}) });
   return result;
 }
@@ -618,7 +628,7 @@ export function removeSound(user: User, sessionId: string, soundRowId: string): 
   const changed = db.prepare("UPDATE placed_sounds SET removed_by = ?, removed_at = ? WHERE id = ? AND removed_at IS NULL").run(me.person.id, removedAt, row.id);
   if (Number(changed.changes) === 0) return { ok: false, code: "gone" };
   soundTimes.set(user.id, now);
-  sendAll(session.scene_id, session.mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: me.person.name, byId: me.person.id, removedAt });
+  sendAll(session.scene_id, session.mode, { type: "sound-removed", sessionId: session.id, id: row.id, soundId: row.sound_id, by: me.person.name, byId: me.person.id, removedAt, ...(session.scene_id === "planet" ? { chorus: chorusWorks(session.id) } : {}) });
   log("sound_removed", { user: user.id, nickname: user.nickname, session: session.id, sound: row.sound_id, id: row.id, left_by: row.name });
   return { ok: true };
 }
