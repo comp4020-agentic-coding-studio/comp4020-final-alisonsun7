@@ -4,6 +4,8 @@ import * as THREE from "three";
 import type { Avatar } from "../shared/protocol.js";
 import type { Pose } from "./figures.js";
 
+export type FigureRole = "player" | "npc";
+
 export interface AnimalFigureOptions {
   avatar: Avatar;
   seed: string;
@@ -11,6 +13,7 @@ export interface AnimalFigureOptions {
   height?: number;
   pose?: Pose;
   child?: boolean;
+  role?: FigureRole;
 }
 
 const TAU = Math.PI * 2;
@@ -76,6 +79,12 @@ const OUTFITS = [
   { shirt: 0x89a8aa, trousers: 0x6d795a, collar: 0xf4e7ce },
   { shirt: 0xe0bb75, trousers: 0x647b70, collar: 0xf6e9ce },
   { shirt: 0xc2b794, trousers: 0x8c6853, collar: 0xf2e7d1 },
+  { shirt: 0x6e9693, trousers: 0x84634e, collar: 0xf2e3c6 },
+  { shirt: 0xb67b70, trousers: 0x526f68, collar: 0xf4dfbc },
+  { shirt: 0x9aa97a, trousers: 0x695f69, collar: 0xf2e9d8 },
+  { shirt: 0xc7915d, trousers: 0x5f7788, collar: 0xf7e9cc },
+  { shirt: 0x8c86a0, trousers: 0x6c795b, collar: 0xf2e2c1 },
+  { shirt: 0xe3c494, trousers: 0x6c7378, collar: 0xf9edd5 },
 ];
 const FURS = [
   { coat: 0xe7c99d, muzzle: 0xf8e6c9, ear: 0xc8977e },
@@ -84,6 +93,10 @@ const FURS = [
   { coat: 0xf1dfb8, muzzle: 0xffedcf, ear: 0xd7ae90 },
   { coat: 0x9b7d65, muzzle: 0xdec5a0, ear: 0x81634f },
   { coat: 0xcbb38c, muzzle: 0xf1dfbd, ear: 0xab8c6e },
+  { coat: 0xe9e4d7, muzzle: 0xffedcf, ear: 0xc9b2a0 },
+  { coat: 0xbd8255, muzzle: 0xf1d4ad, ear: 0x985e43 },
+  { coat: 0x777e7b, muzzle: 0xd5cfb9, ear: 0x5c6560 },
+  { coat: 0xb9a99a, muzzle: 0xead8bb, ear: 0x998677 },
 ];
 
 const ellipsoid = geometry("soft ellipsoid", () => new THREE.SphereGeometry(1, 12, 8));
@@ -550,6 +563,10 @@ export class AnimalFigure extends THREE.Group {
   readonly height: number;
   readonly headAnchor = new THREE.Object3D();
   pose: Pose;
+  role: FigureRole;
+  private identityBadge: THREE.Mesh | null = null;
+  private roleScarf: THREE.Mesh | null = null;
+  private interiorLight = 0;
   private readonly rig = new THREE.Group();
   private readonly hips = new THREE.Bone();
   private readonly upperBody = new THREE.Bone();
@@ -572,7 +589,7 @@ export class AnimalFigure extends THREE.Group {
 
   constructor(options: AnimalFigureOptions) {
     super();
-    const { avatar, seed, child = false } = options;
+    const { avatar, seed, child = false, role = "npc" } = options;
     const h = hash(seed);
     const outfit = OUTFITS[(h >>> 8) % OUTFITS.length];
     const fur = FURS[h % FURS.length];
@@ -582,8 +599,10 @@ export class AnimalFigure extends THREE.Group {
     const trousers = clothMaterial(outfit.trousers, "cotton trousers");
     const collar = clothMaterial(outfit.collar, "open linen collar");
     const shoes = material(0x80624b, "rounded warm-brown shoes", 0.96);
+    this.role = role;
     this.name = `${avatar}-person-${seed}`;
-    this.userData.figure = { avatar, seed, child, source: "original soft-toy geometry and matte painted materials" };
+    this.userData.figure = { avatar, seed, child, role, outfit: (h >>> 8) % OUTFITS.length, coat: h % FURS.length, source: "original soft-toy geometry and matte painted materials" };
+    this.userData.interiorLight = 0;
     this.pose = options.pose ?? "stand";
     this.height = options.height ?? (child ? 1.15 : 1.75);
     this.thighLength = child ? 0.175 : 0.185;
@@ -692,7 +711,11 @@ export class AnimalFigure extends THREE.Group {
 
     this.arms = [-1, 1].map((side) => this.buildArm(side, cloth, collar, furMat)) as [Arm, Arm];
     this.legs = [-1, 1].map((side) => this.buildLeg(side, trousers, shoes)) as [Leg, Leg];
-    if (avatar === "cat") this.buildScarfAndBag();
+    if (avatar === "cat" || role === "player") this.buildScarfAndBag(avatar === "cat");
+    this.identityBadge = this.part(this.upperBody, "identity-pin", geometry("rounded identity pin", () =>
+      new THREE.SphereGeometry(1, 12, 8).scale(0.018, 0.023, 0.005)), material(role === "player" ? 0x4d96b5 : 0xd9a34f, "identity pin", 0.94), false);
+    this.identityBadge.position.set(0.053, 0.185, 0.071);
+    this.identityBadge.userData.role = role;
     const tail = this.part(this.hips, `${avatar}-tail`, geometry(`${avatar} tail`, () => {
       const points = avatar === "cat"
         ? [[0, 0.018, -0.05], [0.025, -0.055, -0.12], [0.06, -0.105, -0.17], [0.095, -0.09, -0.18], [0.107, -0.055, -0.165]]
@@ -776,7 +799,7 @@ export class AnimalFigure extends THREE.Group {
     return { thigh, shin, foot };
   }
 
-  private buildScarfAndBag(): void {
+  private buildScarfAndBag(withBag = true): void {
     const scarf = geometry("folded woven scarf", () => {
       const p: number[] = [], index: number[] = [];
       const around = 64, rows = 8;
@@ -795,7 +818,9 @@ export class AnimalFigure extends THREE.Group {
       tail.translate(0, 0, 0.055);
       return merge([band, tail]);
     });
-    this.part(this.upperBody, "folded-olive-scarf", scarf, material(0x668978, "sea-sage scarf", 1, THREE.DoubleSide));
+    this.roleScarf = this.part(this.upperBody, "folded-olive-scarf", scarf,
+      material(this.role === "player" ? 0x4b8eae : 0x668978, "resident scarf", 1, THREE.DoubleSide));
+    if (!withBag) return;
     const leather = geometry("soft shoulder bag and crossbody strap", () => {
       const s = new THREE.Shape();
       s.moveTo(-0.042, -0.048); s.quadraticCurveTo(-0.05, 0, -0.04, 0.048); s.quadraticCurveTo(0, 0.058, 0.04, 0.048);
@@ -806,6 +831,45 @@ export class AnimalFigure extends THREE.Group {
       return merge([bag, flap, strap]);
     });
     this.part(this.upperBody, "leather-shoulder-bag-and-strap", leather, material(0xaa7854, "warm clay shoulder bag", 0.96));
+  }
+
+  /** Blue scarf and pin identify actual players; ochre identifies authored NPCs. */
+  setRole(role: FigureRole): void {
+    if (role !== "player" && role !== "npc") return;
+    this.role = role;
+    this.userData.figure.role = role;
+    if (!this.roleScarf && role === "player") this.buildScarfAndBag(false);
+    if (this.roleScarf) {
+      this.roleScarf.visible = role === "player" || this.userData.figure.avatar === "cat";
+      const scarf = material(role === "player" ? 0x4b8eae : 0x668978, "resident scarf", 1, THREE.DoubleSide);
+      this.roleScarf.material = this.ownsMaterials ? this.privateMaterial(scarf) : scarf;
+    }
+    if (this.identityBadge) {
+      const pin = material(role === "player" ? 0x4d96b5 : 0xd9a34f, "identity pin", 0.94);
+      this.identityBadge.material = this.ownsMaterials ? this.privateMaterial(pin) : pin;
+      this.identityBadge.userData.role = role;
+    }
+    const fill = this.interiorLight;
+    this.interiorLight = -1;
+    this.setInteriorLight(fill);
+  }
+
+  /** A restrained room-local warm fill; outdoors is exactly zero. */
+  setInteriorLight(amount: number): void {
+    const strength = THREE.MathUtils.clamp(Number.isFinite(amount) ? amount : 0, 0, 0.22);
+    if (Math.abs(strength - this.interiorLight) < 0.0001) return;
+    this.interiorLight = strength;
+    if (!this.ownsMaterials && strength > 0) {
+      this.traverse(object => {
+        if (object instanceof THREE.Mesh) object.material = this.privateMaterial(object.material as THREE.Material);
+      });
+      this.ownsMaterials = true;
+    }
+    if (this.ownsMaterials) this.traverse(object => {
+      if (!(object instanceof THREE.Mesh) || !(object.material instanceof THREE.MeshStandardMaterial)) return;
+      object.material.emissive.copy(object.material.color).multiply(new THREE.Color(0xffe3b7)).multiplyScalar(strength);
+    });
+    this.userData.interiorLight = strength;
   }
 
   setFacing(yaw: number): void {

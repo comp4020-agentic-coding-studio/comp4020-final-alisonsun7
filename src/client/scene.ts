@@ -14,6 +14,8 @@ import { SharedSoundPlace } from "./shared-sound-place.js";
 import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
 import { WEATHER_LABELS, formatTime, minuteAt, type Environment } from "../shared/environment.js";
 import { HUTS } from "../shared/huts.js";
+import type { NpcRestroomResult, NpcRoutineFrame } from "../shared/npc-routines.js";
+import { RoutineAudio } from "./routine-audio.js";
 import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
 
@@ -47,6 +49,13 @@ let replyRevision = 0;
 let operation: { key: string; id: string } | null = null;
 const me = (): Person | null => snapshot.you;
 let sharedPlace: SharedSoundPlace | null = null;
+let npcFrames: NpcRoutineFrame[] = snapshot.npcs ?? [];
+let npcTime = { server: Date.parse(snapshot.serverNow), received: performance.now() };
+let occupancyPeople: (Person & { x: number; z: number; yaw: number })[] = [];
+let occupancyKnown = false;
+let restroomPending = false;
+let routineListener = { ...(scene.zones.find(zone => zone.id === zoneId)?.spawn ?? { x: 0, z: 0, yaw: 0 }) };
+const routineAudio = new RoutineAudio({ report: count => { stage.dataset.npcFlushVoices = String(count); } });
 
 const world = new WorldView(stage, scene, mode.id, {
   startZone: zoneId,
@@ -61,6 +70,8 @@ const world = new WorldView(stage, scene, mode.id, {
     soundscape.frame(l);
     trail.frame(l.x, l.z, l.yaw, soundscape.on);
     sharedPlace?.frame(l.x, l.z);
+    routineListener = { x: l.x, z: l.z, yaw: l.yaw };
+    routineAudio.frame(npcFrames, routineListener, soundscape.on, npcTime.server + Math.max(0, performance.now() - npcTime.received));
     here = { x: l.x, z: l.z };
   },
   onNear: (person) => showChat(person),
@@ -70,6 +81,7 @@ const world = new WorldView(stage, scene, mode.id, {
   },
   onWait: (room) => say(`Someone is in ${room.name}. Please wait: the light by the door turns green when it's free.`),
 });
+world.setSelf(snapshot.you);
 let here = { x: 0, z: 0 };
 
 // The small Tools drawer keeps secondary controls within one native focus scope.
@@ -144,6 +156,15 @@ const lookSettings = new LookSettings({
 });
 stage.append(lookSettings.element);
 $("look-settings").onclick = () => { closeWorldTools(); lookSettings.open(); };
+const viewModeButton = $<HTMLButtonElement>("view-mode");
+function renderViewMode(): void {
+  const third = world.viewMode === "third";
+  viewModeButton.setAttribute("aria-pressed", String(third));
+  viewModeButton.textContent = third ? "Walk in first person" : "See my character";
+  viewModeButton.setAttribute("aria-label", third ? "Third-person view. Switch to first person" : "First-person view. See my character from behind");
+}
+viewModeButton.onclick = () => { world.setViewMode(world.viewMode === "first" ? "third" : "first"); renderViewMode(); };
+renderViewMode();
 
 // One durable sky for everyone; scene destinations only change your own path.
 let environment = snapshot.environment;
@@ -220,6 +241,38 @@ trail.setAll(snapshot.sounds);
 trail.element.open = false;
 $("tools-listening").append(trail.element);
 
+const restroomButton = $<HTMLButtonElement>("test-restroom");
+const restroomStatus = $("restroom-status");
+restroomButton.textContent = "Invite a resident to test the restroom";
+function receiveNpcRoutines(frames: readonly NpcRoutineFrame[], serverNow?: string): void {
+  const server = serverNow ? Date.parse(serverNow) : NaN;
+  const current = npcTime.server + Math.max(0, performance.now() - npcTime.received);
+  if (Number.isFinite(server) && server < npcTime.server) return;
+  npcFrames = frames.map(frame => ({ ...frame }));
+  if (Number.isFinite(server)) npcTime = { server: Math.max(server, current), received: performance.now() };
+  world.setNpcRoutines(npcFrames, serverNow);
+  renderRestroomStatus();
+}
+function renderRestroomStatus(): void {
+  restroomButton.disabled = restroomPending || !boot.joined || !connected;
+  if (!connected) { restroomStatus.textContent = "Waiting for the shared door state. Reconnect before inviting a resident."; return; }
+  if (!occupancyKnown) { restroomStatus.textContent = "Waiting for shared occupancy positions…"; return; }
+  const state = HUTS.filter(hut => hut.kind !== "shop").map(hut => {
+    const npc = npcFrames.find(frame => frame.hutId === hut.id && frame.occupying);
+    const human = occupancyPeople.find(person => person.x > hut.x0 && person.x < hut.x1 && person.z > hut.z0 && person.z < hut.z1);
+    return `${hut.name}: ${human ? `occupied by ${human.name}` : npc ? `occupied by ${npc.label}` : "free"}`;
+  });
+  const routine = npcFrames.find(frame => frame.phase !== "idle");
+  const description = routine ? ` ${routine.label} is ${routine.phase === "waiting" ? "waiting for the current occupant to leave"
+    : routine.phase === "walking" ? "walking to the restroom" : routine.phase === "entering" ? "entering"
+      : routine.phase === "flushing" ? "flushing" : routine.phase === "leaving" ? "leaving" : "using the restroom"}.` : "";
+  restroomStatus.textContent = state.join("; ") + "." + description
+    + " Red means occupied; green means free. A second visitor can try the door while it is occupied.";
+}
+receiveNpcRoutines(npcFrames, snapshot.serverNow);
+restroomButton.onclick = () => { void inviteRestroomResident(); };
+addEventListener("pagehide", event => { if (!event.persisted) routineAudio.dispose(); });
+
 // ---- the server's stream --------------------------------------------------
 
 let source: EventSource | null = null;
@@ -235,6 +288,10 @@ function connect(): void {
     const msg = JSON.parse(e.data as string) as ServerMessage;
     if (msg.type === "snapshot") {
       snapshot = msg;
+      world.setSelf(msg.you);
+      occupancyKnown = false;
+      occupancyPeople = [];
+      receiveNpcRoutines(msg.npcs ?? [], msg.serverNow);
       receiveEnvironment(msg.environment, msg.serverNow);
       renderPeople();
       const live = new Set(msg.sounds.map((s) => s.id));
@@ -255,7 +312,13 @@ function connect(): void {
     else if (msg.type === "presence") {
       snapshot = { ...snapshot, online: msg.online };
       renderPeople();
-    } else if (msg.type === "moves") world.setOthers(msg.people.filter((p) => p.id !== me()?.id) as Other[]);
+    } else if (msg.type === "moves") {
+      occupancyPeople = msg.people.map(person => ({ ...person }));
+      occupancyKnown = true;
+      receiveNpcRoutines(msg.npcs ?? [], msg.serverNow);
+      world.setOthers(msg.people.filter((p) => p.id !== me()?.id) as Other[]);
+      renderRestroomStatus();
+    }
     else if (msg.type === "said" && msg.by !== me()?.id) {
       world.showSaid(msg.by, msg.text);
       heard(msg.name, msg.text);
@@ -285,34 +348,80 @@ function connect(): void {
 
 let lastSent = { at: 0, x: NaN, z: NaN, yaw: NaN };
 let moveInFlight = false;
+let positionRequest: Promise<MoveResult | null> | null = null;
 
 // Five times a second at most, and only when you've moved or turned.
-function reportPosition(x: number, z: number, yaw: number): void {
+function reportPosition(x: number, z: number, yaw: number, force = false): Promise<MoveResult | null> | null {
   // Keep position commands in order: a delayed rejection must not undo a
   // newer accepted move. Frames keep running; the next report uses their
   // latest position as soon as this response has been handled.
-  if (moveInFlight) return;
-  if (!boot.joined || !connected) return;
+  if (moveInFlight) return positionRequest;
+  if ((!force && restroomPending) || !boot.joined || !connected) return null;
   const now = performance.now();
-  if (now - lastSent.at < 200) return;
-  if (Math.hypot(x - lastSent.x, z - lastSent.z) < 0.05 && Math.abs(yaw - lastSent.yaw) < 0.05 && now - lastSent.at < 5000) return;
+  if (!force && now - lastSent.at < 200) return null;
+  if (!force && Math.hypot(x - lastSent.x, z - lastSent.z) < 0.05 && Math.abs(yaw - lastSent.yaw) < 0.05 && now - lastSent.at < 5000) return null;
   lastSent = { at: now, x, z, yaw };
   moveInFlight = true;
-  void fetch(`/api/sessions/${snapshot.sessionId}/move`, {
+  positionRequest = fetch(`/api/sessions/${snapshot.sessionId}/move`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, yaw: Math.round(yaw * 100) / 100 }),
     signal: AbortSignal.timeout(5000),
   }).then(async (response) => {
-    if (response.status !== 409) return;
-    const result = await response.json() as MoveResult;
+    const result = await response.json().catch(() => null) as MoveResult | null;
+    if (!result) return null;
     if (!result.ok && result.code === "hut_taken") {
       world.correctPosition(result.position);
       lastSent = { at: 0, x: NaN, z: NaN, yaw: NaN };
       const hut = HUTS.find((h) => h.id === result.hutId);
       say("Someone is in " + (hut?.name ?? "that room") + ". Please wait for the green light.");
     }
-  }).catch(() => undefined).finally(() => { moveInFlight = false; });
+    return result;
+  }).catch(() => null).finally(() => { moveInFlight = false; positionRequest = null; });
+  return positionRequest;
+}
+
+async function inviteRestroomResident(): Promise<void> {
+  if (restroomPending || !boot.joined || !connected) return;
+  const hut = HUTS.find(item => item.kind.endsWith("toilet"));
+  if (!hut) return;
+  restroomPending = true;
+  world.setInputPaused(true);
+  renderRestroomStatus();
+  try {
+    // Settle an earlier command before moving the observer. Frames cannot
+    // publish a stale position between this explicit move and its invitation.
+    await positionRequest;
+    // The server intentionally drops moves less than 90 ms apart. A forced
+    // observer move must be accepted, not mistaken for a throttled no-op.
+    const wait = 110 - (performance.now() - lastSent.at);
+    if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+    const position = { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 2.4, yaw: 0 };
+    world.correctPosition(position);
+    here = { x: position.x, z: position.z };
+    world.faceSound(position.x, hut.z1 - 0.6);
+    const moved = await reportPosition(position.x, position.z, position.yaw, true);
+    if (!moved?.ok) { say("Couldn't confirm your position by the restroom. Check the connection and try again."); return; }
+    const response = await fetch(`/api/sessions/${snapshot.sessionId}/npc-restroom`, {
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ hutId: hut.id }), signal: AbortSignal.timeout(8000),
+    });
+    const result = await response.json() as NpcRestroomResult;
+    if (!result.ok) {
+      say(result.code === "busy" ? "The resident already has a restroom visit underway. Watch the shared door state."
+        : result.code === "slow_down" ? "Wait a moment before inviting the resident again."
+          : "The invitation wasn't accepted. Reconnect and try again.");
+      return;
+    }
+    receiveNpcRoutines(result.npcs, result.serverNow);
+    closeWorldTools(true);
+    say("The resident is walking to the restroom. Watch the red and green lamp; a second visitor can try the occupied door.");
+  } catch {
+    say("The invitation could not be confirmed. It may have reached the server; check the shared door state before trying again.");
+  } finally {
+    restroomPending = false;
+    renderRestroomStatus();
+    restoreWorldInput();
+  }
 }
 
 // ---- talking to whoever is near -------------------------------------------
@@ -567,6 +676,7 @@ const remembered = (): string | null => {
 };
 function setSound(on: boolean): void {
   soundscape.setOn(on);
+  routineAudio.frame(npcFrames, routineListener, on, npcTime.server + Math.max(0, performance.now() - npcTime.received));
   soundSwitch.setAttribute("aria-pressed", String(on));
   const label = on ? "Sound on" : "Sound off";
   soundSwitch.querySelector<HTMLElement>(".world-action-label")!.textContent = label;
@@ -722,6 +832,7 @@ function renderStatus(): void {
   environmentPanel.setAvailability({ joined: boot.joined, connected });
   renderSharedPlace();
   renderReply();
+  renderRestroomStatus();
 }
 
 function renderPeople(): void {

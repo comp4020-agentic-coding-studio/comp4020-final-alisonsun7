@@ -18,6 +18,10 @@ import { seasideKit } from "./seaside.js";
 import { canStand, wind, type Built } from "./world-build.js";
 import { loadLookMode, type LookMode } from "./look-settings.js";
 import type { Position } from "../shared/protocol.js";
+import type { NpcRoutineFrame } from "../shared/npc-routines.js";
+import { HUTS } from "../shared/huts.js";
+import { loadViewMode, rememberViewMode, thirdPersonCamera, interiorFigureFill, type ViewMode } from "./view-mode.js";
+export type { ViewMode } from "./view-mode.js";
 
 const KITS: Record<string, PlaceKit> = { seaside: seasideKit };
 
@@ -46,6 +50,14 @@ export interface Other extends Person {
   x: number;
   z: number;
   yaw: number;
+}
+
+interface NpcRoutineView {
+  frame: NpcRoutineFrame;
+  sprite: AnimalFigure;
+  at: THREE.Vector3;
+  goal: THREE.Vector3;
+  gait: Gait;
 }
 
 interface OtherView {
@@ -191,7 +203,14 @@ export class WorldView {
   private game: BallGame | null = null;
   private rain: THREE.LineSegments | null = null;
   private raycaster = new THREE.Raycaster();
+  private labelRaycaster = new THREE.Raycaster();
   private light: Light;
+  private _viewMode: ViewMode = loadViewMode();
+  private self: { person: Person; sprite: AnimalFigure; gait: Gait; label: HTMLDivElement } | null = null;
+  private cameraDistance = 0;
+  private npcLabels: { sprite: AnimalFigure; label: HTMLDivElement }[] = [];
+  private npcRoutines = new Map<string, NpcRoutineView>();
+  private npcRoutineServerMs = -Infinity;
 
   // where you are
   private x = 0;
@@ -337,7 +356,15 @@ export class WorldView {
       this.built.root.add(sprite);
       this.soundResidents.add(resident, sprite, true);
     }
-    addEventListener("pagehide", (event) => { if (!event.persisted) this.soundResidents.dispose(); });
+    const npcFigures = new Set([...this.passers.map(p => p.sprite), ...this.regulars.map(p => p.sprite), ...(this.game?.kids.map(p => p.sprite) ?? []), ...this.soundResidents.figures]);
+    for (const sprite of npcFigures) this.addNpcLabel(sprite, sprite.userData.soundResident?.label ?? (sprite.pose === "guitar" || sprite.pose === "strum" ? "Mateo · NPC" : "Neighbour · NPC"));
+    addEventListener("pagehide", (event) => {
+      if (!event.persisted) {
+        this.soundResidents.dispose();
+        this.self?.sprite.dispose();
+        for (const routine of this.npcRoutines.values()) routine.sprite.dispose();
+      }
+    });
 
     this.zone = opts.startZone;
     this.placeAt(opts.startZone);
@@ -352,6 +379,73 @@ export class WorldView {
   }
 
   // ---- public ------------------------------------------------------------
+
+  get viewMode(): ViewMode { return this._viewMode; }
+
+  setViewMode(mode: ViewMode): void {
+    if (mode !== "first" && mode !== "third") return;
+    this._viewMode = mode;
+    rememberViewMode(mode);
+    this.host.dataset.viewMode = mode;
+    this.keys.clear();
+    this.stick = { x: 0, y: 0 };
+    this.target = null;
+    if (this.self) this.self.sprite.visible = mode === "third";
+  }
+
+  setSelf(person: Person | null): void {
+    if (this.self && person?.id === this.self.person.id && person.avatar === this.self.person.avatar) {
+      this.self.person = { ...person };
+      this.self.label.textContent = `${person.name} · YOU`;
+      return;
+    }
+    this.self?.sprite.dispose();
+    this.self?.label.remove();
+    this.self = null;
+    if (!person) { delete this.host.dataset.selfId; return; }
+    const duplicate = this.others.get(person.id);
+    if (duplicate) {
+      duplicate.sprite.dispose(); duplicate.label.remove(); duplicate.bubble.remove();
+      clearTimeout(duplicate.bubbleTimer); this.others.delete(person.id);
+    }
+    const sprite = new AnimalFigure({ avatar: person.avatar, seed: person.id, role: "player" });
+    sprite.setFacing(this.yaw + Math.PI);
+    sprite.position.set(this.x, this.surfaceHeight(this.x, this.z), this.z);
+    sprite.visible = this._viewMode === "third";
+    this.built.root.add(sprite);
+    const label = this.roleLabel(`${person.name} · YOU`, "player");
+    label.className = "self-name";
+    this.self = { person: { ...person }, sprite, gait: { phase: 0 }, label };
+    this.host.dataset.selfId = person.id;
+  }
+
+  setNpcRoutines(frames: readonly NpcRoutineFrame[], serverNow?: string): void {
+    const serverMs = serverNow ? Date.parse(serverNow) : NaN;
+    if (Number.isFinite(serverMs) && serverMs < this.npcRoutineServerMs) return;
+    if (Number.isFinite(serverMs)) this.npcRoutineServerMs = serverMs;
+    const seen = new Set<string>();
+    for (const frame of frames) {
+      if (![frame.x, frame.z, frame.yaw].every(Number.isFinite) || seen.has(frame.id)) continue;
+      seen.add(frame.id);
+      let view = this.npcRoutines.get(frame.id);
+      if (!view) {
+        const sprite = new AnimalFigure({ avatar: frame.avatar, seed: frame.id, role: "npc" });
+        const at = new THREE.Vector3(frame.x, this.surfaceHeight(frame.x, frame.z), frame.z);
+        sprite.position.copy(at); this.built.root.add(sprite);
+        this.addNpcLabel(sprite, `${frame.label} · NPC`);
+        view = { frame: { ...frame }, sprite, at, goal: at.clone(), gait: { phase: 0 } };
+        this.npcRoutines.set(frame.id, view);
+      }
+      view.frame = { ...frame };
+      view.goal.set(frame.x, this.surfaceHeight(frame.x, frame.z), frame.z);
+      view.sprite.userData.npcRoutine = { ...frame };
+    }
+    for (const [id, view] of this.npcRoutines) if (!seen.has(id)) {
+      view.sprite.dispose();
+      this.npcLabels = this.npcLabels.filter(item => { if (item.sprite !== view.sprite) return true; item.label.remove(); return false; });
+      this.npcRoutines.delete(id);
+    }
+  }
 
   goTo(zoneId: string): void {
     const shot = this.scene.zones.find((s) => s.id === zoneId);
@@ -410,6 +504,7 @@ export class WorldView {
     this.x = position.x;
     this.z = position.z;
     this.yaw = position.yaw;
+    this.self?.sprite.setFacing(this.yaw + Math.PI);
     this.keys.clear();
     this.target = null;
     this.setZone(this.kit.zoneAt(this.x, this.z));
@@ -870,6 +965,7 @@ export class WorldView {
     this.z = s.z;
     this.yaw = s.yaw;
     this.pitch = -0.04;
+    this.self?.sprite.setFacing(this.yaw + Math.PI);
     this.target = null;
     this.setZone(this.kit.zoneAt(this.x, this.z));
   }
@@ -1081,16 +1177,18 @@ export class WorldView {
     this.updateEnvironment(now);
 
     this.adaptQuality(now);
+    const beforeSelf = new THREE.Vector3(this.x, 0, this.z);
     const steps = Math.ceil(dt / 0.04);
     for (let i = 0; i < steps; i++) this.move(dt / steps);
     this.watchTrail(dt);
-    const bobY = Math.sin(this.bob) * 0.035;
-    this.camera.position.set(this.x, EYE + bobY, this.z);
-    const people = [{ x: this.x, z: this.z, me: true }, ...[...this.others.values()].map((o) => ({ x: o.at.x, z: o.at.z }))];
+    this.updateSelf(beforeSelf, dt);
+    this.moveNpcRoutines(dt);
+    const people = [{ x: this.x, z: this.z, me: true }, ...[...this.others.values()].map((o) => ({ x: o.at.x, z: o.at.z })), ...this.npcDoorPeople()];
     this.kit.animate?.(now / 1000, people);
     this.watchRooms(people);
     this.followSun();
-    this.camera.rotation.set(this.pitch, this.yaw, 0);
+    this.updateCamera();
+    this.camera.updateMatrixWorld(true);
     this.sky.position.copy(this.camera.position);
 
     if (!reduced()) {
@@ -1105,8 +1203,11 @@ export class WorldView {
     // Shared arrivals and passing walkers may occupy the camera's position.
     // Keep their identity/talk/sound intact without drawing clipped body parts.
     for (const p of [...this.passers, ...this.regulars, ...(this.game?.kids ?? []), ...this.others.values(), ...this.soundResidents.figures.map((sprite) => ({ sprite }))]) {
-      p.sprite.visible = Math.hypot(p.sprite.position.x - this.x, p.sprite.position.z - this.z) > 0.65;
+      p.sprite.visible = Math.hypot(p.sprite.position.x - this.camera.position.x, p.sprite.position.z - this.camera.position.z) > 0.65;
     }
+    this.updateFigureLights();
+    this.updateNpcLabels();
+    this.updateSelfLabel();
     if (this.rain?.visible && !reduced()) {
       const pos = this.rain.geometry.getAttribute("position") as THREE.BufferAttribute;
       const a = pos.array as Float32Array;
@@ -1133,6 +1234,9 @@ export class WorldView {
       this.host.dataset.lampIntensity = this.built.lamp.intensity.toFixed(2);
       this.host.dataset.environmentIntensity = this.scene3.environmentIntensity.toFixed(3);
       this.host.dataset.residentResponses = JSON.stringify(this.residentResponses);
+      this.host.dataset.viewMode = this._viewMode;
+      this.host.dataset.selfVisible = String(this.self?.sprite.visible ?? false);
+      this.host.dataset.cameraDistance = this.cameraDistance.toFixed(3);
     }
     this.opts.onListen?.({
       x: this.x,
@@ -1172,29 +1276,132 @@ export class WorldView {
     }
   }
 
+  private updateSelf(before: THREE.Vector3, dt: number): void {
+    if (!this.self) return;
+    const sprite = this.self.sprite;
+    const at = new THREE.Vector3(this.x, this.surfaceHeight(this.x, this.z), this.z);
+    before.y = at.y;
+    if (Math.hypot(at.x - before.x, at.z - before.z) > 0.001 && !reduced()) this.stride(sprite, this.self.gait, before, at, dt);
+    else { sprite.setPose("stand"); sprite.setMotion(0, false); }
+    sprite.position.copy(at);
+  }
+
+  private updateCamera(): void {
+    if (this._viewMode === "first") {
+      this.camera.position.set(this.x, EYE + Math.sin(this.bob) * 0.035, this.z);
+      this.camera.rotation.set(this.pitch, this.yaw, 0);
+      this.cameraDistance = 0;
+      if (this.self) this.self.sprite.visible = false;
+      return;
+    }
+    const anchor = new THREE.Vector3(this.x, this.surfaceHeight(this.x, this.z) + 1.08, this.z);
+    const camera = thirdPersonCamera(anchor, this.yaw, this.pitch, {
+      occluders: [...this.built.occluders, ...this.built.floors], solids: this.built.solids, circles: this.built.circles,
+      floorHeight: (x, z) => this.surfaceHeight(x, z),
+    });
+    this.camera.position.copy(camera.position);
+    this.camera.lookAt(anchor);
+    this.cameraDistance = camera.distance;
+    if (this.self) {
+      this.self.sprite.visible = camera.distance > 0.7;
+      this.self.sprite.setOpacity(camera.distance < 1.3 ? Math.max(0.22, (camera.distance - 0.55) / 0.75) : 1);
+    }
+  }
+
+  private roleLabel(text: string, role: "player" | "npc"): HTMLDivElement {
+    const label = document.createElement("div");
+    label.textContent = text;
+    label.dataset.role = role;
+    Object.assign(label.style, { position: "absolute", pointerEvents: "none", whiteSpace: "nowrap", padding: "3px 8px", borderRadius: "12px", font: "600 11px/1.4 system-ui", boxShadow: "0 1px 5px #182a2526", background: role === "player" ? "#eaf4f8" : "#fff0ce", color: role === "player" ? "#264e65" : "#775321", border: `1px solid ${role === "player" ? "#6b9caf" : "#d6aa58"}` });
+    label.hidden = true;
+    this.overlay.append(label);
+    return label;
+  }
+
+  private addNpcLabel(sprite: AnimalFigure, text: string): void {
+    if (this.npcLabels.some(item => item.sprite === sprite)) return;
+    const label = this.roleLabel(text, "npc");
+    label.className = "npc-name";
+    this.npcLabels.push({ sprite, label });
+  }
+
+  private updateNpcLabels(): void {
+    const nearest = this.npcLabels.filter(({ sprite }) => sprite.visible && Math.hypot(sprite.position.x - this.x, sprite.position.z - this.z) < 10)
+      .sort((a, b) => a.sprite.position.distanceToSquared(this.camera.position) - b.sprite.position.distanceToSquared(this.camera.position)).slice(0, 4);
+    for (const item of this.npcLabels) item.label.hidden = true;
+    for (const { sprite, label } of nearest) {
+      const point = sprite.headAnchor.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.12, 0));
+      const direction = point.clone().sub(this.camera.position); const distance = direction.length();
+      this.labelRaycaster.set(this.camera.position, direction.normalize()); this.labelRaycaster.near = 0.05; this.labelRaycaster.far = Math.max(0.05, distance - 0.15);
+      if (this.labelRaycaster.intersectObjects(this.built.occluders, true).length) continue;
+      point.project(this.camera);
+      if (point.z >= 1 || Math.abs(point.x) > 0.92 || Math.abs(point.y) > 0.92) continue;
+      const x = (point.x + 1) * this.host.clientWidth / 2, y = (1 - point.y) * this.host.clientHeight / 2;
+      label.hidden = false;
+      label.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
+    }
+  }
+
+  private updateSelfLabel(): void {
+    if (!this.self) return;
+    const { sprite, label } = this.self;
+    label.hidden = !sprite.visible || this._viewMode !== "third";
+    if (label.hidden) return;
+    const point = sprite.headAnchor.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.12, 0)).project(this.camera);
+    label.hidden = point.z >= 1 || Math.abs(point.x) > 0.92 || Math.abs(point.y) > 0.92;
+    label.style.transform = `translate(${(point.x + 1) * this.host.clientWidth / 2}px, ${(1 - point.y) * this.host.clientHeight / 2}px) translate(-50%, -100%)`;
+  }
+
+  private updateFigureLights(): void {
+    const figures = new Set([...this.passers.map(p => p.sprite), ...this.regulars.map(p => p.sprite), ...(this.game?.kids.map(p => p.sprite) ?? []), ...this.soundResidents.figures, ...[...this.others.values()].map(p => p.sprite), ...[...this.npcRoutines.values()].map(p => p.sprite), ...(this.self ? [this.self.sprite] : [])]);
+    for (const sprite of figures) sprite.setInteriorLight(interiorFigureFill(this.kit.isInside(sprite.position.x, sprite.position.z), this.light.stars, this.light.environment));
+  }
+
+  private moveNpcRoutines(dt: number): void {
+    for (const view of this.npcRoutines.values()) {
+      const before = view.at.clone();
+      view.at.lerp(view.goal, reduced() ? 1 : Math.min(1, dt * 12));
+      const moving = before.distanceToSquared(view.at) > 0.00001;
+      if (moving && !reduced()) this.stride(view.sprite, view.gait, before, view.at, dt);
+      else { view.sprite.setPose("stand"); view.sprite.setMotion(0, false); view.sprite.setFacing(view.frame.yaw); }
+      view.sprite.position.copy(view.at);
+      view.sprite.visible = !["occupied", "flushing"].includes(view.frame.phase);
+    }
+  }
+
+  private npcDoorPeople(): { x: number; z: number }[] {
+    return [...this.npcRoutines.values()].map(({ frame }) => {
+      const hut = HUTS.find(h => h.id === frame.hutId);
+      if (hut && frame.occupying && (frame.phase === "entering" || frame.phase === "leaving")) return { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 - 0.35 };
+      return { x: frame.x, z: frame.z };
+    });
+  }
+
   // ---- other people --------------------------------------------------------
 
   // Everyone else in the place, as the server says they stand.
   setOthers(people: Other[]): void {
     const seen = new Set<string>();
     for (const p of people) {
+      if (p.id === this.self?.person.id) continue;
       seen.add(p.id);
       let o = this.others.get(p.id);
       if (!o) {
-        const sprite = new AnimalFigure({ avatar: p.avatar, seed: p.id });
+        const sprite = new AnimalFigure({ avatar: p.avatar, seed: p.id, role: "player" });
         sprite.setFacing(p.yaw + Math.PI);
         sprite.position.set(p.x, this.surfaceHeight(p.x, p.z), p.z);
         this.built.root.add(sprite);
-        const label = document.createElement("div");
+        const label = this.roleLabel(`${p.name} · PLAYER`, "player");
         label.className = "other-name";
-        label.textContent = p.name;
         const bubble = document.createElement("div");
         bubble.className = "said-bubble";
         bubble.hidden = true;
-        this.overlay.append(label, bubble);
+        this.overlay.append(bubble);
         o = { person: p, sprite, gait: newGait(), pose: "stand", at: sprite.position.clone(), goal: sprite.position.clone(), yaw: p.yaw, label, bubble };
         this.others.set(p.id, o);
       }
+      o.person = { id: p.id, name: p.name, avatar: p.avatar };
+      o.label.textContent = `${p.name} · PLAYER`;
       o.goal.set(p.x, this.surfaceHeight(p.x, p.z), p.z);
       o.yaw = p.yaw;
     }
