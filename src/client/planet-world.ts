@@ -425,7 +425,7 @@ export class PlanetWorld {
             if (this.camera.aspect < .8) target.addScaledVector(up, -Math.min(this.zoom, 8) * .16 * (1 - overview * 2));
             this.camera.lookAt(target);
             if (this.self)
-                this.self.visible = distance > 1.15;
+                this.self.visible = thirdPersonBodyVisible(distance, hits.length > 0, !!own || this.built.inside(this.position.x, this.position.z));
         }
         this.camera.updateMatrixWorld();
         if(this.self&&this.selfLabel)this.label(this.selfLabel,this.self,this.position);
@@ -641,6 +641,13 @@ export class PlanetWorld {
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
         a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+}
+
+/** A room wall/roof can compress the camera into the player's own head.
+ * Keep the selected third-person mode, but clear the body from that cramped
+ * view; stepping back outside restores it without changing any controls. */
+export function thirdPersonBodyVisible(distance: number, collisionLimited: boolean, indoors: boolean): boolean {
+    return distance > 1.15 && !(indoors && collisionLimited && distance < 2.5);
 }
 
 /** Grounded paper/glass buds mark real contributions. Their shimmer means
