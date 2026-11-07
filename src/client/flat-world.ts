@@ -3,7 +3,7 @@
 // retain their spherical metre metric; only the screen projection changes.
 import * as THREE from "three";
 import type { PlanetWorld } from "./planet-world.js";
-import { PLANET_HALF, PLANET_RADIUS, PLANET_PLACES, PLANET_HUTS, planetDistance, planetPoint, planetBasis, planetLocal, canonicalPlanetPosition, sceneHutAt, type PlanetPlace } from "../shared/planet.js";
+import { PLANET_HALF, PLANET_RADIUS, PLANET_PLACES, PLANET_HUTS, PLANET_CAFE_SCALE, planetDistance, planetPoint, planetBasis, planetLocal, canonicalPlanetPosition, sceneHutAt, type PlanetPlace } from "../shared/planet.js";
 import type { Person, Position, PlacedSound, Moves } from "../shared/protocol.js";
 import type { NpcRoutineFrame } from "../shared/npc-routines.js";
 import { minuteAt, type Environment } from "../shared/environment.js";
@@ -44,7 +44,8 @@ export function canStandFlat(x: number, z: number, locked: ReadonlySet<string>, 
     if (PLANET_PLACES.some(p => (p.id === "green" || p.id === "stage") && planetDistance({ x, z }, p) < (p.id === "green" ? 1.05 : 1.5))) return false;
     for (const p of PLANET_PLACES.filter(p => ["tea", "reading", "workshop"].includes(p.kind))) {
         const { x: dx, z: dz } = planetLocal({ x, z }, p);
-        if (Math.abs(dx) <= 2.7 && Math.abs(dz) <= 2.5 && (Math.abs(dx) > 2.15 || dz < -1.75)) return false;
+        const scale = p.kind === "tea" ? PLANET_CAFE_SCALE : { x: 1, z: 1 };
+        if (Math.abs(dx) <= 2.7*scale.x && Math.abs(dz) <= 2.5*scale.z && (Math.abs(dx) > 2.15*scale.x || dz < -1.75*scale.z)) return false;
     }
     for (const h of PLANET_HUTS) {
         if (x < h.x0 - .25 || x > h.x1 + .25 || z < h.z0 - .25 || z > h.z1 + .25) continue;

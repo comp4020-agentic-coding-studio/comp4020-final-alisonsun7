@@ -24,8 +24,8 @@ describe("the sound-shaped coffee house", () => {
     // This previously stopped at a closed front wall outside the narrow door.
     expect(scene.canStand(-7.65, -4.9, new Set())).toBe(true);
     // The existing back and side walls remain physical boundaries.
-    expect(scene.canStand(-9, -9, new Set())).toBe(false);
-    expect(scene.canStand(-6.35, -7, new Set())).toBe(false);
+    expect(scene.canStand(-9, -10, new Set())).toBe(false);
+    expect(scene.canStand(-5.3, -7, new Set())).toBe(false);
   });
 
   it("uses living public cafe ingredients for steam, the record and company, and cancels their effects after removal", () => {

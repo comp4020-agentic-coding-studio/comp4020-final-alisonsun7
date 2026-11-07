@@ -22,6 +22,49 @@ type Actor = {
     target: Position;
     name: string;
 };
+type GestureRig = { body?: THREE.Object3D; head?: THREE.Object3D; left?: THREE.Object3D; right?: THREE.Object3D };
+
+/** Limit render work while giving thin silhouettes more samples on ordinary
+ * screens and making use of retina displays. Resize never changes the world. */
+export function planetRenderScale(width: number, height: number, nativeDpr: number): number {
+    const w = Number.isFinite(width) && width > 0 ? width : 1;
+    const h = Number.isFinite(height) && height > 0 ? height : 1;
+    const native = Number.isFinite(nativeDpr) && nativeDpr > 0 ? nativeDpr : 1;
+    return Math.min(Math.max(1.25, native), 2, Math.sqrt(6_000_000 / (w * h)));
+}
+
+// These are neighbours, never members of the room or public contributors.
+// Position them in the real cafe tangent frame rather than widening old data.
+export const CAFE_RESIDENT_HOMES = [
+    { id: "coffee-barista", local: [-.4, -2.4], avatar: "cat", preference: "lively", facing: 0, label: "Bean · barista · NPC" },
+    { id: "coffee-server", local: [0, 1], avatar: "dog", preference: "lively", facing: -.8, label: "Jun · café staff · NPC" },
+    { id: "coffee-reader", local: [-2.2, .9], avatar: "dog", preference: "cozy", facing: .85, label: "Coco · café regular · NPC" },
+    { id: "coffee-company", local: [2.2, .9], avatar: "cat", preference: "lively", facing: -.85, label: "Maple · café regular · NPC" },
+    { id: "coffee-visitor", local: [-4.5, 2.3], avatar: "cat", preference: "cozy", facing: .9, label: "Wren · café regular · NPC" },
+    { id: "coffee-listener", local: [4.5, 2.3], avatar: "dog", preference: "lively", facing: -.9, label: "Sol · café regular · NPC" },
+].map(home => {
+    const [x, z] = home.local, center = PLANET_PLACES.find(place => place.kind === "tea")!;
+    const position = planetStep({ x: center.x, z: center.z, yaw: Math.atan2(x, z) }, 1, 0, R * Math.asin(Math.hypot(x, z) / R));
+    return { ...home, x: position.x, z: position.z, avatar: home.avatar as "cat" | "dog", preference: home.preference as "cozy" | "lively" };
+});
+
+/** Small authored idle life yields entirely to actual shared sound responses.
+ * Server time makes the same neighbour perform the same gesture for everyone. */
+export function animateCafeIdle(figure: THREE.Object3D, rig: GestureRig, serverNow: number, reducedMotion: boolean): void {
+    const resident = figure.userData.soundResident, id: string = resident?.id ?? "";
+    if (!id.startsWith("coffee-") || resident?.sourceId || figure.userData.chorusWorkId) return;
+    let seed = 0; for (const letter of id) seed = (seed * 31 + letter.charCodeAt(0)) >>> 0;
+    const phase = reducedMotion ? 0 : serverNow / 1000 + seed % 71;
+    const breath = reducedMotion ? 0 : Math.sin(phase * .95);
+    if (rig.body) rig.body.rotation.z += breath * .012;
+    if (rig.head) {
+        rig.head.rotation.x = .03 + breath * .02;
+        rig.head.rotation.y = reducedMotion ? 0 : Math.sin(phase * .31) * .18;
+    }
+    if (id === "coffee-barista" && rig.right) rig.right.rotation.x = -.65 + (reducedMotion ? 0 : Math.sin(phase * .8) * .12);
+    if (id === "coffee-server" && rig.left) rig.left.rotation.x = -.45 + (reducedMotion ? 0 : Math.sin(phase * .65) * .08);
+}
+
 type Listener = Position & {
     camera: THREE.PerspectiveCamera;
     serverNow: number;
@@ -44,7 +87,7 @@ export class PlanetWorld {
     private garden: ChorusGarden;
     private works: ChorusWork[] = [];
     private focusedWork: string | null = null;
-    private gestureRigs = new WeakMap<AnimalFigure, { body?: THREE.Object3D; head?: THREE.Object3D; left?: THREE.Object3D; right?: THREE.Object3D }>();
+    private gestureRigs = new WeakMap<AnimalFigure, GestureRig>();
     private kangaroo = new KangarooCompanion();
     private kangarooLabel: HTMLSpanElement;
     private lastInteraction: string | null = null;
@@ -103,7 +146,7 @@ export class PlanetWorld {
         canvas.className = "planet-canvas";
         canvas.tabIndex = 0;
         canvas.setAttribute("aria-label", "Little Chorus. Walk with W A S D or arrows, hold Shift to run, Space to jump, and E to interact. Drag to look. V changes view.");
-        this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+        this.renderer.setPixelRatio(planetRenderScale(host.clientWidth, host.clientHeight, devicePixelRatio));
         this.renderer.setSize(host.clientWidth, host.clientHeight);
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -115,6 +158,8 @@ export class PlanetWorld {
         host.prepend(canvas);
         host.append(this.overlay);
         this.scene.add(this.built.root, this.hemi, this.sun);
+        const fixtureNames = (name: string): string[] => {const names: string[]=[];this.built.root.getObjectByName(name)?.traverse(object=>{if(object.name)names.push(object.name);});return names;};
+        host.dataset.roomFixtures = JSON.stringify({toilet:fixtureNames("restroom-fixtures"),shower:fixtureNames("shower-fixtures")});
         this.connections = new PlanetSoundConnections(this.scene, (x, z) => this.built.heightAt(x, z));
         this.garden = new ChorusGarden(this.scene);
         this.scene.add(this.kangaroo.figure);
@@ -135,16 +180,15 @@ export class PlanetWorld {
         this.rain.frustumCulled = false;
         this.scene.add(this.rain);
         this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
-        const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" },
-            { id: "coffee-barista", x: -9.1, z: -7.55, avatar: "cat", preference: "lively" },
-            { id: "coffee-reader", x: -12.9, z: -4.5, avatar: "dog", preference: "cozy" },
-            { id: "coffee-company", x: -5.1, z: -4.5, avatar: "cat", preference: "lively" }] as const;
-        for (const h of homes) {
+        const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" }] as const;
+        for (const h of [...homes, ...CAFE_RESIDENT_HOMES]) {
+            const facing = "facing" in h ? h.facing : 0;
+            const label = "label" in h ? h.label : "Resident · NPC";
             const f = new AnimalFigure({ avatar: h.avatar, seed: h.id, role: "npc" });
-            this.residents.add({ ...h, label: h.id.replace("-", " ") + " · NPC", facing: 0 }, f, true);
+            this.residents.add({ ...h, label, facing }, f, true);
             this.scene.add(f);
-            this.residentPos.set(f, { x: h.x, z: h.z, yaw: 0 });
-            this.residentLabels.set(f, this.makeLabel("Resident · NPC", "npc"));
+            this.residentPos.set(f, { x: h.x, z: h.z, yaw: facing });
+            this.residentLabels.set(f, this.makeLabel(label, "npc"));
         }
         this.bind();
         this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -348,7 +392,7 @@ export class PlanetWorld {
         this.host.append(touch);
     }
     private resize(): void { const w = this.host.clientWidth, h = this.host.clientHeight; if (w < 1 || h < 1)
-        return; this.renderer.setSize(w, h); this.camera.aspect = w / h; this.camera.fov = w / h < .8 ? 72 : 68; this.camera.updateProjectionMatrix(); }
+        return; this.renderer.setPixelRatio(planetRenderScale(w, h, devicePixelRatio)); this.renderer.setSize(w, h); this.host.dataset.renderScale = this.renderer.getPixelRatio().toFixed(3); this.camera.aspect = w / h; this.camera.fov = w / h < .8 ? 72 : 68; this.camera.updateProjectionMatrix(); }
     private frame = (now: number): void => {
         if (this.disposed)
             return;
@@ -501,6 +545,7 @@ export class PlanetWorld {
             this.residentPos.set(f, p);
             f.setInteriorLight(fill(p.x, p.z));
             this.sharedWorkGesture(f, p);
+            animateCafeIdle(f, this.gestureRig(f), this.serverNow, this.reduced.matches);
             onPlanet(f, p.x, p.z, this.built.heightAt(p.x, p.z), p.yaw);
             this.label(this.residentLabels.get(f)!, f, p);
         }
@@ -570,23 +615,28 @@ export class PlanetWorld {
             this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
                 id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,
-                variant: figure.userData.chorusVariant ?? null, npc: true })));
+                variant: figure.userData.chorusVariant ?? null, npc: true, ...this.residentPos.get(figure),
+                avatar: figure.userData.figure.avatar, outfit: figure.userData.figure.outfit })));
         }
     };
     private kangarooIsNear(): boolean {
         return !this.paused && planetDistance(this.position, this.kangaroo.at) <= 3.2 && this.project(this.kangaroo.at.x, this.kangaroo.at.z, 1.2).visible;
     }
-    private sharedWorkGesture(figure: AnimalFigure, position: Position): void {
-        const work = this.garden.workNear(position, 6);
-        figure.userData.chorusWorkId = work?.id ?? null;
-        figure.userData.chorusVariant = work?.variant ?? null;
-        if (!work) return;
+    private gestureRig(figure: AnimalFigure): GestureRig {
         let rig = this.gestureRigs.get(figure);
         if (!rig) {
             rig = { body: figure.getObjectByName("upper-body-rig"), head: figure.getObjectByName("head-rig"),
                 left: figure.getObjectByName("left-shoulder"), right: figure.getObjectByName("right-shoulder") };
             this.gestureRigs.set(figure, rig);
         }
+        return rig;
+    }
+    private sharedWorkGesture(figure: AnimalFigure, position: Position): void {
+        const work = this.garden.workNear(position, 6);
+        figure.userData.chorusWorkId = work?.id ?? null;
+        figure.userData.chorusVariant = work?.variant ?? null;
+        if (!work) return;
+        const rig = this.gestureRig(figure);
         const phase = this.reduced.matches ? 0 : this.serverNow / (60_000 / CHORUS_BPM) * Math.PI * 2;
         const anchor = PLANET_PLACES.find(place => place.id === work.placeId)!;
         position.yaw = bearingToward(position, anchor);
