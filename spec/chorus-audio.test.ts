@@ -134,6 +134,7 @@ describe("local listening and the shared musical consequence", () => {
   });
   it("keeps a nearby reading source clear through the normal reply distance, then fades to its quiet boundary", async () => {
     const instance = audio(), position = { x: -13, z: 7, yaw: 0 };
+    instance.setVolume(.7); // The actual arrival slider's default listening level.
     instance.setAll([sound("reading-bells", "chorus-bells", position)]);
     instance.setOn(true); instance.frame(position, camera, origin); await settle();
     const voice = gains[2], beside = voice.gain.value;
@@ -141,6 +142,9 @@ describe("local listening and the shared musical consequence", () => {
     expect(voice.gain.value / beside).toBeCloseTo(1, 5);
     instance.frame(planetStep(position, 1, 0, 4), camera, origin + 200);
     expect(voice.gain.value / beside).toBeGreaterThanOrEqual(.25);
+    const pcm = sources[0].buffer!.getChannelData(0);
+    const scoreRms = Math.sqrt(pcm.reduce((power, value) => power + value * value, 0) / pcm.length);
+    expect(20 * Math.log10(scoreRms * voice.gain.value * gains[0].gain.value)).toBeGreaterThan(-45);
     instance.frame(planetStep(position, 1, 0, 5.9), camera, origin + 300);
     expect(voice.gain.value / beside).toBeLessThan(.01);
     instance.frame(planetStep(position, 1, 0, 6.1), camera, origin + 400);
