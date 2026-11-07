@@ -44,6 +44,9 @@ measures that separately.
 
 Use separate browser profiles, an incognito profile or separate devices.
 Ordinary tabs sharing cookies are one identity even with multiple connections.
+Return in the same regular profile with its cookie to keep your identity.
+Clearing cookies, changing device or ending a private-browsing session can mean
+joining as someone new; existing works still retain the original attribution.
 
 One friend can leave **Warm chords** at Listening Green. The other chooses
 **Answer [friend's name]**. The studio states the exact author and ingredient
@@ -187,8 +190,13 @@ unknown-source late-acknowledgement guard separately. The 43-check path controls
 logical loss of two actual sound frames, then opens a fresh native connection
 for the real snapshot before releasing the held receipt. Another case checks
 actual close/reconnect. No server state/event data is fabricated, and this is
-not a natural-outage timing claim. A later portrait-only camera improvement
-requires its own focused phone review.
+not a natural-outage timing claim. All fifteen unchanged coastal suites also
+pass on a dedicated empty 18890 database and frozen application; the earlier
+historical-clone fixture failure is retained in the record. The later
+portrait-only camera source `26805fb` passes eight focused actual checks of
+Reading, Green and Stage, quiet touch preview/cancel, movement/travel/jump and
+cleanup. Six actual desktop/phone frames were reviewed; this focused result is
+separate from the full 190/43 source/browser scope.
 
 Reviewed real captures from the 43-check run include the
 [desktop beginning](screenshots/26-chorus-final-desktop-solo.png),
@@ -199,8 +207,15 @@ Reviewed real captures from the 43-check run include the
 [Pocket Jam](screenshots/26-chorus-final-pocket-jam.png), and the Reading canopy
 on [desktop](screenshots/26-chorus-final-reading-canopy.png) and
 [phone](screenshots/26-chorus-final-reading-canopy-phone.png). These are
-unretouched running screenshots. They include the lateral Reading offset;
-a subsequent portrait-only camera refinement is recorded separately.
+unretouched running screenshots. They include the lateral Reading offset and
+precede the final portrait-only camera adjustment. Latest reviewed composition
+captures show Listening Green on [desktop](screenshots/26-chorus-portrait-green-desktop.png)
+and [phone](screenshots/26-chorus-portrait-green-phone.png), Pocket Jam on
+[desktop](screenshots/26-chorus-portrait-stage-desktop.png) and
+[phone](screenshots/26-chorus-portrait-stage-phone.png), and the Reading canopy
+on [desktop](screenshots/26-chorus-reading-visible-desktop.png) and
+[phone](screenshots/26-chorus-reading-visible-phone.png). Full body/feet and the
+nearby work remain above the phone contribution card in these reviewed frames.
 
 Use Node 24 and the package's pnpm 11 environment to build with `pnpm build`.
 An existing preview can be started safely with

@@ -58,5 +58,9 @@ Actual portrait screenshots also showed the lower character and Reading
 Nook stem behind the contribution card. The close third-person portrait view
 now aims below the head, scaled by zoom and faded into overview. This changes
 projection only; first person, desktop composition, physical camera collision
-and stored coordinates are unchanged. Focused touch/three-place screenshot
-review is required before promoting this last framing adjustment.
+and stored coordinates are unchanged. Source `26805fb` passed eight focused
+real desktop/phone/touch checks; all six captures were reviewed, including
+full body/feet and work above the phone HUD. This is separate from the
+190-test source and 43-check full browser runs at `2c2f587`. The
+[evidence record](../evidence/chorus-garden-2026-11-07.json) preserves both
+scopes; original-preview promotion and human artistic judgement remain distinct.

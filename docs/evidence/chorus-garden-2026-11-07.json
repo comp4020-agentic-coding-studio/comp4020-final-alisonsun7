@@ -1,7 +1,7 @@
 {
   "date": "2026-11-07",
   "product": "Little Chorus / 小小合鸣",
-  "status": "Candidate integration in progress; completed checks and pending gates are separate below",
+  "status": "Technical local candidate verified; original18861 promotion/final release record pending, with human/artistic/deployment limits explicit",
   "request": "A complete, memorable first shared creation for two to six friends without musical training, centred on Listening Green with distinct Pocket Jam and Reading Nook uses.",
   "branch": "codex/chorus-garden",
   "source": {
@@ -12,11 +12,12 @@
     "playableGardenRuntime": "51cb210600d34bd5083c29229bf6b4f2e6db5766",
     "initialPreviewUtility": "af8fd98e095fcde83061aad2dec8437c1470fae3",
     "finalReleaseCommit": null,
-    "scope": "Source2c2f587 includes publication guard92d706b and the lateral Reading carrier shift. It passes the separate190-test full source run and43-check integrated three-place browser path. Earlier184/41 runs remain separately identified. Preview utilitya3d6cf6 passes20 lifecycle checks. A portrait-only camera adjustment and focused phone review, final legacy coastal regression,18861 cutover and release-tag fields remain pending.",
+    "scope": "Canonical shared/audio guards and Reading carrier shift at2c2f587 pass190 source tests,43 integrated browser checks and15 unchanged coastal suites. Later portrait-only camera source26805fb passes8 focused actual desktop/phone/touch checks. The runs retain separate source scopes. Preview utilitya3d6cf6 passes20 lifecycle checks. Original18861 cutover and final release/tag fields await their own record.",
     "previewUtilityRestartCorrection": "a3d6cf6ff691682c5243da792e4ed8a2d1625c0d",
     "finalLateAcknowledgementGuardCommit": "92d706b1ffbd5f1f84f54fb88dbf499d0b423011",
     "readingDisplayOffset": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
-    "guardedRuntime": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2"
+    "guardedRuntime": "2c2f58760e1e6a73cc066aa95f704eb2c62c28a2",
+    "finalRuntimeCandidateCommit": "26805fb9de720657347ce737755a0bed77617663"
   },
   "rollback": {
     "tag": "before-chorus-garden-2026-11-07",
@@ -1282,6 +1283,450 @@
         }
       },
       "limitation": "A later portrait-only camera framing adjustment is separately checked; this43-check run covers the canonical shared/audio logic and Reading carrier offset, not that final camera change."
+    },
+    "coastalRegression": {
+      "artifact": ".cache/ensemble/coast-regression/results.json",
+      "sha256": "1f87a395ed7dc7b83b66a1551846f3c0351d0fecdce751a850de6e447fe3e5c1",
+      "report": {
+        "appUrl": "http://localhost:18890",
+        "appBuild": ".cache/ensemble/coast-dist",
+        "scripts": [
+          {
+            "script": "world-two-browsers",
+            "exitCode": 0,
+            "seconds": 48.13,
+            "passed": true,
+            "checks": 9,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/world-two-browsers.log"
+          },
+          {
+            "script": "meet-and-talk",
+            "exitCode": 0,
+            "seconds": 62.85,
+            "passed": true,
+            "checks": 16,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/meet-and-talk.log"
+          },
+          {
+            "script": "leave-a-sound",
+            "exitCode": 0,
+            "seconds": 13.94,
+            "passed": true,
+            "checks": 17,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/leave-a-sound.log"
+          },
+          {
+            "script": "sound-discovery",
+            "exitCode": 0,
+            "seconds": 14.1,
+            "passed": true,
+            "checks": 25,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/sound-discovery.log"
+          },
+          {
+            "script": "look-controls",
+            "exitCode": 0,
+            "seconds": 9.79,
+            "passed": true,
+            "checks": 15,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/look-controls.log"
+          },
+          {
+            "script": "huts",
+            "exitCode": 0,
+            "seconds": 32.77,
+            "passed": true,
+            "checks": 21,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/huts.log"
+          },
+          {
+            "script": "busker-sound",
+            "exitCode": 0,
+            "seconds": 9.57,
+            "passed": true,
+            "checks": 12,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/busker-sound.log"
+          },
+          {
+            "script": "cooperative-play",
+            "exitCode": 0,
+            "seconds": 31.71,
+            "passed": true,
+            "checks": 33,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/cooperative-play.log"
+          },
+          {
+            "script": "cooperative-ack-race",
+            "exitCode": 0,
+            "seconds": 19.07,
+            "passed": true,
+            "checks": 12,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/cooperative-ack-race.log"
+          },
+          {
+            "script": "environment",
+            "exitCode": 0,
+            "seconds": 23.45,
+            "passed": true,
+            "checks": 24,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/environment.log"
+          },
+          {
+            "script": "quiet-light",
+            "exitCode": 0,
+            "seconds": 6.0,
+            "passed": true,
+            "checks": 11,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/quiet-light.log"
+          },
+          {
+            "script": "d-reference-ui",
+            "exitCode": 0,
+            "seconds": 15.69,
+            "passed": true,
+            "checks": 47,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/d-reference-ui.log"
+          },
+          {
+            "script": "shared-sound-focus",
+            "exitCode": 0,
+            "seconds": 47.41,
+            "passed": true,
+            "checks": 39,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/shared-sound-focus.log"
+          },
+          {
+            "script": "living-sound-world",
+            "exitCode": 0,
+            "seconds": 42.45,
+            "passed": true,
+            "checks": 20,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/living-sound-world.log"
+          },
+          {
+            "script": "view-mode",
+            "exitCode": 0,
+            "seconds": 6.39,
+            "passed": true,
+            "checks": 15,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression/view-mode.log"
+          }
+        ],
+        "completed": 15,
+        "planned": 15,
+        "passed": true
+      },
+      "passed": true,
+      "scriptsPassed": 15,
+      "scriptsPlanned": 15,
+      "scope": "The original unmodified15 coastal suites on independent fresh empty database18890, using a frozen54-file compiled copy of2c2f587 including canonical publication guards. No writing test targets18861. A later portrait-only planet camera adjustment does not affect this coastal code scope.",
+      "database": ".cache/ensemble/coast-regression.db",
+      "serverPid": 54378,
+      "frozenManifest": {
+        "artifact": ".cache/ensemble/coast-frozen.json",
+        "sha256": "0c3772f398529bcac2444e8a17f11deec232136176611e1de35964d9476077b0",
+        "compiledFiles": 54,
+        "source": "current candidate PID47143, runtime 92d706b + 2c2f587"
+      }
+    },
+    "portraitFramingBrowser": {
+      "artifact": ".cache/chorus-portrait-final/results.json",
+      "sha256": "5604465391f2f16b612589bf2b3cd66e704d82b479a8e393cd814d4828cc8380",
+      "report": {
+        "type": "automated developer check",
+        "mode": "targeted reading art",
+        "failed": false,
+        "checks": [
+          {
+            "label": "two independent browsers produce the same real water-and-bird canopy after the porch art shift"
+          },
+          {
+            "label": "Reading Nook's real phone work and movement controls remain reachable after the art shift",
+            "detail": [
+              {
+                "text": "Answer Reading Ada",
+                "x": 29,
+                "y": 645,
+                "width": 143.609375,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Our works",
+                "x": 180.609375,
+                "y": 645,
+                "width": 85.046875,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Sound off; turn on",
+                "x": 284,
+                "y": 5.5,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Run Shift",
+                "x": 215,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Jump Space",
+                "x": 300,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move forward",
+                "x": 64,
+                "y": 726,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move left",
+                "x": 12,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move back",
+                "x": 64,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move right",
+                "x": 116,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              }
+            ]
+          },
+          {
+            "label": "Reading Nook touch Listen and Cancel preserve the quiet preference and require an explicit shared contribution"
+          },
+          {
+            "label": "green's actual portrait work, movement and sound controls remain reachable",
+            "detail": [
+              {
+                "text": "Answer Reading Ada",
+                "x": 29,
+                "y": 645,
+                "width": 143.609375,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Our works",
+                "x": 180.609375,
+                "y": 645,
+                "width": 85.046875,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Sound off; turn on",
+                "x": 284,
+                "y": 5.5,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Run Shift",
+                "x": 215,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Jump Space",
+                "x": 300,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move forward",
+                "x": 64,
+                "y": 726,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move left",
+                "x": 12,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move back",
+                "x": 64,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move right",
+                "x": 116,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              }
+            ]
+          },
+          {
+            "label": "stage's actual portrait work, movement and sound controls remain reachable",
+            "detail": [
+              {
+                "text": "Answer Reading Ada",
+                "x": 29,
+                "y": 645,
+                "width": 143.609375,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Our works",
+                "x": 180.609375,
+                "y": 645,
+                "width": 85.046875,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Sound off; turn on",
+                "x": 284,
+                "y": 5.5,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Run Shift",
+                "x": 215,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Jump Space",
+                "x": 300,
+                "y": 778,
+                "width": 78,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move forward",
+                "x": 64,
+                "y": 726,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move left",
+                "x": 12,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move back",
+                "x": 64,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              },
+              {
+                "text": "Move right",
+                "x": 116,
+                "y": 778,
+                "width": 44,
+                "height": 44,
+                "usable": true
+              }
+            ]
+          },
+          {
+            "label": "after the portrait camera change, actual touch movement, place travel and jumping still work without undoing mute"
+          },
+          {
+            "label": "the targeted real reading flow preserves all existing sources and has no browser errors",
+            "detail": []
+          },
+          {
+            "label": "normal API cleanup leaves the complete work archived and no test sound playing"
+          }
+        ],
+        "errors": [],
+        "cleanupErrors": []
+      },
+      "passed": true,
+      "checks": 8,
+      "runtimeSourceCommit": "26805fb9de720657347ce737755a0bed77617663",
+      "appUrl": "http://localhost:18885",
+      "independentBrowserContexts": 2,
+      "scope": "Focused actual Reading water-and-bird work after lateral carrier and portrait camera changes, reachable44px controls at Green/Stage/Reading, quiet touch Listen/Cancel, real touch movement/place travel/jump, pre-existing source preservation and normal API cleanup. It does not rerun or relabel the190/43 canonical-code checks.",
+      "visualReview": {
+        "reviewedBy": "root agent",
+        "actualRunningCaptures": 6,
+        "viewports": [
+          {
+            "width": 1920,
+            "height": 1080
+          },
+          {
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "observed": "Full local body/feet and nearby work remain above the phone contribution HUD at the three reviewed places.",
+        "limits": "Developer visual review, not author artistic acceptance, unfamiliar-human comprehension or physical-phone performance."
+      },
+      "browserErrors": [],
+      "cleanupErrors": []
     }
   },
   "failuresAndCorrections": [
@@ -1326,7 +1771,7 @@
     {
       "observed": "Final three-place screenshots showed the Reading Nook carrier still hidden behind the local player despite an operable action path.",
       "correction": "An art-only lateral porch offset is being applied; source positions and shared work identity stay unchanged.",
-      "status": "Focused real desktop/phone captures and geometry repeat pending; automation success is not treated as sufficient visual acceptance."
+      "status": "Lateral carrier offset2c2f587 and portrait camera framing26805fb verified by separate8-check actual touch/three-place path and review of all six final desktop/phone images. Shared/source coordinates are unchanged; the190/43 logical checks remain separately scoped."
     },
     {
       "observed": "An in-flight new child was created and removed while its browser missed both SSE events. Reconnect supplied its canonical tombstone, but the original delayed acknowledgement inserted the previously unknown child into local live sound/audio maps. The work sculpture remained correct, so checking only canonical work state missed the playback/label resurrection.",
@@ -1344,7 +1789,7 @@
       "observed": "The first coastal regression attempt used a cloned historical world. leave-a-sound expected zero total marks and voices after removing its own one sound, but five original coastal sounds remained live and were correctly preserved.",
       "correction": "Run the original unchanged15-suite coastal regression on a dedicated empty database at18890 with a frozen compiled application. Preserve the earlier partial attempt and the original world.",
       "classification": "Fresh-world fixture assumption, not proof that the app failed to remove its owned source; no assertion is weakened.",
-      "status": "Fresh isolated legacy run pending."
+      "status": "Verified correction to the test environment: all15 original suites exit0 on18890/frozen2c2f587. Initial two-pass/third-failed clone attempt and five-source audit retained separately; no assertion or original source was removed."
     }
   ],
   "pending": {
@@ -1356,35 +1801,9 @@
     "finalReleaseCommitAndTag": {
       "status": "pending"
     },
-    "finalScreenshots": {
-      "status": "Eight43-check raw exports verified byte-for-byte. Post-portrait-framing focused captures pending separately.",
-      "exportedFiles": [
-        "docs/screenshots/26-chorus-final-desktop-duet.png",
-        "docs/screenshots/26-chorus-final-desktop-solo.png",
-        "docs/screenshots/26-chorus-final-phone-work.png",
-        "docs/screenshots/26-chorus-final-phone-studio.png",
-        "docs/screenshots/26-chorus-final-phone-journal.png",
-        "docs/screenshots/26-chorus-final-pocket-jam.png",
-        "docs/screenshots/26-chorus-final-reading-canopy.png",
-        "docs/screenshots/26-chorus-final-reading-canopy-phone.png"
-      ]
-    },
     "publicDeployment": {
       "status": "not authorized or performed in this turn",
       "note": "Local promotion and deployment preparation do not authorize main push or public access changes."
-    },
-    "readingNookVisualRefinement": {
-      "status": "carrier shift included in43-check actual source and reviewed captures; later portrait-only framing pending",
-      "reason": "No sound coordinates, shared state, audio or collision change. Focused actual phone self/carrier review will be recorded separately from190/43."
-    },
-    "currentLegacyCoastalRegression": {
-      "status": "pending",
-      "appUrl": "http://localhost:18890",
-      "reason": "Original unmodified15 coastal suites are moving to a dedicated empty DB/frozen compiled copy. On the historical clone, the third suite assumed zero total marks/voices after removing its test sound despite five preserved pre-existing live coastal sounds. The failed fixture attempt is retained, not treated as an application-removal failure."
-    },
-    "portraitCameraReview": {
-      "status": "pending",
-      "reason": "A lower portrait camera head target should raise the full self and Reading stem above the phone work card. This is display framing only and must have actual post-change phone evidence."
     }
   },
   "humanAndArtisticJudgement": {
@@ -1476,6 +1895,53 @@
         "removedUnknownSourceRevived": true
       },
       "classification": "Read-only execution of actual controller functions with actual PlanetAudio and supplied race states, not a live browser path or by-ear observation."
+    },
+    "coastalHistoricalFixtureMismatch": {
+      "artifact": ".cache/ensemble/coast-regression-preserved-fixture-attempt/results.json",
+      "sha256": "e8acce04b162540dc1c823e53f3a7fc4ac278e8465fbbee8451938edce530115",
+      "report": {
+        "appUrl": "http://localhost:18885",
+        "appBuild": ".cache/ensemble/dist",
+        "scripts": [
+          {
+            "script": "world-two-browsers",
+            "exitCode": 0,
+            "seconds": 40.57,
+            "passed": true,
+            "checks": 9,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression-preserved-fixture-attempt/world-two-browsers.log"
+          },
+          {
+            "script": "meet-and-talk",
+            "exitCode": 0,
+            "seconds": 27.76,
+            "passed": true,
+            "checks": 16,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression-preserved-fixture-attempt/meet-and-talk.log"
+          },
+          {
+            "script": "leave-a-sound",
+            "exitCode": 1,
+            "seconds": 13.87,
+            "passed": false,
+            "checks": 15,
+            "notRun": [],
+            "log": ".cache/ensemble/coast-regression-preserved-fixture-attempt/leave-a-sound.log"
+          }
+        ],
+        "completed": 3,
+        "planned": 15,
+        "passed": false
+      },
+      "fixtureAudit": {
+        "artifact": ".cache/ensemble/coast-regression-preserved-fixture-attempt/fixture-mismatch.json",
+        "sha256": "67e4655f276ebf179a86d3ca477d660084c31e77bd0d88363b24daa78d59ba98",
+        "reason": "legacy test requires empty coast; preserved candidate has existing live coast sounds",
+        "preExistingLiveCoastalSoundCount": 5
+      },
+      "scope": "Initial cloned-history fixture: first two scripts pass, third exits1 with fifteen successes and two zero-total-mark/voice assertions failing. These were valid retained pre-existing sources, not an application-removal defect. Historical sound coordinates/data and the original assertions remain unchanged; the correct empty-fixture repeat passes all15 suites."
     }
   },
   "preGuardScreenshots": [
@@ -1606,6 +2072,62 @@
       "pixelHeight": 844,
       "kind": "actual unretouched running UI capture",
       "scope": "43-check guarded runtime2c2f587, including Reading carrier offset and before the later portrait-only camera change"
+    }
+  ],
+  "portraitScreenshots": [
+    {
+      "file": "docs/screenshots/26-chorus-reading-visible-desktop.png",
+      "sourceArtifact": ".cache/chorus-portrait-final/chorus-reading-visible-desktop.png",
+      "sha256": "866512790441cef0bc7681f1e53e8a96de191d74b23185b69273ab8da53e0879",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-reading-visible-phone.png",
+      "sourceArtifact": ".cache/chorus-portrait-final/chorus-reading-visible-phone.png",
+      "sha256": "e4d1cc2600fb3ac31b9dbb71818f3c08d2665a81f8d881e69bfb3413196bded0",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-portrait-green-desktop.png",
+      "sourceArtifact": ".cache/chorus-portrait-final/chorus-portrait-green-desktop.png",
+      "sha256": "887a3b20d2f6d5d3184c031a936163cc288e56eb7b17ddcc1e063290a354a425",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-portrait-green-phone.png",
+      "sourceArtifact": ".cache/chorus-portrait-final/chorus-portrait-green-phone.png",
+      "sha256": "8e55afadb5ebed89343362f694bdf0bd52782b8eedfb46f897606a437ba5acab",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-portrait-stage-desktop.png",
+      "sourceArtifact": ".cache/chorus-portrait-final/chorus-portrait-stage-desktop.png",
+      "sha256": "8f5a6b2635cf9a9689343cf24bda87d361a944d5cf12a4a8430dab3defbdc583",
+      "pixelWidth": 1920,
+      "pixelHeight": 1080,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
+    },
+    {
+      "file": "docs/screenshots/26-chorus-portrait-stage-phone.png",
+      "sourceArtifact": ".cache/chorus-portrait-final/chorus-portrait-stage-phone.png",
+      "sha256": "891499e84ac43f2f44e05a87a35ae6db471413664456cc1c53a614bede06082a",
+      "pixelWidth": 390,
+      "pixelHeight": 844,
+      "kind": "actual unretouched running UI capture",
+      "scope": "Focused final portrait-camera source26805fb after the separate canonical190/43 run"
     }
   ]
 }

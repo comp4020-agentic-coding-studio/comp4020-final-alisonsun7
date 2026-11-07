@@ -2672,3 +2672,37 @@ suites are moving to an independent empty database on 18890 with a frozen
 compiled copy; the prior partial attempt and its fixture mismatch remain in
 the record. This is not evidence that the application failed to remove the
 test sound, and the original working preview is not a test target.
+
+
+The coastal repeat now passes **all fifteen original suites**, each exit 0,
+on the dedicated empty 18890 database and frozen `2c2f587` application copy.
+The [structured record](evidence/chorus-garden-2026-11-07.json) preserves each
+actual script timing, check count and local log scope. The first clone attempt
+remains separate: two suites passed and leave-a-sound exited 1 with fifteen
+successes and two zero-total assertions invalid for its five preserved old
+coastal sources. No original assertion, historical source or database was
+removed to manufacture the passing fresh-world outcome. This completes the
+coastal regression gate, not the later portrait camera review or 18861 cutover.
+
+
+The final portrait-only source `26805fb` now passes its **eight focused actual
+checks**, separate from the 190/43 canonical-code runs. Two independent
+browsers make the same real Reading water/bird canopy; touch Listen/Cancel
+keeps quiet browsing and explicit publication distinct. All three areas retain
+reachable 44 px work, sound and movement targets, and real touch movement,
+place travel and jumping still work. Existing sources are preserved; normal
+API cleanup leaves the completed test work archived, no source playing and no
+browser or cleanup errors. The root agent reviewed all six unretouched actual
+desktop/phone captures: full bodies/feet and work remain above the phone HUD.
+This completes the final composition gate without relabelling the earlier
+full-suite run or claiming physical-phone/author artistic acceptance.
+
+The current ADR, walkthrough, acceptance map and structured record now agree:
+canonical state/audio logic at `2c2f587` has 190 source tests, 43 integrated
+browser checks and fifteen original coastal suite results; the later camera
+composition at `26805fb` has its own eight-check touch/render result. The
+20-check lifecycle fixture is separate again. The technical candidate is ready
+for the original-preview switch; the actual 18861 all-table comparison,
+listener/served-byte verification and release tag must come from that switch's
+record. Human listening, two uncoached pairs, voluntary recombination, real
+next-day return and public deployment are still not claimed.
