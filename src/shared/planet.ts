@@ -4,6 +4,8 @@ import { HUTS, type Hut } from "./huts.js";
 import type { Position } from "./protocol.js";
 export const PLANET_RADIUS = 22;
 export const PLANET_HALF = Math.PI * PLANET_RADIUS;
+// Presentation geometry only; existing source coordinates are never remapped.
+export const PLANET_CAFE_SCALE = { x: 1.5, z: 1.35 } as const;
 type Point = {
     x: number;
     z: number;
@@ -86,7 +88,7 @@ export const PLANET_PLACES: readonly PlanetPlace[] = [
     { id: "conservatory", title: "Rain conservatory", description: "Build a soft water-and-bird corner; living sources colour the flower beds.", kind: "conservatory", x: -2, z: 16, sounds: ["rainstick", "trickle", "evening-forest"] },
     { id: "pool", title: "Tide pools", description: "Waves, gulls and a passing boat bring the shore to this tiny world.", kind: "pool", x: 16, z: 14, sounds: ["beach-waves", "coastal-gulls", "harbour-boat"] },
     { id: "workshop", title: "Lantern workshop", description: "Each nearby public sound lights a lantern in its family's colour.", kind: "workshop", x: -21, z: -15, sounds: ["bicycle-bell", "hand-claps", "cafe-music"] },
-    { id: "restrooms", title: "Restrooms and showers", description: "One occupant at a time. Invite a resident to test the real door lock.", kind: "restrooms", x: 14, z: 10, sounds: [] },
+    { id: "restrooms", title: "Restrooms and showers", description: "A little privacy. The door locks while a visitor is inside; a green lamp means the room is free.", kind: "restrooms", x: 14, z: 10, sounds: [] },
     { id: "observatory", title: "The other-side lookout", description: "Walk around the globe and meet again; there is no edge to fall off.", kind: "observatory", x: 55, z: -8, sounds: ["evening-forest", "summer-cicadas"] },
 ];
 export const PLANET_HUTS: readonly Hut[] = [

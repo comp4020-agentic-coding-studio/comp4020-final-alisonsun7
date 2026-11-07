@@ -367,12 +367,13 @@ try {
   await Promise.all([goTo(a,"restrooms"),goTo(b,"restrooms")]);
   if (await b.locator("#planet-sound").getAttribute("aria-pressed") !== "true") await b.locator("#planet-sound").click();
   const beforeRoutine = (await snapshot(ada)).sounds;
-  await openTools(a);
-  await a.locator(".planet-restroom summary").click();
-  const invited = a.waitForResponse(response => response.request().method() === "POST" && new URL(response.url()).pathname.endsWith("/npc-restroom"));
-  await a.locator("#planet-test-restroom").click();
-  const invitation = await (await invited).json();
-  check(invitation.ok && invitation.npcs.some(npc => npc.phase === "walking"), "the visible restroom check starts a real authoritative resident routine");
+  check(await a.locator("#planet-test-restroom, #planet-invite-resident").count()===0,"residents follow their own routine without a player-facing test invitation");
+  // Schedule only this scratch fixture rather than exposing a four-minute
+  // routine clock as a player action. All actual admission and audio checks
+  // below continue through the real server state and independent browsers.
+  const scheduled=await ada.context.request.post(`${base}/api/sessions/${ada.sessionId}/npc-restroom`,{data:{}});
+  const invitation=await scheduled.json();
+  check(scheduled.ok() && invitation.ok && invitation.npcs.some(npc => npc.phase === "walking"), "the scratch fixture schedules the existing authoritative resident routine");
   const hut = PLANET_HUTS.find(item=>item.kind.endsWith("toilet"));
   const waitNpc = (page, expected) => page.waitForFunction(expected=>{
     const stage=document.getElementById("planet-stage");

@@ -14,7 +14,7 @@ describe("in-world nearby chat and private room access", () => {
         now = 0;at = { x: 0, z: 3, yaw: Math.PI };people = [];npcs = [];sounds = [];
         options = { at: () => at, you: () => ({ id: "me", name: "Me", avatar: "cat" }), people: () => people, npcs: () => npcs, sounds: () => sounds,
             joined: () => true, connected: () => true, project: () => ({ x: 50, y: 80, visible: true }),
-            openChat: vi.fn(), closeChat: vi.fn(), walk: vi.fn(), stay: vi.fn(async () => null), invite: vi.fn(), notice: vi.fn() };
+            openChat: vi.fn(), closeChat: vi.fn(), walk: vi.fn(), stay: vi.fn(async () => null), notice: vi.fn() };
         social = new PlanetSocial(document.getElementById("host")!, options);
     });
     afterEach(() => { social?.dispose();dom.window.close();vi.unstubAllGlobals(); });
@@ -44,6 +44,15 @@ describe("in-world nearby chat and private room access", () => {
         npcs = [];people = [{ id: "bo", name: "Bo", avatar: "dog", x: 13.5, z: 5.9, yaw: 0 }];frame();expect(social.restroom.textContent).toContain("Bo is inside");
         people = [];at = { x: 13.5, z: 5.9, yaw: Math.PI };frame();expect(document.getElementById("planet-switch-room")!.hidden).toBe(true);expect(document.getElementById("planet-stay-action")!.hidden).toBe(false);expect(document.getElementById("planet-enter-room")!.hidden).toBe(true);
         document.getElementById("planet-leave-room")!.click();expect(options.walk).toHaveBeenLastCalledWith({ x: 13.5, z: 8.25, yaw: Math.PI });
+    });
+    it("lets residents keep their own routine without offering a player invitation or lock-test action", () => {
+        at = { x: 13.5, z: 8.2, yaw: Math.PI };frame();
+        expect(social.restroom.hidden).toBe(false);
+        expect(document.getElementById("planet-invite-resident")).toBeNull();
+        expect([...social.restroom.querySelectorAll("button")].some(button => /invite|try the lock|test with/i.test(button.textContent ?? ""))).toBe(false);
+        npcs = [npc()];frame();
+        expect((document.getElementById("planet-enter-room") as HTMLButtonElement).disabled).toBe(true);
+        expect(document.getElementById("planet-restroom-live")!.textContent).toContain("Rowan is using");
     });
     it("starts a shower only on an explicit action and prevents duplicate pending requests", async () => {
         let resolve!: (error: string | null) => void;options.stay = vi.fn(() => new Promise<string | null>(done => {resolve = done;}));

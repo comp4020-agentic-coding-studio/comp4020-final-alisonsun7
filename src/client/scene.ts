@@ -14,7 +14,7 @@ import { SharedSoundPlace } from "./shared-sound-place.js";
 import { EnvironmentPanel, type ApplyEnvironmentResult } from "./environment-panel.js";
 import { WEATHER_LABELS, formatTime, minuteAt, type Environment } from "../shared/environment.js";
 import { HUTS } from "../shared/huts.js";
-import type { NpcRestroomResult, NpcRoutineFrame } from "../shared/npc-routines.js";
+import type { NpcRoutineFrame } from "../shared/npc-routines.js";
 import { RoutineAudio } from "./routine-audio.js";
 import type { Room } from "./places.js";
 import { WorldView, type Other } from "./world.js";
@@ -53,7 +53,6 @@ let npcFrames: NpcRoutineFrame[] = snapshot.npcs ?? [];
 let npcTime = { server: Date.parse(snapshot.serverNow), received: performance.now() };
 let occupancyPeople: (Person & { x: number; z: number; yaw: number })[] = [];
 let occupancyKnown = false;
-let restroomPending = false;
 let routineListener = { ...(scene.zones.find(zone => zone.id === zoneId)?.spawn ?? { x: 0, z: 0, yaw: 0 }) };
 const routineAudio = new RoutineAudio({ report: count => { stage.dataset.npcFlushVoices = String(count); } });
 
@@ -241,9 +240,7 @@ trail.setAll(snapshot.sounds);
 trail.element.open = false;
 $("tools-listening").append(trail.element);
 
-const restroomButton = $<HTMLButtonElement>("test-restroom");
 const restroomStatus = $("restroom-status");
-restroomButton.textContent = "Invite a resident to test the restroom";
 function receiveNpcRoutines(frames: readonly NpcRoutineFrame[], serverNow?: string): void {
   const server = serverNow ? Date.parse(serverNow) : NaN;
   const current = npcTime.server + Math.max(0, performance.now() - npcTime.received);
@@ -254,8 +251,7 @@ function receiveNpcRoutines(frames: readonly NpcRoutineFrame[], serverNow?: stri
   renderRestroomStatus();
 }
 function renderRestroomStatus(): void {
-  restroomButton.disabled = restroomPending || !boot.joined || !connected;
-  if (!connected) { restroomStatus.textContent = "Waiting for the shared door state. Reconnect before inviting a resident."; return; }
+  if (!connected) { restroomStatus.textContent = "Waiting for the shared door state. Door actions return when connected."; return; }
   if (!occupancyKnown) { restroomStatus.textContent = "Waiting for shared occupancy positions…"; return; }
   const state = HUTS.filter(hut => hut.kind !== "shop").map(hut => {
     const npc = npcFrames.find(frame => frame.hutId === hut.id && frame.occupying);
@@ -267,10 +263,9 @@ function renderRestroomStatus(): void {
     : routine.phase === "walking" ? "walking to the restroom" : routine.phase === "entering" ? "entering"
       : routine.phase === "flushing" ? "flushing" : routine.phase === "leaving" ? "leaving" : "using the restroom"}.` : "";
   restroomStatus.textContent = state.join("; ") + "." + description
-    + " Red means occupied; green means free. A second visitor can try the door while it is occupied.";
+    + " Red means occupied; green means free. The room is private until its visitor leaves.";
 }
 receiveNpcRoutines(npcFrames, snapshot.serverNow);
-restroomButton.onclick = () => { void inviteRestroomResident(); };
 addEventListener("pagehide", event => { if (!event.persisted) routineAudio.dispose(); });
 
 // ---- the server's stream --------------------------------------------------
@@ -356,7 +351,7 @@ function reportPosition(x: number, z: number, yaw: number, force = false): Promi
   // newer accepted move. Frames keep running; the next report uses their
   // latest position as soon as this response has been handled.
   if (moveInFlight) return positionRequest;
-  if ((!force && restroomPending) || !boot.joined || !connected) return null;
+  if (!boot.joined || !connected) return null;
   const now = performance.now();
   if (!force && now - lastSent.at < 200) return null;
   if (!force && Math.hypot(x - lastSent.x, z - lastSent.z) < 0.05 && Math.abs(yaw - lastSent.yaw) < 0.05 && now - lastSent.at < 5000) return null;
@@ -379,49 +374,6 @@ function reportPosition(x: number, z: number, yaw: number, force = false): Promi
     return result;
   }).catch(() => null).finally(() => { moveInFlight = false; positionRequest = null; });
   return positionRequest;
-}
-
-async function inviteRestroomResident(): Promise<void> {
-  if (restroomPending || !boot.joined || !connected) return;
-  const hut = HUTS.find(item => item.kind.endsWith("toilet"));
-  if (!hut) return;
-  restroomPending = true;
-  world.setInputPaused(true);
-  renderRestroomStatus();
-  try {
-    // Settle an earlier command before moving the observer. Frames cannot
-    // publish a stale position between this explicit move and its invitation.
-    await positionRequest;
-    // The server intentionally drops moves less than 90 ms apart. A forced
-    // observer move must be accepted, not mistaken for a throttled no-op.
-    const wait = 110 - (performance.now() - lastSent.at);
-    if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
-    const position = { x: (hut.door.x0 + hut.door.x1) / 2, z: hut.z1 + 2.4, yaw: 0 };
-    world.correctPosition(position);
-    here = { x: position.x, z: position.z };
-    world.faceSound(position.x, hut.z1 - 0.6);
-    const moved = await reportPosition(position.x, position.z, position.yaw, true);
-    if (!moved?.ok) { say("Couldn't confirm your position by the restroom. Check the connection and try again."); return; }
-    const response = await fetch(`/api/sessions/${snapshot.sessionId}/npc-restroom`, {
-      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ hutId: hut.id }), signal: AbortSignal.timeout(8000),
-    });
-    const result = await response.json() as NpcRestroomResult;
-    if (!result.ok) {
-      say(result.code === "busy" ? "The resident already has a restroom visit underway. Watch the shared door state."
-        : result.code === "slow_down" ? "Wait a moment before inviting the resident again."
-          : "The invitation wasn't accepted. Reconnect and try again.");
-      return;
-    }
-    receiveNpcRoutines(result.npcs, result.serverNow);
-    closeWorldTools(true);
-    say("The resident is walking to the restroom. Watch the red and green lamp; a second visitor can try the occupied door.");
-  } catch {
-    say("The invitation could not be confirmed. It may have reached the server; check the shared door state before trying again.");
-  } finally {
-    restroomPending = false;
-    renderRestroomStatus();
-    restoreWorldInput();
-  }
 }
 
 // ---- talking to whoever is near -------------------------------------------

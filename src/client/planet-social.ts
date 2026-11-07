@@ -18,7 +18,6 @@ interface Options {
     closeChat(): void;
     walk(target: Position): void;
     stay(soundId: string): Promise<string | null>;
-    invite(): void;
     notice(text: string): void;
 }
 interface Words { element: HTMLElement; expires: number; }
@@ -33,7 +32,6 @@ export class PlanetSocial {
     private enter: HTMLButtonElement;
     private leave: HTMLButtonElement;
     private stay: HTMLButtonElement;
-    private invite: HTMLButtonElement;
     private switchRoom: HTMLButtonElement;
     private tucked: HTMLButtonElement;
     private words = new Map<string, Words>();
@@ -66,11 +64,10 @@ export class PlanetSocial {
         });
         this.leave = button("planet-leave-room", "Walk outside", () => { const hut = sceneHutAt("planet", this.opts.at().x, this.opts.at().z);if (hut) this.opts.walk(doorPoint(hut)); });
         this.stay = button("planet-stay-action", "Flush", () => { void this.playStay(); });
-        this.invite = button("planet-invite-resident", "Invite Rowan to try the lock", () => this.opts.invite());
         this.switchRoom = button("planet-switch-room", "Go to shower", () => {
             const current = this.nearestHut(), other = PLANET_HUTS.find(hut => hut.id !== current?.id);if (other) this.opts.walk(doorPoint(other));
         });
-        const actions = document.createElement("div");actions.className = "planet-restroom-actions";actions.append(this.enter, this.stay, this.leave, this.invite, this.switchRoom);
+        const actions = document.createElement("div");actions.className = "planet-restroom-actions";actions.append(this.enter, this.stay, this.leave, this.switchRoom);
         this.restroom.append(heading, this.status, actions);
         this.tucked = button("planet-restroom-reopen", "Restroom controls", () => { this.dismissed = false;this.renderRestroom();this.restroom.querySelector<HTMLButtonElement>("button")?.focus(); });
         this.tucked.className = "planet-restroom-reopen";this.tucked.hidden = true;
@@ -120,7 +117,6 @@ export class PlanetSocial {
         this.stay.hidden = !own;this.stay.disabled = !available || this.stayPending || !!source;
         text(this.stay, this.stayPending ? "Starting…" : source ? shower ? "Shower running" : "Flush started" : shower ? "Run shower" : "Flush");
         this.switchRoom.hidden = own;this.switchRoom.disabled = !available;text(this.switchRoom, shower ? "Go to restroom" : "Go to shower");
-        this.invite.hidden = shower || own;this.invite.disabled = !available || occupied || this.opts.npcs().some(frame => !["idle"].includes(frame.phase));
     }
     private async playStay(): Promise<void> {
         if (this.stayPending || !this.opts.connected()) return;

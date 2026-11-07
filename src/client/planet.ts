@@ -407,30 +407,6 @@ privateButton.id = "planet-private-sound";
 privateButton.hidden = true;
 $("planet-occupancy").after(privateButton);
 function renderOccupancy(): void { const parts = PLANET_HUTS.map(h => { const n = npcs.find(n => n.hutId === h.id && n.occupying), person = people.find(p => sceneHutAt("planet", p.x, p.z)?.id === h.id); return `${h.name}: ${n ? n.label + " · " + n.phase : person ? person.name + " · occupied" : "free · green light"}`; }); $("planet-occupancy").textContent = parts.join(". "); const h = sceneHutAt("planet", here.x, here.z); privateButton.hidden = !boot.joined || !h; privateButton.textContent = h?.kind.endsWith("shower") ? "Run shower for this stay" : "Flush for this stay"; }
-$("planet-test-restroom").onclick = async () => {
-    if (!boot.joined)
-        return say("Enter with a name first.");
-    afterDialogClose(tools, () => {void (async () => {
-    world.correctPosition({ x: 13.5, z: 9.1, yaw: Math.PI });
-    world.setViewMode("third");
-    updateView();
-    try {
-        if (!await settledMove())
-            return say("Your position is not confirmed. Try again after reconnecting.");
-        const result = await api("npc-restroom", "POST", {});
-        if (result.ok) {
-            receiveNpcs(result.npcs as NpcRoutineFrame[],String(result.serverNow));
-            say("Rowan is walking to the restroom. Wait for the red light, then try the door. Open Places & friends for the live occupancy state.");
-        }
-        else
-            say(result.code === "busy" ? "Rowan is already on a restroom visit. Watch the door." : errors[String(result.code)] ?? "The resident could not start. Try again.");
-        renderOccupancy();
-    }
-    catch {
-        say("Connection interrupted. Invite again when connected.");
-    }
-    })();});
-};
 function renderPeople(): void {environmentPanel.setAvailability({joined:boot.joined,connected}); $("planet-presence").textContent = `${snapshot.online.length} here · ${publicSounds().length} shared sounds` + (connected ? "" : " · reconnecting"); $("planet-people").replaceChildren(...snapshot.online.map(p => { const e = document.createElement("p"); e.textContent = p.name + (p.id === snapshot.you?.id ? " (you)" : " · player"); return e; })); stage.dataset.people = String(snapshot.online.length); }
 function receiveNpcs(frames:readonly NpcRoutineFrame[],serverNow:string):void{const time=Date.parse(serverNow);if(!Number.isFinite(time)||time<npcTime||disposed)return;npcTime=time;npcs=frames.map(n=>({...n}));world.setNpcs(npcs);renderOccupancy();}
 const chat = $<HTMLFormElement>("planet-chat");
@@ -461,7 +437,7 @@ social = new PlanetSocial(stage, {
     joined: () => boot.joined, connected: () => connected, project: (x,z,height) => world.project(x,z,height),
     openChat: () => $("planet-chat-toggle").click(), closeChat: () => $("planet-chat-close").click(),
     walk: target => {world.walkToward(target,.12);world.focus();}, stay: id => leaveSound(id,true),
-    invite: () => $("planet-test-restroom").click(), notice: say,
+    notice: say,
 });
 function receiveWords(name: string, text: string): void { const p = document.createElement("p"); p.textContent = name + ": " + text; $("planet-chat-log").append(p); setTimeout(() => p.remove(), 8000); }
 const stream = new EventSource("/api/stream?scene=planet&mode=weekday");

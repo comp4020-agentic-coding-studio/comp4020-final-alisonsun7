@@ -112,6 +112,7 @@ try {
     await a.getByRole("button", { name: "Cancel", exact: true }).click();
     await a.click("#planet-tools");await a.locator('#planet-destinations [data-zone="restrooms"]').click();
     await a.waitForFunction(()=>!document.getElementById("planet-tools-panel").open&&document.getElementById("planet-restroom-card").dataset.hut==="planet-toilet");
+    check(await a.locator("#planet-invite-resident, #planet-test-restroom").count()===0,"Rooms keep natural resident routines without asking players to invite a lock test");
     await a.locator("#planet-enter-room").tap();
     await a.waitForFunction(()=>{const s=document.getElementById("planet-stage");return Number(s.dataset.at.split(",")[1])<5.7&&s.dataset.walkingIntent==="false"&&s.dataset.selfVisible==="false";});
     check(true,"Phone restroom arrival hides the body when its roof shortens the third-person camera");await shot(a,"restroom-interior-phone");

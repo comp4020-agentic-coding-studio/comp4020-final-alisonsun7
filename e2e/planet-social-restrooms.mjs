@@ -88,6 +88,7 @@ try {
     await go(bo,"observatory");await a.click("#planet-talk");await a.fill("#planet-chat-input","This message stays nearby");await a.click("#planet-chat-submit");await a.waitForTimeout(500);
     check(!(await b.locator("#planet-chat-log").textContent()).includes("This message stays nearby"),"A player beyond twelve metres does not receive the message");await a.keyboard.press("Escape");
     for(const who of[ada,bo])await go(who,"restrooms");
+    check(await a.locator("#planet-invite-resident, #planet-test-restroom").count()===0,"Private rooms offer natural visits without a player-facing resident or lock-test invitation");
     check(await a.locator("#planet-talk").evaluate(button=>{const r=button.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest("button")===button;}),"Talk remains reachable while restroom controls are open");
     await a.locator("#planet-enter-room:not([hidden])").waitFor({state:"visible"});await a.click("#planet-enter-room");await inside(a,"planet-toilet");
     await a.waitForFunction(()=>Number(document.getElementById("planet-stage").dataset.at.split(",")[1])<5.7);await closedDoor(a,"planet-toilet");await closedDoor(b,"planet-toilet");
@@ -112,7 +113,12 @@ try {
     await a.locator("#planet-talk").tap();await a.fill("#planet-chat-input","Phone chat works");await a.locator("#planet-chat-submit").tap();await a.locator("#planet-chat-close").tap();
     check(await a.locator("#planet-chat").evaluate(form=>form.hidden),"Touch users can open, send and close chat");
     await a.setViewportSize({width:1920,height:1080});await go(ada,"restrooms");await go(bo,"restrooms");
-    await a.click("#planet-invite-resident");await a.waitForFunction(()=>JSON.parse(document.getElementById("planet-stage").dataset.npcRoutines??"[]").some(npc=>npc.phase==="occupied"&&npc.occupying),undefined,{timeout:15000});
+    // Scratch-only fixture schedules the existing routine without waiting four
+    // minutes. Players have no invitation action; the real gate, phase stream,
+    // door, flush token and decoded audio are still observed below.
+    const scheduled=await ada.context.request.post(`${base}/api/sessions/${ada.sessionId}/npc-restroom`,{data:{}}),routine=await scheduled.json();
+    assert.ok(scheduled.ok()&&routine.ok&&routine.npcs.some(npc=>npc.phase==="walking"),JSON.stringify(routine));
+    await a.waitForFunction(()=>JSON.parse(document.getElementById("planet-stage").dataset.npcRoutines??"[]").some(npc=>npc.phase==="occupied"&&npc.occupying),undefined,{timeout:15000});
     await closedDoor(b,"planet-toilet");await rejectedAdmission(bo,"planet-toilet",13.5,5.5);
     check(await b.locator("#planet-restroom-live").textContent().then(text=>text.includes("Rowan")),"Both browsers see the actual resident and occupied-door explanation");
     await a.waitForFunction(()=>JSON.parse(document.getElementById("planet-stage").dataset.npcRoutines??"[]").some(npc=>npc.phase==="flushing"&&npc.flushId),undefined,{timeout:10000});
