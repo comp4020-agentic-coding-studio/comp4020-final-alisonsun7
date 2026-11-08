@@ -5,6 +5,7 @@ import type { Avatar } from "../shared/protocol.js";
 import type { Pose } from "./figures.js";
 
 export type FigureRole = "player" | "npc";
+export type ConversationRole = "speaking" | "listening";
 
 export interface AnimalFigureOptions {
   avatar: Avatar;
@@ -885,6 +886,16 @@ export class AnimalFigure extends THREE.Group {
     this.setMotion(this.lastPhase, this.lastWalking);
   }
 
+  /** A turn-taking gesture, not a speech message or another audio source.
+   * phase is a complete conversational beat; the caller supplies shared time.
+   * World facing is untouched. A later pose/motion call fully replaces this. */
+  setConversation(role: ConversationRole, phase: number, reducedMotion = false, lookYaw = 0): void {
+    this.lastWalking = false;
+    this.setPose(role === "speaking" ? "talk" : "stand");
+    this.setMotion(phase, false);
+    this.conversationGesture(role, phase, reducedMotion, lookYaw);
+  }
+
   /** Phase is a complete 0..1 stride, independent of refresh rate. */
   setMotion(phase: number, walking: boolean): void {
     this.lastPhase = Number.isFinite(phase) ? phase : 0;
@@ -919,9 +930,8 @@ export class AnimalFigure extends THREE.Group {
       this.aimArm(this.arms[0], new THREE.Vector3(-0.085, 0.025, 0.188), new THREE.Vector3(-1, -1, 0));
       this.aimArm(this.arms[1], new THREE.Vector3(0.085, 0.025, 0.188), new THREE.Vector3(1, -1, 0));
     }
-    if (this.pose === "talk") {
-      this.aimArm(this.arms[1], new THREE.Vector3(0.21, 0.20, 0.14), new THREE.Vector3(1, -1, 0));
-      this.head.rotation.y = -0.09 + 0.025 * Math.sin(q + this.phaseOffset);
+    if (this.pose === "talk" && !strides) {
+      this.conversationGesture("speaking", this.lastPhase, false, 0);
     } else if (this.pose === "arms-up") {
       for (const arm of this.arms) {
         arm.upper.rotation.set(-Math.PI + 0.1, 0, arm.side * -0.24);
@@ -937,6 +947,36 @@ export class AnimalFigure extends THREE.Group {
       const stroke = this.pose === "strum" ? -0.012 : 0.012;
       this.aimArm(this.arms[1], new THREE.Vector3(0.052, 0.085 + stroke + 0.012 * Math.sin(q), 0.177), new THREE.Vector3(1, -0.7, 0.2));
     }
+  }
+
+  private conversationGesture(role: ConversationRole, phase: number, reducedMotion: boolean, lookYaw: number): void {
+    const turn = Number.isFinite(phase) ? phase : 0;
+    const t = reducedMotion ? 0 : ((turn + this.phaseOffset / TAU) % 1 + 1) % 1;
+    const q = t * TAU;
+    const pulse = (centre: number, width: number): number => {
+      const distance = Math.abs(Math.atan2(Math.sin((t - centre) * TAU), Math.cos((t - centre) * TAU))) / TAU;
+      return distance >= width ? 0 : Math.cos(distance / width * Math.PI / 2) ** 2;
+    };
+    const speaking = role === "speaking";
+    // Each palm has its own short phrase. Clear rests between phrases let the
+    // hand return to the body instead of freezing the right paw in mid-air.
+    const right = speaking ? reducedMotion ? .18 : pulse(.21, .18) : 0;
+    const left = speaking && !reducedMotion ? pulse(.68, .16) * .88 : 0;
+    const breath = reducedMotion ? 0 : Math.sin(q);
+    for (let i = 0; i < this.arms.length; i++) {
+      const arm = this.arms[i], gesture = i === 0 ? left : right;
+      arm.upper.rotation.set(-.025 - gesture * .4, arm.side * gesture * .09, arm.side * (.075 + gesture * .1));
+      arm.fore.rotation.set((i === 0 ? -.14 : -.07) - gesture * .88, arm.side * gesture * .1, 0);
+    }
+    const emphasis = Math.max(right, left);
+    this.upperBody.rotation.set(-.012 * emphasis, speaking ? (right - left) * .028 : 0, breath * (speaking ? .009 : .004));
+    const nod = reducedMotion ? 0 : speaking ? Math.sin(q * 2) * (.012 + emphasis * .025) : pulse(.58, .12) * .065;
+    const facing = Number.isFinite(lookYaw) ? THREE.MathUtils.clamp(lookYaw, -.6, .6) : 0;
+    this.head.rotation.set((speaking ? -.005 : .018) + nod,
+      THREE.MathUtils.clamp(facing + (reducedMotion ? 0 : Math.sin(q + .3) * (speaking ? .045 : .018)), -.6, .6),
+      (speaking ? .008 : .035) + breath * (speaking ? .012 : .006));
+    // The authored closed mouth stays a curve. Hands, gaze and the listener's
+    // occasional nod communicate turns without permanent open-mouth geometry.
   }
 
   private aimArm(arm: Arm, target: THREE.Vector3, pole: THREE.Vector3): void {

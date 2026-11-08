@@ -6,6 +6,9 @@ import { SoundResidents } from "./sound-residents.js";
 import { SoundWildlife } from "./sound-wildlife.js";
 import { SoundVessels } from "./sound-vessels.js";
 import { SoundPinwheels } from "./sound-pinwheels.js";
+import { PLANET_RESIDENT_HOMES, planetNpcFurnitureClearance } from "./planet-neighbours.js";
+import { NpcConversationCues } from "./npc-conversation-cues.js";
+export { CAFE_RESIDENT_HOMES } from "./planet-neighbours.js";
 import { coastlineAt, planetPierHeightAt } from "./planet-coast.js";
 import type { SoundSignal } from "../shared/sound-response.js";
 import { buildPlanet, onPlanet, surfaceFrame } from "./planet-build.js";
@@ -38,26 +41,12 @@ export function planetRenderScale(width: number, height: number, nativeDpr: numb
     return Math.min(Math.max(1.25, native), 2, Math.sqrt(6_000_000 / (w * h)));
 }
 
-// These are neighbours, never members of the room or public contributors.
-// Position them in the real cafe tangent frame rather than widening old data.
-export const CAFE_RESIDENT_HOMES = [
-    { id: "coffee-barista", local: [-.4, -2.4], avatar: "cat", preference: "lively", facing: 0, label: "Bean · barista · NPC" },
-    { id: "coffee-server", local: [0, 1], avatar: "dog", preference: "lively", facing: -.8, label: "Jun · café staff · NPC" },
-    { id: "coffee-reader", local: [-2.2, .9], avatar: "dog", preference: "cozy", facing: .85, label: "Coco · café regular · NPC" },
-    { id: "coffee-company", local: [2.2, .9], avatar: "cat", preference: "lively", facing: -.85, label: "Maple · café regular · NPC" },
-    { id: "coffee-visitor", local: [-4.5, 2.3], avatar: "cat", preference: "cozy", facing: .9, label: "Wren · café regular · NPC" },
-    { id: "coffee-listener", local: [4.5, 2.3], avatar: "dog", preference: "lively", facing: -.9, label: "Sol · café regular · NPC" },
-].map(home => {
-    const [x, z] = home.local, center = PLANET_PLACES.find(place => place.kind === "tea")!;
-    const position = planetStep({ x: center.x, z: center.z, yaw: Math.atan2(x, z) }, 1, 0, R * Math.asin(Math.hypot(x, z) / R));
-    return { ...home, x: position.x, z: position.z, avatar: home.avatar as "cat" | "dog", preference: home.preference as "cozy" | "lively" };
-});
-
 /** Small authored idle life yields entirely to actual shared sound responses.
  * Server time makes the same neighbour perform the same gesture for everyone. */
 export function animateCafeIdle(figure: THREE.Object3D, rig: GestureRig, serverNow: number, reducedMotion: boolean): void {
     const resident = figure.userData.soundResident, id: string = resident?.id ?? "";
-    if (!id.startsWith("coffee-") || resident?.sourceId || figure.userData.chorusWorkId) return;
+    const life=figure.userData.residentLife;
+    if (!id.startsWith("coffee-") || resident?.sourceId && life?.attending!==false || figure.userData.chorusWorkId || life?.walking || life?.role) return;
     let seed = 0; for (const letter of id) seed = (seed * 31 + letter.charCodeAt(0)) >>> 0;
     const phase = reducedMotion ? 0 : serverNow / 1000 + seed % 71;
     const breath = reducedMotion ? 0 : Math.sin(phase * .95);
@@ -101,6 +90,7 @@ export class PlanetWorld {
     private kangarooLabel: HTMLSpanElement;
     private lastInteraction: string | null = null;
     private residentLabels = new Map<AnimalFigure, HTMLSpanElement>();
+    private conversationCues = new NpcConversationCues();
     private overlay = document.createElement("div");
     private touch: HTMLElement | null = null;
     private sun = new THREE.DirectionalLight(0xffefcf, 3.2);
@@ -189,17 +179,18 @@ export class PlanetWorld {
         this.rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xbadadd, size: .065, transparent: true, opacity: .65 }));
         this.rain.frustumCulled = false;
         this.scene.add(this.rain);
-        this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
+        const furnitureClear=planetNpcFurnitureClearance(this.built.root);
+        this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, this.locked()) && !sceneHutAt("planet", x, z) && furnitureClear(x,z,this.built.heightAt(x,z)), distanceBetween: planetDistance });
         this.soundWildlife = new SoundWildlife(this.scene, (x,z)=>this.built.heightAt(x,z)+(this.built.inside(x,z)?3.2:0));
         this.soundVessels = new SoundVessels(this.scene,{shoreline:coastlineAt,isWater:(x,z)=>z>coastlineAt(x)+.12&&planetPierHeightAt(x,z)===null});
         this.soundPinwheels = new SoundPinwheels(this.scene,{heightAt:(x,z)=>this.built.heightAt(x,z),canStand:(x,z)=>this.built.canStand(x,z,this.locked())&&this.garden.canStand(x,z)});
-        const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" }] as const;
-        for (const h of [...homes, ...CAFE_RESIDENT_HOMES]) {
+        for (const h of PLANET_RESIDENT_HOMES) {
             const facing = "facing" in h ? h.facing : 0;
             const label = "label" in h ? h.label : "Resident · NPC";
             const f = new AnimalFigure({ avatar: h.avatar, seed: h.id, role: "npc" });
             this.residents.add({ ...h, label, facing }, f, true);
             this.scene.add(f);
+            this.conversationCues.add(f);
             this.residentPos.set(f, { x: h.x, z: h.z, yaw: facing });
             this.residentLabels.set(f, this.makeLabel(label, "npc"));
         }
@@ -354,6 +345,7 @@ export class PlanetWorld {
         this.works = works.map(work => ({ ...work, liveSources: work.liveSources.map(source => ({ ...source })),
             sources: work.sources.map(source => ({ ...source })), contributors: work.contributors.map(person => ({ ...person })) }));
         this.garden.setWorks(this.works);
+        this.residents.refreshLifeGeometry();
     }
     /** Selecting a record only highlights its real sculpture; travel is explicit. */
     focusWork(workId: string | null): void { this.focusedWork = workId; this.garden.focusWork(workId); }
@@ -582,6 +574,7 @@ export class PlanetWorld {
             f.setInteriorLight(fill(p.x, p.z));
             this.sharedWorkGesture(f, p);
             animateCafeIdle(f, this.gestureRig(f), this.serverNow, this.reduced.matches);
+            this.conversationCues.update(f,this.serverNow,this.reduced.matches);
             onPlanet(f, p.x, p.z, this.built.heightAt(p.x, p.z), p.yaw);
             this.label(this.residentLabels.get(f)!, f, p);
         }
@@ -659,6 +652,13 @@ export class PlanetWorld {
                 id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,
                 variant: figure.userData.chorusVariant ?? null, npc: true, ...this.residentPos.get(figure),
                 avatar: figure.userData.figure.avatar, outfit: figure.userData.figure.outfit })));
+            this.host.dataset.residentLife = JSON.stringify(this.residents.figures.map(figure => ({
+                ...figure.userData.residentLife,id:figure.userData.soundResident.id,...this.residentPos.get(figure),
+                screen:this.project(this.residentPos.get(figure)!.x,this.residentPos.get(figure)!.z,1.2),
+                cueScreen:this.project(this.residentPos.get(figure)!.x,this.residentPos.get(figure)!.z,1.92),
+                rig:{head:this.gestureRig(figure).head?.rotation.toArray().slice(0,3),left:this.gestureRig(figure).left?.rotation.toArray().slice(0,3),right:this.gestureRig(figure).right?.rotation.toArray().slice(0,3)},
+                cueVisible:figure.getObjectByName("npc-conversation-turn")?.visible??false,
+            })));
         }
     };
     private kangarooIsNear(): boolean {
@@ -674,7 +674,8 @@ export class PlanetWorld {
         return rig;
     }
     private sharedWorkGesture(figure: AnimalFigure, position: Position): void {
-        const work = this.garden.workNear(position, 6);
+        const life=figure.userData.residentLife;
+        const work = life?.walking || life?.role || life?.attending===false ? null : this.garden.workNear(position, 6);
         figure.userData.chorusWorkId = work?.id ?? null;
         figure.userData.chorusVariant = work?.variant ?? null;
         if (!work) return;
@@ -732,7 +733,7 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+        a.figure.dispose(); this.conversationCues.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
 }
 
 /** A room wall/roof can compress the camera into the player's own head.

@@ -331,12 +331,14 @@ export function buildPlanet(): PlanetBuild {
             const g = place(p.x, p.z);
             for (let i = 0; i < 4; i++) {
                 const a = i * Math.PI / 2, b = new THREE.Group();
+                b.name = "green-bench";
                 b.rotation.y = a;
                 b.position.set(Math.sin(a) * 3.7, 0, Math.cos(a) * 3.7);
                 g.add(b);
                 bench(b, 0, 0);
             }
             const fountain = mesh(new THREE.CylinderGeometry(.75, 1, .45, 20), stone, g);
+            fountain.name = "green-fountain";
             fountain.position.y = .25;
             const basin = mesh(new THREE.CylinderGeometry(.67, .67, .035, 24), sea, g);
             basin.position.y = .49;
@@ -364,6 +366,7 @@ export function buildPlanet(): PlanetBuild {
             for (const [x, z] of [[-2.2, .25], [2.2, .25], [-2.2, 3.8], [2.2, 3.8], [-4.5, 1.4], [4.5, 1.4]]) {
                 const table = new THREE.Group(); g.add(table); table.position.set(x, 0, z); table.name = "cafe-company-table";
                 const top = mesh(new THREE.CylinderGeometry(.59, .59, .1, 18), timber, table); top.position.y = .84;
+                top.name = "cafe-table-top";
                 box(.12, .8, .12, dark, table, 0, .4, 0);
                 box(.64, .07, .12, dark, table, 0, .1, 0);
                 cup(table, -.2, .9, 0); cup(table, .2, .9, .1);
@@ -372,6 +375,7 @@ export function buildPlanet(): PlanetBuild {
                 ball(.075, rose, table, .02, 1.27, -.18);
                 for (const side of [-1, 1]) {
                     const chair = new THREE.Group(); table.add(chair); chair.position.set(side * .88, 0, .18); chair.rotation.y = side * Math.PI / 2;
+                    chair.name = "cafe-chair";
                     box(.46, .08, .46, terra, chair, 0, .44, 0);
                     box(.46, .49, .065, terra, chair, 0, .72, -.2);
                     for (const xx of [-.16, .16]) for (const zz of [-.16, .16]) box(.045, .4, .045, dark, chair, xx, .2, zz);
@@ -426,6 +430,7 @@ export function buildPlanet(): PlanetBuild {
                 box(.055, 2.2, .055, timber, g, x, 1.3, 1.4);
             }
             const menu = new THREE.Group(); g.add(menu); menu.position.set(-.95, 0, 3.45); menu.rotation.y = -.12;
+            menu.name = "cafe-menu-board";
             box(.7, .95, .08, dark, menu, 0, .62, 0);
             for (const y of [.91, .68, .48]) box(.43, .025, .018, cream, menu, 0, y, .055);
             const bean = ball(.075, gold, menu, 0, .96, .065); bean.scale.set(1.6, .8, .25);

@@ -257,4 +257,78 @@ describe("the original Soundfolk people", () => {
     expect(Number.isFinite(box(b).max.y)).toBe(true);
     b.dispose();
   });
+
+  it("speaks with alternating hands and real rests instead of holding one paw up forever", () => {
+    const figure = new AnimalFigure({ avatar: "dog", seed: "conversation", height: 1 });
+    const left: THREE.Vector3[] = [], right: THREE.Vector3[] = [];
+    try {
+      figure.setPose("talk");
+      for (let step = 0; step < 80; step++) {
+        figure.setMotion(step / 80, false);figure.updateMatrixWorld(true);
+        left.push(part(figure, "left-hand").getWorldPosition(new THREE.Vector3()));
+        right.push(part(figure, "right-hand").getWorldPosition(new THREE.Vector3()));
+        expect(Math.min(box(part(figure, "left-shoe")).min.y, box(part(figure, "right-shoe")).min.y)).toBeCloseTo(0, 5);
+      }
+      const range = (points: THREE.Vector3[]) => Math.max(...points.map(point => point.z)) - Math.min(...points.map(point => point.z));
+      expect(range(left)).toBeGreaterThan(.04);expect(range(right)).toBeGreaterThan(.04);
+      expect(left.some((point, i) => point.z > right[i].z + .04)).toBe(true);
+      expect(right.some((point, i) => point.z > left[i].z + .04)).toBe(true);
+      expect(left.some((point, i) => point.z < .06 && right[i].z < .06)).toBe(true);
+      expect(figure.getObjectByName("acoustic-guitar")?.visible ?? false).toBe(false);
+    } finally { figure.dispose(); }
+  });
+
+  it("distinguishes a quiet listener from a speaker without changing world facing or opening the mouth", () => {
+    const figure = new AnimalFigure({ avatar: "cat", seed: "listen-and-answer", height: 1 });
+    const left: number[] = [], head: number[] = [];
+    const mouth = part(figure, "mouth-line").scale.clone();
+    try {
+      figure.setFacing(1.2);
+      for (let step = 0; step < 40; step++) {
+        figure.setConversation("listening", step / 40, false, .3);
+        left.push(part(figure, "left-hand").getWorldPosition(new THREE.Vector3()).z);
+        head.push(figure.getObjectByName("head-rig")!.rotation.x);
+        expect(figure.rotation.y).toBeCloseTo(1.2);
+        expect(part(figure, "mouth-line").scale).toEqual(mouth);
+        expect(Math.abs(figure.getObjectByName("head-rig")!.rotation.y)).toBeLessThanOrEqual(.6);
+      }
+      expect(Math.max(...left) - Math.min(...left)).toBeLessThan(.03);
+      expect(Math.max(...head) - Math.min(...head)).toBeGreaterThan(.02);
+      figure.setConversation("speaking", .2, false, 3);
+      expect(Math.abs(figure.getObjectByName("head-rig")!.rotation.y)).toBeLessThanOrEqual(.6);
+      expect(figure.pose).toBe("talk");
+    } finally { figure.dispose(); }
+  });
+
+  it("freezes conversation motion when reduced and never accumulates a repeated conversational phase", () => {
+    const figure = new AnimalFigure({ avatar: "dog", seed: "still-speaker" });
+    const capture = (): number[][] => { figure.updateMatrixWorld(true);const result: number[][] = [];figure.traverse(object => result.push([...object.matrixWorld.elements]));return result; };
+    try {
+      for (const role of ["speaking", "listening"] as const) {
+        figure.setConversation(role, .12, false, .1);const first = capture();
+        for (let i = 0; i < 80; i++) figure.setConversation(role, .12, false, .1);
+        expect(capture()).toEqual(first);
+        figure.setConversation(role, .12, true, .1);const still = capture();
+        for (const phase of [.49, .87, 12.6, NaN, Infinity]) figure.setConversation(role, phase, true, .1);
+        expect(capture()).toEqual(still);
+      }
+    } finally { figure.dispose(); }
+  });
+
+  it("resets conversation joints completely before walking, jumping or playing again", () => {
+    const used = new AnimalFigure({ avatar: "cat", seed: "reset-conversation" }), clean = new AnimalFigure({ avatar: "cat", seed: "reset-conversation" });
+    const rigs = ["hip-rig", "upper-body-rig", "head-rig", "left-shoulder", "left-elbow", "right-shoulder", "right-elbow", "left-hip", "right-hip"];
+    try {
+      for (const pose of ["stand", "walk", "arms-up", "guitar", "strum"] as const) {
+        used.setConversation("speaking", .23, false, .5);
+        used.setConversation("listening", .61, false, -.4);
+        used.setPose(pose);used.setMotion(.37, pose === "walk");
+        clean.setPose(pose);clean.setMotion(.37, pose === "walk");
+        used.updateMatrixWorld(true);clean.updateMatrixWorld(true);
+        for (const name of rigs) expect(used.getObjectByName(name)!.matrixWorld.elements, pose + "/" + name).toEqual(clean.getObjectByName(name)!.matrixWorld.elements);
+        expect(used.getObjectByName("acoustic-guitar")?.visible ?? false).toBe(pose === "guitar" || pose === "strum");
+        expect(Math.min(box(part(used, "left-shoe")).min.y, box(part(used, "right-shoe")).min.y)).toBeCloseTo(0, 5);
+      }
+    } finally { used.dispose();clean.dispose(); }
+  });
 });

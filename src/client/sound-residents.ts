@@ -4,10 +4,31 @@ import * as THREE from "three";
 import type { PlacedSound } from "../shared/protocol.js";
 import { chooseResidentResponse, residentPhase, RESIDENT_SETTLE_MS, type ResidentHome, type ResidentResponse, type SoundBehavior, type SoundSignal } from "../shared/sound-response.js";
 import type { AnimalFigure } from "./characters.js";
+import { bearingToward } from "./planet-locomotion.js";
+import { planetDistance } from "../shared/planet.js";
+import { prepareResidentLife, sampleResidentLife, residentAttentionWeight, residentConversationRole, residentLifeSeed,
+  type PreparedResidentLife, type ResidentLifePlan, type ResidentLifeSample } from "./resident-life.js";
 
 export interface ResidentDefinition extends ResidentHome {
   label: string;
   facing: number;
+  life?: ResidentLifePlan;
+}
+
+export interface ResidentActivitySummary {
+  id: string;
+  x: number;
+  z: number;
+  yaw: number;
+  activity: "walking" | "resting" | "working" | "attending" | "speaking" | "listening" | "blocked";
+  walking: boolean;
+  attending: boolean;
+  partnerId: string | null;
+  role: "speaking" | "listening" | null;
+  sourceId: string | null;
+  blocked: boolean;
+  blockedReason: PreparedResidentLife["reason"];
+  slot: number;
 }
 
 export interface ResidentResponseSummary {
@@ -35,6 +56,20 @@ interface Resident {
   arm?: THREE.Object3D;
   elbow?: THREE.Object3D;
   knee?: THREE.Object3D;
+  life?: PreparedResidentLife;
+  activity?: ResidentActivitySummary;
+}
+interface LifeFrame {
+  resident: Resident;
+  sample: ResidentLifeSample;
+  x: number;
+  z: number;
+  yaw: number;
+  walking: boolean;
+  attending: boolean;
+  phase: number;
+  partnerId: string | null;
+  role: "speaking" | "listening" | null;
 }
 
 interface Options {
@@ -65,7 +100,8 @@ export class SoundResidents {
     sprite.userData.soundResident = { id: definition.id, label: definition.label, npc: true, behavior: "idle", sourceId: null };
     this.residents.push({ definition, sprite, owned, home, goal: home.clone(), response: null, release: null,
       hips: sprite.getObjectByName("hip-rig"), body: sprite.getObjectByName("upper-body-rig"), head: sprite.getObjectByName("head-rig"),
-      arm: sprite.getObjectByName("right-shoulder"), elbow: sprite.getObjectByName("right-elbow"), knee: sprite.getObjectByName("right-knee") });
+      arm: sprite.getObjectByName("right-shoulder"), elbow: sprite.getObjectByName("right-elbow"), knee: sprite.getObjectByName("right-knee"),
+      ...(definition.life ? { life: prepareResidentLife(definition.life, definition, this.options) } : {}) });
   }
 
   owns(sprite: AnimalFigure): boolean {
@@ -81,6 +117,20 @@ export class SoundResidents {
       residentId: definition.id, label: definition.label, sourceId: response.sourceId, soundId: response.soundId,
       behavior: response.profile.behavior, x: sprite.position.x, z: sprite.position.z, ...(response.origin ? {origin:response.origin} : {}),
     }] : []);
+  }
+
+  get activities(): readonly ResidentActivitySummary[] {
+    return this.residents.flatMap(resident => resident.activity ? [{ ...resident.activity }] : []);
+  }
+
+  /** The world calls this only after canonical shared geometry changes.
+   * A newly blocked tour deliberately changes to the same validated safe
+   * stop for every observer; ordinary source/preview updates never do this.
+   */
+  refreshLifeGeometry(): void {
+    if (this.disposed) return;
+    for (const resident of this.residents) if (resident.definition.life)
+      resident.life = prepareResidentLife(resident.definition.life, resident.definition, this.options);
   }
 
   setContributions(sounds: readonly SoundSignal[]): void {
@@ -99,6 +149,7 @@ export class SoundResidents {
     const sample = Math.floor(serverNowMs / 250) * 250;
     const select = sample !== this.selectedAt;
     this.selectedAt = sample;
+    const lifeFrames: LifeFrame[] = [];
     for (const resident of this.residents) {
       const { definition, sprite, home } = resident;
       const response = select ? chooseResidentResponse(definition, this.sounds, sample, this.options.distanceBetween) : resident.response;
@@ -116,6 +167,10 @@ export class SoundResidents {
           if (!this.safePath(home, resident.goal)) resident.goal.copy(home);
           resident.goal.y = this.options.surfaceHeight(resident.goal.x, resident.goal.z);
         }
+      }
+      if (resident.life) {
+        lifeFrames.push(this.lifeFrame(resident, serverNowMs, reducedMotion));
+        continue;
       }
       const age = response ? Math.max(0, serverNowMs - response.at - RESIDENT_SETTLE_MS) : 0;
       const progress = reducedMotion ? 0 : ease(age / 3000);
@@ -140,6 +195,77 @@ export class SoundResidents {
       sprite.userData.soundResident.sourceId = response?.sourceId ?? null;
       sprite.userData.soundResident.soundId = response?.soundId ?? null;
     }
+    // Pair after both positions are sampled. Neither render order nor the
+    // previous frame's position may decide whether neighbours can converse.
+    for (const frame of lifeFrames) {
+      const plan = frame.resident.life!.plan;
+      const other = lifeFrames.find(candidate => candidate.resident.definition.id === plan.partnerId);
+      if (!other || other.resident.life!.plan.partnerId !== frame.resident.definition.id || other.resident.life!.plan.group !== plan.group
+        || frame.walking || other.walking || planetDistance(frame, other) > 3 || planetDistance(frame, other) < .45) continue;
+      const a = frame.resident.response, b = other.resident.response;
+      const sharedChat = a?.profile.behavior === "chat" && b?.profile.behavior === "chat" && a.sourceId === b.sourceId;
+      const ordinaryTalk = frame.sample.action === "talk" && other.sample.action === "talk" && !frame.attending && !other.attending;
+      if (!sharedChat && !ordinaryTalk) continue;
+      frame.partnerId = other.resident.definition.id;
+      frame.role = residentConversationRole(frame.resident.definition.id, frame.partnerId, plan.group, serverNowMs, reducedMotion);
+      frame.yaw = bearingToward(frame, other);
+    }
+    for (const frame of lifeFrames) this.drawLife(frame, serverNowMs, reducedMotion);
+  }
+
+  private lifeFrame(resident: Resident, serverNowMs: number, reducedMotion: boolean): LifeFrame {
+    const life = resident.life!;
+    const sampled = !life.blocked && !reducedMotion ? sampleResidentLife(life.plan, serverNowMs) : null;
+    const fallbackAction = life.plan.waypoints.find(point => point.x === life.fallback.x && point.z === life.fallback.z)?.action ?? "rest";
+    const sample: ResidentLifeSample = sampled ?? { ...life.fallback, yaw: resident.definition.facing, walking: false, action: fallbackAction, phase: 0, slot: 0 };
+    // Reduced motion is a fixed authored safe stop. Source changes never
+    // move a planned resident to an old home/response goal or teleport it back.
+    const point = reducedMotion ? life.fallback : sample;
+    const response = resident.response;
+    const attending = !!response && (reducedMotion || residentAttentionWeight(response.sourceId, life.plan.group, response.at, serverNowMs) > .05);
+    return { resident, sample, x: point.x, z: point.z, yaw: sample.walking && !reducedMotion ? sample.yaw : resident.definition.facing,
+      walking: sample.walking && !reducedMotion, attending,
+      phase: reducedMotion ? 0 : residentPhase(resident.definition.id, serverNowMs, sample.walking ? 1.6 : 3.2), partnerId: null, role: null };
+  }
+
+  private drawLife(frame: LifeFrame, serverNowMs: number, reducedMotion: boolean): void {
+    const { resident, walking, attending, role } = frame;
+    const { sprite, response } = resident;
+    sprite.position.set(frame.x, this.options.surfaceHeight(frame.x, frame.z), frame.z);
+    // Walking remains grounded in the route; attention changes the upper
+    // body/gaze, never the legs or canonical location of an ordinary tour.
+    const facing = !walking && attending && response && !role ? bearingToward(frame, response) : frame.yaw;
+    sprite.setFacing(facing);
+    const conversation = sprite as AnimalFigure & { setConversation?: (role: "speaking" | "listening", phase: number, reducedMotion: boolean, lookYaw?: number) => void };
+    if (role && conversation.setConversation) {
+      // The figure's conversation helper owns its full stationary pose.
+      // Do not write a second stand/talk motion over that role afterwards.
+      const phase = reducedMotion ? 0 : ((serverNowMs / 3200 + residentLifeSeed(resident.life!.plan.group)) % 1 + 1) % 1;
+      conversation.setConversation(role, phase, reducedMotion, 0);
+    } else {
+      sprite.setPose(walking ? "walk" : role === "speaking" ? "talk" : !role && attending && response?.profile.behavior === "chat" ? "talk"
+        : !attending && !role && frame.sample.action === "work" ? "lean" : "stand");
+      sprite.setMotion(frame.phase, walking);
+      if (resident.hips) resident.hips.rotation.set(0, 0, 0);
+      if (attending && response && !role) {
+        this.gesture(resident, response.profile.behavior, frame.phase, reducedMotion, walking);
+        if (walking && resident.head) {
+          const look = difference(bearingToward(frame, response), facing);
+          resident.head.rotation.y = Math.max(-.65, Math.min(.65, look));
+        }
+      } else if (!reducedMotion && !walking && !role && resident.head) {
+        resident.head.rotation.y = Math.sin(frame.phase * TAU) * .12;
+        resident.head.rotation.x = .025 + Math.sin(frame.phase * TAU * 2) * .025;
+      }
+    }
+    const blocked = resident.life!.blocked;
+    const activity: ResidentActivitySummary["activity"] = role ?? (walking ? "walking" : attending ? "attending" : blocked ? "blocked" : frame.sample.action === "work" ? "working" : "resting");
+    resident.activity = { id: resident.definition.id, x: frame.x, z: frame.z, yaw: facing, activity, walking, attending,
+      partnerId: frame.partnerId, role, sourceId: response?.sourceId ?? null, blocked, blockedReason: resident.life!.reason, slot: frame.sample.slot };
+    sprite.userData.residentLife = { ...resident.activity };
+    sprite.userData.soundResident.behavior = response?.profile.behavior ?? "idle";
+    sprite.userData.soundResident.sourceId = response?.sourceId ?? null;
+    sprite.userData.soundResident.soundId = response?.soundId ?? null;
   }
 
   private safePath(from: THREE.Vector3, to: THREE.Vector3): boolean {
@@ -157,13 +283,13 @@ export class SoundResidents {
     return true;
   }
 
-  private gesture(resident: Resident, behavior: SoundBehavior, phase: number, reducedMotion: boolean): void {
+  private gesture(resident: Resident, behavior: SoundBehavior, phase: number, reducedMotion: boolean, upperOnly = false): void {
     const q = phase * TAU;
     const motion = reducedMotion ? 0 : 1;
     if (behavior === "sway") {
       if (resident.body) resident.body.rotation.z += Math.sin(q) * 0.085 * motion;
       if (resident.head) resident.head.rotation.z = -Math.sin(q) * 0.07 * motion;
-      if (resident.knee) resident.knee.rotation.x += Math.max(0, Math.sin(q)) * 0.16 * motion;
+      if (resident.knee && !upperOnly) resident.knee.rotation.x += Math.max(0, Math.sin(q)) * 0.16 * motion;
       if (resident.elbow) resident.elbow.rotation.x = -0.65 + Math.sin(q) * 0.12 * motion;
     } else if (behavior === "play") {
       if (resident.body) resident.body.rotation.y += Math.sin(q) * 0.18 * motion;
@@ -190,6 +316,7 @@ export class SoundResidents {
     this.disposed = true;
     for (const resident of this.residents) {
       delete resident.sprite.userData.soundResident;
+      delete resident.sprite.userData.residentLife;
       if (resident.owned) resident.sprite.dispose();
       else {
         resident.sprite.position.copy(resident.home);
