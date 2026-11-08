@@ -27,12 +27,15 @@ export type NpcRestroomResult =
   | { ok: false; code: "no_session" | "bad_request" | "not_here" | "slow_down" | "busy" };
 
 export const NPC_ROUTINE_MS = {
-  interval: 240_000,
-  walking: 6000,
+  // Ordinary activity lasts at least five minutes between visits. The same
+  // time is used after finding a busy room; a queue is not a resident's job.
+  interval: 300_000,
+  walking: 10_000,
+  waiting: 8000,
   entering: 2000,
   occupied: 5000,
   flushing: 3500,
-  leaving: 6000,
+  leaving: 10_000,
   // On leaving, walk straight through the doorway before turning for home.
   exitDoorway: 2000,
 } as const;
@@ -42,6 +45,9 @@ export interface NpcRoutineDefinition {
   label: string;
   avatar: "cat" | "dog";
   home: { x: number; z: number; yaw: number };
+  // Presentation routes only: no users, sound rows or new admission authority.
+  dailyRoute?: readonly { x: number; z: number; yaw: number; restMs: number }[];
+  approach?: readonly { x: number; z: number }[];
   hutId: string;
 }
 
@@ -50,7 +56,20 @@ export function restroomResident(sceneId: string, huts: readonly Hut[]): NpcRout
   if (!toilet) return null;
   return {
     id: `${sceneId}-restroom-neighbour`, label: "Rowan · resident NPC", avatar: "dog",
-    home: { x: (toilet.door.x0 + toilet.door.x1) / 2 - 3, z: toilet.z1 + 1.9, yaw: 0.7 },
+    home: sceneId === "planet" ? { x: 8.2, z: 2.2, yaw: -.7 }
+      : { x: (toilet.door.x0 + toilet.door.x1) / 2 - 3, z: toilet.z1 + 1.9, yaw: 0.7 },
+    ...(sceneId === "planet" ? {
+      // An outdoor loop beside the green, well away from the restroom door.
+      // Repeated waypoints retrace the path instead of cutting across huts.
+      dailyRoute: [
+        { x: 8.2, z: 2.2, yaw: -.7, restMs: 45_000 },
+        { x: 6.9, z: 1.5, yaw: -1.4, restMs: 35_000 },
+        { x: 7.2, z: 3.3, yaw: -.5, restMs: 40_000 },
+        { x: 9, z: 5, yaw: -1.2, restMs: 20_000 },
+        { x: 7.2, z: 3.3, yaw: 1.4, restMs: 10_000 },
+      ],
+      approach: [{ x: 9, z: 5 }, { x: 10, z: 9 }],
+    } : {}),
     hutId: toilet.id,
   };
 }

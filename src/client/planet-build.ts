@@ -1,3 +1,4 @@
+import type { SoundSignal } from "../shared/sound-response.js";
 // Original low-cost, volumetric Soundfolk architecture. No downloaded models.
 import * as THREE from "three";
 import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, PLANET_CAFE_SCALE, planetBasis, planetPoint, planetDistance, planetLocal, type PlanetPlace } from "../shared/planet.js";
@@ -26,7 +27,7 @@ export interface PlanetBuild {
         z: number;
     }[];
     cafeState: { sourceIds: string[]; steam: boolean; music: boolean; company: boolean };
-    setContributions(sounds: readonly PlacedSound[]): void;
+    setContributions(sounds: readonly SoundSignal[]): void;
     heightAt(x: number, z: number): number;
     inside(x: number, z: number): boolean;
     canStand(x: number, z: number, locked: ReadonlySet<string>, ownHut?: string): boolean;
@@ -126,44 +127,105 @@ export function buildPlanet(): PlanetBuild {
     for (const p of PLANET_PLACES)
         if (p.kind !== "pool" && p.kind !== "restrooms" && p.kind !== "green")
             patch(p.x, p.z, p.kind === "tea" ? 6.7 : 3.5, paper);
-    // Continuous ribbons replace a necklace of overlapping discs. Branches
-    // arrive at the actual doors and porches, leaving the meeting green open.
-    function path(points: [number, number][], width = 1.2, title = "village-path"): void {
-        const curve = new THREE.CatmullRomCurve3(points.map(([x, z]) => new THREE.Vector3(x, 0, z)));
-        const samples = curve.getPoints(Math.max(12, Math.ceil(curve.getLength() / .3)));
-        const vertices: number[] = [], indices: number[] = [];
-        for (let i = 0; i < samples.length; i++) {
-            const p = samples[i], a = samples[Math.max(0, i - 1)], b = samples[Math.min(samples.length - 1, i + 1)];
-            const dx = b.x - a.x, dz = b.z - a.z, length = Math.max(.001, Math.hypot(dx, dz));
-            for (const side of [-1, 1]) {
-                const xx = p.x - dz / length * width / 2 * side / Math.max(.3, Math.cos(p.z / R));
-                const zz = p.z + dx / length * width / 2 * side;
-                const v = planetPoint(xx, zz, .055);
-                vertices.push(v.x, v.y, v.z);
-            }
-            if (i < samples.length - 1) { const n = i * 2; indices.push(n, n + 1, n + 2, n + 1, n + 3, n + 2); }
-        }
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-        geometry.setIndex(indices); geometry.computeVertexNormals();
-        const object = mesh(geometry, stone); object.castShadow = false; object.name = title;
-    }
+    // One connected, curved road surface, not separate strips laid over each
+    // other. A clipped distance field joins branches without coplanar seams;
+    // its narrow grass-and-earth shoulder belongs to the same geometry.
     const promenade: [number, number][] = [];
     for (let i = 0; i <= 96; i++) promenade.push([-Math.PI * R + i * Math.PI * 2 * R / 96, 1.2 * Math.sin(i / 96 * Math.PI * 4)]);
-    path(promenade, 1.65, "around-the-world-promenade");
     const villageRoutes: [number, number][][] = [
         [[-4, -.4], [-6.5, -1.4], [-9, -3.7]],
         [[5, .5], [7, -3], [10, -5.8]],
         [[-7, .8], [-10, 4], [-13, 10.1]],
         [[-.6, 3], [-4, 8], [-4.5, 12], [-2, 18.8]],
         [[7, 1], [9, 5], [10, 9], [14, 10]],
-        [[14, 10], [16.5, 11.5], [16, 14]],
+        // Follow the pool's bank. The former route cut straight through its
+        // water and then the runnel, looking like disconnected floating tiles.
+        [[14, 10], [12, 11], [11.2, 13.6], [12.3, 16.6], [14, 18]],
         [[-9, -3.7], [-15, -5], [-19, -8], [-21, -11.8]],
         [[55, -1.2], [54, -3], [55, -5]],
-        [[16, 14], [20, 17], [20, coastlineAt(20) - .7]],
+        [[14, 10], [17.5, 10], [20.8, 12.2], [21.1, 15.4], [20, coastlineAt(20) - .7]],
         [[3, 2], [7, 9], [7, coastlineAt(7) - 1.4]],
     ];
-    for (const points of villageRoutes) path(points, 1.2);
+    type RoadSegment = { ax: number; az: number; bx: number; bz: number; halfWidth: number };
+    const roadBuckets = new Map<string, RoadSegment[]>(), bucketSize = 2, halfWorld = Math.PI * R;
+    let roadSouth = -Infinity, roadNorth = Infinity;
+    for (const [points, width] of [[promenade, 1.65], ...villageRoutes.map(points => [points, 1.2])] as [number[][], number][]) {
+        const curve = new THREE.CatmullRomCurve3(points.map(([x, z]) => new THREE.Vector3(x, 0, z)));
+        const samples = curve.getPoints(Math.max(12, Math.ceil(curve.getLength() / .25)));
+        for (let i = 1; i < samples.length; i++) {
+            const a = samples[i - 1], b = samples[i], halfWidth = width / 2;
+            const paddingX = (halfWidth + .7) / Math.max(.3, Math.cos(Math.max(Math.abs(a.z), Math.abs(b.z)) / R));
+            roadNorth = Math.min(roadNorth, a.z - halfWidth - .5, b.z - halfWidth - .5);
+            roadSouth = Math.max(roadSouth, a.z + halfWidth + .5, b.z + halfWidth + .5);
+            // Duplicate only the seam neighbourhood so the promenade has the
+            // same width and tangent on both sides of longitude's wrap.
+            for (const shift of [-halfWorld * 2, 0, halfWorld * 2]) {
+                const segment = { ax: a.x + shift, az: a.z, bx: b.x + shift, bz: b.z, halfWidth };
+                const left = Math.min(segment.ax, segment.bx) - paddingX, right = Math.max(segment.ax, segment.bx) + paddingX;
+                if (left > halfWorld + bucketSize || right < -halfWorld - bucketSize) continue;
+                for (let x = Math.floor(left / bucketSize); x <= Math.floor(right / bucketSize); x++)
+                    for (let z = Math.floor((Math.min(a.z, b.z) - halfWidth - .7) / bucketSize); z <= Math.floor((Math.max(a.z, b.z) + halfWidth + .7) / bucketSize); z++) {
+                        const key = `${x}:${z}`, bucket = roadBuckets.get(key);
+                        if (bucket) bucket.push(segment); else roadBuckets.set(key, [segment]);
+                    }
+            }
+        }
+    }
+    const roadField = (x: number, z: number): number => {
+        let field = -3;
+        const eastScale = Math.max(.3, Math.cos(z / R));
+        for (const segment of roadBuckets.get(`${Math.floor(x / bucketSize)}:${Math.floor(z / bucketSize)}`) ?? []) {
+            const dx = (segment.bx - segment.ax) * eastScale, dz = segment.bz - segment.az;
+            const px = (x - segment.ax) * eastScale, pz = z - segment.az;
+            const t = THREE.MathUtils.clamp((px * dx + pz * dz) / Math.max(.000001, dx * dx + dz * dz), 0, 1);
+            field = Math.max(field, 1 - Math.hypot(px - dx * t, pz - dz * t) / segment.halfWidth);
+        }
+        // Sand can meet the path; no pale road is painted out over the sea.
+        return Math.min(field, (coastlineAt(x) - z - .12) / .6);
+    };
+    const columns = Math.ceil(halfWorld * 2 / .3), rows = Math.ceil((roadSouth - roadNorth) / .3);
+    const fields = new Float32Array((columns + 1) * (rows + 1));
+    const gridPoint = (index: number): { x: number; z: number; field: number } => ({
+        x: -halfWorld + index % (columns + 1) / columns * halfWorld * 2,
+        z: roadNorth + Math.floor(index / (columns + 1)) / rows * (roadSouth - roadNorth), field: fields[index],
+    });
+    for (let row = 0; row <= rows; row++) for (let col = 0; col <= columns; col++) {
+        const i = row * (columns + 1) + col, p = gridPoint(i); fields[i] = roadField(p.x, p.z);
+    }
+    const roadVertices: number[] = [], roadNormals: number[] = [], roadColours: number[] = [], roadIndices: number[] = [];
+    const roadVertexCache = new Map<string, number>(), shoulder = new THREE.Color(0xa1a981), roadCore = new THREE.Color(0xd8c6a3);
+    const roadVertex = (key: string, p: { x: number; z: number; field: number }): number => {
+        const cached = roadVertexCache.get(key); if (cached !== undefined) return cached;
+        const v = planetPoint(p.x, p.z, .065), index = roadVertices.length / 3;
+        roadVertices.push(v.x, v.y, v.z);
+        const radial = Math.hypot(v.x, v.y, v.z); roadNormals.push(v.x / radial, v.y / radial, v.z / radial);
+        const colour = shoulder.clone().lerp(roadCore, THREE.MathUtils.smoothstep(p.field, 0, .25));
+        roadColours.push(colour.r, colour.g, colour.b); roadVertexCache.set(key, index); return index;
+    };
+    const clipRoadTriangle = (triangle: number[]): void => {
+        if (triangle.every(i => fields[i] <= 0)) return;
+        const polygon: number[] = [];
+        for (let j = 0; j < 3; j++) {
+            const a = triangle[j], b = triangle[(j + 1) % 3], p = gridPoint(a), q = gridPoint(b);
+            if (p.field > 0) polygon.push(roadVertex(`g${a}`, p));
+            if ((p.field > 0) !== (q.field > 0)) {
+                const t = p.field / (p.field - q.field);
+                polygon.push(roadVertex(`e${Math.min(a, b)}:${Math.max(a, b)}`, { x: p.x + (q.x - p.x) * t, z: p.z + (q.z - p.z) * t, field: 0 }));
+            }
+        }
+        for (let j = 1; j < polygon.length - 1; j++) roadIndices.push(polygon[0], polygon[j], polygon[j + 1]);
+    };
+    for (let row = 0; row < rows; row++) for (let col = 0; col < columns; col++) {
+        const a = row * (columns + 1) + col, b = a + columns + 1;
+        clipRoadTriangle([a, b, a + 1]); clipRoadTriangle([a + 1, b, b + 1]);
+    }
+    const roadGeometry = new THREE.BufferGeometry();
+    roadGeometry.setAttribute("position", new THREE.Float32BufferAttribute(roadVertices, 3));
+    roadGeometry.setAttribute("normal", new THREE.Float32BufferAttribute(roadNormals, 3));
+    roadGeometry.setAttribute("color", new THREE.Float32BufferAttribute(roadColours, 3)); roadGeometry.setIndex(roadIndices);
+    roadGeometry.userData.continuousRoad = true;
+    const roadMaterial = mat(0xffffff); roadMaterial.vertexColors = true;
+    const road = mesh(roadGeometry, roadMaterial); road.castShadow = false; road.name = "around-the-world-promenade";
     function sign(parent: THREE.Object3D, text: string, y = 3.8, front = 2.04): void {
         const canvas = document.createElement("canvas");
         canvas.width = 512;
@@ -573,13 +635,7 @@ export function buildPlanet(): PlanetBuild {
     const tint = new THREE.Color();
     const palette = [0x668469, 0x53745f, 0x8b9b6c, 0x749578, 0x5f8275];
     const nearPath = (x: number, z: number): boolean => {
-        if (Math.abs(z - 1.2 * Math.sin((x + Math.PI * R) / (Math.PI * 2 * R) * Math.PI * 4)) < 2) return true;
-        return villageRoutes.some(route => route.some((a, i) => {
-            const b = route[i + 1]; if (!b) return false;
-            const dx = b[0] - a[0], dz = b[1] - a[1], length2 = dx * dx + dz * dz;
-            const t = THREE.MathUtils.clamp(((x - a[0]) * dx + (z - a[1]) * dz) / Math.max(.001, length2), 0, 1);
-            return Math.hypot(x - a[0] - t * dx, z - a[1] - t * dz) < 1.6;
-        }));
+        return roadField(x, z) > -1.3;
     };
     const clearMeeting = (x: number, z: number): boolean => PLANET_PLACES.some(p => planetDistance({ x, z }, p) < 5.4) || PLANET_HUTS.some(h => x > h.x0 - 1 && x < h.x1 + 1 && z > h.z0 - 1 && z < h.z1 + 1);
     for (let i = 0; i < 650 && ti < 150; i++) {
@@ -686,7 +742,7 @@ export function buildPlanet(): PlanetBuild {
         return true;
     }
     const inside = (x: number, z: number): boolean => buildings.some(p => { const local = planetLocal({ x, z }, p), scale = p.kind === "tea" ? PLANET_CAFE_SCALE : { x: 1, z: 1 }; return Math.abs(local.x) < 2.3*scale.x && Math.abs(local.z) < 1.95*scale.z; });
-    function setContributions(sounds: readonly PlacedSound[]): void {
+    function setContributions(sounds: readonly SoundSignal[]): void {
         const cafe = PLANET_PLACES.find(place => place.kind === "tea")!;
         const live = sounds.filter(source => !source.removedAt && !source.whileIn && planetDistance(source, cafe) <= 8)
             .sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id));

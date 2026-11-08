@@ -2,6 +2,11 @@
 // No listener, audio switch, random value or browser-arrival time participates.
 import type { PlacedSound } from "./protocol.js";
 
+// World examples have no invented player identity and never enter a reply
+// graph, contribution history or human-presence count.
+export type SoundSignal = Pick<PlacedSound, "id" | "soundId" | "x" | "z" | "at"> &
+  Partial<Pick<PlacedSound, "removedAt" | "whileIn">> & { origin?: "example" };
+
 export type SoundMood = "cozy" | "lively" | "wild";
 export type SoundBehavior = "sway" | "chat" | "play" | "listen" | "watch" | "wave";
 
@@ -28,6 +33,7 @@ const behaviors: Readonly<Record<string, SoundBehavior>> = {
   "gentle-breeze": "listen", "summer-cicadas": "watch", "bicycle-bell": "wave",
   "cafe-dishes": "chat", "harbour-boat": "watch",
   "rainstick": "listen", "hand-claps": "sway",
+  "chorus-chords": "sway", "chorus-pulse": "sway", "chorus-bells": "wave",
 };
 
 export function soundResponseFor(soundId: string): SoundResponseProfile | null {
@@ -50,6 +56,7 @@ export interface ResidentResponse {
   z: number;
   at: number;
   profile: SoundResponseProfile;
+  origin?: "example";
 }
 
 export const RESIDENT_HEAR = 18;
@@ -60,11 +67,13 @@ export const RESIDENT_SETTLE_MS = 2000;
 /**
  * Fixed home positions, three-metre priority bands and oldest-first ties keep
  * a chosen source steady as the figure walks or the contribution list reorders.
+ * Responsive, settled real ingredients take attention before teaching examples;
+ * examples resume only when no real ingredient is eligible for this resident.
  * A neighbour's preference is one band, so a substantially nearer sound wins.
  * This is deliberately stateless: a late arrival picks the same source as a
  * long-running page, unlike an incumbent-dependent local hysteresis rule.
  */
-export function chooseResidentResponse(home: ResidentHome, sounds: readonly PlacedSound[], serverNowMs: number, distanceBetween: (a: {x:number;z:number}, b: {x:number;z:number}) => number = (a,b) => Math.hypot(a.x-b.x,a.z-b.z)): ResidentResponse | null {
+export function chooseResidentResponse(home: ResidentHome, sounds: readonly SoundSignal[], serverNowMs: number, distanceBetween: (a: {x:number;z:number}, b: {x:number;z:number}) => number = (a,b) => Math.hypot(a.x-b.x,a.z-b.z)): ResidentResponse | null {
   if (![home.x, home.z, serverNowMs].every(Number.isFinite)) return null;
   let selected: ResidentResponse | null = null;
   let selectedPriority = Infinity;
@@ -79,8 +88,12 @@ export function chooseResidentResponse(home: ResidentHome, sounds: readonly Plac
     const distance = distanceBetween(sound, home);
     if (distance > RESIDENT_HEAR) continue;
     const priority = Math.floor(distance / 3) + (profile.mood === home.preference ? 0 : 1);
-    if (selected && (priority > selectedPriority || (priority === selectedPriority && (at > selected.at || (at === selected.at && sound.id >= selected.sourceId))))) continue;
-    selected = { sourceId: sound.id, soundId: sound.soundId, x: sound.x, z: sound.z, at, profile };
+    if (selected) {
+      const example = sound.origin === "example", selectedExample = selected.origin === "example";
+      if (example && !selectedExample) continue;
+      if (example === selectedExample && (priority > selectedPriority || (priority === selectedPriority && (at > selected.at || (at === selected.at && sound.id >= selected.sourceId))))) continue;
+    }
+    selected = { sourceId: sound.id, soundId: sound.soundId, x: sound.x, z: sound.z, at, profile, ...(sound.origin ? {origin:sound.origin} : {}) };
     selectedPriority = priority;
   }
   return selected;

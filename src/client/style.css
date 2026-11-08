@@ -2429,6 +2429,34 @@ h3 {
 .chorus-placement-intent p { margin:0 0 6px;font-size:13px; }
 .chorus-placement-intent button { min-height:44px;border:1px solid #94a28a;border-radius:20px;padding:8px 14px;background:#fffdf2;color:#244a44; }
 .planet-stage:has(.chorus-placement-intent:not([hidden])) .chorus-dock { display:none; }
+.planet-examples-label { display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer; }
+.planet-examples-label[hidden] { display:none; }
+.planet-examples-label input { width:20px;height:20px;accent-color:#345d51; }
+.sound-discovery { position:absolute;z-index:21;left:22px;bottom:24px;width:min(340px,calc(100% - 44px));padding:17px 18px;background:#fbf7ebf5;border:1px solid #acb69b;border-radius:6px 24px 24px;box-shadow:0 12px 35px #243d3226;color:#244a44; }
+.sound-discovery[hidden],.sound-discovery-reopen[hidden] { display:none; }
+.planet-stage:has(.planet-chat:not([hidden])) .sound-discovery,
+.planet-stage:has(.planet-chat:not([hidden])) .sound-discovery-reopen { display:none; }
+.sound-discovery #sound-discovery-origin { margin:0 34px 7px 0;font:600 11px/1.4 var(--font);color:#566b56; }
+.sound-discovery>strong { display:block;margin-right:22px;font:400 25px/1.2 var(--font-display); }
+.sound-discovery #sound-discovery-cause { margin:9px 0 13px;font-size:13px;line-height:1.45; }
+#sound-discovery-close { position:absolute;right:5px;top:5px;width:44px;height:44px;border:0;background:none;color:#244a44;font-size:23px;cursor:pointer; }
+#sound-discovery-actions { display:flex;flex-wrap:wrap;gap:7px; }
+#sound-discovery-actions button,.sound-discovery-reopen { min-height:44px;padding:9px 12px;border:1px solid #91a48b;border-radius:9px;background:#fffdf0;color:#244a44;font:600 12px/1.4 var(--font);cursor:pointer; }
+#sound-discovery-create { background:#345d51!important;color:#fffdf0!important;border-color:#345d51!important; }
+#sound-example-compare { background:transparent!important;border:0!important;padding-left:0!important;text-decoration:underline;text-underline-offset:3px; }
+#sound-discovery-feedback { margin:6px 0 0;font-size:12px;line-height:1.4; }
+#sound-discovery-feedback:empty { display:none; }
+.sound-discovery-reopen { position:absolute;z-index:20;left:22px;bottom:24px;box-shadow:0 4px 15px #243d3220; }
+.planet-stage:has(#sound-discovery:not([hidden])) .planet-nearby-sound,
+.planet-stage:has(#sound-discovery:not([hidden])) .planet-nearby-reopen,
+.planet-stage:has(#sound-discovery:not([hidden])) .planet-sound-pins,
+.planet-stage:has(#sound-discovery:not([hidden]))>.planet-place { display:none; }
+@media(max-width:620px){
+ .sound-discovery { left:12px;bottom:154px;width:calc(100% - 24px);padding:13px 15px; }
+ .sound-discovery>strong { font-size:22px; }
+ .sound-discovery #sound-discovery-cause { margin:7px 0 10px;font-size:12px; }
+ .sound-discovery-reopen { bottom:154px;left:12px; }
+}
 .chorus-welcome { width:min(520px,calc(100vw - 32px));text-align:center;padding:32px 42px; }
 .chorus-welcome .btn { display:flex;width:100%;margin-top:10px;justify-content:center; }
 .chorus-welcome h2 { font-size:38px; }

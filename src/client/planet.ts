@@ -8,6 +8,8 @@ import { PlanetSocial } from "./planet-social.js";
 import { PlanetAudio } from "./planet-audio.js";
 import { RoutineAudio } from "./routine-audio.js";
 import { ChorusStudio } from "./chorus-studio.js";
+import { SoundDiscovery } from "./sound-discovery.js";
+import { worldSoundExamples, activeWorldExamples } from "../shared/sound-life.js";
 import { chorusPlaceAt, type ChorusWork } from "../shared/chorus.js";
 import { invitationHref, invitationWork } from "../shared/chorus-invitation.js";
 import { placementAvailability, findNearbyPlan } from "../shared/chorus-placement.js";
@@ -45,6 +47,9 @@ let here: Position = { x: 0, z: 3, yaw: Math.PI };
 let noticeTimer: ReturnType<typeof setTimeout> | undefined;
 let soundInteractions: PlanetSoundInteractions | undefined;
 let social: PlanetSocial | undefined;
+let soundDiscovery: SoundDiscovery | undefined;
+const exampleBlueprints=worldSoundExamples(snapshot.sessionId);
+let examplesEnabled=true;try{examplesEnabled=localStorage.getItem("little-chorus-examples")!=="off";}catch{}
 let walkingReply: string | null = null;
 let walkingReplyRevision = 0;
 let placementPlan: { soundId: string; parent: SoundReference | null; target: Position; revision: number } | null = null;
@@ -61,6 +66,7 @@ const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l =
         soundInteractions?.frame();
         studio.frame();
         social?.frame();
+        soundDiscovery?.frame();
         updateReplyIntent();
         updatePlacementPlan();
         updateView();
@@ -208,7 +214,7 @@ native(shared, $("planet-shared"));
 containFocus(shared);
 $("planet-shared").onclick = () => { renderShared(); show(shared); };
 function publicSounds(): PlacedSound[] { return [...sounds.values()].filter(s => !s.whileIn && !s.removedAt && !ended.has(s.id)); }
-function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list); soundInteractions?.setAll(list);studio.setWorks(chorus);conversations.changed();renderShared(); renderPeople(); }
+function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list);refreshSoundLife(); soundInteractions?.setAll(list);studio.setWorks(chorus);conversations.changed();renderShared(); renderPeople(); }
 function record(kind: string, s: PlacedSound, by = s.by): void { if (s.whileIn)
     return; const id = s.id + ":" + kind; if (events.has(id))
     return; events.add(id); activity.unshift(by + (kind === "removed" ? " removed " : " left ") + (findSound(s.soundId)?.label ?? "a sound")); activity.splice(4); $("planet-activity").replaceChildren(...activity.map(text => { const p = document.createElement("p"); p.textContent = text; return p; })); }
@@ -363,6 +369,18 @@ function receiveChorus(works: readonly ChorusWork[]): void {
     stage.dataset.chorus = JSON.stringify(chorus.map(w=>({id:w.id,placeId:w.placeId,variant:w.variant,duet:w.duet,sources:w.sources.map(s=>({id:s.id,byId:s.byId,replyToId:s.replyToId,removedAt:s.removedAt})),live:w.liveSources.map(s=>s.id)})));
 }
 receiveChorus(chorus);
+const examplesSetting=$<HTMLInputElement>("planet-examples");examplesSetting.checked=examplesEnabled;
+function refreshSoundLife():void{
+    const active=activeWorldExamples(exampleBlueprints,publicSounds(),!flat&&examplesEnabled);
+    audio.setExamples(active);if(world instanceof PlanetWorld)world.setExamples(active);
+    stage.dataset.soundExamples=JSON.stringify(active);soundDiscovery?.frame();
+}
+function setExamplesEnabled(enabled:boolean):void{examplesEnabled=enabled;examplesSetting.checked=enabled;try{localStorage.setItem("little-chorus-examples",enabled?"on":"off");}catch{}refreshSoundLife();}
+examplesSetting.onchange=()=>setExamplesEnabled(examplesSetting.checked);
+if(flat){$("planet-examples-label").hidden=true;$("planet-examples-note").hidden=true;}
+else soundDiscovery=new SoundDiscovery(stage,{at:()=>world.at,sources:publicSounds,blueprints:()=>exampleBlueprints,enabled:()=>examplesEnabled,setEnabled:setExamplesEnabled,
+    listen:id=>audio.preview(id),stop:()=>audio.stopPreview(),create:id=>{cancelReply();openLibrary(false,id);}});
+refreshSoundLife();
 const placementIntent = document.createElement("aside");placementIntent.className="chorus-placement-intent";placementIntent.hidden=true;
 const placementText=document.createElement("p"), stopPlacing=button("Cancel walk",()=>{cancelPlacement();world.focus();});stopPlacing.id="chorus-walk-cancel";placementIntent.append(placementText,stopPlacing);stage.append(placementIntent);
 function cancelPlacement(): void { if(placementPlan)world.cancelWalkingIntent();placementPlan=null;placementIntent.hidden=true; }
@@ -416,10 +434,10 @@ function inviteTo(work: ChorusWork): void {
     const open=()=>{invitationUrl.value=new URL(invitationHref(work.id),location.origin).href;invitationStatus.textContent="";show(invitation);invitationUrl.focus();invitationUrl.select();};
     if(studio.journal.open)afterDialogClose(studio.journal,open);else open();
 }
-function openLibrary(full = false): void { if (!boot.joined) {
+function openLibrary(full = false, suggested?: string): void { if (!boot.joined) {
     show(arrival);
     return;
-} world.setPaused(true);if(full){library.setReply(reply);library.open();}else studio.open(reply); }
+} world.setPaused(true);if(full){library.setReply(reply);library.open();}else studio.open(reply,suggested); }
 $("planet-place").onclick = () => {cancelReply();openLibrary();};
 const conversations = new SoundConversations({
     visitLabel: "Walk toward sound",
@@ -637,4 +655,4 @@ renderPeople();
 renderShared();
 renderOccupancy();
 window.addEventListener("pagehide", e => { if (e.persisted || disposed)
-    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); studio.dispose();audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();social?.dispose();world.dispose(); }, { once: false });
+    return; disposed = true; clearInterval(clock); clearTimeout(noticeTimer); stream.close(); studio.dispose();soundDiscovery?.dispose();audio.dispose(); routineAudio.dispose();soundInteractions?.dispose();social?.dispose();world.dispose(); }, { once: false });

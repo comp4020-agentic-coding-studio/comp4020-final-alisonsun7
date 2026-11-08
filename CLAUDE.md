@@ -2,6 +2,15 @@
 
 # Little Chorus agent rules
 
+ADR031 adds three explicitly labelled, locally switchable world examples in
+the 3D presentation. Their reserved signals have no author, database source,
+reply or work. Real public sources take priority; examples never unlock a shared
+form or override local listening consent. Source-derived birds and gulls must
+disappear on withdrawal. A hidden discovery guide must not stop another
+dialog's private preview, and chat must remain reachable before the next frame.
+Road repairs retain historical source coordinates; ordinary resident activity
+and bounded busy-room waits retain authoritative admission.
+
 ADR030 makes the first shared creation the current quality priority. Explain
 predicted effects from the whole live work, preserve true author marks and
 withdrawn history, and treat a work invitation as a public reference only.

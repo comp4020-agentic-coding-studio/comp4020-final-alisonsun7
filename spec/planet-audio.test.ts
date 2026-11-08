@@ -2,11 +2,16 @@ import * as THREE from "three";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PlanetAudio } from "../src/client/planet-audio.ts";
 import type { PlacedSound } from "../src/shared/protocol.ts";
+import type { SoundSignal } from "../src/shared/sound-response.ts";
+import { planetPoint } from "../src/shared/planet.ts";
 
 const at = Date.parse("2026-11-07T10:00:00Z");
 const listener = { x: 0, z: 0, yaw: 0 };
 const sound = (id = "source-a", patch: Partial<PlacedSound> = {}): PlacedSound => ({
   id, soundId: "guitar", x: 2, z: 0, at: new Date(at).toISOString(), by: "Ada", byId: "person-a", ...patch,
+});
+const example = (id = "example-a", patch: Partial<SoundSignal> = {}): SoundSignal => ({
+  id, soundId: "guitar", x: 0, z: 0, at: new Date(at).toISOString(), origin: "example", ...patch,
 });
 function parameter() {
   const result = { value: 0, setTargetAtTime: vi.fn(), setValueAtTime: vi.fn() };
@@ -148,5 +153,81 @@ describe("the new planet's optional shared recording playback", () => {
     await settle(); waiting.resolve(decoded); await settle();
     expect(sources.filter(source => source.start.mock.calls.length)).toHaveLength(8);
     expect(Math.max(...report.mock.calls.map(([count]) => count))).toBeLessThanOrEqual(8);
+  });
+
+  it("keeps examples silent without local permission while still allowing a private audition", async () => {
+    const instance = audio(); instance.setExamples([example()]);
+    instance.frame(listener, camera, at + 1000); await settle();
+    expect(instance.on).toBe(false); expect(contexts).toHaveLength(0); expect(fetcher).not.toHaveBeenCalled();
+    expect(await instance.preview("guitar")).toBe(true);
+    expect(instance.on).toBe(false); expect(sources).toHaveLength(1);
+    instance.stopPreview(); instance.setAll([sound("new-friend")]); instance.frame(listener, camera, at + 2000);
+    await settle(); expect(sources).toHaveLength(1); expect(instance.on).toBe(false);
+  });
+
+  it("gives eight real in-range sounds priority over nearby examples without expanding the budget", async () => {
+    const report = vi.fn(), instance = audio(report);
+    instance.setExamples(Array.from({ length: 8 }, (_, i) => example(`example-${i}`, { soundId: "coastal-gulls", x: .1 + i * .05 })));
+    instance.setAll(Array.from({ length: 8 }, (_, i) => sound(`real-${i}`, { x: 10 + i * .1 })));
+    instance.setOn(true); instance.frame(listener, camera, at); await settle();
+    expect(sources).toHaveLength(8);
+    expect(fetcher.mock.calls.map(([url]) => url)).toEqual(["/assets/sounds/guitar.mp3"]);
+    expect(Math.max(...report.mock.calls.map(([count]) => count))).toBeLessThanOrEqual(8);
+  });
+
+  it("retains an explicit real focus when the mix also contains nearer examples", async () => {
+    const instance = audio(), target = sound("my-focus", { x: 13 });
+    instance.setAll([...Array.from({ length: 8 }, (_, i) => sound(`near-${i}`, { x: 2 + i * .1 })), target]);
+    instance.setExamples([example("example-close", { soundId: "coastal-gulls" })]);
+    instance.setFocus(target.id); instance.setOn(true); instance.frame(listener, camera, at); await settle();
+    expect(sources).toHaveLength(8);
+    expect(pans.some(pan => Math.abs(pan.positionX.value - planetPoint(target.x, target.z, .55).x) < .00001)).toBe(true);
+    expect(fetcher.mock.calls.map(([url]) => url)).toEqual(["/assets/sounds/guitar.mp3"]);
+  });
+
+  it("plays a nearby example at half gain and removes it at its own six-metre boundary", async () => {
+    const instance = audio(); instance.setAll([sound("real", { x: 0 })]); instance.setExamples([example()]);
+    instance.setOn(true); instance.frame(listener, camera, at); await settle();
+    expect(sources).toHaveLength(2);
+    const actualGain = sources[0].connect.mock.calls[0][0].gain.value;
+    const exampleGain = sources[1].connect.mock.calls[0][0].gain.value;
+    expect(exampleGain / actualGain).toBeCloseTo(.5, 8);
+    instance.frame({ x: 6.01, z: 0, yaw: 0 }, camera, at + 1000); await settle();
+    expect(sources[1].stop).toHaveBeenCalledOnce(); expect(sources[0].stop).not.toHaveBeenCalled();
+  });
+
+  it("removes real sources independently and immediately stops examples when they are hidden", async () => {
+    const instance = audio(); instance.setAll([sound("real")]); instance.setExamples([example()]);
+    instance.setOn(true); instance.frame(listener, camera, at); await settle();
+    expect(sources).toHaveLength(2);
+    instance.remove("real"); expect(sources[0].stop).toHaveBeenCalledOnce(); expect(sources[1].stop).not.toHaveBeenCalled();
+    instance.setAll([]); instance.setWorks([]); instance.frame(listener, camera, at + 100); await settle();
+    expect(sources).toHaveLength(2); expect(sources[1].stop).not.toHaveBeenCalled();
+    instance.setExamples([]); expect(sources[1].stop).toHaveBeenCalledOnce(); expect(instance.on).toBe(true);
+  });
+
+  it("does not revive an example decode removed before completion, including a quick off/on without a new frame", async () => {
+    const waiting = deferred<AudioBuffer>(); decode.mockReturnValueOnce(waiting.promise);
+    const instance = audio(); instance.setExamples([example()]); instance.setOn(true); instance.frame(listener, camera, at);
+    await settle(); instance.setExamples([]); instance.setExamples([example()]); waiting.resolve(decoded); await settle();
+    expect(sources).toHaveLength(0);
+    instance.frame(listener, camera, at + 1000); await settle(); expect(sources).toHaveLength(1);
+  });
+
+  it("does not cancel a pending example when the same example list is refreshed", async () => {
+    const waiting = deferred<AudioBuffer>(); decode.mockReturnValueOnce(waiting.promise);
+    const instance = audio(); instance.setExamples([example()]); instance.setOn(true); instance.frame(listener, camera, at);
+    await settle(); instance.setExamples([example()]); waiting.resolve(decoded); await settle();
+    expect(sources).toHaveLength(1);
+  });
+
+  it.each(["hidden", "off", "disposed"])("never starts a pending example after this page becomes %s", async mode => {
+    const waiting = deferred<AudioBuffer>(); decode.mockReturnValueOnce(waiting.promise);
+    const instance = audio(); instance.setExamples([example()]); instance.setOn(true); instance.frame(listener, camera, at);
+    await settle();
+    if (mode === "hidden") { document.hidden = true; document.dispatchEvent(new Event("visibilitychange")); }
+    else if (mode === "off") instance.setOn(false);
+    else instance.dispose();
+    waiting.resolve(decoded); await settle(); expect(sources).toHaveLength(0);
   });
 });

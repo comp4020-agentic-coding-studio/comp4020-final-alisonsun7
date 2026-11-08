@@ -3,6 +3,8 @@
 import * as THREE from "three";
 import { AnimalFigure } from "./characters.js";
 import { SoundResidents } from "./sound-residents.js";
+import { SoundWildlife } from "./sound-wildlife.js";
+import type { SoundSignal } from "../shared/sound-response.js";
 import { buildPlanet, onPlanet, surfaceFrame } from "./planet-build.js";
 import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, planetBasis, planetPoint, planetDistance, planetStep, sceneHutAt, type PlanetPlace } from "../shared/planet.js";
 import type { Person, Position, PlacedSound, Moves } from "../shared/protocol.js";
@@ -70,6 +72,8 @@ type Listener = Position & {
     serverNow: number;
 };
 export class PlanetWorld {
+    private soundWildlife: SoundWildlife;
+    private examples: SoundSignal[] = [];
     readonly renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     readonly camera = new THREE.PerspectiveCamera(68, 1, .1, 220);
     readonly scene = new THREE.Scene();
@@ -180,6 +184,7 @@ export class PlanetWorld {
         this.rain.frustumCulled = false;
         this.scene.add(this.rain);
         this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
+        this.soundWildlife = new SoundWildlife(this.scene, (x,z)=>this.built.heightAt(x,z)+(this.built.inside(x,z)?3.2:0));
         const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" }] as const;
         for (const h of [...homes, ...CAFE_RESIDENT_HOMES]) {
             const facing = "facing" in h ? h.facing : 0;
@@ -318,10 +323,14 @@ export class PlanetWorld {
     }
     setContributions(sounds: readonly PlacedSound[]): void {
         this.publicSounds = sounds.filter(s => !s.removedAt && !s.whileIn).map(s => ({ ...s })).sort((a,b)=>a.at.localeCompare(b.at)||a.id.localeCompare(b.id));
-        this.residents.setContributions(this.publicSounds);
-        this.built.setContributions(this.publicSounds);
+        this.refreshSoundLife();
         this.connections.setAll(this.publicSounds);
         this.cues.setAll(this.publicSounds, (x, z) => this.built.heightAt(x, z));
+    }
+    setExamples(examples: readonly SoundSignal[]): void { this.examples=examples.filter(source=>source.origin==="example").map(source=>({...source}));this.refreshSoundLife(); }
+    private refreshSoundLife(): void {
+        const signals=[...this.publicSounds,...this.examples];
+        this.residents.setContributions(signals);this.built.setContributions(signals);this.soundWildlife.setSources(signals);
     }
     setWorks(works: readonly ChorusWork[]): void {
         this.works = works.map(work => ({ ...work, liveSources: work.liveSources.map(source => ({ ...source })),
@@ -478,6 +487,7 @@ export class PlanetWorld {
         if(this.self&&this.selfLabel)this.label(this.selfLabel,this.self,this.position);
         this.built.animate?.(this.serverNow / 1000, this.reduced.matches);
         this.garden.frame(this.serverNow, this.reduced.matches);
+        this.soundWildlife.frame(this.serverNow, this.reduced.matches);
         this.cues.frame(this.serverNow, this.reduced.matches);
         this.kangaroo.frame(dt, this.position, this.jumpOffset, (x, z) => this.garden.canStand(x, z) && !sceneHutAt("planet", x, z) && this.built.canStand(x, z, locked), this.reduced.matches);
         const companionWork = this.garden.workNear(this.kangaroo.at, 7, false);
@@ -534,7 +544,7 @@ export class PlanetWorld {
             positionActor(a, planetDistance(a.at, a.target) > .08);
         for (const [id, a] of this.routines) {
             const n = this.npcFrames.find(n => n.id === id);
-            positionActor(a, !!n && ["walking", "entering", "leaving"].includes(n.phase));
+            positionActor(a, !!n && (["walking", "entering", "leaving"].includes(n.phase) || n.phase === "idle" && planetDistance(a.at,a.target)>.025));
             a.label.hidden = !a.figure.visible || a.label.hidden;
         }
         // Restore controller-native coordinates before running its actual rig.
@@ -615,6 +625,7 @@ export class PlanetWorld {
             this.host.dataset.calls = String(this.renderer.info.render.calls);
             this.host.dataset.chorusGardens = JSON.stringify(this.garden.state);
             this.host.dataset.cafe = JSON.stringify(this.built.cafeState);
+            this.host.dataset.soundWildlife = JSON.stringify(this.soundWildlife.state);
             this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
                 id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,
@@ -693,7 +704,7 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.residents.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+        a.figure.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
 }
 
 /** A room wall/roof can compress the camera into the player's own head.

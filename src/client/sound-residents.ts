@@ -2,7 +2,7 @@
 // come from shared contributions/server time, never from one visitor's hearing.
 import * as THREE from "three";
 import type { PlacedSound } from "../shared/protocol.js";
-import { chooseResidentResponse, residentPhase, RESIDENT_SETTLE_MS, type ResidentHome, type ResidentResponse, type SoundBehavior } from "../shared/sound-response.js";
+import { chooseResidentResponse, residentPhase, RESIDENT_SETTLE_MS, type ResidentHome, type ResidentResponse, type SoundBehavior, type SoundSignal } from "../shared/sound-response.js";
 import type { AnimalFigure } from "./characters.js";
 
 export interface ResidentDefinition extends ResidentHome {
@@ -16,6 +16,7 @@ export interface ResidentResponseSummary {
   sourceId: string;
   soundId: string;
   behavior: SoundBehavior;
+  origin?: "example";
   x: number;
   z: number;
 }
@@ -50,7 +51,7 @@ const ease = (t: number): number => { const p = Math.max(0, Math.min(1, t)); ret
 
 export class SoundResidents {
   private residents: Resident[] = [];
-  private sounds: PlacedSound[] = [];
+  private sounds: SoundSignal[] = [];
   private disposed = false;
   private selectedAt = -Infinity;
 
@@ -78,11 +79,11 @@ export class SoundResidents {
   get responses(): readonly ResidentResponseSummary[] {
     return this.residents.flatMap(({ definition, response, sprite }) => response ? [{
       residentId: definition.id, label: definition.label, sourceId: response.sourceId, soundId: response.soundId,
-      behavior: response.profile.behavior, x: sprite.position.x, z: sprite.position.z,
+      behavior: response.profile.behavior, x: sprite.position.x, z: sprite.position.z, ...(response.origin ? {origin:response.origin} : {}),
     }] : []);
   }
 
-  setContributions(sounds: readonly PlacedSound[]): void {
+  setContributions(sounds: readonly SoundSignal[]): void {
     if (this.disposed) return;
     // Take a value snapshot; subsequent ACK bookkeeping cannot change a choice
     // behind this controller's back. The shared selector rejects private stays.

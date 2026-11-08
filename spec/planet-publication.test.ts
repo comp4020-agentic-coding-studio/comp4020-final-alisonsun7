@@ -42,7 +42,7 @@ function controller(): { harness: Harness; acknowledge(): void } {
     const sounds=new Map([[root.id,root]]),ended=new Set(),errors={},stage={dataset:{}},stream={};
     const world={setWorks(){},setContributions(rows){drawnIds=rows.map(row=>row.id);},setSelf(){},setPeople(){}};
     const studio={setWorks(){}},library={setReply(){},close(){}},conversations={changed(){}},soundInteractions={setAll(){}};
-    const settledMove=async()=>true,api=()=>ack,record=()=>{},say=()=>{},renderShared=()=>{},renderPeople=()=>{},receiveNpcs=()=>{},receiveEnvironment=()=>{},renderOccupancy=()=>{},receiveWords=()=>{};
+    const settledMove=async()=>true,api=()=>ack,record=()=>{},say=()=>{},renderShared=()=>{},renderPeople=()=>{},receiveNpcs=()=>{},receiveEnvironment=()=>{},renderOccupancy=()=>{},receiveWords=()=>{},refreshSoundLife=()=>{};
     let people=[];
     audio.setAll([root]);
     ${implementation}
