@@ -1076,7 +1076,7 @@
       },
       "processor": {
         "script": "scripts/process-pond-frogs.mjs",
-        "sourceSha256": "d825f379f5aa4b9d6d075ff1463e9f78f494671703f634f545deb564a0244b19",
+        "sourceSha256": "4382a95feaca758b8dd1b519f1f7e0835e9db3b963bd6ec0700f47083fc082f2",
         "version": 1,
         "sampleRate": 44100,
         "from": 0.4,

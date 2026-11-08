@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PlanetAudio } from "../src/client/planet-audio.ts";
-import { findSound } from "../src/shared/sounds.ts";
+import { findSound, soundUrl } from "../src/shared/sounds.ts";
 import { FROG_CALL_ENVELOPE } from "../src/shared/frog-call.ts";
 import type { PlacedSound } from "../src/shared/protocol.ts";
 
@@ -166,7 +166,7 @@ describe("water-life assets through the real planet audio controller", () => {
     document = new DocumentFake(); contexts = []; sources = []; instances = [];
     decode = vi.fn(async () => ({ duration: 32 } as AudioBuffer));
     fetcher = vi.fn(async (url: string) => {
-      const id = url.split("/").at(-1)!.replace(/\.mp3$/, "");
+      const id = new URL(url,"http://localhost").pathname.split("/").at(-1)!.replace(/\.mp3$/, "");
       const bytes = readFileSync(`public/assets/sounds/${id}.mp3`);
       return { ok: true, arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) };
     });
@@ -182,7 +182,9 @@ describe("water-life assets through the real planet audio controller", () => {
 
   it.each(definitions)("auditions real local $id bytes privately for at most five seconds", async definition => {
     const instance = player(); expect(await instance.preview(definition.id)).toBe(true);
-    expect(fetcher).toHaveBeenCalledWith(`/assets/sounds/${definition.id}.mp3`);
+    const revision=createHash("sha256").update(readFileSync(`public/assets/sounds/${definition.id}.mp3`)).digest("hex").slice(0,12);
+    const expected=`/assets/sounds/${definition.id}.mp3`+(definition.id==="pond-frogs"?`?v=${revision}`:"");
+    expect(soundUrl(definition.id)).toBe(expected);expect(fetcher).toHaveBeenCalledWith(expected);
     const decodedBytes = decode.mock.calls[0][0];
     expect(createHash("sha256").update(new Uint8Array(decodedBytes)).digest("hex"))
       .toBe(createHash("sha256").update(readFileSync(`public/assets/sounds/${definition.id}.mp3`)).digest("hex"));

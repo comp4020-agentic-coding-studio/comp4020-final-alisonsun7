@@ -6,6 +6,7 @@
 // CC0/public domain derivatives. Chorus parts, bubbles and whale illustrations
 // are original procedural project audio, without sampled music or wildlife.
 // Sources and methods are listed in public/assets-manifest.json.
+import { FROG_RECORDING_REVISION } from "./frog-call.js";
 
 // What makes a sound, after Bernie Krause: the land and water, animals, or
 // people. Each family has a colour, so a place with many kinds of sound is
@@ -57,7 +58,7 @@ export const SOUNDS: SoundKind[] = [
 ];
 
 export const findSound = (id: unknown): SoundKind | undefined => SOUNDS.find((s) => s.id === id);
-export const soundUrl = (id: string): string => `/assets/sounds/${id}.mp3`;
+export const soundUrl = (id: string): string => `/assets/sounds/${encodeURIComponent(id)}.mp3${id === "pond-frogs" ? `?v=${FROG_RECORDING_REVISION}` : ""}`;
 
 // You leave a sound where you stand, and can remove one only from beside it.
 export const REACH = 4;

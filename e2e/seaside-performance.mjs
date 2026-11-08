@@ -5,10 +5,12 @@
 // APP_URL=http://localhost:18952 SCRATCH_DB=.cache/seaside-performance/browser/history.db
 // node e2e/seaside-performance.mjs .cache/seaside-performance/browser-artifacts
 import assert from "node:assert/strict";
-import { mkdirSync, realpathSync, writeFileSync } from "node:fs";
+import { mkdirSync, realpathSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { chromium } from "playwright";
+import {createHash} from "node:crypto";
+const frogRevision=createHash("sha256").update(readFileSync("public/assets/sounds/pond-frogs.mp3")).digest("hex").slice(0,12);
 
 const address = new URL(process.env.APP_URL ?? "");
 assert.equal(address.protocol, "http:");
@@ -90,7 +92,7 @@ async function contextPage(name, href = "/planet") {
     if (url.pathname.startsWith("/client/")) report.runtimeAssets.push(url.pathname);
     if (!["GET", "HEAD"].includes(request.method())) report.requests.push({ identity: name, method: request.method(), path: url.pathname });
   });
-  page.on("response", response => { const path = new URL(response.url()).pathname;if (path.startsWith("/assets/sounds/")) report.recordings.push({ identity: name, path, status: response.status() }); });
+  page.on("response", response => { const path = new URL(response.url()).pathname;if (path.startsWith("/assets/sounds/")) report.recordings.push({ identity: name, path, revision:new URL(response.url()).searchParams.get("v"), status: response.status() }); });
   const who = { name, context, page, lastWrite: 0 };people.push(who);await page.goto(base + href);return who;
 }
 async function join(who) {
@@ -214,7 +216,7 @@ try {
   const beforeListen = (await state(a.page)).audio;await a.page.locator('#chorus-studio [data-listen="pond-frogs"]').click();
   await a.page.waitForFunction(starts => window.__seasideMetrics().starts > starts, beforeListen.starts);const frogAudio = await output(a);
   check(frogAudio.decodes.slice(beforeListen.decodes.length).some(decoded => decoded.duration > 17.9 && decoded.duration < 18.1 && decoded.rms > .00001)
-    && report.recordings.some(recording => recording.identity === a.name && recording.path === "/assets/sounds/pond-frogs.mp3" && recording.status === 200), "Private Listen genuinely fetches and decodes the current eighteen-second pond chorus and emits native audio");
+    && report.recordings.some(recording => recording.identity === a.name && recording.path === "/assets/sounds/pond-frogs.mp3" && recording.revision === frogRevision && recording.status === 200), "Private Listen genuinely fetches and decodes the current content-versioned eighteen-second pond chorus and emits native audio");
   check((await state(a.page)).soundOn === "false" && rows().length === 1, "A private frog listen neither enables world audio nor publishes a source");await shot(a, "pond-private-listen-phone");
   await a.page.locator("#chorus-studio").getByRole("button", { name: "Cancel", exact: true }).click();await ready(a.page);
   await a.page.waitForFunction(() => window.__seasideMetrics().active === 0);

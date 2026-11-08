@@ -1,7 +1,7 @@
 // Optional spatial playback. Local listening choices never edit the work.
 import * as THREE from "three";
 import type { PlacedSound, Position } from "../shared/protocol.js";
-import { findSound } from "../shared/sounds.js";
+import { findSound, soundUrl } from "../shared/sounds.js";
 import { PLANET_PLACES, planetDistance, planetPoint } from "../shared/planet.js";
 import type { ChorusWork } from "../shared/chorus.js";
 import type { SoundSignal } from "../shared/sound-response.js";
@@ -87,7 +87,7 @@ export class PlanetAudio {
         let promise = this.buffers.get(id);
         if (!promise) {
             if (isChorusInstrument(id)) promise = Promise.resolve().then(() => chorusBuffer(this.context(), id));
-            else promise = fetch(`/assets/sounds/${encodeURIComponent(id)}.mp3`).then(async response => {
+            else promise = fetch(soundUrl(id)).then(async response => {
                 if (!response.ok) throw new Error("Recording unavailable");
                 const context = this.context(), decoded = await context.decodeAudioData(await response.arrayBuffer());
                 return soundEvent(id) ? decoded : seamlessRecording(context, decoded);
