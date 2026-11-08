@@ -7,22 +7,51 @@ that cannot be supplied by source inspection.
 
 ## Build scope before reading any result
 
-The current verified local application is **`cd73f2a`**, served at
-`http://localhost:18861/planet`, on `codex/living-sound-discovery`.
+The current verified local application is **`3ee3493`**, served at
+`http://localhost:18861/planet`, on `codex/sounds-in-motion`.
+[ADR032](../decisions/032-sounds-set-the-world-in-motion.md) and the
+[motion release index](../evidence/sounds-in-motion-2026-11-08.json) distinguish
+the final **328 source/HTTP checks in 51 files, 65.31 s**, **17** shared-motion
+browser checks, and **19** coastal-walk checks. They are separate runs, not an
+added score or evidence of human understanding.
+
+| Current promise | Agent rule / automatic rejection | Human judgement still needed |
+| --- | --- | --- |
+| A horn makes a recognisable, attributed ferry sail | Actual public source, server-time ocean route and author-tinted roof; latest three-ferry limit; explicit Watch leaves source/audio fixed; [vessel checks](../../spec/sound-vessels.test.ts) and [shared browser path](../../e2e/sounds-in-motion.mjs) | Can players recognise whose boat answered, find it, and use that result in a joint creation? |
+| A breeze makes something near my source move | At most six real source-attributed pinwheels; server-time motion, quiet preference and withdrawal; the 17-check path uses actual full-library search and Leave | Is the small object noticeable at normal play scale and does it encourage another choice? |
+| Shore walking keeps the actual body and camera outside the planet | Front-hemisphere building/floor/collision classification; real continuous coastal walks, turns, zoom and desktop/touch views | The 19 bounded browser checks do not cover every future angle, obstruction or physical device |
+| I can reach the consequence and withdraw it on a phone | Ordinary pool Share offers three relevant choices; explicit Watch and the Places & friends Soundscape entry; actual 390×844 touch path | Physical-phone comfort and whether the route is discoverable without explanation |
+
+Promotion preserves all twelve tables including **44** sound-history rows;
+**62** served assets match the reviewed build. A fresh anonymous observer of
+the actual port-18861 release finds **16** public planet sources, unchanged
+IDs, zero writes/page errors and **387** safe rendered samples on a real
+desktop coast walk. The 19-check scratch coast run precedes the final Watch
+framing/menu adjustments, with ordinary movement/camera formulas unchanged;
+the promoted desktop observation is not a second mobile coast run.
+Application rollback retains
+`cd73f2a` with the **current database**, never an old database snapshot.
+No human listening, unfamiliar-pair, physical-phone, next-day or public-
+deployment result is implied.
+
+### Preceding discovery release — 2026-11-08 historical scope
+
+The preceding local application was **`cd73f2a`**, on
+`codex/living-sound-discovery`.
 [ADR031](../decisions/031-living-sound-discovery.md) and the
 [discovery release index](../evidence/living-discovery-2026-11-08.json)
 separate actual browser checks, the earlier full source run, rejected views,
 data-preserving promotion and open human judgement.
 
-| Current promise | Agent rule / automatic rejection | Human judgement still needed |
+| ADR031 promise at that checkpoint | Agent rule / automatic rejection | Human judgement still needed |
 | --- | --- | --- |
 | I can discover what a sound changes | Clearly labelled local examples; private Listen and explicit Leave; 26-check independent-browser discovery path | Do unfamiliar players infer the cause and then try their own combination? |
 | A teaching prop cannot impersonate a friend | No author, source row, reply, work or presence; real eligible sources win; quiet/off and withdrawal checks | Are the distinction and local comparison understandable? |
 | The world feels continuous and lived in | One spherical road surface, no pool/channel road; bounded NPC waits and ordinary routes; geometry negative control and actual screenshots | Road finish, character expressiveness and whether ordinary life feels convincing |
 
-Promotion preserves all twelve tables including **42** sound-history rows;
-59 served assets match the reviewed build. The read-only observer sees the
-current **19** public planet sounds. No human listening, unfamiliar-pair,
+That promotion preserved all twelve tables including **42** sound-history rows;
+59 served assets matched that build. Its read-only observer saw
+**19** public planet sounds. No human listening, unfamiliar-pair,
 physical-phone, next-day or public-deployment result is implied.
 
 ### Preceding answer release — historical scope
@@ -61,6 +90,7 @@ is implied by this local acceptance.
 | [View comparison](../evidence/perspectives-2026-11-08.json), application `bdb59c6` | Independent identities across the same canonical 2D/2.5D world, private decoded audition, actual shared forms, chat, touch and privacy; failed chat attempts retained | A preference for flat art, 3D-specific camera quality or novice discovery |
 | [Lived-in 3D](../evidence/lived-in-3d-2026-11-08.json), application `37e055b` | Final-source geometry/route checks, walked café/private-room views, bounded sampling, natural NPC visits and removal of artificial lock invitations. Private/social reports explicitly precede the final camera/header correction | Universal absence of aliasing/flicker; physical-phone performance; musical pleasure; author sign-off |
 | [Answer-focused local release](../evidence/answers-2026-11-08.json), application `5f1fc28` | Actual authors share marks between record and source leaves; live directed replies, whole-work predictions, work links, recomposition, quiet preference and historical-corner recovery have the specified completed paths. Actual promotion preserves all current rows | No unfamiliar-pair, musical pleasure, physical-phone, next-day, container-image or course-deployment claim |
+| [Sounds in motion](../evidence/sounds-in-motion-2026-11-08.json), application `3ee3493` | 328 source/HTTP checks, a separate 17-check boat/breeze path and 19 coastal checks; source-attributed motion, explicit safe Watch, quiet late join, withdrawal and current-data local promotion | These source effects are not themselves a two-author joint work, a human comprehension finding or exhaustive camera coverage |
 
 Local acceptance establishes the named build and preserved working database.
 It does not establish what the course Fly deployment currently serves.

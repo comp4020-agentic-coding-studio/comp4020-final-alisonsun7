@@ -1,0 +1,27 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/sound-vessels.test.ts (6 tests | 1 failed) 75ms
+   ❯ actual horn ingredients bring passing ferries (6)
+     × has a hull, cabin, chimney, windows and a curved sea-level wake, with visible upward deck faces 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/sound-vessels.test.ts > actual horn ingredients bring passing ferries > has a hull, cabin, chimney, windows and a curved sea-level wake, with visible upward deck faces
+AssertionError: expected 0 to be greater than 5
+ ❯ spec/sound-vessels.test.ts:73:22
+     71|       let upward = 0;
+     72|       for (let i = 0; i < positions.count; i++) if (Math.abs(positions…
+     73|       expect(upward).toBeGreaterThan(5);
+       |                      ^
+     74|       ship.traverse(object => {
+     75|         if (!(object instanceof THREE.Mesh)) return;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  15:27:34
+   Duration  183ms (tests 59%, transform 25%, import 14%, worker 1%)
+

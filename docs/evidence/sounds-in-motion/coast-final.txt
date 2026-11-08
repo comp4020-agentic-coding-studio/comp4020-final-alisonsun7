@@ -1,0 +1,19 @@
+ok  desktop-third-default reaches z > 5 by actual sustained S-key movement within its time bound
+ok  desktop-third-default: every observed render keeps the real signed ground and camera outside the globe
+ok  The default desktop walk continues by real D then S to the far shore beyond x60/z7 without a wall shortcut
+ok  Every far-shore render stays on land and outside the globe while actually passing within one metre of the café antipode
+ok  desktop-third-close reaches z > 5 by actual sustained S-key movement within its time bound
+ok  desktop-third-close: every observed render keeps the real signed ground and camera outside the globe
+ok  desktop-third-far reaches z > 5 by actual sustained S-key movement within its time bound
+ok  desktop-third-far: every observed render keeps the real signed ground and camera outside the globe
+ok  desktop-first reaches z > 5 by actual sustained S-key movement within its time bound
+ok  desktop-first: every observed render keeps the real signed ground and camera outside the globe
+ok  phone-third-close reaches z > 5 by actual sustained touch movement within its time bound
+ok  phone-third-close: every observed render keeps the real signed ground and camera outside the globe
+ok  phone-third-far reaches z > 5 by actual sustained touch movement within its time bound
+ok  phone-third-far: every observed render keeps the real signed ground and camera outside the globe
+ok  phone-first reaches z > 5 by actual sustained touch movement within its time bound
+ok  phone-first: every observed render keeps the real signed ground and camera outside the globe
+ok  The walk, view and touch actions preserve an explicitly quiet visit
+ok  No page errors, contribution mutations or environment mutations occur
+ok  All original planet/coastal live sources remain exact with zero source/environment writes

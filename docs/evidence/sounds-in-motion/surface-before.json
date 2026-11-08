@@ -1,0 +1,74 @@
+{
+  "kind": "pure geometry diagnosis",
+  "frozenBuild": ".cache/surface-safety/before-dist",
+  "coastSweep": {
+    "stepMetresLongitude": 0.25,
+    "shoreInset": 0.25,
+    "negativeWalkableSamples": 49,
+    "samples": [
+      {
+        "x": 53.88496162102456,
+        "z": 8.429105591717807,
+        "height": -45.01612400683567,
+        "signedFootRadius": -23.016124006835668,
+        "inside": false
+      },
+      {
+        "x": 54.13496162102456,
+        "z": 8.472903693097873,
+        "height": -44.953251284545644,
+        "signedFootRadius": -22.953251284545644,
+        "inside": false
+      },
+      {
+        "x": 54.38496162102456,
+        "z": 8.517877930043202,
+        "height": -44.89357525751086,
+        "signedFootRadius": -22.89357525751086,
+        "inside": false
+      },
+      {
+        "x": 54.63496162102456,
+        "z": 8.564005073038736,
+        "height": -44.83706111647926,
+        "signedFootRadius": -22.837061116479262,
+        "inside": false
+      },
+      {
+        "x": 54.88496162102456,
+        "z": 8.611261297090756,
+        "height": -44.78367580912901,
+        "signedFootRadius": -22.783675809129008,
+        "inside": false
+      },
+      {
+        "x": 55.13496162102456,
+        "z": 8.659622194031478,
+        "height": -44.73338798285555,
+        "signedFootRadius": -22.733387982855547,
+        "inside": false
+      },
+      {
+        "x": 55.38496162102456,
+        "z": 8.709062785125079,
+        "height": -44.686167930253866,
+        "signedFootRadius": -22.686167930253866,
+        "inside": false
+      },
+      {
+        "x": 55.63496162102456,
+        "z": 8.759557533968696,
+        "height": -44.64198753719357,
+        "signedFootRadius": -22.64198753719357,
+        "inside": false
+      }
+    ]
+  },
+  "cafeAntipode": {
+    "x": 60.11503837897544,
+    "z": 7,
+    "height": -44.16,
+    "inside": true,
+    "canStand": true
+  }
+}

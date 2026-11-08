@@ -1,0 +1,53 @@
+Command provenance and scope notes — not a new execution transcript
+Date: 2026-11-08. The commands below were supplied by their executing agents.
+This archival task copied existing evidence; it did not rerun these checks.
+
+SURFACE DIAGNOSIS
+The before build compiled the working tree at this task's start, before the
+surface-height/hemisphere-footprint correction. It was not independently
+pinned to a Git SHA. The after build compiled the forward footprint repair;
+neither build is the later final integrated runtime. Exact reported commands:
+./node_modules/.bin/tsc -p tsconfig.build.json --outDir .cache/surface-safety/before-dist
+node --input-type=module -e 'import {writeFileSync} from "node:fs"; import {buildPlanet} from "./.cache/surface-safety/before-dist/client/planet-build.js"; import {coastlineAt} from "./.cache/surface-safety/before-dist/client/planet-coast.js"; import {PLANET_HALF as HALF, PLANET_RADIUS as R} from "./.cache/surface-safety/before-dist/shared/planet.js"; globalThis.document={createElement:()=>({getContext:()=>new Proxy({},{get:()=>()=>{}})})}; const scene=buildPlanet(), bad=[]; for(let x=-HALF;x<=HALF;x+=.25){ const z=coastlineAt(x)-.25, height=scene.heightAt(x,z); if(scene.canStand(x,z,new Set())&&height<0)bad.push({x,z,height,signedFootRadius:R+height,inside:scene.inside(x,z)}); } const cafeOpposite={x:-9+HALF,z:7}; const out={kind:"pure geometry diagnosis",frozenBuild:".cache/surface-safety/before-dist",coastSweep:{stepMetresLongitude:.25,shoreInset:.25,negativeWalkableSamples:bad.length,samples:bad.slice(0,8)},cafeAntipode:{...cafeOpposite,height:scene.heightAt(cafeOpposite.x,cafeOpposite.z),inside:scene.inside(cafeOpposite.x,cafeOpposite.z),canStand:scene.canStand(cafeOpposite.x,cafeOpposite.z,new Set())}};writeFileSync(".cache/surface-safety/before.json",JSON.stringify(out,null,2)); console.log(JSON.stringify(out));scene.dispose();'
+./node_modules/.bin/tsc -p tsconfig.build.json --outDir .cache/surface-safety/after-dist
+node --input-type=module -e 'import {writeFileSync} from "node:fs"; import {buildPlanet} from "./.cache/surface-safety/after-dist/client/planet-build.js"; import {coastlineAt} from "./.cache/surface-safety/after-dist/client/planet-coast.js"; import {PLANET_HALF as HALF, PLANET_RADIUS as R} from "./.cache/surface-safety/after-dist/shared/planet.js"; globalThis.document={createElement:()=>({getContext:()=>new Proxy({},{get:()=>()=>{}})})}; const scene=buildPlanet(), bad=[];let checked=0;for(let x=-HALF;x<=HALF;x+=.25){const z=coastlineAt(x)-.25,height=scene.heightAt(x,z);if(scene.canStand(x,z,new Set())){checked++;if(!Number.isFinite(height)||height<0)bad.push({x,z,height});}}const point={x:-9+HALF,z:7};const out={kind:"pure geometry diagnosis",compiledBuild:".cache/surface-safety/after-dist",coastSweep:{stepMetresLongitude:.25,shoreInset:.25,walkableSamples:checked,negativeOrNonfiniteSamples:bad.length},cafeAntipode:{...point,height:scene.heightAt(point.x,point.z),inside:scene.inside(point.x,point.z),canStand:scene.canStand(point.x,point.z,new Set())},tests:{after:".cache/surface-safety/after-tests.txt",negative:".cache/surface-safety/before-tests.txt"},humanVisualReview:false,gpu:false,databaseWrites:false};writeFileSync(".cache/surface-safety/after.json",JSON.stringify(out,null,2)); console.log(JSON.stringify(out));scene.dispose();'
+
+The before JSON preserves 49 negative walkable samples and a -44.16 m cafe
+antipode falsely treated as indoors. The after JSON preserves 553 walkable
+shore samples with zero negative/nonfinite heights, with that antipode at
+height zero/outdoors. These are bounded pure geometry observations, not
+continuous-walk GPU acceptance.
+The frozen Vitest control substitutes only buildPlanet. Its new helper test
+still imports current TypeScript, so the single passing case does NOT prove
+that the older helper existed. The current passing group was run before the
+frozen negative group; do not rewrite that order as a test-first chronology.
+
+VESSEL QA
+All vessel checks ran the then-current source forwards, without frozen import,
+source replacement or restoring old files. The initial candidate QA failure
+was an actual downward-facing hull deck, not a missing API in the old app.
+The six-test after.txt was rerun after strengthening source-arrival/late-snapshot
+canonical instance order; its final six-test output is the one archived.
+The seventh author-colour test was added before implementing roof/pennant tint
+and per-vessel material cleanup. Its missing state colour fails before the
+forward correction and all seven then pass.
+
+FULL AND TARGETED RUNS
+Full 326/51 is an earlier integrated source/HTTP run. Full 327/51 follows the
+extra author-colour check, but predates ordinary Share curation repair and the
+coherent final runtime package. That HTTP server started before the new phone
+menu HTML. Targeted 39/6 after Share repair and targeted 39/6 after Watch focus
+and phone-menu source changes are source/DOM checks, not browser startup proof.
+A real later browser found stale HTML/JS caused a new control to be null and
+controller startup to fail. Root is rebuilding/restarting the entire candidate
+and running new complete source/browser checks separately. Their in-progress
+outputs are intentionally NOT copied here. Do not label either older full run
+or either targeted run as final whole-package acceptance.
+
+BOUNDARIES
+These artifacts establish specified source/geometry/stubbed-audio/DOM and
+isolated HTTP behaviour. They do not establish actual artistic listening,
+physical-phone performance, unfamiliar-player comprehension, next-day return
+or public deployment. Runtime/GPU/screenshots and actual failure records are
+being integrated separately by Root. No database, cookie jar, runtime/server
+log or compiled dist tree has been copied into this packet.

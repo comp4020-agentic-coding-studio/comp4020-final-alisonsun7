@@ -1,0 +1,80 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-surface-safety.test.ts (5 tests | 4 failed) 102ms
+   ❯ the actual ground and camera on the far shore (5)
+     × keeps the cafe's walkable antipodal shore on this hemisphere instead of a negative remote floor 3ms
+     × removes phantom building walls at antipodes while retaining actual cafe walls and floor clearance 1ms
+     × has no negative or non-finite floor anywhere along the walkable coast, seam or either pole 11ms
+     × keeps first/third person and their entire near-plane envelope outside the globe across legal view settings 20ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-surface-safety.test.ts > the actual ground and camera on the far shore > keeps the cafe's walkable antipodal shore on this hemisphere instead of a negative remote floor
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ spec/planet-surface-safety.test.ts:23:48
+     21|         expect(point).toEqual({ x: HALF - 9, z: 7 });
+     22|         expect(scene.canStand(point.x, point.z, new Set())).toBe(true);
+     23|         expect(scene.inside(point.x, point.z)).toBe(false);
+       |                                                ^
+     24|         expect(scene.heightAt(point.x, point.z)).toBe(0);
+     25|         const feet = planetPoint(point.x, point.z, scene.heightAt(poin…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  spec/planet-surface-safety.test.ts > the actual ground and camera on the far shore > removes phantom building walls at antipodes while retaining actual cafe walls and floor clearance
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ spec/planet-surface-safety.test.ts:34:77
+     32|         for (const side of [-1, 1]) {
+     33|             const phantomWall = offset(far, side * 3.6, 0), actualWall…
+     34|             expect(scene.canStand(phantomWall.x, phantomWall.z, new Se…
+       |                                                                             ^
+     35|             expect(scene.inside(phantomWall.x, phantomWall.z)).toBe(fa…
+     36|             expect(scene.heightAt(phantomWall.x, phantomWall.z)).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  spec/planet-surface-safety.test.ts > the actual ground and camera on the far shore > has no negative or non-finite floor anywhere along the walkable coast, seam or either pole
+AssertionError: nonnegative coast 53.88496162102456,8.429105591717807: expected -45.01612400683567 to be greater than or equal to 0
+ ❯ spec/planet-surface-safety.test.ts:57:59
+     55|             const height = scene.heightAt(x, z);
+     56|             expect(Number.isFinite(height), `finite coast ${x},${z}`).…
+     57|             expect(height, `nonnegative coast ${x},${z}`).toBeGreaterT…
+       |                                                           ^
+     58|         }
+     59|         expect(checked).toBeGreaterThan(1500);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  spec/planet-surface-safety.test.ts > the actual ground and camera on the far shore > keeps first/third person and their entire near-plane envelope outside the globe across legal view settings
+AssertionError: view 53.88496162102456,8.429105591717807,0,-0.5,4.2,0: expected 21.396039748071882 to be greater than 22.1
+ ❯ spec/planet-surface-safety.test.ts:88:130
+     86|                         // of camera look direction, including the ove…
+     87|                         const nearEnvelope = .1 * Math.sqrt(1 + Math.t…
+     88|                         expect(camera.length() - nearEnvelope, `view $…
+       |                                                                                                                                  ^
+     89|                     }
+     90|                 }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  15:23:54
+   Duration  267ms (tests 52%, transform 32%, import 15%, worker 1%)
+

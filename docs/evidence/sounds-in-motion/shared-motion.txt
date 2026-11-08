@@ -1,0 +1,19 @@
+(node:55995) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok  Tide pools Share offers three real curated choices including the passing ferry
+ok  The horn choice explains its visible ferry consequence before publishing
+ok  An explicit real horn creates a ferry retaining the actual author and original sound position
+ok  The ferry changes actual rendered position over more than one second of server time
+ok  A later friend enters with an independent real cookie identity
+ok  Late arrival sees the same authored ferry and server-time trajectory, allowing actual frame-sampling skew
+ok  Both independent visits remain genuinely quiet while the shared ferry moves
+ok  Desktop Watch reaches a safe real shore without moving the horn or publishing another source
+ok  At 390×844, touch Watch has a visible unobstructed 44px target and reaches the real shore
+ok  Actual UI withdrawal removes the live horn and its ferry in both open browser sessions
+ok  The searchable full library explains the breeze's paper-pinwheel consequence
+ok  The real breeze creates the same source-attributed paper pinwheel for both friends
+ok  The source-derived pinwheel visibly turns over server time
+ok  A friend's contribution and a document reload never enable either quiet visitor's audio
+ok  Withdrawing the real breeze removes its pinwheel and live source from both sessions
+ok  The actual motion and withdrawal path has no browser runtime errors
+ok  Read-only scratch SQLite confirms original rows are intact and each acknowledged fixture retains a real source/author/position tombstone

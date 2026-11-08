@@ -37,6 +37,63 @@ try{
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(250);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   await page.screenshot({path:`${out}/promoted-pool-phone.png`,fullPage:true});report.viewports.push({width:390,height:844});
+  // Exercise the promoted fix with an anonymous visitor. The route above
+  // rejects every non-GET/HEAD request, so these are local walking/viewing
+  // controls only; this browser never joins or writes a player position.
+  await page.setViewportSize({width:1920,height:1080});
+  await page.locator("#planet-tools").click();await page.locator('#planet-destinations [data-zone="observatory"]').click();
+  await page.waitForFunction(()=>{
+    const stage=document.getElementById("planet-stage");if(!stage?.dataset.groundSafety||document.querySelector("dialog:modal"))return false;
+    const actual=JSON.parse(stage.dataset.groundSafety);return Math.abs(actual.x-55)<.01&&actual.z<-3;
+  });
+  const radius=await page.evaluate(async()=>{const {PLANET_RADIUS}=await import("/shared/planet.js");return PLANET_RADIUS;});
+  const ground=()=>page.locator("#planet-stage").evaluate(stage=>JSON.parse(stage.dataset.groundSafety));
+  const groundErrors=sample=>{
+    const errors=[];
+    for(const key of ["x","z","feetRadius","signedFeetRadius","cameraRadius"])if(!Number.isFinite(sample[key]))errors.push(`${key} is not finite`);
+    if(sample.signedFeetRadius<radius-.001)errors.push("feet crossed the signed surface hemisphere");
+    if(sample.feetRadius<radius-.001)errors.push("feet are inside the globe");
+    if(sample.cameraRadius<=radius)errors.push("camera is inside the globe");
+    return errors;
+  };
+  const coast={radius,start:await ground(),legs:[],samples:[],safe:false,reachedGoal:false};report.coast=coast;
+  assert.deepEqual(groundErrors(coast.start),[],"The promoted observatory starts on outward ground with its real camera outside the globe");
+  await page.screenshot({path:`${out}/promoted-coast-start-desktop.png`,fullPage:true});
+  await page.evaluate(()=>{
+    const stage=document.getElementById("planet-stage"),began=performance.now(),samples=[];let frame=null;
+    const take=()=>{const actual=JSON.parse(stage.dataset.groundSafety);if(actual.frame===frame)return;frame=actual.frame;samples.push({...actual,elapsedMs:performance.now()-began});};
+    take();const observer=new MutationObserver(take);observer.observe(stage,{attributes:true,attributeFilter:["data-ground-safety"]});
+    window.__promotedCoast={samples,stop:()=>{take();observer.disconnect();return samples;}};
+  });
+  try{
+    for(const [key,axis,threshold]of [["s","z",5],["d","x",60],["s","z",7.15]]){
+      const leg={key,goal:{axis,greaterThan:threshold},start:await ground(),reachedGoal:false};coast.legs.push(leg);const began=Date.now();
+      await page.locator("canvas.planet-canvas").focus();
+      try{
+        await page.keyboard.down(key);
+        while(Date.now()-began<15000){
+          await page.waitForTimeout(75);
+          const samples=await page.evaluate(()=>window.__promotedCoast.samples),bad=samples.find(sample=>groundErrors(sample).length);
+          if(bad){coast.firstViolation={...bad,reasons:groundErrors(bad)};assert.fail(`Promoted coast crossed the surface/camera envelope: ${JSON.stringify(coast.firstViolation)}`);}
+          const actual=await ground();leg.end=actual;
+          if(actual[axis]>threshold){leg.reachedGoal=true;break;}
+        }
+      }finally{await page.keyboard.up(key).catch(()=>{});leg.end=await ground();leg.elapsedMs=Date.now()-began;}
+      assert.ok(leg.reachedGoal,`Actual sustained ${key.toUpperCase()} must reach ${axis}>${threshold} within its bound; no position injection`);
+    }
+  }catch(error){coast.failure=error?.stack??String(error);throw error;}
+  finally{
+    for(const key of ["s","d"])await page.keyboard.up(key).catch(()=>{});
+    coast.samples=await page.evaluate(()=>window.__promotedCoast.stop());coast.end=await ground();
+    coast.safe=coast.samples.length>=6&&coast.samples.every(sample=>groundErrors(sample).length===0);
+    coast.reachedGoal=coast.legs.length===3&&coast.legs.every(leg=>leg.reachedGoal);
+    await page.screenshot({path:`${out}/${coast.failure?"promoted-coast-failure-desktop":"promoted-coast-end-desktop"}.png`,fullPage:true});
+  }
+  assert.ok(coast.safe&&coast.reachedGoal,"Every actual promoted render stays outside the globe through the observatory and café-antipode shore walk");
+  const afterCoast=await context.request.get(base+"/planet");assert.equal(afterCoast.status(),200);
+  const afterSnapshot=JSON.parse((await afterCoast.text()).match(/id="planet-boot"[^>]*>([\s\S]*?)<\/script>/)[1]).snapshot;
+  report.afterCoastSourceIds=sourceIds(afterSnapshot);assert.deepEqual(report.afterCoastSourceIds,report.expectedSourceIds,"Read-only coast walking leaves every current public source unchanged");
+  assert.equal((await page.evaluate(()=>JSON.parse(document.getElementById("planet-boot").textContent).joined)),false);
   const readme=await context.request.get(base+"/readme/");assert.equal(readme.status(),200);
   const rendered=await readme.text();assert.ok(!rendered.includes('href="http://localhost:18861/planet"'));
   report.notes=[];

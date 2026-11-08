@@ -1,0 +1,387 @@
+{
+  "date": "2026-11-08",
+  "kind": "local-release-evidence-index",
+  "applicationCommit": "3ee3493",
+  "branch": "codex/sounds-in-motion",
+  "url": "http://localhost:18861/planet",
+  "beforeCodeTag": "before-sounds-in-motion-2026-11-08",
+  "previousApplication": "cd73f2a",
+  "design": "docs/decisions/032-sounds-set-the-world-in-motion.md",
+  "interpretation": "Source checks, actual developer browser paths and visual inspection have separate scopes. Totals are not additive quality scores. No listening or newcomer comprehension result is inferred.",
+  "runs": [
+    {
+      "name": "surface and vessel source history",
+      "evidence": "docs/evidence/sounds-in-motion/pure-checks.json",
+      "scope": "Separate recorded runs with their actual forward working-tree scope, including frozen geometry negative controls, failures, corrections and 326/327 earlier full-source checkpoints. Not all final-package results."
+    },
+    {
+      "name": "actual broken coast baseline",
+      "command": "EXPECT_BROKEN=1 APP_URL=http://localhost:18910 node e2e/coast-walk.mjs .cache/motion/coast-before",
+      "result": "observed-broken-baseline; exit 1",
+      "evidence": "docs/evidence/sounds-in-motion/coast-before.json",
+      "scope": "Frozen cd73f2a with observation-only render dataset added. At actual Lookout arrival signed feet radius is negative and camera is inside globe. Held real S movement retains the failure. Expected-broken label never converts a failed product assertion to pass."
+    },
+    {
+      "name": "continuous coastal controls",
+      "command": "APP_URL=http://localhost:18912 node e2e/coast-walk.mjs .cache/motion/coast-final",
+      "checks": 19,
+      "result": "passed",
+      "evidence": "docs/evidence/sounds-in-motion/coast-final.json",
+      "scope": "Seven desktop/390x844 touch profiles, first/third person and zoom 4.2/8/28; actual S then continued D/S walk passes within one metre of cafe antipode. Every observed render checks signed feet/camera/real sea boundary. Before final Watch-only targeting and sound menu changes; ordinary movement/camera formula remains unchanged."
+    },
+    {
+      "name": "complete source and HTTP regression",
+      "command": "APP_URL=http://localhost:18911 ./node_modules/.bin/vitest run",
+      "checks": 328,
+      "files": 51,
+      "durationSeconds": 65.31,
+      "result": "passed",
+      "evidence": "docs/evidence/sounds-in-motion/full-source-328.txt",
+      "scope": "All final application source and server HTML, with separate spec database. Candidate server fully restarted after the stale HTML/module discovery."
+    },
+    {
+      "name": "independent-browser authored motion",
+      "command": "APP_URL=http://localhost:18912 SCRATCH_DB=.cache/motion/browser/history.db node e2e/sounds-in-motion.mjs .cache/motion/sounds-ready",
+      "checks": 17,
+      "result": "passed",
+      "evidence": "docs/evidence/sounds-in-motion/shared-motion.json",
+      "scope": "Two independent cookie identities, real explicit pool horn publication, late matching trajectory, authorship, quiet audio guards, visible desktop/touch Watch, no source relocation, breeze publication/rotation, reload, actual UI withdrawal and original-row/tombstone preservation. No autoplay bypass. Same complete 69-file application as promoted release."
+    },
+    {
+      "name": "reviewed build and app-only promotion",
+      "command": "python3 scripts/local-preview.py --dist .cache/motion/release/dist --commit 3ee3493 --restart",
+      "result": "passed",
+      "evidence": "docs/evidence/sounds-in-motion/promotion.json",
+      "scope": "69 compiled files exactly match reviewed candidate. All rows in twelve current tables preserved, including 44 sound rows at switch. 62 served files and cache headers verified. User world never used for write tests."
+    },
+    {
+      "name": "actual promoted read-only coast observer",
+      "command": "APP_URL=http://localhost:18861 node e2e/chorus-read-only.mjs .cache/motion/promoted",
+      "result": "passed",
+      "evidence": "docs/evidence/sounds-in-motion/promoted-observer.json",
+      "scope": "Fresh anonymous document, 3D/Sound off, desktop and phone layout, real author marks and four notes/README routes; all non-GET/HEAD blocked. Actual S/D/S walk from Lookout to x60.387/z7.270 captures 387 safe rendered samples, signed feet radius22m and camera31.638m. 16 current public planet source IDs remain unchanged. Zero writes/page errors. Desktop-only post-promotion route, not a second mobile coast run."
+    }
+  ],
+  "failures": [
+    {
+      "kind": "geometry bug",
+      "evidence": "docs/evidence/sounds-in-motion/coast-before.json",
+      "observation": "A back-facing tangent projection was accepted as a distant building footprint, producing about -44m floor height. The real Lookout spawn already has negative signed feet and inner camera.",
+      "correction": "Reject opposite hemisphere before footprint/floor/wall tests; use actual raised-plane intersection. No camera-height patch or source-coordinate migration."
+    },
+    {
+      "kind": "product discovery bug",
+      "evidence": "docs/evidence/sounds-in-motion/first-share-failure.json",
+      "observation": "Ordinary Share at pool offered Green choices rather than the local sea choices; the separate example shortcut had hidden that inconsistency.",
+      "correction": "Non-core local Share now offers that place’s three suggested ingredients; Green/Stage/Nook and actual reply rules stay intact."
+    },
+    {
+      "kind": "mobile navigation gap",
+      "evidence": "docs/evidence/sounds-in-motion/phone-soundscape-failure.json",
+      "observation": "The first withdrawal check tried the intentionally hidden desktop header. No mobile menu alternative existed.",
+      "correction": "Add Soundscape to Places & friends and test the actual visible menu entry."
+    },
+    {
+      "kind": "rejected visual framing",
+      "evidence": "docs/evidence/sounds-in-motion/rejected-ferry-watch-phone.png",
+      "observation": "The first safe Watch view left a small ferry on the horizon with guide cards competing for attention.",
+      "correction": "Explicit Watch collapses the guide and frames the source-driven ferry. Manual motion ends following. Final projected boat is hit-tested against unobstructed canvas."
+    },
+    {
+      "kind": "candidate packaging failure",
+      "evidence": "docs/evidence/sounds-in-motion/stale-package-failure.json",
+      "observation": "Hot-recompiled static JS expected a new menu element while the running Node process retained old imported HTML; a fresh arrival crashed before joining.",
+      "correction": "Restart both independent candidate services from the complete package before source/browser acceptance; final release bytes equal the reviewed complete candidate."
+    },
+    {
+      "kind": "browser harness assumption",
+      "evidence": "docs/evidence/sounds-in-motion/reading-action-harness-failure.json",
+      "observation": "The helper tried generic Share while a core-place dock intentionally supplies the visible main action. Boat creation, Watch and withdrawal had passed.",
+      "correction": "Use the actual visible core action, or its normal reopen button, with no forced click or injected product state."
+    },
+    {
+      "kind": "unpromoted fix seen by user",
+      "observation": "The author reported clipping still present while preview.json and actual 18861 listener were still cd73f2a. Source changes and scratch checks did not update existing user tabs.",
+      "correction": "Promote verified 3ee3493 to the actual address, preserve current rows, require a fresh document and verify actual promoted walking separately."
+    }
+  ],
+  "isolation": "Frozen baseline18910, source suite18911 and independent browser world18912 each have separate ignored databases. Browser tests accept only designated scratch port/path. User18861 receives the app-only switch and read-only blocked-write observer.",
+  "visualReview": "Root inspected actual coast-before/after and boat desktop/phone plus pinwheel renders. Final ferry is recognisable and centered by Watch; pinwheel remains a deliberately small local prop. Screenshots are actual renders, never concepts.",
+  "humanStatus": {
+    "hardwareListening": "not performed",
+    "unfamiliarPairs": "not performed",
+    "physicalPhone": "not performed",
+    "nextDayReturn": "not performed",
+    "publicDeployment": "not authorized or performed"
+  },
+  "limits": [
+    "Up to three visible live public horn ferries and six breeze pinwheels, selected canonically; dense histories can exhaust the visual budget.",
+    "The existing horn recording/emitter stays fixed; a moving ferry is a visible response, not a relocated spatial audio source or a human participant.",
+    "The ferry route needs a valid sampled ocean course. Original moored sailboat remains scenery.",
+    "3D received the motion props and hemisphere floor repair. Optional 2D/2.5D lenses retain prior state but were not revalidated or extended here.",
+    "A bounded coastal route and geometry sweep do not prove all future positions, meshes or camera paths.",
+    "No new recording, asset download, schema migration or fabricated contribution was introduced."
+  ],
+  "rollback": {
+    "targetApplication": "cd73f2a",
+    "retainedCompiledFiles": 66,
+    "matchesUninstrumentedFrozenBefore": true,
+    "allCurrentDataRetained": true,
+    "fullRollbackRehearsalThisIteration": false,
+    "command": "python3 scripts/local-preview.py --rollback"
+  },
+  "promotionCounts": {
+    "persistentTables": 12,
+    "soundHistoryRows": 44,
+    "publicPlanetSourcesAtReadOnlyVisit": 16,
+    "servedAssets": 62,
+    "compiledFiles": 69
+  },
+  "artifacts": [
+    {
+      "path": "docs/evidence/sounds-in-motion/baseline-instrumentation.json",
+      "bytes": 600,
+      "sha256": "3c893e79fb277ad84a80b46e516380c853f64f841f74647eb7451fa84bae0c57"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-after-desktop.png",
+      "bytes": 600459,
+      "sha256": "3af15cd67c145e35e82c9e0df73e40532e08a38f20b4785b846535797746a4bc"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-after-phone-first.png",
+      "bytes": 61173,
+      "sha256": "29c2b165facd8d075f04ec7f525663c376b8cc956e093796be7920ab4e490bec"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-before-inside.png",
+      "bytes": 436395,
+      "sha256": "91198a10e3db6f82b3238e42402f8f5ad89699e6ed9a75712dbcdef49cdbfc54"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-before.json",
+      "bytes": 14582,
+      "sha256": "25b863b1a701cbb71ae8a233f5f197d62e42a5a13e9f8296f979ceafb80f94a7"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-before.txt",
+      "bytes": 973,
+      "sha256": "d53ab686d6702a5af129b31c971d94354a3577f5f1940adf83a40f125145f406"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-final.json",
+      "bytes": 766024,
+      "sha256": "391e2c552bc4e117c2435c0462a9eb3063cf6a57121ddc64e9b423ddb1de5f15"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/coast-final.txt",
+      "bytes": 1836,
+      "sha256": "eb360267da3a982f112d82d81a76cf5cbb45dbeb7f31e543c8dd26bb47460504"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/command-provenance.txt",
+      "bytes": 5804,
+      "sha256": "11c8f04c2f35f674d32bd02363914365808c9c93584c8f34eaebff4aa0e401fd"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/ferry-desktop.png",
+      "bytes": 411232,
+      "sha256": "e9ab7daae6df2abe71d8a3ab63aaf6d74ae460c434f75173730a4e8fb3a63cc6"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/ferry-phone.png",
+      "bytes": 110790,
+      "sha256": "d8c5bb1ec85c8c8c6f50538acfb59232bf1d7a7554a431447a1b45e3c5968986"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/first-share-failure.json",
+      "bytes": 2009,
+      "sha256": "92f02a6e8c20ae48dfc22131a6714324c980a70f42d61f080096b032ea76ad3b"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/first-share-failure.txt",
+      "bytes": 947,
+      "sha256": "189da2b8753095f47e88956460d8326939f66eaf5b6ffc238c2c44a83ab9eac6"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-328.txt",
+      "bytes": 1077,
+      "sha256": "63fd9aa68751e832a42a4e2552eb3fe7a365ab3c5c6d60eb70ac25ba4f96b460"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-before-share-fix.txt",
+      "bytes": 1077,
+      "sha256": "b910bde6d6bcfe217ca93725f42d9e9783bd526f7d4b9790660de04a6140d4f6"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-config.txt",
+      "bytes": 552,
+      "sha256": "fabc353d9677d3995cf2097be45cd9fdb5c017fc12695cbf3b0a4feba2e7ba11"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-initial.txt",
+      "bytes": 1077,
+      "sha256": "2832dde437ebc74af0aa327110871565a13f5e697dfce6eaae87a966b54cc9b3"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/phone-soundscape-failure.json",
+      "bytes": 7014,
+      "sha256": "ff4633057a8d052edf4fd446a78a61ef83ed8e9065a402fb8c2a9ffb58d96fd8"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/phone-soundscape-failure.txt",
+      "bytes": 3017,
+      "sha256": "5574aecba74fe4b2abc7110f0a5a32c36a64ba9a63fc3d45b911449f7815bb6f"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/pinwheel-desktop.png",
+      "bytes": 739615,
+      "sha256": "67d417f1960788710337d02b24e61b97d1c011ddaaedf55c3e4e30b6356d75f8"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/promoted-coast-end.png",
+      "bytes": 589857,
+      "sha256": "5ad92f274df3f3c9931264ba4ace70e43cef3bbdff16acd4ce1cdfd02e75b323"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/promoted-coast-start.png",
+      "bytes": 463409,
+      "sha256": "3b94380c818044f1582fb82b5f1abc5b23ae26ef3b75fd494116d285c2d65f2c"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/promoted-observer.json",
+      "bytes": 118396,
+      "sha256": "d36a33d60a4c40f03bc8c47d335c775d9337b3574a9eccfdce59d74ffdd3d945"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/promoted-observer.txt",
+      "bytes": 75250,
+      "sha256": "495e64b45fda78fb545e7623887e663a3383590fec6cc946d422588e1cc4c3d7"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/promoted-pool-phone.png",
+      "bytes": 154818,
+      "sha256": "db0466513e3361b4968ce68ae7a25a44eb76517db933ec8dda8402732aa97138"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/promotion.json",
+      "bytes": 8203,
+      "sha256": "a6feccb3aa0f873cd5b63a9004e4872ed1d87360ee676aa836c2cf605f6ac286"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/pure-checks.json",
+      "bytes": 16394,
+      "sha256": "5e6cf66bb43efb1d31775a5b7d27a5d616e4affe3ce67a480f9925fb9b0a394e"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/reading-action-harness-failure.json",
+      "bytes": 7115,
+      "sha256": "38c72556247750ed800cdf970f67eccac2468d7e1ce2bef2f603d3cecd35c81c"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/reading-action-harness-failure.txt",
+      "bytes": 3022,
+      "sha256": "75ac11c7ebd14c85604fb283de6cf49fcf59d6964e1f3fa6aa7dbd858415288b"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/rejected-ferry-watch-phone.png",
+      "bytes": 131053,
+      "sha256": "0be2cf23872e6028ce408b1a829d56cf81a033b8fe62ea308eec2d8127c33957"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/release-build.json",
+      "bytes": 6748,
+      "sha256": "27f9eafb9c0e97982079227b1ac1610bd490f7575acdfd278b1c307a9006f82c"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/rollback-check.json",
+      "bytes": 254,
+      "sha256": "2187ef66ea268e2a8cbf6ffd9b1a4521ea729cee2e39c05b18d93eeea06bbdb5"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/shared-motion.json",
+      "bytes": 8229,
+      "sha256": "4f69a48b4561adee5d1d50a394add17dba27140e59b566014baa9f8db7a04529"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/shared-motion.txt",
+      "bytes": 1679,
+      "sha256": "6b9ff2d30860dc703be7b2755b55f08f3a99a0706271f05556866e63edfc4287"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/stale-package-failure.json",
+      "bytes": 79685,
+      "sha256": "92dc2144cde6f620bf69691bacf5158b657e7fd112d21934b873a32c211b2683"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/stale-package-failure.txt",
+      "bytes": 2368,
+      "sha256": "147cb866a6046e749e4ccad1b8ff4727374ab8d68e73a05b2f216fb6c5e8b7e2"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-after-tests.txt",
+      "bytes": 240,
+      "sha256": "38f505195b97f199f59a3d54b47bc582eb146c51c5a9998a2d228a83e7d33266"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-after.json",
+      "bytes": 564,
+      "sha256": "207362898d2d7c60bab40f64a58dfc837a932164b03c2a54733ae9e4d853109b"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-before-tests.txt",
+      "bytes": 4318,
+      "sha256": "f34c63f7b4777ac94754f773744055d1b1835a7692e30fb916ed0ede2ee5e7bb"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-before.json",
+      "bytes": 1894,
+      "sha256": "5eab2158739f21c73018bdfcb658413662432a4eb8176177f06fc50ab772576f"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-config.txt",
+      "bytes": 224,
+      "sha256": "0c7f696c9d1a5efa8c9c1cb7a88c85bea80ecad19c6aa2c0909382f11deae9e5"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/targeted-after-share-fix.txt",
+      "bytes": 240,
+      "sha256": "576d5c693dcf9c3eb21b45ba84da2115243950318b63167b03858ec042b53e16"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/targeted-after-watch-and-phone-source.txt",
+      "bytes": 438,
+      "sha256": "b29da4367d48921731f27d05cf5f945f7a8a284437f69726642d79b3baa3802a"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/targeted-config.txt",
+      "bytes": 240,
+      "sha256": "a097982e5549c2135d6cc502019c7cd6b153d3b958131ae4366908af5d7cd7d9"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-after.txt",
+      "bytes": 238,
+      "sha256": "8f20d3d848b84ee24cfd029137da2504a322234f804e5774ecd5be4175d67a26"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-author-color-after.txt",
+      "bytes": 238,
+      "sha256": "61abc23bc0e3c28b7f537135fdd4c1ddb39c9770b433b30620d08687b7a2c822"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-author-color-before.txt",
+      "bytes": 1463,
+      "sha256": "2eb1b2681685dd92b957f39cc98f53c99c2c213d041893a70b4d250c4e90d6b0"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-config.txt",
+      "bytes": 86,
+      "sha256": "3c19162cdcb91fde530836ea55cee4007a93c99532d2a85bfda9c79c898745c0"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-initial-qa.txt",
+      "bytes": 1181,
+      "sha256": "e13a1cca10603780172d4881870a4d8c45f21f5d643d9569d7b812e954b9cc25"
+    }
+  ]
+}

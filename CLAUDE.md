@@ -2,6 +2,27 @@
 
 # Little Chorus agent rules
 
+ADR032 keeps local building tests on the front hemisphere before applying a
+tangent-plane footprint or raised floor. Antipodes can project onto the same
+local rectangle; never repair their negative floor height with an arbitrary
+camera offset or relocated source. Check signed feet and the camera envelope
+through actual continuous coast walking as well as geometry tests.
+
+Passing ferries and paper pinwheels derive only from eligible real public
+sources, use canonical source order and anchored server time, retain actual
+author/source identity, and disappear on withdrawal. Keep their budgets and
+reduced-motion poses. The old moored sailboat is scenery. Watch the boat is an
+explicit local viewing action: it neither moves the sound/audio emitter nor
+publishes, edits a reply or enables listening. Boat/wind effects do not replace
+real cross-author shared works or add another world example.
+
+When server code or generated HTML changes, rebuild and restart the entire
+scratch candidate before browser acceptance. Fresh client JS with a still
+running old HTML module can leave controls missing and prevent startup. Verify
+the coherent served package; source/DOM passes or a refreshed static file are
+not proof that a new document starts. Run writing tests away from the user's
+preview and use the data-preserving preview utility for its local switch.
+
 ADR031 adds three explicitly labelled, locally switchable world examples in
 the 3D presentation. Their reserved signals have no author, database source,
 reply or work. Real public sources take priority; examples never unlock a shared

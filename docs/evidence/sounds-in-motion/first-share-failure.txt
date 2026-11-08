@@ -1,0 +1,15 @@
+(node:40707) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+AssertionError [ERR_ASSERTION]: Tide pools Share offers three real curated choices including the passing ferry
+    at check (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:36:10)
+    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:205:3
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:473:9) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+ok  Read-only scratch SQLite confirms original rows are intact and each acknowledged fixture retains a real source/author/position tombstone

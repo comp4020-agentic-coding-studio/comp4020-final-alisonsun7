@@ -1,0 +1,477 @@
+{
+  "kind": "automated-developer-browser-regression",
+  "base": "http://localhost:18910",
+  "status": "observed-broken-baseline",
+  "passed": false,
+  "expectedBroken": true,
+  "observedRegression": true,
+  "expectedRegressionObserved": true,
+  "failure": "AssertionError [ERR_ASSERTION]: Actual desktop-third-default crossed the ground/camera envelope: {\"frame\":41,\"x\":55,\"z\":-8,\"feetRadius\":22.208254211158668,\"signedFeetRadius\":-22.208254211158664,\"cameraRadius\":15.776961608348243,\"view\":\"third\",\"zoom\":8,\"elapsedMs\":0,\"reasons\":[\"feet have crossed the signed ground hemisphere\",\"camera/near-plane origin is inside the globe clearance\"]}\n    at walk (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/coast-walk.mjs:124:16)\n    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/coast-walk.mjs:157:37",
+  "checks": [
+    {
+      "label": "All original planet/coastal live sources remain exact with zero source/environment writes"
+    }
+  ],
+  "errors": [],
+  "writes": [],
+  "routes": [
+    {
+      "id": "desktop-third-default",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "view": "third",
+      "zoom": 8,
+      "touch": false,
+      "start": {
+        "frame": 31,
+        "x": 55,
+        "z": -8,
+        "feetRadius": 22.208254211158668,
+        "signedFeetRadius": -22.208254211158664,
+        "cameraRadius": 15.776961608348243,
+        "view": "third",
+        "zoom": 8
+      },
+      "goal": {
+        "zGreaterThan": 5
+      },
+      "samples": [
+        {
+          "frame": 41,
+          "x": 55,
+          "z": -8,
+          "feetRadius": 22.208254211158668,
+          "signedFeetRadius": -22.208254211158664,
+          "cameraRadius": 15.776961608348243,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 0
+        },
+        {
+          "frame": 42,
+          "x": 55,
+          "z": -7.946560000000001,
+          "feetRadius": 22.20588686053164,
+          "signedFeetRadius": -22.20588686053164,
+          "cameraRadius": 15.774921220861193,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 12.600000023841858
+        },
+        {
+          "frame": 43,
+          "x": 55,
+          "z": -7.8931200000000015,
+          "feetRadius": 22.20365101278837,
+          "signedFeetRadius": -22.20365101278837,
+          "cameraRadius": 15.772994257828227,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 27.899999976158142
+        },
+        {
+          "frame": 44,
+          "x": 55,
+          "z": -7.840000000000002,
+          "feetRadius": 22.201558812050752,
+          "signedFeetRadius": -22.201558812050752,
+          "cameraRadius": 15.771191170657799,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 45
+        },
+        {
+          "frame": 45,
+          "x": 55,
+          "z": -7.7865600000000015,
+          "feetRadius": 22.19958498918027,
+          "signedFeetRadius": -22.199584989180266,
+          "cameraRadius": 15.769490168618441,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 61.80000001192093
+        },
+        {
+          "frame": 46,
+          "x": 55,
+          "z": -7.733120000000001,
+          "feetRadius": 22.197742482929232,
+          "signedFeetRadius": -22.197742482929232,
+          "cameraRadius": 15.767902390058097,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 78.39999997615814
+        },
+        {
+          "frame": 47,
+          "x": 55,
+          "z": -7.679680000000002,
+          "feetRadius": 22.19603123886269,
+          "signedFeetRadius": -22.196031238862687,
+          "cameraRadius": 15.766427776238753,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 95.19999998807907
+        },
+        {
+          "frame": 48,
+          "x": 55,
+          "z": -7.626560000000002,
+          "feetRadius": 22.19446027730283,
+          "signedFeetRadius": -22.19446027730283,
+          "cameraRadius": 15.765074088808415,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 112
+        },
+        {
+          "frame": 49,
+          "x": 55,
+          "z": -7.573120000000003,
+          "feetRadius": 22.19301062455978,
+          "signedFeetRadius": -22.19301062455978,
+          "cameraRadius": 15.763824968163783,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 128.80000001192093
+        },
+        {
+          "frame": 50,
+          "x": 55,
+          "z": -7.520000000000003,
+          "feetRadius": 22.191699599491614,
+          "signedFeetRadius": -22.191699599491617,
+          "cameraRadius": 15.762695328237193,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 144.69999998807907
+        },
+        {
+          "frame": 51,
+          "x": 55,
+          "z": -7.466560000000003,
+          "feetRadius": 22.190511367869988,
+          "signedFeetRadius": -22.190511367869988,
+          "cameraRadius": 15.761671517096339,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 162.10000002384186
+        },
+        {
+          "frame": 52,
+          "x": 55,
+          "z": -7.413120000000003,
+          "feetRadius": 22.189454184901706,
+          "signedFeetRadius": -22.189454184901706,
+          "cameraRadius": 15.760760640268746,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 178.5
+        },
+        {
+          "frame": 53,
+          "x": 55,
+          "z": -7.360000000000002,
+          "feetRadius": 22.188533175421075,
+          "signedFeetRadius": -22.188533175421075,
+          "cameraRadius": 15.759967106438092,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 195.39999997615814
+        },
+        {
+          "frame": 54,
+          "x": 55,
+          "z": -7.306560000000002,
+          "feetRadius": 22.18773721571901,
+          "signedFeetRadius": -22.18773721571901,
+          "cameraRadius": 15.759281325590996,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 211.5
+        },
+        {
+          "frame": 55,
+          "x": 55,
+          "z": -7.253120000000001,
+          "feetRadius": 22.187072222795294,
+          "signedFeetRadius": -22.187072222795294,
+          "cameraRadius": 15.758708390696224,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 228.39999997615814
+        },
+        {
+          "frame": 56,
+          "x": 55,
+          "z": -7.199680000000002,
+          "feetRadius": 22.186538177027288,
+          "signedFeetRadius": -22.186538177027288,
+          "cameraRadius": 15.758248280576096,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 245.10000002384186
+        },
+        {
+          "frame": 57,
+          "x": 55,
+          "z": -7.146560000000002,
+          "feetRadius": 22.18613708687851,
+          "signedFeetRadius": -22.18613708687851,
+          "cameraRadius": 15.757902722180962,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 261.69999998807907
+        },
+        {
+          "frame": 58,
+          "x": 55,
+          "z": -7.093440000000003,
+          "feetRadius": 22.185865353085347,
+          "signedFeetRadius": -22.185865353085347,
+          "cameraRadius": 15.757668611983917,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 278.60000002384186
+        },
+        {
+          "frame": 59,
+          "x": 55,
+          "z": -7.039680000000003,
+          "feetRadius": 22.18572204081485,
+          "signedFeetRadius": -22.185722040814852,
+          "cameraRadius": 15.757545142866201,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 295.30000001192093
+        },
+        {
+          "frame": 60,
+          "x": 55,
+          "z": -6.986560000000003,
+          "feetRadius": 22.1857105580945,
+          "signedFeetRadius": -22.1857105580945,
+          "cameraRadius": 15.757535250068726,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 311.80000001192093
+        },
+        {
+          "frame": 61,
+          "x": 55,
+          "z": -6.933120000000004,
+          "feetRadius": 22.18582952124536,
+          "signedFeetRadius": -22.18582952124536,
+          "cameraRadius": 15.757637741422954,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 327.5
+        },
+        {
+          "frame": 62,
+          "x": 55,
+          "z": -6.880000000000004,
+          "feetRadius": 22.18607750902344,
+          "signedFeetRadius": -22.18607750902344,
+          "cameraRadius": 15.757851393226556,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 344.89999997615814
+        },
+        {
+          "frame": 63,
+          "x": 55,
+          "z": -6.826560000000003,
+          "feetRadius": 22.186457516557176,
+          "signedFeetRadius": -22.186457516557176,
+          "cameraRadius": 15.758178787502125,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 361.5
+        },
+        {
+          "frame": 64,
+          "x": 55,
+          "z": -6.773120000000003,
+          "feetRadius": 22.186968453109102,
+          "signedFeetRadius": -22.186968453109106,
+          "cameraRadius": 15.758618986977247,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 378.80000001192093
+        },
+        {
+          "frame": 65,
+          "x": 55,
+          "z": -6.720000000000004,
+          "feetRadius": 22.187606100422002,
+          "signedFeetRadius": -22.187606100422002,
+          "cameraRadius": 15.759168360615252,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 394.10000002384186
+        },
+        {
+          "frame": 66,
+          "x": 55,
+          "z": -6.666560000000004,
+          "feetRadius": 22.188378159828115,
+          "signedFeetRadius": -22.188378159828115,
+          "cameraRadius": 15.759833547702753,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 410.89999997615814
+        },
+        {
+          "frame": 67,
+          "x": 55,
+          "z": -6.613120000000004,
+          "feetRadius": 22.189281204926903,
+          "signedFeetRadius": -22.189281204926907,
+          "cameraRadius": 15.760611601155617,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 427.80000001192093
+        },
+        {
+          "frame": 68,
+          "x": 55,
+          "z": -6.559680000000005,
+          "feetRadius": 22.190315262369545,
+          "signedFeetRadius": -22.190315262369545,
+          "cameraRadius": 15.761502549736406,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 443.89999997615814
+        },
+        {
+          "frame": 69,
+          "x": 55,
+          "z": -6.506240000000007,
+          "feetRadius": 22.191480362676963,
+          "signedFeetRadius": -22.191480362676963,
+          "cameraRadius": 15.762506426383462,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 460.69999998807907
+        },
+        {
+          "frame": 70,
+          "x": 55,
+          "z": -6.4531200000000055,
+          "feetRadius": 22.192768388528982,
+          "signedFeetRadius": -22.192768388528982,
+          "cameraRadius": 15.763616244263948,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 477.39999997615814
+        },
+        {
+          "frame": 71,
+          "x": 55,
+          "z": -6.399680000000006,
+          "feetRadius": 22.194194896374285,
+          "signedFeetRadius": -22.194194896374288,
+          "cameraRadius": 15.764845415755943,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 495
+        },
+        {
+          "frame": 72,
+          "x": 55,
+          "z": -6.346560000000006,
+          "feetRadius": 22.19574284386347,
+          "signedFeetRadius": -22.19574284386347,
+          "cameraRadius": 15.766179265110095,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 511.39999997615814
+        },
+        {
+          "frame": 73,
+          "x": 55,
+          "z": -6.2934400000000075,
+          "feetRadius": 22.19742042787794,
+          "signedFeetRadius": -22.19742042787794,
+          "cameraRadius": 15.767624865017392,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 527.6000000238419
+        },
+        {
+          "frame": 74,
+          "x": 55,
+          "z": -6.240000000000008,
+          "feetRadius": 22.199238977620066,
+          "signedFeetRadius": -22.199238977620066,
+          "cameraRadius": 15.769191989156216,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 544.6999999880791
+        },
+        {
+          "frame": 75,
+          "x": 55,
+          "z": -6.186560000000008,
+          "feetRadius": 22.20118883375827,
+          "signedFeetRadius": -22.201188833758273,
+          "cameraRadius": 15.770872325742657,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 561.3000000119209
+        },
+        {
+          "frame": 76,
+          "x": 55,
+          "z": -6.133120000000009,
+          "feetRadius": 22.203270053908714,
+          "signedFeetRadius": -22.203270053908714,
+          "cameraRadius": 15.772665936945835,
+          "view": "third",
+          "zoom": 8,
+          "elapsedMs": 577.1999999880791
+        }
+      ],
+      "reachedGoal": false,
+      "safe": false,
+      "end": {
+        "frame": 76,
+        "x": 55,
+        "z": -6.133120000000009,
+        "feetRadius": 22.203270053908714,
+        "signedFeetRadius": -22.203270053908714,
+        "cameraRadius": 15.772665936945835,
+        "view": "third",
+        "zoom": 8
+      },
+      "elapsedMs": 587,
+      "violationCount": 36,
+      "firstViolation": {
+        "frame": 41,
+        "x": 55,
+        "z": -8,
+        "feetRadius": 22.208254211158668,
+        "signedFeetRadius": -22.208254211158664,
+        "cameraRadius": 15.776961608348243,
+        "view": "third",
+        "zoom": 8,
+        "elapsedMs": 0,
+        "reasons": [
+          "feet have crossed the signed ground hemisphere",
+          "camera/near-plane origin is inside the globe clearance"
+        ]
+      }
+    }
+  ],
+  "physicalPhone": false,
+  "humanVisualAcceptance": false,
+  "humanListening": false,
+  "limitations": [
+    "Diagnostics observe actual rendered camera/feet vectors; they do not establish artistic quality.",
+    "Phone coverage uses a touch-enabled Chrome viewport and real injected touch input, not a physical device.",
+    "A matching expected-broken baseline is still a failed product assertion and exits 1."
+  ]
+}

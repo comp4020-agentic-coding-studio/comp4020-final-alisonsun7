@@ -1,0 +1,9 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  15:28:34
+   Duration  180ms (tests 61%, transform 23%, import 14%, worker 1%)
+

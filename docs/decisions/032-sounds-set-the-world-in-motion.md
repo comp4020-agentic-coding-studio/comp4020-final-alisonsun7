@@ -1,14 +1,15 @@
 # ADR 032 — Sounds set the world in motion
 
-Date: 2026-11-08. Status: accepted candidate direction; implementation and
-integrated checks are pending. This record is not a completed-feature claim.
+Date: 2026-11-08. Status: locally promoted as application `3ee3493` after
+scoped source, coastal-walk and dual-browser boat/wind checks. Fresh promoted
+read-only coastal inspection also passes; artistic and unfamiliar-player acceptance are not claimed.
 
 ## Request and inspected starting point
 
 The author asks for a placed boat horn to make a boat sail, and for similarly
 coherent sound effects. They also report that walking beside the coast can
-put the camera inside the planet. The latter needs actual reproduction and
-repair rather than a cosmetic scene change.
+put the camera inside the planet. The latter has been reproduced and traced
+to surface classification rather than cosmetic camera distance.
 
 At inspection, the coast already contained a pier, a volumetric sailboat,
 sails, water and a tide-pool channel. That boat bobs and rolls but does not
@@ -18,10 +19,10 @@ working windmill or boat-navigation system to claim or preserve.
 `harbour-boat` is labelled **Boat by the pier** and `gentle-breeze` is **Breeze and birds**: existing
 recording IDs, licences and playback roles remain unchanged.
 
-The studio already separates private Listen from explicit Leave and can show
-an environmental consequence outside the three main work places. Its current
-effect copy covers birds, gulls and café responses, but not the proposed boat
-or wind changes. The local discovery guide currently covers only ADR031's
+At the starting checkpoint, the studio separated private Listen from explicit
+Leave and could show an environmental consequence outside the three main work
+places. Its effect copy covered birds, gulls and café responses, but not the
+boat or wind changes. The local discovery guide currently covers only ADR031's
 three clearly labelled examples.
 
 ## Product decision
@@ -78,12 +79,13 @@ spots in this candidate; this decision does not silently add a horn example.
 
 ## Coastal camera requirement
 
-The geometry investigation identified a concrete cause: a tangent-plane
-projection could classify an antipodal point as inside a building footprint,
-producing a floor height of approximately -44 m. The candidate repair must
-reject the opposite hemisphere before treating a point as a local building
-interior or floor. Raising the camera would conceal the wrong ground model.
-This pure-geometry diagnosis does not establish that the actual walk is fixed.
+The geometry investigation identified a concrete cause: tangent projection
+classified the café's antipode as inside its footprint, yielding a -44.16 m
+floor. The old coast sweep contained 49 negative walkable samples. Front-
+hemisphere gating now precedes local footprint, floor and wall checks; the
+bounded repaired sweep has 553 walkable samples with no negative/nonfinite
+heights. Raising the camera would conceal the wrong ground model. Geometry
+alone was insufficient, so an actual continuous coast path was checked too.
 
 Reproduce the reported walk with the actual controls and inspect the corrected
 path. The avatar's ground height and the camera must remain outside the authored
@@ -92,7 +94,11 @@ viewport changes. Preserve the normal follow/drag conventions, first-/third-pers
 and source positions. A successful Go here jump or a numerical camera check
 alone cannot establish that the continuous coast walk is fixed.
 
-## Short acceptance protocol — pending execution
+## Acceptance protocol and remaining checks
+
+This protocol set the candidate targets. The executed runs below establish
+their named cases only; manual hearing, unfamiliar-player comprehension and
+exhaustive run/jump/seam coverage have not been supplied by these new paths.
 
 1. In an isolated world, privately audition a horn, cancel, then explicitly
    leave it. Confirm that only publication starts the proposed sailing response
@@ -116,7 +122,49 @@ alone cannot establish that the continuous coast walk is fixed.
    source removal and current-history preservation. Record each build and check separately. Human listening and
    unfamiliar-player understanding still require their own real observations.
 
-No artistic listening, browser/GPU acceptance, human playtest or final release
-is asserted here. Implementation choices, observed failures and actual results
-must be appended only after they occur. Application rollback must retain the
-current database; never restore an old database to reverse a visual change.
+## Observed candidate and local promotion results
+
+The final coastal browser path passes 19 checks: sustained desktop and touch
+walking in first/third person, close/far camera settings, and a continuous far-
+shore leg within one metre of the café antipode. Observed signed feet and
+camera remain outside the globe, with quiet preference and source history
+preserved. This is bounded developer automation, not a guarantee for every
+camera angle. The coherent restarted scratch application also passes 328
+source/HTTP checks in 51 files, 65.31 s; earlier 326/327 runs have narrower
+build scopes and must not be called final-package acceptance.
+
+During candidate work, the author still observed clipping at port 18861. Its
+recorded application remained the preceding `cd73f2a`: this fix had not yet
+reached that preview. Do not treat the report as a completed retest of the
+candidate. The subsequent promotion below delivers the candidate, without
+claiming the author has personally retested it.
+
+Boat/wind browser attempts also exposed three real integration gaps: ordinary
+Tide-pools Share showed Green recommendations; the withdrawal path attempted
+an invisible desktop header on phone; and new client JS ran against stale
+server-held HTML, causing a null-control startup failure. Venue-aware choices,
+a reachable phone drawer entry and a complete candidate rebuild/restart address
+those causes. A final test-harness correction uses Reading Nook's visible
+primary action rather than assuming a separate Share button is visible there.
+The complete 17-check path then passes; earlier failures remain evidence.
+
+The final `.cache/motion/sounds-ready/results.json` records two independent
+quiet identities, real horn and breeze publication, attributed moving geometry,
+late arrival, desktop/touch Watch, withdrawal in both sessions, reload quiet
+preference and real SQLite tombstones. Its 17 checks pass without runtime
+errors. This is developer automation, not an unfamiliar-player study or sound
+quality judgement.
+
+Source commit `3ee3493` matches all 69 reviewed compiled files. Local promotion
+at port 18861 preserves all twelve current tables and verifies 62 served
+assets. The previous application remains the application-only rollback target
+with the current database. A fresh anonymous promoted observer then passes:
+all non-GET/HEAD requests are blocked, all sixteen current public planet source
+IDs remain unchanged, and an actual S/D/S coast walk records 387 safe render
+samples from the Lookout to x60.387/z7.270. The feet remain at radius 22 m and
+the default third-person camera at 31.638 m. This post-promotion path is desktop;
+the earlier isolated coastal run covers touch. The
+[release index](../evidence/sounds-in-motion-2026-11-08.json) keeps each scope
+and raw artifact separate, including the original failures. No artistic listening,
+physical-phone or public-release acceptance is asserted. Rollback must retain
+the current database, never restore an old one for visuals.

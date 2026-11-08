@@ -5,6 +5,37 @@ coding agent can inspect PCM, scheduling and WebAudio graphs; it has not heard
 these sounds. The project author and friend-playtest groups still need to judge
 comfort, clarity and whether they want to try another combination.
 
+## Current local revision — 2026-11-08
+
+Application **`3ee3493`** on `codex/sounds-in-motion` is the local preview at
+`http://localhost:18861/planet`. [ADR032](decisions/032-sounds-set-the-world-in-motion.md)
+and the [current release index](evidence/sounds-in-motion-2026-11-08.json)
+separate its **328 source/HTTP checks in 51 files, 65.31 s**, the **17**-check
+shared boat/breeze browser path and **19** coastal-walk checks. These are
+separate scopes; none is a speaker-output or artistic listening judgement.
+
+The existing **Boat by the pier** recording now has a visual consequence: up
+to three newest real public horns cause server-timed passing ferries, with
+author-coloured roofs and an explicit **Watch the boat** action. The emitter,
+recording, original source position and author remain fixed; moving to watch
+does not move the horn or start audio. The existing **Breeze and birds**
+recording similarly drives up to six source-attributed paper pinwheels.
+Neither effect adds another sound, an autoplay bed or a synthetic contributor.
+Ordinary Tide-pools Share offers three venue choices including the horn, and
+the full library explains the breeze effect before explicit Leave.
+
+ADR031's coffee/bird/gull teaching signals remain optional local examples,
+yielding to eligible real sources. Its `cd73f2a`
+[discovery index](evidence/living-discovery-2026-11-08.json) records that earlier
+checkpoint; it is not a second acceptance run of this revision. The current
+local promotion retains all twelve tables, **44** sound-history rows and
+verified bytes for **62** assets. Its actual unjoined read-only observer sees
+**16** public planet sources, preserving their IDs with zero writes or page
+errors; the separate desktop coast observation records **387** safe rendered
+samples. These are not additional audio-output checks. Application rollback returns to `cd73f2a`
+while retaining the current database. No sound-coordinate or audio-role
+migration accompanies the new presentation.
+
 ## Decision and scope
 
 The first shared score uses three original parts rather than trying to make the
@@ -119,7 +150,7 @@ range, half-level gain and yield the eight-voice budget to real contributions.
 Clearing or re-enabling them invalidates stale loads; they never unmute a page.
 The discovery path verifies actual decoded private playback under a gesture,
 not speaker output or an artistic verdict. See the
-[scoped release evidence](evidence/living-discovery-2026-11-08.json).
+[earlier ADR031 release evidence](evidence/living-discovery-2026-11-08.json).
 
 Use headphones first at modest volume, then phone/laptop speakers. For each row,
 record device, volume, first impression and one concrete requested change.

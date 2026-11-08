@@ -2982,3 +2982,70 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   existing sound identities/positions and audio stay fixed, effects derive from
   real public sources and server time, watching is an explicit local action,
   and examples do not multiply. Water-flow expansion remains deferred.
+
+
+## 2026-11-08 — Sounds in motion: candidate integration and version boundary
+
+- The author reports that the coast still clips while this candidate is under
+  development. The recorded listener at 18861 remains application `cd73f2a`;
+  the hemisphere repair had not yet been promoted there. This was a delivery/
+  version boundary, not a completed user retest of the repaired candidate.
+  The later local switch below delivers the fix; it does not supply the
+  author's own retest result.
+- The diagnosis is now bounded by both geometry and actual walking. The old
+  café antipode produces a -44.16 m floor; 49 walkable coast samples are
+  negative. A front-hemisphere gate removes the alias before local floor/wall
+  checks, with zero negative/nonfinite heights in 553 repaired walkable
+  samples. This preserves actual building floors and source coordinates;
+  no arbitrary camera offset hides the defect.
+- `.cache/motion/coast-final/results.json` passes 19 developer browser checks.
+  Real held-key/touch movement covers first/third person and camera distances,
+  including the extended continuous far-shore route within one metre of the
+  café antipode. Observed signed feet/camera clear the globe, quiet preference
+  stays quiet and existing source/environment state is unchanged. This is
+  route-specific observation, not universal camera or physical-phone proof.
+- Three boat/wind browser attempts fail for different reasons. The initial
+  ordinary Share at Tide pools receives Green's choices; venue-aware defaults
+  now offer the local three ingredients without requiring a discovery link.
+  A later withdrawal step tries `planet-shared`, an intentionally desktop-only
+  header hidden on phone; the drawer gains a real Our soundscape entry and
+  the path uses reachable UI. A third attempt loads new JS with stale
+  server-held HTML and fails on a null control. The whole compiled scratch
+  candidate is rebuilt/restarted, rather than treating a source test or static
+  refresh as startup proof. The failed records remain in
+  `.cache/motion/sounds-in-motion-artifacts/`, `sounds-in-motion-verified/`
+  and `sounds-in-motion-final/`; none is counted as a completed full path.
+- The restarted source/HTTP run `.cache/motion/full-spec-complete.txt` passes
+  328 checks in 51 files, 65.31 s, on isolated port 18911. The earlier 326 and
+  327 runs predate later source/package changes; 39-check targeted passes do
+  not establish that a fresh browser starts. Pure/raw provenance is archived
+  in `docs/evidence/sounds-in-motion/pure-checks.json`. Final boat/wind
+  end-to-end results and data-preserving live promotion are not inferred from
+  this source total and will be recorded after execution. No main push,
+  public deployment, unfamiliar-player study or artistic listening is claimed.
+
+- Later in this iteration, `.cache/motion/sounds-ready/results.json` completes
+  the 17-check boat/wind browser path with two independent quiet identities,
+  real source authors/positions, shared moving ferries and pinwheels, late
+  arrival, desktop/touch Watch, withdrawal, reload mute and actual SQLite
+  tombstones. Reading Nook's helper now uses its visible primary action rather
+  than another assumed Share control. The path has zero runtime errors; the
+  preceding failed attempts are not converted into success.
+- Application `3ee3493` is then promoted to port 18861. All 69 compiled files
+  match the reviewed candidate, every row in all twelve current tables is
+  preserved and 62 served assets match. PID 56758 records the new listener;
+  the preceding `cd73f2a` is the application-only rollback with current data.
+  Root is preparing the release index and a fresh unjoined read-only observer.
+  That observer is still pending here. This local switch is not a main push,
+  public deployment, unfamiliar-player study or artistic listening verdict.
+
+- The subsequent promoted observer passes at the real 18861 address. It never
+  joins, blocks every non-GET/HEAD request and records zero writes/page errors.
+  A real S/D/S walk from the Lookout to x60.387/z7.270 captures 387 safe render
+  samples, with signed feet radius 22 m and camera radius 31.638 m. All sixteen
+  current public planet source IDs remain unchanged. The switch preserves
+  44 sound-history rows in twelve tables; earlier counts describe earlier
+  checkpoints, not lost rows. The new
+  [release index](evidence/sounds-in-motion-2026-11-08.json) archives these
+  distinct runs, screenshots, actual failures and file hashes. Owned scratch
+  services are stopped after checks, their databases retained; 18861 stays up.

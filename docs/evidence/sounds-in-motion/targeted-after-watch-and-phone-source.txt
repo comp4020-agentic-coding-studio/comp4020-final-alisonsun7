@@ -1,0 +1,12 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+
+ Test Files  6 passed (6)
+      Tests  39 passed (39)
+   Start at  15:47:43
+   Duration  2.02s (import 56%, tests 32%, transform 11%, worker 1%)
+
+    Isolate  6 workers spawned · ~58ms startup each (spawn + environment, per file)
+             at least ~291ms faster with isolate: false — reuses workers across files instead of one per file
+

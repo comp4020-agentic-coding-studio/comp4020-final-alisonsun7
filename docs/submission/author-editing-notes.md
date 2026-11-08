@@ -3,11 +3,39 @@
 Audit date: 2026-11-08. Agent-prepared factual notes, not a rewrite of the
 author's argument. Root materials at the start of this audit came from
 [`f86e1d6`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f86e1d6).
-The current local application is **`cd73f2a`** on
-`codex/living-sound-discovery`, serving `http://localhost:18861/planet`.
-The [discovery release index](../evidence/living-discovery-2026-11-08.json)
-records optional labelled demonstrations, true-source priority, the road and
-resident corrections, actual browser scopes and preserved current history.
+The current local application is **`3ee3493`** on `codex/sounds-in-motion`,
+serving `http://localhost:18861/planet`. [ADR032](../decisions/032-sounds-set-the-world-in-motion.md)
+and the [motion release index](../evidence/sounds-in-motion-2026-11-08.json)
+record real source-driven ferries and pinwheels, safe coastal viewpoints,
+the antipodal floor/camera correction and preserved current history.
+The final **328 source/HTTP checks in 51 files, 65.31 s**, **17** shared boat/
+breeze browser checks and **19** coastal-walk browser checks have distinct
+scopes. They must not become a combined quality total or a human-study result.
+The actual local promotion preserves all twelve tables, including **44**
+sound-history rows, and verifies **62** served assets. Its rollback target is
+**`cd73f2a`**, retaining the current database.
+
+The subsequent fresh anonymous observer of the promoted port-18861 application
+finds **16** live public planet sources and preserves their IDs. It joins no
+identity, makes zero writes and reports no page errors. Its actual desktop
+Lookout-to-coast walk records **387** safe rendered samples. The earlier
+19-check scratch coast run includes phone controls but precedes the final
+Watch framing/menu changes; ordinary movement/camera formulas are unchanged.
+The post-promotion walk is not another mobile or physical-device run.
+
+The horn's up-to-three passing ferries have author-coloured roofs and server-
+time routes; **Watch the boat** moves only the visitor. Breeze has up to six
+attributed turning pinwheels. Neither relocates the sound, adds a contributor
+or proves collaboration by itself. Ordinary pool Share now offers waves,
+gulls and the horn; the mobile Places & friends drawer exposes **Our soundscape**.
+The 17-check path uses those real controls, separate quiet cookie identities,
+late joining, source withdrawal and read-only scratch history checks.
+
+The preceding `cd73f2a`
+[discovery release index](../evidence/living-discovery-2026-11-08.json) is dated
+2026-11-08 history: optional labelled demonstrations, true-source priority,
+road/resident corrections and its own browser and promotion scope. Its
+42 sound-history rows and 59 verified assets do not describe this promotion.
 README and PROCESS now explicitly record the playable 2D/2.5D comparison and
 the author's stated preference for livelier, more suitable 3D; no unfamiliar
 player preference or artistic listening result was invented.
@@ -46,8 +74,9 @@ The [actual local promotion](../evidence/answers/promotion.json) preserves all
 rows in all twelve tables, including **31 sound rows at promotion**, and
 verifies 56 served assets/cache behaviour. The initial planning count of 29
 rows must not be reused as the final comparison. Previous application
-`37e055b` was the rollback target at that checkpoint. The current target is
-`5f1fc28`, always retaining the current database.
+`37e055b` was the rollback target at that checkpoint; `5f1fc28` later became
+the target for ADR031. The current target is `cd73f2a`, always retaining the
+current database.
 The [fresh unjoined Chrome observer](../evidence/answers/promoted-observer.json)
 passes desktop/phone checks with zero writes/page errors, nine existing public
 sounds, four note routes returning 200, unlisted notes returning 404 and no
@@ -61,12 +90,13 @@ playtest or a public deployment.
 | [README](../../README.md), opening notice and final AUTHOR INPUT paragraph | Explicitly an unapproved author-review draft | Review every personal/product claim using the [five questions](final-author-checklist.md). Retain honest limits. Remove scaffolding only after review. |
 | README, “Enter the planet”, line 13 at audit | Raw Markdown links `http://localhost:18861/planet` | The candidate renderer repairs the deployed entry to `/planet`; the raw GitHub README still needs the author-approved, verified course URL. The marker cannot use another computer's localhost. |
 | README, “Small enough to matter” | Sloan and Harley are design arguments selected in an agent-assisted draft | Confirm reading and specify what each source changes about the actual product; remove or replace unsupported personal interpretation. |
-| README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules | Walk current `cd73f2a` and confirm the terms and visible/audible consequence. Scoped answer, creation and discovery paths establish technical behaviour, not human comprehension. |
+| README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules | Walk current `3ee3493` and confirm the terms and visible/audible consequence. The new ferry and pinwheel are source effects, not evidence that two people formed a joint work. Scoped paths establish technical behaviour, not human comprehension. |
 | README, relative evidence/audio/manifest links | GitHub-relative links are valid there, but the previous renderer resolved them under `/readme/`; those application routes did not exist | Four exact note routes, `/assets-manifest.json` and current-origin `/planet` are repaired. Other repository references use fixed public GitHub links. Final source checks and the promoted observer verify route 200/404 behaviour. Docker-image verification remains separate. No author prose was changed for this repair. |
 | [PROCESS](../../PROCESS.md), “Failures changed the harness” | The earlier audit found garden-release checks described as current | The 2026-11-08 edit now names the 43-check browser path and 190-test source run as historical garden results with their [build scope](../evidence/chorus-garden-2026-11-07.json). Later candidate evidence remains in the release index; do not replace every old number with the newest count. |
 | README, “Small enough to matter”, and PROCESS, “Keeping dependable foundations” | Updated on 2026-11-08 following the author's explicit request to record testing 2D/2.5D and finding 3D more lively and suitable | The drafts now distinguish the author's stated design preference from the developer's [playable comparison checks](../evidence/perspectives-2026-11-08.json). [ADR028](../decisions/028-optional-paper-world-presentations.md) and [ADR029](../decisions/029-a-lived-in-3d-world.md) record the alternatives and return to 3D. Retain the explicit cost: occlusion, camera and rendering work. No unfamiliar-player preference study is implied. |
 | PROCESS, final acceptance and failure selection | Predates the populated-Green `too_close` failure and ADR030's reply clarity/placement changes | Explain why a brighter sculpture could not fix impossible placement. Cite `2ca764f` planning, `f557ade` cancellation/SSE repair, the real failed travel path and `5f1fc28` current-position/zero-walk correction, then `686a048` actual-controller checks. The final historical path and local promotion are now verified; preserve the earlier failed attempts rather than presenting first-pass success. |
 | PROCESS, technical versus harness failure | Does not yet distinguish the wrong fixture assumptions and coastal timeout from the real travel failure | Nine live planet sources are not nine Green sources: the fixture has five in Green. Separately, the coastal workflow deliberately waits 4.56 s inside a five-second overall budget; `5f1fc28` raises only that whole-workflow budget to ten seconds, preserving every one-second SSE assertion. A clean 275-check run takes 107.04 s before the separate final 277-check run. These repairs diagnose the harness; they do not establish better application latency. |
+| PROCESS, ADR032 failure selection | The newer motion/coast evidence is not yet interpreted in the personal account | Distinguish the actual antipodal café footprint producing a negative floor from a test clicking a deliberately hidden Share duplicate. Keep the stale server-HTML/client-JS startup failure and its full restart in the record. The final 19 coastal checks and 17 shared-motion checks are bounded developer evidence; explain the author's own change in directing or accepting work rather than inventing one. |
 | PROCESS, two AUTHOR INPUT paragraphs | Asks for a real change in directing practice and personal reading/listening | Supply the real experience; commits establish events, not what the author learned or believed. Add a bounded before/fix/harness example rather than another totals paragraph. |
 | [Research note](../../research-note.md), notice and first-person thesis | A useful field-level draft remains unsigned | Own or revise the verification-capacity thesis; verify source claims and limitations, explain the strongest counter-case, and avoid turning the note into a project summary. |
 | [Historical reflections](../../reflections/README.md) | Earlier DayDraw/SoundGarden/Bloom context differs from the final product | Preserve that context. A later correction must be dated; do not write Little Chorus success retrospectively into earlier entries. |

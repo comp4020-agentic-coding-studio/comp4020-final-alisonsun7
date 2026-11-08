@@ -1,0 +1,1 @@
+export default {test:{include:["spec/sound-vessels.test.ts"],fileParallelism:false}};

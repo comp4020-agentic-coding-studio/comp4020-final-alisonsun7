@@ -1,0 +1,44 @@
+(node:45149) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+page.fill: Timeout 20000ms exceeded.
+Call log:
+[2m  - waiting for locator('#planet-join-form input[name="nickname"]')[22m
+[2m    - locator resolved to <input value="" required="" maxlength="24" name="nickname" id="planet-nickname" autocomplete="nickname" placeholder="A nickname is fine"/>[22m
+[2m    - fill("Motion Ada")[22m
+[2m  - attempting fill action[22m
+[2m    2 × waiting for element to be visible, enabled and editable[22m
+[2m      - element is not visible[22m
+[2m    - retrying fill action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and editable[22m
+[2m      - element is not visible[22m
+[2m    - retrying fill action[22m
+[2m      - waiting 100ms[22m
+[2m    39 × waiting for element to be visible, enabled and editable[22m
+[2m       - element is not visible[22m
+[2m     - retrying fill action[22m
+[2m       - waiting 500ms[22m
+
+    at quietPerson (/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:93:14)
+    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:204:15 {
+  log: [
+    `  - waiting for locator('#planet-join-form input[name="nickname"]')`,
+    '    - locator resolved to <input value="" required="" maxlength="24" name="nickname" id="planet-nickname" autocomplete="nickname" placeholder="A nickname is fine"/>',
+    '    - fill("Motion Ada")',
+    '  - attempting fill action',
+    '    2 × waiting for element to be visible, enabled and editable',
+    '      - element is not visible',
+    '    - retrying fill action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and editable',
+    '      - element is not visible',
+    '    - retrying fill action',
+    '      - waiting 100ms',
+    '    39 × waiting for element to be visible, enabled and editable',
+    '       - element is not visible',
+    '     - retrying fill action',
+    '       - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+ok  Read-only scratch SQLite confirms original rows are intact and each acknowledged fixture retains a real source/author/position tombstone

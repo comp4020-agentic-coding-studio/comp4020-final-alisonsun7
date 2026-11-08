@@ -1,0 +1,193 @@
+{
+  "type": "automated-developer-browser-check",
+  "base": "http://localhost:18912",
+  "failed": true,
+  "failure": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#planet-shared')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" id=\"planet-shared\" aria-haspopup=\"dialog\" aria-label=\"Our soundscape: sounds and responses\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    37 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at remove (/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:139:44)\n    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:238:29",
+  "checks": [
+    {
+      "label": "Tide pools Share offers three real curated choices including the passing ferry",
+      "elapsedMs": 1806,
+      "detail": [
+        "beach-waves",
+        "coastal-gulls",
+        "harbour-boat"
+      ]
+    },
+    {
+      "label": "The horn choice explains its visible ferry consequence before publishing",
+      "elapsedMs": 1807,
+      "detail": "A little ferry sails the nearest coast. The horn stays where it was left."
+    },
+    {
+      "label": "An explicit real horn creates a ferry retaining the actual author and original sound position",
+      "elapsedMs": 2138,
+      "detail": {
+        "sourceId": "snd_4aa7f5b63f1d4efe",
+        "byId": "par_7129f8608f9d368b",
+        "by": "Motion Ada",
+        "soundId": "harbour-boat",
+        "sourceX": 16,
+        "sourceZ": 14,
+        "color": "#cf8789",
+        "visible": true,
+        "anchorX": 24,
+        "anchorZ": 19.665667953225316,
+        "x": 20.37698383601102,
+        "z": 22.20521201445998,
+        "yaw": -0.4611797928663192
+      }
+    },
+    {
+      "label": "The ferry changes actual rendered position over more than one second of server time",
+      "elapsedMs": 3333
+    },
+    {
+      "label": "A later friend enters with an independent real cookie identity",
+      "elapsedMs": 4547
+    },
+    {
+      "label": "Late arrival sees the same authored ferry and server-time trajectory, allowing actual frame-sampling skew",
+      "elapsedMs": 4552,
+      "detail": {
+        "clockDeltaMs": 391.199951171875,
+        "poseDeltaMetres": 0.18579291336460083,
+        "anchorsMatch": true
+      }
+    },
+    {
+      "label": "Both independent visits remain genuinely quiet while the shared ferry moves",
+      "elapsedMs": 4555
+    },
+    {
+      "label": "Desktop Watch reaches a safe real shore without moving the horn or publishing another source",
+      "elapsedMs": 4883,
+      "detail": {
+        "frame": 204,
+        "x": 24,
+        "z": 13.315667953225315,
+        "feetRadius": 21.999999999999996,
+        "signedFeetRadius": 21.999999999999996,
+        "cameraRadius": 31.63814311871036,
+        "view": "third",
+        "zoom": 8,
+        "planetRadius": 22,
+        "shore": 14.915667953225315,
+        "canStand": true
+      }
+    },
+    {
+      "label": "At 390×844, touch Watch has a visible unobstructed 44px target and reaches the real shore",
+      "elapsedMs": 5181,
+      "detail": {
+        "metrics": {
+          "selector": "sound-discovery-watch",
+          "x": 28,
+          "y": 632,
+          "width": 110.53125,
+          "height": 44,
+          "interceptor": "sound-discovery-watch",
+          "usable": true
+        },
+        "actual": {
+          "frame": 222,
+          "x": 24,
+          "z": 13.315667953225315,
+          "feetRadius": 21.999999999999996,
+          "signedFeetRadius": 21.999999999999996,
+          "cameraRadius": 31.638143118710364,
+          "view": "third",
+          "zoom": 8,
+          "planetRadius": 22,
+          "shore": 14.915667953225315,
+          "canStand": true
+        }
+      }
+    },
+    {
+      "label": "Read-only scratch SQLite confirms original rows are intact and each acknowledged fixture retains a real source/author/position tombstone",
+      "elapsedMs": 26983,
+      "detail": {
+        "database": ".cache/motion/browser/history.db",
+        "mode": "read-only SQLite",
+        "initialRows": 0,
+        "initialRowsPreserved": true,
+        "onlyAcknowledgedOwnRowsAdded": true,
+        "fixtureTombstones": [
+          {
+            "id": "snd_4aa7f5b63f1d4efe",
+            "soundId": "harbour-boat",
+            "byId": "par_7129f8608f9d368b",
+            "x": 16,
+            "z": 14,
+            "at": "2026-11-08T07:42:32.116Z",
+            "removedAt": "2026-11-08T07:42:57.229Z"
+          }
+        ],
+        "finalRows": 1
+      }
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": [],
+  "targetRects": [
+    {
+      "selector": "sound-discovery-watch",
+      "x": 41,
+      "y": 994,
+      "width": 110.53125,
+      "height": 44,
+      "interceptor": "sound-discovery-watch",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-watch",
+      "x": 28,
+      "y": 632,
+      "width": 110.53125,
+      "height": 44,
+      "interceptor": "sound-discovery-watch",
+      "usable": true
+    }
+  ],
+  "historyEvidence": {
+    "database": ".cache/motion/browser/history.db",
+    "mode": "read-only SQLite",
+    "initialRows": 0,
+    "initialRowsPreserved": true,
+    "onlyAcknowledgedOwnRowsAdded": true,
+    "fixtureTombstones": [
+      {
+        "id": "snd_4aa7f5b63f1d4efe",
+        "soundId": "harbour-boat",
+        "byId": "par_7129f8608f9d368b",
+        "x": 16,
+        "z": 14,
+        "at": "2026-11-08T07:42:32.116Z",
+        "removedAt": "2026-11-08T07:42:57.229Z"
+      }
+    ],
+    "finalRows": 1
+  },
+  "sources": [
+    {
+      "id": "snd_4aa7f5b63f1d4efe",
+      "soundId": "harbour-boat",
+      "x": 16,
+      "z": 14,
+      "by": "Motion Ada",
+      "byId": "par_7129f8608f9d368b",
+      "at": "2026-11-08T07:42:32.116Z"
+    }
+  ],
+  "independentCookieIdentities": true,
+  "humanListening": false,
+  "unfamiliarPairStudy": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "limitations": [
+    "Native audio starts and contexts are observed without an autoplay bypass; artistic sound quality is not judged.",
+    "A document reload is not a server restart or a next-day revisit.",
+    "390×844 touch emulation does not establish physical-device usability.",
+    "Ground checks use the actual production geometry; screenshots still require visual inspection."
+  ]
+}

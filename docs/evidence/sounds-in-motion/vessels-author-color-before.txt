@@ -1,0 +1,34 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/sound-vessels.test.ts (7 tests | 1 failed) 88ms
+   ❯ actual horn ingredients bring passing ferries (7)
+     × gives each author's roof and pennant their shared mark, releasing per-vessel materials on removal 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/sound-vessels.test.ts > actual horn ingredients bring passing ferries > gives each author's roof and pennant their shared mark, releasing per-vessel materials on removal
+AssertionError: expected undefined to be '#8bccae' // Object.is equality
+
+- Expected:
+"#8bccae"
+
++ Received:
+undefined
+
+ ❯ spec/sound-vessels.test.ts:120:79
+    118|       const roof = ship => (ship.getObjectByName("ferry-coral-roof") a…
+    119|       const expected = id => "#" + new THREE.Color(authorMark(id).colo…
+    120|       expect(vessels.state.find(state => state.sourceId === first.id)?…
+       |                                                                               ^
+    121|       expect(vessels.state.find(state => state.sourceId === second.id)…
+    122|       expect(roof(ada).color.getHexString()).not.toBe(roof(bo).color.g…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  15:39:05
+   Duration  204ms (tests 60%, transform 25%, import 14%, worker 1%)
+

@@ -1,0 +1,294 @@
+{
+  "kind": "source-check-evidence-index",
+  "date": "2026-11-08",
+  "workingDirectory": "repository root",
+  "archivedFromCheckout": "83809a7dcc440ff84c5c37c4d754b3404f4ba659",
+  "checkoutMeaning": "Archive context only. Historical runs executed different forward working-tree stages; there is no claim all were executed at the archive checkout or final release.",
+  "countsAreNotAdditive": true,
+  "artifacts": [
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-before.json",
+      "copiedFrom": ".cache/surface-safety/before.json",
+      "bytes": 1894,
+      "sha256": "5eab2158739f21c73018bdfcb658413662432a4eb8176177f06fc50ab772576f",
+      "kind": "verbatim-diagnosis-json"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-after.json",
+      "copiedFrom": ".cache/surface-safety/after.json",
+      "bytes": 564,
+      "sha256": "207362898d2d7c60bab40f64a58dfc837a932164b03c2a54733ae9e4d853109b",
+      "kind": "verbatim-diagnosis-json"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-before-tests.txt",
+      "copiedFrom": ".cache/surface-safety/before-tests.txt",
+      "bytes": 4318,
+      "sha256": "f34c63f7b4777ac94754f773744055d1b1835a7692e30fb916ed0ede2ee5e7bb",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-after-tests.txt",
+      "copiedFrom": ".cache/surface-safety/after-tests.txt",
+      "bytes": 240,
+      "sha256": "38f505195b97f199f59a3d54b47bc582eb146c51c5a9998a2d228a83e7d33266",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/surface-config.txt",
+      "copiedFrom": ".cache/surface-safety/vitest.config.mjs",
+      "bytes": 224,
+      "sha256": "0c7f696c9d1a5efa8c9c1cb7a88c85bea80ecad19c6aa2c0909382f11deae9e5",
+      "kind": "verbatim-configuration"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-initial-qa.txt",
+      "copiedFrom": ".cache/sound-vessels/initial-qa.txt",
+      "bytes": 1181,
+      "sha256": "e13a1cca10603780172d4881870a4d8c45f21f5d643d9569d7b812e954b9cc25",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-after.txt",
+      "copiedFrom": ".cache/sound-vessels/after.txt",
+      "bytes": 238,
+      "sha256": "8f20d3d848b84ee24cfd029137da2504a322234f804e5774ecd5be4175d67a26",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-author-color-before.txt",
+      "copiedFrom": ".cache/sound-vessels/author-color-before.txt",
+      "bytes": 1463,
+      "sha256": "2eb1b2681685dd92b957f39cc98f53c99c2c213d041893a70b4d250c4e90d6b0",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-author-color-after.txt",
+      "copiedFrom": ".cache/sound-vessels/author-color-after.txt",
+      "bytes": 238,
+      "sha256": "61abc23bc0e3c28b7f537135fdd4c1ddb39c9770b433b30620d08687b7a2c822",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/vessels-config.txt",
+      "copiedFrom": ".cache/sound-vessels/vitest.config.mjs",
+      "bytes": 86,
+      "sha256": "3c19162cdcb91fde530836ea55cee4007a93c99532d2a85bfda9c79c898745c0",
+      "kind": "verbatim-configuration"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-initial.txt",
+      "copiedFrom": ".cache/motion/full-spec.txt",
+      "bytes": 1077,
+      "sha256": "2832dde437ebc74af0aa327110871565a13f5e697dfce6eaae87a966b54cc9b3",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-before-share-fix.txt",
+      "copiedFrom": ".cache/motion/full-spec-final.txt",
+      "bytes": 1077,
+      "sha256": "b910bde6d6bcfe217ca93725f42d9e9783bd526f7d4b9790660de04a6140d4f6",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/targeted-after-share-fix.txt",
+      "copiedFrom": ".cache/motion/pure-curation.txt",
+      "bytes": 240,
+      "sha256": "576d5c693dcf9c3eb21b45ba84da2115243950318b63167b03858ec042b53e16",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/targeted-after-watch-and-phone-source.txt",
+      "copiedFrom": ".cache/motion/pure-watch.txt",
+      "bytes": 438,
+      "sha256": "b29da4367d48921731f27d05cf5f945f7a8a284437f69726642d79b3baa3802a",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/full-source-config.txt",
+      "copiedFrom": "vitest.config.ts",
+      "bytes": 552,
+      "sha256": "fabc353d9677d3995cf2097be45cd9fdb5c017fc12695cbf3b0a4feba2e7ba11",
+      "kind": "verbatim-configuration"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/targeted-config.txt",
+      "copiedFrom": ".cache/motion/pure.config.mjs",
+      "bytes": 240,
+      "sha256": "a097982e5549c2135d6cc502019c7cd6b153d3b958131ae4366908af5d7cd7d9",
+      "kind": "verbatim-configuration"
+    },
+    {
+      "path": "docs/evidence/sounds-in-motion/command-provenance.txt",
+      "bytes": 5804,
+      "sha256": "11c8f04c2f35f674d32bd02363914365808c9c93584c8f34eaebff4aa0e401fd",
+      "kind": "agent-reported-command-provenance-not-new-stdout"
+    }
+  ],
+  "runs": [
+    {
+      "id": "surface-before-diagnosis",
+      "commands": [
+        "./node_modules/.bin/tsc -p tsconfig.build.json --outDir .cache/surface-safety/before-dist",
+        "node --input-type=module -e 'import {writeFileSync} from \"node:fs\"; import {buildPlanet} from \"./.cache/surface-safety/before-dist/client/planet-build.js\"; import {coastlineAt} from \"./.cache/surface-safety/before-dist/client/planet-coast.js\"; import {PLANET_HALF as HALF, PLANET_RADIUS as R} from \"./.cache/surface-safety/before-dist/shared/planet.js\"; globalThis.document={createElement:()=>({getContext:()=>new Proxy({},{get:()=>()=>{}})})}; const scene=buildPlanet(), bad=[]; for(let x=-HALF;x<=HALF;x+=.25){ const z=coastlineAt(x)-.25, height=scene.heightAt(x,z); if(scene.canStand(x,z,new Set())&&height<0)bad.push({x,z,height,signedFootRadius:R+height,inside:scene.inside(x,z)}); } const cafeOpposite={x:-9+HALF,z:7}; const out={kind:\"pure geometry diagnosis\",frozenBuild:\".cache/surface-safety/before-dist\",coastSweep:{stepMetresLongitude:.25,shoreInset:.25,negativeWalkableSamples:bad.length,samples:bad.slice(0,8)},cafeAntipode:{...cafeOpposite,height:scene.heightAt(cafeOpposite.x,cafeOpposite.z),inside:scene.inside(cafeOpposite.x,cafeOpposite.z),canStand:scene.canStand(cafeOpposite.x,cafeOpposite.z,new Set())}};writeFileSync(\".cache/surface-safety/before.json\",JSON.stringify(out,null,2)); console.log(JSON.stringify(out));scene.dispose();'"
+      ],
+      "output": "surface-before.json",
+      "observed": {
+        "negativeWalkableSamples": 49,
+        "cafeAntipodeHeight": -44.16,
+        "cafeAntipodeInside": true
+      },
+      "scope": "Initial working-tree compiled geometry before forward repair; no pinned Git SHA, sign rasterisation stubbed, no GPU/service/DB."
+    },
+    {
+      "id": "surface-after-diagnosis",
+      "commands": [
+        "./node_modules/.bin/tsc -p tsconfig.build.json --outDir .cache/surface-safety/after-dist",
+        "node --input-type=module -e 'import {writeFileSync} from \"node:fs\"; import {buildPlanet} from \"./.cache/surface-safety/after-dist/client/planet-build.js\"; import {coastlineAt} from \"./.cache/surface-safety/after-dist/client/planet-coast.js\"; import {PLANET_HALF as HALF, PLANET_RADIUS as R} from \"./.cache/surface-safety/after-dist/shared/planet.js\"; globalThis.document={createElement:()=>({getContext:()=>new Proxy({},{get:()=>()=>{}})})}; const scene=buildPlanet(), bad=[];let checked=0;for(let x=-HALF;x<=HALF;x+=.25){const z=coastlineAt(x)-.25,height=scene.heightAt(x,z);if(scene.canStand(x,z,new Set())){checked++;if(!Number.isFinite(height)||height<0)bad.push({x,z,height});}}const point={x:-9+HALF,z:7};const out={kind:\"pure geometry diagnosis\",compiledBuild:\".cache/surface-safety/after-dist\",coastSweep:{stepMetresLongitude:.25,shoreInset:.25,walkableSamples:checked,negativeOrNonfiniteSamples:bad.length},cafeAntipode:{...point,height:scene.heightAt(point.x,point.z),inside:scene.inside(point.x,point.z),canStand:scene.canStand(point.x,point.z,new Set())},tests:{after:\".cache/surface-safety/after-tests.txt\",negative:\".cache/surface-safety/before-tests.txt\"},humanVisualReview:false,gpu:false,databaseWrites:false};writeFileSync(\".cache/surface-safety/after.json\",JSON.stringify(out,null,2)); console.log(JSON.stringify(out));scene.dispose();'"
+      ],
+      "output": "surface-after.json",
+      "observed": {
+        "walkableSamples": 553,
+        "negativeOrNonfiniteSamples": 0,
+        "cafeAntipodeHeight": 0,
+        "cafeAntipodeInside": false
+      },
+      "scope": "Forward hemisphere-footprint repair compiled in isolation, before later runtime/boat integration. Pure bounded geometry, not completed coastal browser traversal."
+    },
+    {
+      "id": "surface-before-tests",
+      "command": "PLANET_BUILD_UNDER_TEST=../.cache/surface-safety/before-dist/client/planet-build.js ./node_modules/.bin/vitest run spec/planet-surface-safety.test.ts --config .cache/surface-safety/vitest.config.mjs > .cache/surface-safety/before-tests.txt 2>&1",
+      "output": "surface-before-tests.txt",
+      "files": 1,
+      "passed": 1,
+      "failed": 4,
+      "exitCode": 1,
+      "startTime": "15:23:54",
+      "scope": "Frozen buildPlanet import only; new helper test still imports current TS. Not proof old helper exists. Actually executed after the current-source passing run."
+    },
+    {
+      "id": "surface-after-tests",
+      "command": "./node_modules/.bin/vitest run --config .cache/surface-safety/vitest.config.mjs > .cache/surface-safety/after-tests.txt 2>&1",
+      "output": "surface-after-tests.txt",
+      "files": 5,
+      "passed": 17,
+      "failed": 0,
+      "startTime": "15:23:39",
+      "scope": "Five new surface checks plus paths, cafe, lived-in and sightline geometry. Canvas sign drawing stubbed; no server/GPU/DB."
+    },
+    {
+      "id": "vessels-initial-qa",
+      "command": "./node_modules/.bin/vitest run --config .cache/sound-vessels/vitest.config.mjs > .cache/sound-vessels/initial-qa.txt 2>&1",
+      "output": "vessels-initial-qa.txt",
+      "files": 1,
+      "passed": 5,
+      "failed": 1,
+      "scope": "New candidate geometry QA failure: deck faces point down. Not a frozen old-app or missing-API control."
+    },
+    {
+      "id": "vessels-after",
+      "command": "./node_modules/.bin/vitest run --config .cache/sound-vessels/vitest.config.mjs > .cache/sound-vessels/after.txt 2>&1",
+      "output": "vessels-after.txt",
+      "files": 1,
+      "passed": 6,
+      "failed": 0,
+      "scope": "Deck winding corrected; saved output is the later six-test rerun including strengthened incremental-arrival/late-snapshot canonical order. No frozen source replacement."
+    },
+    {
+      "id": "vessels-author-color-before",
+      "command": "./node_modules/.bin/vitest run --config .cache/sound-vessels/vitest.config.mjs > .cache/sound-vessels/author-color-before.txt 2>&1",
+      "output": "vessels-author-color-before.txt",
+      "files": 1,
+      "passed": 6,
+      "failed": 1,
+      "scope": "New seventh author-colour/material-disposal case against then-current source before that forward implementation; state colour is missing."
+    },
+    {
+      "id": "vessels-author-color-after",
+      "command": "./node_modules/.bin/vitest run --config .cache/sound-vessels/vitest.config.mjs > .cache/sound-vessels/author-color-after.txt 2>&1",
+      "output": "vessels-author-color-after.txt",
+      "files": 1,
+      "passed": 7,
+      "failed": 0,
+      "scope": "Author roof/pennant tint and independent material cleanup implemented; geometry/resource/source-time checks, not actual WebGL rendering or audio."
+    },
+    {
+      "id": "full-source-initial",
+      "command": "APP_URL=http://localhost:18911 ./node_modules/.bin/vitest run > .cache/motion/full-spec.txt 2>&1",
+      "output": "full-source-initial.txt",
+      "files": 51,
+      "passed": 326,
+      "failed": 0,
+      "durationSeconds": 65.0,
+      "scope": "Earlier source/HTTP run on isolated scratch port18911; not final package and before later author-colour/Share/Watch/phone-menu changes."
+    },
+    {
+      "id": "full-source-before-share-fix",
+      "command": "APP_URL=http://localhost:18911 ./node_modules/.bin/vitest run > .cache/motion/full-spec-final.txt 2>&1",
+      "output": "full-source-before-share-fix.txt",
+      "files": 51,
+      "passed": 327,
+      "failed": 0,
+      "durationSeconds": 64.81,
+      "scope": "Later full source/HTTP run after seventh vessel test; before ordinary Share curation fix and coherent final runtime. Server started before phone-menu HTML existed. File name final is historical, not final whole-package acceptance."
+    },
+    {
+      "id": "targeted-after-share-fix",
+      "command": "./node_modules/.bin/vitest run --config .cache/motion/pure.config.mjs > .cache/motion/pure-curation.txt 2>&1",
+      "output": "targeted-after-share-fix.txt",
+      "files": 6,
+      "passed": 39,
+      "failed": 0,
+      "durationSeconds": 1.45,
+      "scope": "Source/DOM checks after ordinary Share curation fix. Surface, vessels, pinwheels, discovery, sound-life, studio; no HTTP application runtime/GPU."
+    },
+    {
+      "id": "targeted-after-watch-and-phone-source",
+      "command": "./node_modules/.bin/vitest run --config .cache/motion/pure.config.mjs > .cache/motion/pure-watch.txt 2>&1",
+      "output": "targeted-after-watch-and-phone-source.txt",
+      "files": 6,
+      "passed": 39,
+      "failed": 0,
+      "durationSeconds": 2.02,
+      "scope": "After Watch focus and phone Our soundscape source/HTML changes. Passing source/DOM is not coherent browser startup; Root later observed stale served HTML/JS startup failure and is checking a complete restart separately."
+    }
+  ],
+  "excludedInProgress": [
+    ".cache/motion/full-spec-complete.txt",
+    ".cache/motion/sounds-complete.txt"
+  ],
+  "excludedMeaning": "At archive instruction time Root had restarted coherent packages and these final complete source/browser checks were running. Root will index their final outputs separately; this packet does not imply their success.",
+  "notEstablished": [
+    "Final whole-package startup or complete release acceptance",
+    "Actual GPU/visual camera and wake quality",
+    "Artistic listening or music pleasantness",
+    "Unfamiliar-player discovery or preference",
+    "Physical-phone performance",
+    "Actual next-day return",
+    "Public deployment"
+  ],
+  "integrity": "All copied output files have complete terminal summaries and stable bytes at copy time. Hashes cover exact copied bytes. Command provenance is an explicitly labelled executing-agent report, not newly manufactured stdout. This manifest does not hash itself.",
+  "privacy": "No DB, cookie jar, runtime/server log, private source content or compiled dist directory is archived. Pure NPC/source inputs are synthetic or geometry-only; HTTP checks use the isolated scratch application.",
+  "sourceGeometryFingerprints": [
+    {
+      "path": ".cache/surface-safety/before-dist/client/planet-build.js",
+      "sha256": "9fc762a8199fae0ebb664ec40d2aed1445cdd7c0b4fa5886941ce02803750e30",
+      "meaning": "Retained compiled input inspected at archive time; bytes are not copied into this evidence packet."
+    },
+    {
+      "path": ".cache/surface-safety/before-dist/shared/planet.js",
+      "sha256": "3541df5cdf6cf3d3d3d278dcdba1029f59158c407a97278d13ce6996fb27adcc",
+      "meaning": "Retained compiled input inspected at archive time; bytes are not copied into this evidence packet."
+    },
+    {
+      "path": ".cache/surface-safety/after-dist/client/planet-build.js",
+      "sha256": "ef2a0bb086395a34ec45e8177bfc0af11ad5d9775675cd4a256c694276038d8b",
+      "meaning": "Retained compiled input inspected at archive time; bytes are not copied into this evidence packet."
+    },
+    {
+      "path": ".cache/surface-safety/after-dist/shared/planet.js",
+      "sha256": "3541df5cdf6cf3d3d3d278dcdba1029f59158c407a97278d13ce6996fb27adcc",
+      "meaning": "Retained compiled input inspected at archive time; bytes are not copied into this evidence packet."
+    }
+  ]
+}

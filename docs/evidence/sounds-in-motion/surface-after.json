@@ -1,0 +1,24 @@
+{
+  "kind": "pure geometry diagnosis",
+  "compiledBuild": ".cache/surface-safety/after-dist",
+  "coastSweep": {
+    "stepMetresLongitude": 0.25,
+    "shoreInset": 0.25,
+    "walkableSamples": 553,
+    "negativeOrNonfiniteSamples": 0
+  },
+  "cafeAntipode": {
+    "x": 60.11503837897544,
+    "z": 7,
+    "height": 0,
+    "inside": false,
+    "canStand": true
+  },
+  "tests": {
+    "after": ".cache/surface-safety/after-tests.txt",
+    "negative": ".cache/surface-safety/before-tests.txt"
+  },
+  "humanVisualReview": false,
+  "gpu": false,
+  "databaseWrites": false
+}

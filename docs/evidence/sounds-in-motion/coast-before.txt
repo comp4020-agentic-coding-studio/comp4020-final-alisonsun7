@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Actual desktop-third-default crossed the ground/camera envelope: {"frame":41,"x":55,"z":-8,"feetRadius":22.208254211158668,"signedFeetRadius":-22.208254211158664,"cameraRadius":15.776961608348243,"view":"third","zoom":8,"elapsedMs":0,"reasons":["feet have crossed the signed ground hemisphere","camera/near-plane origin is inside the globe clearance"]}
+    at walk (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/coast-walk.mjs:124:16)
+    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/coast-walk.mjs:157:37 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: undefined,
+  operator: 'fail',
+  diff: 'simple'
+}
+Expected regression observed. The product assertion remains failed; exit code is 1.
+ok  All original planet/coastal live sources remain exact with zero source/environment writes

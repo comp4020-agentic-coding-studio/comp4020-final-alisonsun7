@@ -1,0 +1,8 @@
+{
+  "targetApplication": "cd73f2a",
+  "retainedCompiledFiles": 66,
+  "matchesUninstrumentedFrozenBefore": true,
+  "allCurrentDataRetained": true,
+  "fullRollbackRehearsalThisIteration": false,
+  "command": "python3 scripts/local-preview.py --rollback"
+}

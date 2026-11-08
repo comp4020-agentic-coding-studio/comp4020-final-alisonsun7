@@ -1,0 +1,45 @@
+{
+  "type": "automated-developer-browser-check",
+  "base": "http://localhost:18912",
+  "failed": true,
+  "failure": "AssertionError [ERR_ASSERTION]: Tide pools Share offers three real curated choices including the passing ferry\n    at check (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:36:10)\n    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/sounds-in-motion.mjs:205:3\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:473:9)",
+  "checks": [
+    {
+      "label": "Read-only scratch SQLite confirms original rows are intact and each acknowledged fixture retains a real source/author/position tombstone",
+      "elapsedMs": 2015,
+      "detail": {
+        "database": ".cache/motion/browser/history.db",
+        "mode": "read-only SQLite",
+        "initialRows": 0,
+        "initialRowsPreserved": true,
+        "onlyAcknowledgedOwnRowsAdded": true,
+        "fixtureTombstones": [],
+        "finalRows": 0
+      }
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": [],
+  "targetRects": [],
+  "historyEvidence": {
+    "database": ".cache/motion/browser/history.db",
+    "mode": "read-only SQLite",
+    "initialRows": 0,
+    "initialRowsPreserved": true,
+    "onlyAcknowledgedOwnRowsAdded": true,
+    "fixtureTombstones": [],
+    "finalRows": 0
+  },
+  "sources": [],
+  "independentCookieIdentities": false,
+  "humanListening": false,
+  "unfamiliarPairStudy": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "limitations": [
+    "Native audio starts and contexts are observed without an autoplay bypass; artistic sound quality is not judged.",
+    "A document reload is not a server restart or a next-day revisit.",
+    "390×844 touch emulation does not establish physical-device usability.",
+    "Ground checks use the actual production geometry; screenshots still require visual inspection."
+  ]
+}

@@ -14,17 +14,59 @@ coordinates. The original coast at `/scene/seaside?mode=weekday` retains its
 own room and history. Camera, travel and listening preferences never create a
 new room or reinterpret a contribution's position.
 
-The current discovery candidate follows
-[ADR031](decisions/031-living-sound-discovery.md), retaining the answer-focused
+The current motion candidate follows
+[ADR032](decisions/032-sounds-set-the-world-in-motion.md), retaining discovery
+from [ADR031](decisions/031-living-sound-discovery.md) and the answer-focused
 work in [ADR030](decisions/030-a-place-that-remembers-your-answer.md).
 The local address is `http://localhost:18861/planet`; refresh after a candidate
-switch to load its interface. The [current release index](evidence/living-discovery-2026-11-08.json)
+switch to load its interface. The [current release index](evidence/sounds-in-motion-2026-11-08.json)
 records the exact build, executed checks and remaining human judgements.
-Application `cd73f2a` is served on branch `codex/living-sound-discovery`.
-The [preceding answer-release index](evidence/answers-2026-11-08.json)
-is historical evidence, not verification of this candidate.
+Application **`3ee3493`** is served on branch `codex/sounds-in-motion`.
+The preceding `cd73f2a` [discovery release](evidence/living-discovery-2026-11-08.json)
+and [answer release](evidence/answers-2026-11-08.json) are dated historical
+evidence, not verification of this candidate.
 
-## Current discovery candidate: see a sound make a difference
+## Current motion candidate: a sound sets something in motion
+
+At **Tide pools**, close the discovery card to use **Share a sound**. Its three
+ordinary suggestions are waves, gulls and **Boat by the pier**. Leaving the
+horn brings an attributed passing ferry to a real ocean route. Up to three
+newest public horn sources have ferries, with server-time movement, a wake and
+an author-coloured roof and pennant. The old moored sailboat remains scenery.
+**Watch the boat** explicitly takes only this visitor to a checked coastal
+viewpoint; the horn's marker, audio emitter, author and stored position stay
+where it was left. On a phone, **Places & friends → Our soundscape** also gives a
+reachable route to the real source list and withdrawal actions.
+
+Use **Explore every sound**, search **Breeze**, and explicitly leave **Breeze
+and birds** to make a small paper pinwheel turn beside that source. At most six
+real breeze sources receive pinwheels. Both effects retain real author/source
+identity, use server time, stop their motion under reduced motion and disappear
+with their live source. They add neither recordings nor contributors, and do
+not by themselves establish a two-person work. Quiet visits stay quiet.
+
+The coastal correction checks the front hemisphere before classifying a house
+footprint, floor or wall: the far side of the globe must not become the café's
+interior. The final source/HTTP run passes **328 checks in 51 files, 65.31 s**.
+Separately, **19** coastal-walk browser checks and a **17**-check independent-
+browser boat/breeze path pass in isolated worlds. These establish bounded
+technical behaviour, not a universal camera guarantee or human enjoyment.
+The 19-check coast run precedes the final Watch framing/menu changes; ordinary
+movement and camera formulas are unchanged. A fresh anonymous observer of the
+actual promoted application then records **387 safe rendered coastal samples**
+from the Lookout, with no joining, writes or page errors. That final walk is
+desktop evidence, not another phone coast run.
+
+The local promotion preserves every row in all twelve current tables,
+including **44 sound-history rows**, and matches **62** served assets to the
+reviewed build. Start with `python3 scripts/local-preview.py` from the project.
+The promoted read-only visit sees **16 live public planet sources**, with all
+their IDs unchanged through the observation.
+`python3 scripts/local-preview.py --rollback` returns to **`cd73f2a`** with the
+**current** database, including later contributions; never restore an old
+database for a visual rollback.
+
+## Discovery foundation retained from ADR031
 
 Visit **Tide & Coffee**, **Rain conservatory** and **Tide pools** to find three
 labelled **World example · local demonstration** spots: coffee, birds and gulls.
@@ -51,12 +93,10 @@ minutes on ordinary activity between automatic restroom visits, strolling and
 resting away from the door. If the room is busy, the wait is at most eight
 seconds before returning to the day; the shared occupancy lock still applies.
 
-The local switch preserves all rows in twelve current tables, including 42
-sound-history rows; a fresh unjoined observer sees the 19 current live public
-planet sounds. Start with `python3 scripts/local-preview.py` from the project.
-To return to the previous compiled application, use
-`python3 scripts/local-preview.py --rollback`. It retains the **current**
-database, including later contributions; do not restore a historical database.
+At the preceding **2026-11-08 ADR031 checkpoint**, the `cd73f2a` switch preserved
+42 sound-history rows in twelve tables; its fresh unjoined observer saw 19 live
+public planet sounds. Those counts describe that checkpoint, not the current
+database or a second observation of this release.
 
 ## First visit: make a beginning
 

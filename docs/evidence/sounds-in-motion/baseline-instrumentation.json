@@ -1,0 +1,9 @@
+{
+  "application": "cd73f2a",
+  "kind": "observation-only-baseline-instrumentation",
+  "file": "client/planet-world.js",
+  "beforeSha256": "e4aecf7a466fbb1249e75b0d82fd484b6d76e1c68de5726d32df5614121c3513",
+  "afterSha256": "314a2d98656eac3dbde9d71b4067ffc9c7a10fdb351548bc2fc290c3e3fd1f89",
+  "insertion": "\n        this.host.dataset.groundSafety = JSON.stringify({frame:this.frameNumber,x:this.position.x,z:this.position.z,feetRadius:feet.length(),signedFeetRadius:feet.dot(up),cameraRadius:this.camera.position.length(),view:this.viewMode,zoom:this.zoom});",
+  "changesMovementOrCamera": false
+}

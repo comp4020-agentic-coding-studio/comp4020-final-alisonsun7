@@ -1,0 +1,1 @@
+export default {test:{include:['spec/planet-surface-safety.test.ts','spec/sound-vessels.test.ts','spec/sound-pinwheels.test.ts','spec/sound-discovery.test.ts','spec/sound-life.test.ts','spec/chorus-studio.test.ts'],fileParallelism:false}};

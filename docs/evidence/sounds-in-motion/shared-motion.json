@@ -1,0 +1,276 @@
+{
+  "type": "automated-developer-browser-check",
+  "base": "http://localhost:18912",
+  "failed": false,
+  "checks": [
+    {
+      "label": "Tide pools Share offers three real curated choices including the passing ferry",
+      "elapsedMs": 2434,
+      "detail": [
+        "beach-waves",
+        "coastal-gulls",
+        "harbour-boat"
+      ]
+    },
+    {
+      "label": "The horn choice explains its visible ferry consequence before publishing",
+      "elapsedMs": 2435,
+      "detail": "A little ferry sails the nearest coast. The horn stays where it was left."
+    },
+    {
+      "label": "An explicit real horn creates a ferry retaining the actual author and original sound position",
+      "elapsedMs": 2679,
+      "detail": {
+        "sourceId": "snd_751a53341662f301",
+        "byId": "par_b1df34d330106786",
+        "by": "Motion Ada",
+        "soundId": "harbour-boat",
+        "sourceX": 16,
+        "sourceZ": 14,
+        "color": "#aa87c7",
+        "visible": true,
+        "anchorX": 24,
+        "anchorZ": 19.665667953225316,
+        "x": 29.736945238807778,
+        "z": 16.268868196217614,
+        "yaw": 2.5314224018102314
+      }
+    },
+    {
+      "label": "The ferry changes actual rendered position over more than one second of server time",
+      "elapsedMs": 4074
+    },
+    {
+      "label": "A later friend enters with an independent real cookie identity",
+      "elapsedMs": 5512
+    },
+    {
+      "label": "Late arrival sees the same authored ferry and server-time trajectory, allowing actual frame-sampling skew",
+      "elapsedMs": 5529,
+      "detail": {
+        "clockDeltaMs": 411.800048828125,
+        "poseDeltaMetres": 0.062252604152708196,
+        "anchorsMatch": true
+      }
+    },
+    {
+      "label": "Both independent visits remain genuinely quiet while the shared ferry moves",
+      "elapsedMs": 5545
+    },
+    {
+      "label": "Desktop Watch reaches a safe real shore without moving the horn or publishing another source",
+      "elapsedMs": 5891,
+      "detail": {
+        "frame": 232,
+        "x": 24,
+        "z": 13.315667953225315,
+        "feetRadius": 21.999999999999996,
+        "signedFeetRadius": 21.999999999999996,
+        "cameraRadius": 27.81294727280803,
+        "view": "third",
+        "zoom": 4.2,
+        "planetRadius": 22,
+        "shore": 14.915667953225315,
+        "canStand": true
+      }
+    },
+    {
+      "label": "At 390×844, touch Watch has a visible unobstructed 44px target and reaches the real shore",
+      "elapsedMs": 6283,
+      "detail": {
+        "metrics": {
+          "selector": "sound-discovery-watch",
+          "x": 28,
+          "y": 632,
+          "width": 110.53125,
+          "height": 44,
+          "interceptor": "sound-discovery-watch",
+          "usable": true
+        },
+        "actual": {
+          "frame": 260,
+          "x": 24,
+          "z": 13.315667953225315,
+          "feetRadius": 21.999999999999996,
+          "signedFeetRadius": 21.999999999999996,
+          "cameraRadius": 27.812947272808035,
+          "view": "third",
+          "zoom": 4.2,
+          "planetRadius": 22,
+          "shore": 14.915667953225315,
+          "canStand": true
+        }
+      }
+    },
+    {
+      "label": "Actual UI withdrawal removes the live horn and its ferry in both open browser sessions",
+      "elapsedMs": 7045
+    },
+    {
+      "label": "The searchable full library explains the breeze's paper-pinwheel consequence",
+      "elapsedMs": 7266
+    },
+    {
+      "label": "The real breeze creates the same source-attributed paper pinwheel for both friends",
+      "elapsedMs": 7942,
+      "detail": [
+        {
+          "serverNow": 1794125062079.9,
+          "source": {
+            "sourceId": "snd_a895a57fe81d1d16",
+            "byId": "par_b1df34d330106786",
+            "by": "Motion Ada",
+            "x": -11.8038022736937,
+            "z": 10.986316319994359,
+            "sourceX": -13,
+            "sourceZ": 11,
+            "angle": 0.6919084527803463
+          }
+        },
+        {
+          "serverNow": 1794125062106,
+          "source": {
+            "sourceId": "snd_a895a57fe81d1d16",
+            "byId": "par_b1df34d330106786",
+            "by": "Motion Ada",
+            "x": -11.8038022736937,
+            "z": 10.986316319994359,
+            "sourceX": -13,
+            "sourceZ": 11,
+            "angle": 0.716380450995068
+          }
+        }
+      ]
+    },
+    {
+      "label": "The source-derived pinwheel visibly turns over server time",
+      "elapsedMs": 8908
+    },
+    {
+      "label": "A friend's contribution and a document reload never enable either quiet visitor's audio",
+      "elapsedMs": 9575
+    },
+    {
+      "label": "Withdrawing the real breeze removes its pinwheel and live source from both sessions",
+      "elapsedMs": 9762
+    },
+    {
+      "label": "The actual motion and withdrawal path has no browser runtime errors",
+      "elapsedMs": 9762,
+      "detail": []
+    },
+    {
+      "label": "Read-only scratch SQLite confirms original rows are intact and each acknowledged fixture retains a real source/author/position tombstone",
+      "elapsedMs": 9809,
+      "detail": {
+        "database": ".cache/motion/browser/history.db",
+        "mode": "read-only SQLite",
+        "initialRows": 2,
+        "initialRowsPreserved": true,
+        "onlyAcknowledgedOwnRowsAdded": true,
+        "fixtureTombstones": [
+          {
+            "id": "snd_751a53341662f301",
+            "soundId": "harbour-boat",
+            "byId": "par_b1df34d330106786",
+            "x": 16,
+            "z": 14,
+            "at": "2026-11-08T08:04:16.722Z",
+            "removedAt": "2026-11-08T08:04:20.819Z"
+          },
+          {
+            "id": "snd_a895a57fe81d1d16",
+            "soundId": "gentle-breeze",
+            "byId": "par_b1df34d330106786",
+            "x": -13,
+            "z": 11,
+            "at": "2026-11-08T08:04:21.970Z",
+            "removedAt": "2026-11-08T08:04:23.853Z"
+          }
+        ],
+        "finalRows": 4
+      }
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": [],
+  "targetRects": [
+    {
+      "selector": "sound-discovery-watch",
+      "x": 41,
+      "y": 994,
+      "width": 110.53125,
+      "height": 44,
+      "interceptor": "sound-discovery-watch",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-watch",
+      "x": 28,
+      "y": 632,
+      "width": 110.53125,
+      "height": 44,
+      "interceptor": "sound-discovery-watch",
+      "usable": true
+    }
+  ],
+  "historyEvidence": {
+    "database": ".cache/motion/browser/history.db",
+    "mode": "read-only SQLite",
+    "initialRows": 2,
+    "initialRowsPreserved": true,
+    "onlyAcknowledgedOwnRowsAdded": true,
+    "fixtureTombstones": [
+      {
+        "id": "snd_751a53341662f301",
+        "soundId": "harbour-boat",
+        "byId": "par_b1df34d330106786",
+        "x": 16,
+        "z": 14,
+        "at": "2026-11-08T08:04:16.722Z",
+        "removedAt": "2026-11-08T08:04:20.819Z"
+      },
+      {
+        "id": "snd_a895a57fe81d1d16",
+        "soundId": "gentle-breeze",
+        "byId": "par_b1df34d330106786",
+        "x": -13,
+        "z": 11,
+        "at": "2026-11-08T08:04:21.970Z",
+        "removedAt": "2026-11-08T08:04:23.853Z"
+      }
+    ],
+    "finalRows": 4
+  },
+  "sources": [
+    {
+      "id": "snd_751a53341662f301",
+      "soundId": "harbour-boat",
+      "x": 16,
+      "z": 14,
+      "by": "Motion Ada",
+      "byId": "par_b1df34d330106786",
+      "at": "2026-11-08T08:04:16.722Z"
+    },
+    {
+      "id": "snd_a895a57fe81d1d16",
+      "soundId": "gentle-breeze",
+      "x": -13,
+      "z": 11,
+      "by": "Motion Ada",
+      "byId": "par_b1df34d330106786",
+      "at": "2026-11-08T08:04:21.970Z"
+    }
+  ],
+  "independentCookieIdentities": true,
+  "humanListening": false,
+  "unfamiliarPairStudy": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "limitations": [
+    "Native audio starts and contexts are observed without an autoplay bypass; artistic sound quality is not judged.",
+    "A document reload is not a server restart or a next-day revisit.",
+    "390×844 touch emulation does not establish physical-device usability.",
+    "Ground checks use the actual production geometry; screenshots still require visual inspection."
+  ]
+}
