@@ -55,6 +55,10 @@ only after reviewing the corresponding claims. Preserve historical reflections.
 The [course policy](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/ai-use-and-integrity/)
 permits assistance and requires an accurate, explainable account.
 
-Authorized publication and verified course deployment are a separate gate.
+The author subsequently authorizes a public-link playtest. [ADR038](../decisions/038-sites-playtest-publication.md)
+and [publication evidence](../evidence/sites-playtest-2026-11-08.json) record the
+real Sites/Fly release, preserved old data and read-only desktop/phone checks.
+That publication is not a human study or final listening approval. The course
+main branch still needs explicit source reconciliation before final submission.
 Use [the release notes](author-editing-notes.md); this checklist does not
-approve a main push, access change, deployment or database reset.
+approve a main push, further audience change or database reset.

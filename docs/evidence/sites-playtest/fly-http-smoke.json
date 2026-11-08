@@ -1,0 +1,27 @@
+{
+  "origin": "https://comp4020-final-alisonsun7.fly.dev",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "marker": "Little Chorus"
+    },
+    {
+      "path": "/planet",
+      "status": 200,
+      "marker": "planet-stage"
+    },
+    {
+      "path": "/client/planet-busker.js",
+      "status": 200,
+      "marker": "Mateo"
+    },
+    {
+      "path": "/readme/",
+      "status": 200,
+      "marker": "Author review draft"
+    }
+  ],
+  "title": "Little Chorus \u2014 The little world",
+  "frogSha256": "a1204d6d0d102f47a4b63266a623442dcc6e5651700a5611499b68fdb52e880e"
+}

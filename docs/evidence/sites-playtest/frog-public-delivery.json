@@ -1,0 +1,20 @@
+{
+  "kind": "public-Sites-real-Chrome-read-only-frog-content-integrity",
+  "base": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+  "startedAt": "2026-11-08T13:54:11.654Z",
+  "writesAttempted": [],
+  "limitations": [
+    "Byte integrity and delivery only; no decoding, playback, device output or pleasantness verdict",
+    "No join or public-world write"
+  ],
+  "passed": true,
+  "actual": {
+    "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/assets/sounds/pond-frogs.mp3?v=a1204d6d0d10",
+    "status": 200,
+    "type": "audio/mpeg",
+    "gateway": "little-chorus-sites-proxy-v1",
+    "length": 92104,
+    "sha256": "a1204d6d0d102f47a4b63266a623442dcc6e5651700a5611499b68fdb52e880e"
+  },
+  "finishedAt": "2026-11-08T13:54:20.111Z"
+}

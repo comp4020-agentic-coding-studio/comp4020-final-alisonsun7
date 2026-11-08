@@ -1,0 +1,33 @@
+{
+  "app": "comp4020-final-alisonsun7",
+  "sourceCommit": "051919702514877d892f6f79ecf0f60d39a024c5",
+  "previousImage": "registry.fly.io/comp4020-final-alisonsun7:deployment-01M5D6WZG6NEYR4DZ747C383H2",
+  "candidateImage": "registry.fly.io/comp4020-final-alisonsun7@sha256:b32c23416dfd3647764c577895868daba4f1a2c3d8340d9d0ba6b6f394851214",
+  "machine": "d89565db360758",
+  "region": "syd",
+  "memoryMb": 256,
+  "volume": "vol_v3gkxlgxo0300nx4",
+  "volumeMount": "/data",
+  "snapshot": {
+    "id": "vs_3BJBDmKXn3owUDJ9AeynjvN4",
+    "createdAt": "2026-11-08T13:37:41Z",
+    "status": "created",
+    "retentionDays": 5
+  },
+  "databasePlan": "Keep daydraw.db and garden.db unchanged. New sound-of-a-city.db on existing volume. No local DB upload or old DB restore.",
+  "sitesProject": "appgprj_6af079f420e08191b77bc28a73408b27",
+  "access": "public, explicitly requested link access; no email grants or invitations",
+  "state": "published; anonymous hosted browser verification passed",
+  "sitesVersion": 1,
+  "sitesSourceCommit": "9f09fb6583a700fb0a75cb6f15d9c5a4f1757b2c",
+  "sitesVersionId": "appgprj_6af079f420e08191b77bc28a73408b27~appgver_45e28ec18c748191a33e995ac34dc2bd",
+  "sitesDeployment": "appgdep_6af07cc14d3c8191a013e1bc1d1e71c2",
+  "sitesUrl": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+  "publishedAt": "2026-11-08T13:44:44.695955+00:00",
+  "oldDatabaseContentsPreserved": true,
+  "publicBrowserChecks": 29,
+  "publicWritingTestsRun": false,
+  "publicBrowserWritesAttempted": 0,
+  "publicBrowserErrors": 0,
+  "publicBrowserScope": "Two independent anonymous observers; not two contributing players or listening approval"
+}

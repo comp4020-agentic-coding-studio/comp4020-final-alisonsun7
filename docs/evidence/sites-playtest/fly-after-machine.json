@@ -1,0 +1,21 @@
+{
+  "id": "d89565db360758",
+  "state": "started",
+  "region": "syd",
+  "machineCount": 1,
+  "image": "registry.fly.io/comp4020-final-alisonsun7@sha256:b32c23416dfd3647764c577895868daba4f1a2c3d8340d9d0ba6b6f394851214",
+  "guest": {
+    "cpu_kind": "shared",
+    "cpus": 1,
+    "memory_mb": 256
+  },
+  "mounts": [
+    {
+      "encrypted": true,
+      "path": "/data",
+      "size_gb": 1,
+      "volume": "vol_v3gkxlgxo0300nx4",
+      "name": "data"
+    }
+  ]
+}

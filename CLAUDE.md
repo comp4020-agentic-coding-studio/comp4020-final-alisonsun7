@@ -2,6 +2,14 @@
 
 # Little Chorus agent rules
 
+ADR038 records the author's newly authorized link-access Sites playtest and
+the necessary update of the existing Fly backend. Keep its single machine,
+256 MB and /data volume. The old daydraw/garden data remains intact; the
+hosted Little Chorus world uses its own DB, without uploading the local preview.
+The Sites gateway streams the real backend and isolates platform credentials.
+No email invitation is sent. This explicit publication supersedes ADR037's
+earlier local-only release boundary, but does not authorize a main push.
+
 ADR036 retires the optional 2D/2.5D product versions at the author's request.
 Keep their historical experiments and evidence; old links canonically reach
 3D with the original room, identity, work and place context. No flat renderer

@@ -1,0 +1,117 @@
+[
+  {
+    "database": "daydraw.db",
+    "tables": [
+      {
+        "table": "_migrations",
+        "rows": 2,
+        "logicalSha256": "24fdfbce5d1eb6a4c708952c23f85e4a76bf298b971558367ea24e85bf0f1f48"
+      },
+      {
+        "table": "participants",
+        "rows": 186,
+        "logicalSha256": "2c690f5caaf695d3111db89e5abf31c10c4477fba1ea519b4c0dae81229b2f24"
+      },
+      {
+        "table": "proposals",
+        "rows": 62,
+        "logicalSha256": "988e10c37ac6ac0da5c7ecebb80f930eae2eb06dab0c5bdfdb190081442044d3"
+      },
+      {
+        "table": "rooms",
+        "rows": 82,
+        "logicalSha256": "b26eb958cf72561c9793441281b39eb922b60199753b387d2e7f20708f62d10f"
+      }
+    ]
+  },
+  {
+    "database": "garden.db",
+    "tables": [
+      {
+        "table": "activity_logs",
+        "rows": 437,
+        "logicalSha256": "23cc7616b5eda3e9a1f00a37c9352e98ef022a7a872876c248f9bbcbb05160d9"
+      },
+      {
+        "table": "garden_state",
+        "rows": 1,
+        "logicalSha256": "e0afb0ceb473b5e3f21e83046a9a9c38f14bd13b91f2cbbf452c743985ece278"
+      },
+      {
+        "table": "notes",
+        "rows": 36,
+        "logicalSha256": "a8b740b05a1fb9da96df58a098af17d6c2a84330e2ad8e851bc5030cdcb20788"
+      },
+      {
+        "table": "users",
+        "rows": 41,
+        "logicalSha256": "b7f06de76918abb6528de12d7cde8c8c2faf536a105ee92c3879ef2a54b9c999"
+      }
+    ]
+  },
+  {
+    "database": "sound-of-a-city.db",
+    "tables": [
+      {
+        "table": "memories",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "participants",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "placed_sounds",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "placements",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "scenes",
+        "rows": 2,
+        "logicalSha256": "9ce04c467c774bdf7d1b63aa894574daeb9ac80695a1e36622c527b7454d7138"
+      },
+      {
+        "table": "session_environments",
+        "rows": 1,
+        "logicalSha256": "9743e50097e3854643ab5410880e042b2a2d43eaa66c852296c7e95aa59d013f"
+      },
+      {
+        "table": "session_events",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "sessions",
+        "rows": 1,
+        "logicalSha256": "bae5ea55801674bcef6cad60700ae19b7719d7404e19f0abb2fc5b56e4ad2ffa"
+      },
+      {
+        "table": "sound_assets",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "sound_operations",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "sound_replies",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "table": "users",
+        "rows": 0,
+        "logicalSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    ]
+  }
+]

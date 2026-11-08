@@ -3428,3 +3428,41 @@ browser errors. No writing tests use the author's database. First-person
 materials keep assistance visible, historical reflections intact, and human
 listening, two unfamiliar pairs, a true next-day return and hosted deployment
 open. [Hashed release evidence](evidence/seaside-performance-2026-11-08.json).
+
+## 2026-11-08 — Publish a real link-access playtest
+
+The author asks for a Site for two-person testing, then selects access for
+anyone with the link. The existing Fly origin actually returns SoundGarden;
+independent-branch pushes never triggered its main-only deployment workflow.
+[ADR038](decisions/038-sites-playtest-publication.md) records the new release
+authority, Worker/Node compatibility decision and precise data boundary.
+
+The verified `0519197` source is remotely built and deployed by immutable image,
+without a main push. The original machine, 256 MB and /data volume remain. A
+fresh volume snapshot is confirmed created. All old daydraw/garden table counts
+and logical content hashes remain identical; no local player/sound database is
+uploaded. Little Chorus starts its separately named hosted database. HTTP GETs
+confirm its real title, Mateo module, README and exact revised frog bytes.
+
+The new fixed-origin Sites proxy passes 16 meaningful isolated controls,
+including credential isolation, real late SSE chunks/cancellation, public-route
+allowlist, mutation bodies, versioned audio and controlled redirects. The helper
+rejects an in-checkout archive; an external path fixes it. A short-lived expired
+source credential is renewed without a second Site. Native save and publish
+succeed for version 1, source `9f09fb6`, with the author's public-link audience;
+no email invite is sent. A Python HTTP probe receives edge Cloudflare 1010.
+Subsequent real Chrome/Metal desktop/phone inspection passes 29 checks: real
+rendering, same-room SSE and late heartbeats, invitation/quiet entry and Mateo,
+with zero writes, browser errors or failed runtime resources. Two independent
+anonymous observers are not two contributing players. No production-writing
+test or invented human playtest is claimed. [Publication evidence](evidence/sites-playtest-2026-11-08.json).
+
+A further nine-check integration uses the unchanged Worker and a real isolated
+Node/SQLite backend on 18954: independent cookies, matching cross-author habitat,
+idempotent retry, reconnect, exact two-user/two-source/one-reply storage and
+logout pass. Its transport cannot reach the public app; the owned backend stops
+afterward. The initial sandbox socket launch fails with EPERM before requests;
+the scoped approved run passes. All 74 compiled modules match the released
+source. Native Chrome also verifies the exact revised frog bytes through the
+public Site without playing them. Neither result claims cloud-writing tests,
+two human participants or an artistic listening verdict.

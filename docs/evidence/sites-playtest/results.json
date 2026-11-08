@@ -1,0 +1,2381 @@
+{
+  "kind": "read-only-public-native-Chrome-Metal-observer-smoke",
+  "base": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+  "startedAt": "2026-11-08T13:47:36.600Z",
+  "limitations": [
+    "Anonymous read-only observers are not two real contributing players",
+    "No public join, authored contribution, shared reply, chat, deletion, weather change or database write is exercised",
+    "Quiet browsing does not establish audible device output or artistic listening quality",
+    "Snapshots of an empty world cannot validate persisted authored works"
+  ],
+  "browser": "157.0.8103.38",
+  "checks": [
+    "desktop-anonymous loads the actual public planet with HTTP 200",
+    "desktop-anonymous receives the real first-entry invitation and an anonymous observation choice",
+    "desktop-anonymous is a fresh anonymous observer, not a fabricated player",
+    "desktop-anonymous receives the retained 3D planet edition",
+    "desktop-anonymous renders actual 3D canvas geometry while respecting quiet browsing",
+    "desktop-anonymous advances genuine rendered frames and the anchored world clock",
+    "desktop-anonymous has no horizontal viewport overflow",
+    "desktop-anonymous opens the product's real native SSE and receives the same authoritative room",
+    "phone-anonymous loads the actual public planet with HTTP 200",
+    "phone-anonymous receives the real first-entry invitation and an anonymous observation choice",
+    "phone-anonymous is a fresh anonymous observer, not a fabricated player",
+    "phone-anonymous receives the retained 3D planet edition",
+    "phone-anonymous renders actual 3D canvas geometry while respecting quiet browsing",
+    "phone-anonymous advances genuine rendered frames and the anchored world clock",
+    "phone-anonymous has no horizontal viewport overflow",
+    "phone-anonymous opens the product's real native SSE and receives the same authoritative room",
+    "Desktop and phone use two isolated browser contexts",
+    "Both independent anonymous contexts receive the same real shared session",
+    "Phone Places & friends exposes the actual Visit Mateo action",
+    "Phone can actually visit the moving seaside guitarist without enabling sound or overflowing",
+    "Mateo's real projected guitar is clear of obstructing phone cards",
+    "phone-anonymous receives a genuine SSE keep-alive from the public server",
+    "phone-anonymous heartbeat stream retains the same shared world",
+    "desktop-anonymous receives a genuine SSE keep-alive from the public server",
+    "desktop-anonymous heartbeat stream retains the same shared world",
+    "Both real SSE observers agree on the latest public source IDs, including any genuine live changes (an empty set remains empty)",
+    "All actual public SSE connections return successful stream responses",
+    "No write request was attempted; the global guard stayed active throughout",
+    "No browser page errors, console errors, failed JavaScript or failed runtime assets were observed"
+  ],
+  "contexts": [
+    {
+      "name": "desktop-anonymous",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "joined": false,
+      "you": null,
+      "sessionId": "ses_d61b50e4a8ad28bf",
+      "initialSourceIds": [],
+      "cookieNamesOnly": [
+        "__Host-appgarden-visitor"
+      ],
+      "nativeSSE": [
+        {
+          "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+          "opens": 1,
+          "errors": 0,
+          "messages": [
+            {
+              "type": "snapshot",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:43.739Z",
+              "sourceIds": []
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:43.740Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:45.404Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:45.605Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:45.805Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:46.005Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:46.205Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:46.406Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:46.606Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:46.806Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.006Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.207Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.408Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.477Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.609Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.809Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.008Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.209Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.409Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.610Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.811Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.949Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:49.004Z"
+            }
+          ]
+        }
+      ],
+      "heartbeat": {
+        "status": 200,
+        "contentType": "text/event-stream",
+        "heartbeat": true,
+        "snapshot": {
+          "type": "snapshot",
+          "sessionId": "ses_d61b50e4a8ad28bf",
+          "serverNow": "2026-11-08T13:47:49.003Z",
+          "sourceIds": []
+        },
+        "updates": [
+          {
+            "type": "moves",
+            "sessionId": "ses_d61b50e4a8ad28bf",
+            "serverNow": "2026-11-08T13:47:49.004Z"
+          }
+        ],
+        "elapsedMs": 15310.899999976158
+      },
+      "final": {
+        "presentation": "3d",
+        "soundOn": "false",
+        "audioState": "off",
+        "renderScale": 1.25,
+        "triangles": 324327,
+        "calls": 845,
+        "ground": {
+          "frame": 1226,
+          "x": 1.8,
+          "z": 2.2,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.035,
+          "cameraRadius": 31.672006961984586,
+          "view": "third",
+          "zoom": 8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "serverNow": 1794145683899.2,
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "guitar",
+          "guitarVisible": true,
+          "screen": {
+            "x": 2088.89521921375,
+            "y": 3372.93197501926,
+            "visible": false
+          },
+          "guitarScreen": {
+            "x": 1891.649137397007,
+            "y": 2868.5938628108497,
+            "visible": false
+          }
+        },
+        "watching": "",
+        "canvas": {
+          "width": 2400,
+          "height": 1275,
+          "css": {
+            "width": 1920,
+            "height": 1020
+          }
+        },
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": false,
+        "streams": [
+          {
+            "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+            "opens": 1,
+            "errors": 0,
+            "messages": [
+              {
+                "type": "snapshot",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:43.739Z",
+                "sourceIds": []
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:43.740Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:45.404Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:45.605Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:45.805Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:46.005Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:46.205Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:46.406Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:46.606Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:46.806Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.006Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.207Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.408Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.477Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.609Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.809Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.008Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.209Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.409Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.610Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.811Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.949Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:49.004Z"
+              }
+            ]
+          }
+        ]
+      },
+      "finalPublicSourceIds": []
+    },
+    {
+      "name": "phone-anonymous",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "joined": false,
+      "you": null,
+      "sessionId": "ses_d61b50e4a8ad28bf",
+      "initialSourceIds": [],
+      "cookieNamesOnly": [
+        "__Host-appgarden-visitor"
+      ],
+      "nativeSSE": [
+        {
+          "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+          "opens": 1,
+          "errors": 0,
+          "messages": [
+            {
+              "type": "snapshot",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.476Z",
+              "sourceIds": []
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.477Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.609Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:47.809Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.008Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.209Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.409Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.610Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.811Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:48.949Z"
+            },
+            {
+              "type": "moves",
+              "sessionId": "ses_d61b50e4a8ad28bf",
+              "serverNow": "2026-11-08T13:47:49.004Z"
+            }
+          ]
+        }
+      ],
+      "heartbeat": {
+        "status": 200,
+        "contentType": "text/event-stream",
+        "heartbeat": true,
+        "snapshot": {
+          "type": "snapshot",
+          "sessionId": "ses_d61b50e4a8ad28bf",
+          "serverNow": "2026-11-08T13:47:48.948Z",
+          "sourceIds": []
+        },
+        "updates": [
+          {
+            "type": "moves",
+            "sessionId": "ses_d61b50e4a8ad28bf",
+            "serverNow": "2026-11-08T13:47:48.949Z"
+          },
+          {
+            "type": "moves",
+            "sessionId": "ses_d61b50e4a8ad28bf",
+            "serverNow": "2026-11-08T13:47:49.004Z"
+          }
+        ],
+        "elapsedMs": 15222.899999976158
+      },
+      "final": {
+        "presentation": "3d",
+        "soundOn": "false",
+        "audioState": "off",
+        "renderScale": 1.25,
+        "triangles": 204075,
+        "calls": 348,
+        "ground": {
+          "frame": 1007,
+          "x": 13.31459938434433,
+          "z": 16.0444337246386,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.034999999999997,
+          "cameraRadius": 28.429147736082413,
+          "view": "third",
+          "zoom": 4.8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "serverNow": 1794145683852.2,
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "guitar",
+          "guitarVisible": true,
+          "screen": {
+            "x": 194.98685236772897,
+            "y": 306.82040134657336,
+            "visible": true
+          },
+          "guitarScreen": {
+            "x": 198.48601167693394,
+            "y": 352.7989544127824,
+            "visible": true
+          }
+        },
+        "watching": "performer",
+        "canvas": {
+          "width": 487,
+          "height": 945,
+          "css": {
+            "width": 390,
+            "height": 756
+          }
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "overflow": false,
+        "streams": [
+          {
+            "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+            "opens": 1,
+            "errors": 0,
+            "messages": [
+              {
+                "type": "snapshot",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.476Z",
+                "sourceIds": []
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.477Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.609Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.809Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.008Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.209Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.409Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.610Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.811Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.949Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:49.004Z"
+              }
+            ]
+          }
+        ]
+      },
+      "finalPublicSourceIds": []
+    }
+  ],
+  "captures": [
+    {
+      "name": "entry-desktop",
+      "context": "desktop-anonymous",
+      "file": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/sites-playtest/public-smoke-little-chorus-playtest-20261108.crazylife5.chatgpt.site-2026-11-08T13-47-36-599Z/entry-desktop.png",
+      "capturedAt": "2026-11-08T13:47:43.744Z",
+      "state": {
+        "presentation": "3d",
+        "soundOn": "false",
+        "audioState": "off",
+        "renderScale": 1.25,
+        "triangles": 329003,
+        "calls": 845,
+        "ground": {
+          "frame": 10,
+          "x": 1.8,
+          "z": 2.2,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.035,
+          "cameraRadius": 31.672006961984586,
+          "view": "third",
+          "zoom": 8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "serverNow": 1794145660770.6,
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "guitar",
+          "guitarVisible": true,
+          "screen": {
+            "x": 2088.89521921375,
+            "y": 3372.93197501926,
+            "visible": false
+          },
+          "guitarScreen": {
+            "x": 1891.649137397007,
+            "y": 2868.5938628108497,
+            "visible": false
+          }
+        },
+        "watching": "",
+        "canvas": {
+          "width": 2400,
+          "height": 1275,
+          "css": {
+            "width": 1920,
+            "height": 1020
+          }
+        },
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": false,
+        "streams": [
+          {
+            "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+            "opens": 0,
+            "errors": 0,
+            "messages": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "quiet-3d-desktop",
+      "context": "desktop-anonymous",
+      "file": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/sites-playtest/public-smoke-little-chorus-playtest-20261108.crazylife5.chatgpt.site-2026-11-08T13-47-36-599Z/quiet-3d-desktop.png",
+      "capturedAt": "2026-11-08T13:47:44.580Z",
+      "state": {
+        "presentation": "3d",
+        "soundOn": "false",
+        "audioState": "off",
+        "renderScale": 1.25,
+        "triangles": 329005,
+        "calls": 846,
+        "ground": {
+          "frame": 59,
+          "x": 1.8,
+          "z": 2.2,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.035,
+          "cameraRadius": 31.672006961984586,
+          "view": "third",
+          "zoom": 8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "serverNow": 1794145664267.2,
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "guitar",
+          "guitarVisible": true,
+          "screen": {
+            "x": 2088.89521921375,
+            "y": 3372.93197501926,
+            "visible": false
+          },
+          "guitarScreen": {
+            "x": 1891.649137397007,
+            "y": 2868.5938628108497,
+            "visible": false
+          }
+        },
+        "watching": "",
+        "canvas": {
+          "width": 2400,
+          "height": 1275,
+          "css": {
+            "width": 1920,
+            "height": 1020
+          }
+        },
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "overflow": false,
+        "streams": [
+          {
+            "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+            "opens": 1,
+            "errors": 0,
+            "messages": [
+              {
+                "type": "snapshot",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:43.739Z",
+                "sourceIds": []
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:43.740Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "mateo-phone",
+      "context": "phone-anonymous",
+      "file": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/sites-playtest/public-smoke-little-chorus-playtest-20261108.crazylife5.chatgpt.site-2026-11-08T13-47-36-599Z/mateo-phone.png",
+      "capturedAt": "2026-11-08T13:47:48.726Z",
+      "state": {
+        "presentation": "3d",
+        "soundOn": "false",
+        "audioState": "off",
+        "renderScale": 1.25,
+        "triangles": 204075,
+        "calls": 348,
+        "ground": {
+          "frame": 87,
+          "x": 13.31459938434433,
+          "z": 16.0444337246386,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.034999999999997,
+          "cameraRadius": 28.429147736082413,
+          "view": "third",
+          "zoom": 4.8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "serverNow": 1794145668653.3,
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "strum",
+          "guitarVisible": true,
+          "screen": {
+            "x": 194.98685236772897,
+            "y": 306.82040134657336,
+            "visible": true
+          },
+          "guitarScreen": {
+            "x": 198.48601167693394,
+            "y": 352.7989544127824,
+            "visible": true
+          }
+        },
+        "watching": "performer",
+        "canvas": {
+          "width": 487,
+          "height": 945,
+          "css": {
+            "width": 390,
+            "height": 756
+          }
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "overflow": false,
+        "streams": [
+          {
+            "url": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site/api/stream?scene=planet&mode=weekday",
+            "opens": 1,
+            "errors": 0,
+            "messages": [
+              {
+                "type": "snapshot",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.476Z",
+                "sourceIds": []
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.477Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.609Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:47.809Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.008Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.209Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.409Z"
+              },
+              {
+                "type": "moves",
+                "sessionId": "ses_d61b50e4a8ad28bf",
+                "serverNow": "2026-11-08T13:47:48.610Z"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "requests": [
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/planet",
+      "type": "document"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/style.css",
+      "type": "stylesheet"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-world.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-social.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-audio.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/routine-audio.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/chorus-studio.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-discovery.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/sound-life.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-invitation.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-placement.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-library.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/environment-panel.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-sound-interactions.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-conversations.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/look-settings.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/catalog.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/planet.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/sounds.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/huts.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/environment.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/landscapes.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/vendor/three.module.min.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/characters.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-residents.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-wildlife.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-vessels.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-pinwheels.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-waterlife.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-busker.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-neighbours.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/npc-conversation-cues.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-lighting.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-contact-shadows.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-support.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-coast.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-build.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-locomotion.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-wildlife.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-connections.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/chorus-garden.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-guidance.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-signature.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/npc-routines.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/chorus-instrument.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/frog-call.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/sound-response.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/resident-life.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-surface-safety.js",
+      "type": "script"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/api/stream",
+      "type": "eventsource"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/planet",
+      "type": "document"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/style.css",
+      "type": "stylesheet"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-world.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-social.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-audio.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/routine-audio.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/chorus-studio.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-discovery.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/sound-life.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-invitation.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-placement.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-library.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/environment-panel.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-sound-interactions.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-conversations.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/look-settings.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/catalog.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/planet.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/sounds.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/huts.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/environment.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/npc-routines.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/vendor/three.module.min.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/chorus-instrument.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-busker.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-guidance.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/chorus-signature.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/characters.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-residents.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-wildlife.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-vessels.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-pinwheels.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/sound-waterlife.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-neighbours.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/npc-conversation-cues.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-lighting.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-contact-shadows.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-support.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-coast.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-build.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-locomotion.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-wildlife.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-connections.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/chorus-garden.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/sound-response.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/frog-call.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/shared/landscapes.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/resident-life.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/client/planet-surface-safety.js",
+      "type": "script"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/api/stream",
+      "type": "eventsource"
+    },
+    {
+      "context": "phone-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/api/stream",
+      "type": "fetch"
+    },
+    {
+      "context": "desktop-anonymous",
+      "method": "GET",
+      "origin": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+      "path": "/api/stream",
+      "type": "fetch"
+    }
+  ],
+  "responses": [
+    {
+      "context": "desktop-anonymous",
+      "path": "/planet",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/style.css",
+      "status": 200,
+      "type": "stylesheet",
+      "contentType": "text/css; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/catalog.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/look-settings.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/chorus-placement.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/environment-panel.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-world.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/chorus-studio.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-sound-interactions.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/routine-audio.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/chorus-invitation.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/planet.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-audio.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/huts.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/sounds.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-social.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/environment.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-library.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-conversations.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-discovery.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/chorus.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/vendor/three.module.min.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-pinwheels.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-neighbours.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-support.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-wildlife.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-waterlife.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/landscapes.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/npc-routines.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-lighting.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-connections.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/chorus-guidance.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-busker.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/chorus-signature.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-wildlife.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-residents.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-build.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-contact-shadows.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-locomotion.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/sound-vessels.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/chorus-garden.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/chorus-instrument.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-coast.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/frog-call.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/characters.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/resident-life.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/planet-surface-safety.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/client/npc-conversation-cues.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/sound-life.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/shared/sound-response.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/api/stream",
+      "status": 200,
+      "type": "eventsource",
+      "contentType": "text/event-stream"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/planet",
+      "status": 200,
+      "type": "document",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/sound-life.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/style.css",
+      "status": 200,
+      "type": "stylesheet",
+      "contentType": "text/css; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/routine-audio.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/chorus-placement.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-audio.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/chorus-studio.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-conversations.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-sound-interactions.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/chorus-invitation.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/environment.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/catalog.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-discovery.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-world.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/look-settings.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/planet.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/vendor/three.module.min.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-library.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/sounds.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/environment-panel.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-social.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/chorus.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/huts.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/npc-routines.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/chorus-signature.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-busker.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/chorus-instrument.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/chorus-guidance.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-contact-shadows.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-connections.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/npc-conversation-cues.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-pinwheels.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-neighbours.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-vessels.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-wildlife.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-residents.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-support.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-wildlife.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-coast.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-build.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/characters.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-locomotion.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-lighting.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/sound-waterlife.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/chorus-garden.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/landscapes.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/frog-call.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/shared/sound-response.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/resident-life.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/client/planet-surface-safety.js",
+      "status": 200,
+      "type": "script",
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/api/stream",
+      "status": 200,
+      "type": "eventsource",
+      "contentType": "text/event-stream"
+    },
+    {
+      "context": "phone-anonymous",
+      "path": "/api/stream",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "text/event-stream"
+    },
+    {
+      "context": "desktop-anonymous",
+      "path": "/api/stream",
+      "status": 200,
+      "type": "fetch",
+      "contentType": "text/event-stream"
+    }
+  ],
+  "writesAttempted": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "failedRuntimeRequests": [],
+  "passed": true,
+  "sharedInitial": {
+    "sessionId": "ses_d61b50e4a8ad28bf",
+    "desktopSourceIds": [],
+    "phoneSourceIds": [],
+    "joined": false
+  },
+  "finishedAt": "2026-11-08T13:48:22.633Z"
+}

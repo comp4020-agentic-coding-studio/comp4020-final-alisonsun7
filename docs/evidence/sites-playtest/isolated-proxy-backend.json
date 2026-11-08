@@ -1,0 +1,196 @@
+{
+  "kind": "transport-local-real-Worker-Node-SQLite-integration",
+  "startedAt": "2026-11-08T13:53:23.870Z",
+  "upstreamOriginMapped": "https://comp4020-final-alisonsun7.fly.dev",
+  "localBackend": "http://127.0.0.1:18954",
+  "workerSha256": "11546ba812ba99f934690d3420abbfae8b161197d324deeb9367e0c0176da661",
+  "sourceCommit": "051919702514877d892f6f79ecf0f60d39a024c5",
+  "dbPath": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/sites-playtest/integration/run-2026-11-08T13-53-23-870Z/isolated-history.db",
+  "limitations": [
+    "All writes go only to a new localhost:18954 SQLite database; no cloud write or production identity is created",
+    "Two programmatic cookie jars exercise real HTTP authentication, not browser UI or human playtesting",
+    "Local listening preference and audible output are not exercised"
+  ],
+  "checks": [
+    "Owned isolated Node backend starts on port 18954 with a new database",
+    "The actual backend issues different identities through two independent application cookie jars",
+    "Two real proxied SSE streams expose the same fresh world and different authenticated participants",
+    "A real trickle→bird cross-author reply creates the identical two-person habitat result in both proxied SSE streams",
+    "Retrying the actual operation through the Worker preserves its source identity",
+    "Reconnecting both authenticated cookie jars restores identical authoritative works and source IDs",
+    "The isolated real SQLite database contains exactly two identities, two sources and one durable reply",
+    "Both actual leave responses clear the scoped identity cookie and translate their redirect to Sites",
+    "Every Worker transport request stayed on the single fixed upstream origin mapped exclusively to localhost"
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/join",
+      "cookiePresent": false
+    },
+    {
+      "method": "POST",
+      "path": "/join",
+      "cookiePresent": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/stream",
+      "cookiePresent": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stream",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/ses_98b6ef6602560b0c/move",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/ses_98b6ef6602560b0c/move",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/ses_98b6ef6602560b0c/sounds",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/ses_98b6ef6602560b0c/sounds",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/ses_98b6ef6602560b0c/sounds",
+      "cookiePresent": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stream",
+      "cookiePresent": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stream",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/leave",
+      "cookiePresent": true
+    },
+    {
+      "method": "POST",
+      "path": "/leave",
+      "cookiePresent": true
+    }
+  ],
+  "blockedNetwork": [],
+  "passed": true,
+  "backendPid": 71224,
+  "cookieContracts": [
+    "soac_session=[redacted]; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=31536000",
+    "soac_session=[redacted]; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=31536000"
+  ],
+  "sessionId": "ses_98b6ef6602560b0c",
+  "participantIds": [
+    "par_08529a448c14d6f7",
+    "par_c6c26fa2da00b888"
+  ],
+  "work": {
+    "id": "snd_5cf40082a25ce736",
+    "placeId": "green",
+    "x": 0,
+    "z": 0,
+    "title": "Proxy Ada's little chorus",
+    "variant": "habitat",
+    "duet": true,
+    "sources": [
+      {
+        "id": "snd_5cf40082a25ce736",
+        "soundId": "trickle",
+        "x": 0,
+        "z": 0,
+        "by": "Proxy Ada",
+        "byId": "par_08529a448c14d6f7",
+        "at": "2026-11-08T13:53:24.057Z"
+      },
+      {
+        "id": "snd_92a380ffdfeafd37",
+        "soundId": "evening-forest",
+        "x": 1,
+        "z": 0,
+        "by": "Proxy Bo",
+        "byId": "par_c6c26fa2da00b888",
+        "at": "2026-11-08T13:53:24.059Z",
+        "replyToId": "snd_5cf40082a25ce736"
+      }
+    ],
+    "liveSources": [
+      {
+        "id": "snd_5cf40082a25ce736",
+        "soundId": "trickle",
+        "x": 0,
+        "z": 0,
+        "by": "Proxy Ada",
+        "byId": "par_08529a448c14d6f7",
+        "at": "2026-11-08T13:53:24.057Z"
+      },
+      {
+        "id": "snd_92a380ffdfeafd37",
+        "soundId": "evening-forest",
+        "x": 1,
+        "z": 0,
+        "by": "Proxy Bo",
+        "byId": "par_c6c26fa2da00b888",
+        "at": "2026-11-08T13:53:24.059Z",
+        "replyToId": "snd_5cf40082a25ce736"
+      }
+    ],
+    "contributors": [
+      {
+        "id": "par_08529a448c14d6f7",
+        "name": "Proxy Ada"
+      },
+      {
+        "id": "par_c6c26fa2da00b888",
+        "name": "Proxy Bo"
+      }
+    ],
+    "at": "2026-11-08T13:53:24.057Z",
+    "lastAt": "2026-11-08T13:53:24.059Z"
+  },
+  "database": {
+    "users": 2,
+    "sounds": [
+      {
+        "id": "snd_5cf40082a25ce736",
+        "sound_id": "trickle",
+        "placed_by": "par_08529a448c14d6f7",
+        "removed_at": null
+      },
+      {
+        "id": "snd_92a380ffdfeafd37",
+        "sound_id": "evening-forest",
+        "placed_by": "par_c6c26fa2da00b888",
+        "removed_at": null
+      }
+    ],
+    "replies": [
+      {
+        "sound_id": "snd_92a380ffdfeafd37",
+        "parent_id": "snd_5cf40082a25ce736"
+      }
+    ]
+  },
+  "backendStopped": true,
+  "backendExit": {
+    "exitCode": null,
+    "signalCode": "SIGTERM"
+  },
+  "finishedAt": "2026-11-08T13:53:24.236Z"
+}

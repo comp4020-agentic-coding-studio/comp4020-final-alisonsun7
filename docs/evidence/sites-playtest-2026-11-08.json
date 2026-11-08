@@ -1,0 +1,104 @@
+{
+  "kind": "real-hosted-publication-and-read-only-inspection",
+  "sourceCommit": "051919702514877d892f6f79ecf0f60d39a024c5",
+  "siteSourceCommit": "9f09fb6583a700fb0a75cb6f15d9c5a4f1757b2c",
+  "siteUrl": "https://little-chorus-playtest-20261108.crazylife5.chatgpt.site",
+  "siteVersion": 1,
+  "passed": true,
+  "checks": {
+    "priorApplicationCandidate": 419,
+    "isolatedGatewayControls": 16,
+    "actualAnonymousHostedBrowserChecks": 29,
+    "productionWriteTests": 0,
+    "realNodeSqliteIsolatedProxyIntegration": 9,
+    "actualHostedFrogBytes": "exact SHA256; native Chrome GET; no playback"
+  },
+  "limits": [
+    "Anonymous read-only observers are not two real contributing players",
+    "No public join, authored contribution, shared reply, chat, deletion, weather change or database write is exercised",
+    "Quiet browsing does not establish audible device output or artistic listening quality",
+    "Snapshots of an empty world cannot validate persisted authored works"
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/sites-playtest/release.json",
+      "sizeBytes": 1662,
+      "sha256": "7178403e4f1e2a3fce7ff2048afc02c360ae08d0f2f4a3b43a304866979acffa"
+    },
+    {
+      "path": "evidence/sites-playtest/fly-before-databases.json",
+      "sizeBytes": 1394,
+      "sha256": "2dd3a938d3c658c7ac8a0081636e9105335fa5286f5b1af9e08bd47468af2f87"
+    },
+    {
+      "path": "evidence/sites-playtest/fly-after-databases.json",
+      "sizeBytes": 3387,
+      "sha256": "05fa629b4a2f8568dd07e12f18cfbb61750885f304568118064d6279e848f717"
+    },
+    {
+      "path": "evidence/sites-playtest/fly-http-smoke.json",
+      "sizeBytes": 587,
+      "sha256": "a11713296cb70c932596f24b029d77f36b936500206c29537a486fd9e8c90478"
+    },
+    {
+      "path": "evidence/sites-playtest/results.json",
+      "sizeBytes": 72764,
+      "sha256": "6f3eddab452628cc0ce4233969864ddab41295e2aba76a7255b7f8c9ec5ba04b"
+    },
+    {
+      "path": "evidence/sites-playtest/entry-desktop.png",
+      "sizeBytes": 640626,
+      "sha256": "262a7ddd3e768ba8d6e0a40b9e0ae90cef28897b8d595555c0c91c55f0b5b111"
+    },
+    {
+      "path": "evidence/sites-playtest/quiet-3d-desktop.png",
+      "sizeBytes": 751175,
+      "sha256": "7567ca1a5f5fd93f0eb6c4ecc1fc7a1688a049f986fe6741f22aa392abcc4f07"
+    },
+    {
+      "path": "evidence/sites-playtest/mateo-phone.png",
+      "sizeBytes": 138906,
+      "sha256": "3ef93981b5d9717ee362398d4a404a9c2178fd6b3531d5b42b108661d6628794"
+    },
+    {
+      "path": "evidence/sites-playtest/verify-public.mjs",
+      "sizeBytes": 16589,
+      "sha256": "6f38ab99b5e7d6824f7c58e81f40c238b98949f33a8e405c6c590523937d5cfc"
+    },
+    {
+      "path": "evidence/sites-playtest/gateway/worker/index.js",
+      "sizeBytes": 10064,
+      "sha256": "11546ba812ba99f934690d3420abbfae8b161197d324deeb9367e0c0176da661"
+    },
+    {
+      "path": "evidence/sites-playtest/gateway/spec/proxy.test.mjs",
+      "sizeBytes": 13807,
+      "sha256": "48ef43508a958985ac784c9bec5ca85d80ae44fe16f8c00cbe4694528a68a4a0"
+    },
+    {
+      "path": "evidence/sites-playtest/fly-after-machine.json",
+      "sizeBytes": 459,
+      "sha256": "ba32972deb1cbeabb240fb460c78ec2dcaf187137db4b58c8c3b30a5e6a48764"
+    },
+    {
+      "path": "evidence/sites-playtest/isolated-proxy-backend.json",
+      "sizeBytes": 5728,
+      "sha256": "26fb499f972c7a42f413c5b869c5b901e8096b134b6e39cca6ce79a094523e2b"
+    },
+    {
+      "path": "evidence/sites-playtest/compiled-verification.json",
+      "sizeBytes": 10124,
+      "sha256": "2a4235f788107b7c1c0724233364ff5f0656dd3df86d451409e88be089dfb123"
+    },
+    {
+      "path": "evidence/sites-playtest/verify-proxy-backend.mjs",
+      "sizeBytes": 10964,
+      "sha256": "dd87e9d8eac7555c8c11dd2cb584c9efca498a4cf700c3fddd091ed06f4166a0"
+    },
+    {
+      "path": "evidence/sites-playtest/frog-public-delivery.json",
+      "sizeBytes": 778,
+      "sha256": "c95d24759a0fc684d25d0aaee6e87125d4aa374f75570e7c200a817670deefa3"
+    }
+  ]
+}
