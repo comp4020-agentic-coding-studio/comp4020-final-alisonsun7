@@ -2,6 +2,13 @@
 
 # Little Chorus agent rules
 
+ADR038 (Wen, 2026-11-09) puts sounds that change the world in place from
+the start: seven labelled world examples (coffee, birds, gulls, whale, frogs,
+ferry horn, stage guitar) that now cause their animals, ferry and resident
+responses through separate `setExamples` channels, always behind real sources
+and never as rows or authors. Choosers and the library recommend
+world-changing sounds first, marked "Changes the world".
+
 ADR036 retires the optional 2D/2.5D product versions at the author's request.
 Keep their historical experiments and evidence; old links canonically reach
 3D with the original room, identity, work and place context. No flat renderer

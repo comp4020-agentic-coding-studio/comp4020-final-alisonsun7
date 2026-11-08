@@ -3428,3 +3428,37 @@ browser errors. No writing tests use the author's database. First-person
 materials keep assistance visible, historical reflections intact, and human
 listening, two unfamiliar pairs, a true next-day return and hosted deployment
 open. [Hashed release evidence](evidence/seaside-performance-2026-11-08.json).
+
+## 2026-11-09 — Sounds that change the world, in place from the start (ADR 038)
+
+Prompt (Wen, in Chinese): build on the latest version; some sounds should be
+in place on the map by default, such as the guitar, the whale and the
+gulls, and the main recommendations should be sounds that change the world.
+
+Local `main` was fast-forwarded to `codex/seaside-performance` (`0519197`)
+first. The four new examples go through ADR 031's mechanism. The water life
+and the ferries gained a separate examples channel, so the existing checks
+that `setSources` rejects examples did not change. The new spec file failed
+5/5 without the source changes, and the new Watch cases failed 3/10 without
+the discovery change. The full spec passed 424, then 427 after the Watch
+cases were added, 61 files, against a fresh scratch server on :8095.
+
+Browser runs on fresh scratch databases each failed once:
+
+- `living-discovery`: the pool's arrival card showed the frogs example,
+  which was 2.4 m away, instead of the gulls. The frogs were moved to the far
+  side of the pool, where the gulls are nearest for every seed tried.
+- `waters-answer`: after a reload, the labelled example whale and frogs were
+  in the water. The reload check now requires none of the three withdrawn
+  sources to come back, and anything remaining to be an `@world:` example.
+
+Both runs then passed, with 26 and 29 checks. The databases from the failed
+runs are kept in the scratchpad.
+
+The screenshots (scratch, unjoined plus one scratch join) show the frogs and
+gulls at the pool, the guitar card at the stage, the whale card, the whale
+leaping during Watch, and the Changes the world badges on desktop and phone.
+The ferry's state reports it as visible and sailing, but keyboard walking did
+not reach its card, so no screenshot of it was taken. Nothing was pushed or
+deployed. No one has listened to it yet.
+
