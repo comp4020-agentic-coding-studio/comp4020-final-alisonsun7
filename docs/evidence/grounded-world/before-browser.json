@@ -1,0 +1,4901 @@
+{
+  "kind": "rendered-grounding-developer-inspection",
+  "base": "http://localhost:18930",
+  "baselineReadOnly": true,
+  "checks": [
+    "green fits the 390×844 viewport",
+    "tea fits the 390×844 viewport",
+    "Frozen compiled baseline remained GET-only",
+    "The actual GPU compiled/rendered without browser or shader errors"
+  ],
+  "frames": [
+    {
+      "name": "green-desktop",
+      "ground": {
+        "frame": 24,
+        "x": 1.8,
+        "z": 2.2,
+        "feetRadius": 22,
+        "signedFeetRadius": 22,
+        "cameraRadius": 31.638143118710367,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 666.1537512167193,
+            "y": 522.7553063288173,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 641.7857925034956,
+            "y": 482.24524805245585,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.0028038547140974805,
+              0.06234568318167456,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 1237.8817507348822,
+            "y": 358.6471841989137,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1250.581080363553,
+            "y": 328.2755555347928,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.046110011206422385,
+              -0.057817557867835496,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": -183.77199052992438,
+            "y": 1308.2326524577204,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -306.0354871012839,
+            "y": 1339.6428153928475,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.010482608365460923,
+              0.11428765975742539,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.28312680710374505,
+          "z": 13.966593556781193,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 649.5551032992827,
+            "y": 2365.248684306462,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 569.0555348448331,
+            "y": 2716.744676693849,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.006700348335849773,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.006700348335849803,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 671.2536553986389,
+            "y": 366.47040192595705,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 658.3827106746443,
+            "y": 338.3085881033398,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.04849956826794699,
+              -0.09826901105462021,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 560.3611467439872,
+            "y": 537.6429186515116,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 548.9986562333612,
+            "y": 523.6536801938252,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.049630781275921854,
+              0.077247336247873,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.533647629878894,
+          "z": -7.848312991950125,
+          "yaw": 0,
+          "activity": "working",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 584.5549177703966,
+            "y": 414.59278883210845,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 566.7888951603504,
+            "y": 390.6580585871907,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.0356122395976959,
+              -0.16185821581786206,
+              0
+            ],
+            "left": [
+              0.005413958835123711,
+              -0.002435691392504251,
+              -0.845525109752375
+            ],
+            "right": [
+              -0.6804458834018121,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.498707060612077,
+          "z": -3.200331112464342,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 484.3909345975824,
+            "y": 444.38993354821326,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 459.55944393574345,
+            "y": 414.1014238625898,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.22217615305720229,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.22217615305720229,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.166394305254089,
+          "z": -4.801847169165043,
+          "yaw": 1.1647334337061164,
+          "activity": "walking",
+          "walking": true,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 515.226427987386,
+            "y": 437.6111796222625,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 492.375597498203,
+            "y": 410.4229706666137,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              -0.65,
+              0.09
+            ],
+            "left": [
+              0.18442960362127378,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6871905197034622
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.273550274643187,
+          "z": -4.7983820336297915,
+          "yaw": -1.0344466618984887,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 542.7285003016198,
+            "y": 422.0366734703308,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 522.2224531827268,
+            "y": 393.0170807067139,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.15347833337062203,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.15347833337062206,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 350.80745417841433,
+            "y": 526.2657883267528,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 321.07704701413104,
+            "y": 504.0350317152183,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6594890941514334
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 652.6596561945346,
+            "y": 354.29624474110307,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 634.8664643678931,
+            "y": 318.0242569215321,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.049368602355659486,
+              0.15064458674249978,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 898,
+      "triangles": 317661,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "tea-desktop",
+      "ground": {
+        "frame": 46,
+        "x": -9,
+        "z": -4,
+        "feetRadius": 22.36764155148718,
+        "signedFeetRadius": 22.36764155148718,
+        "cameraRadius": 31.993972496275372,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1594.3449536049272,
+            "y": 1038.837552269609,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1674.4665321417065,
+            "y": 1042.5276896241364,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.02057231435885191,
+              0.010668693127693,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 1616.5625787321583,
+            "y": 617.3780208939972,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1648.2206406669918,
+            "y": 597.5917994444749,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.04849078946399707,
+              -0.09830438557978842,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 196.25771940484424,
+            "y": 2691.370025315042,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -5.642902734370381,
+            "y": 3134.7688038421275,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.00001675891748304653,
+              0.08639206699012247,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.2616780322871648,
+          "z": 13.912716426334091,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 2155.0034580526135,
+            "y": 3485.373766710168,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2439.4658122097117,
+            "y": 4075.9957424400777,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.18599374448985004,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.18599374448985,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1101.2246839091235,
+            "y": 398.17692225912367,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1110.6063597399457,
+            "y": 357.8632712210619,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.03257845507007485,
+              -0.11857999640968683,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 627.9452868718483,
+            "y": 399.79631608792505,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 613.8310208003982,
+            "y": 372.95463359730815,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.043419198807262555,
+              0.10985558209184511,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.533647629878894,
+          "z": -7.848312991950125,
+          "yaw": 0,
+          "activity": "working",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 931.9051117373423,
+            "y": 397.9410481112014,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 926.4495034147193,
+            "y": 357.55362203081285,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.03126079728922106,
+              -0.15575284919131158,
+              0
+            ],
+            "left": [
+              0.005413958835123711,
+              -0.002435691392504251,
+              -0.845525109752375
+            ],
+            "right": [
+              -0.7014295053218582,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.505833614214213,
+          "z": -3.238115440354946,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 998.9376744813104,
+            "y": 558.3688687590678,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1003.2328668010801,
+            "y": 516.9575176767098,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.20746437279929175,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.20746437279929184,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 949.5775678905754,
+            "y": 490.6490028416843,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 947.1059257748149,
+            "y": 447.67856030702245,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6086880067958982
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1008.6629598556945,
+            "y": 490.71911245408086,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1012.960932553275,
+            "y": 448.00602099915506,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.01297071279019871,
+              -0.12854747091437202,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 613.9703607051216,
+            "y": 532.0527240140348,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 582.8001433574544,
+            "y": 491.5433826414741,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.5281113030284378
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1306.0296392948783,
+            "y": 532.0527240140345,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1335.0945629322164,
+            "y": 489.87300669189756,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.047801450893896924,
+              0.15736170669469798,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 722,
+      "triangles": 308149,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "stage-desktop",
+      "ground": {
+        "frame": 68,
+        "x": 10,
+        "z": -5,
+        "feetRadius": 22,
+        "signedFeetRadius": 22.000000000000004,
+        "cameraRadius": 31.638143118710367,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -40.88459822169405,
+            "y": 1130.2784555692208,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -145.46489727205307,
+            "y": 1143.9934431372585,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.04997206536288994,
+              -0.08282346811872479,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 896.5662240148372,
+            "y": 428.9590281090062,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 891.6819762953575,
+            "y": 383.8580594114611,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.013455229050512395,
+              -0.11656036945655641,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": -181.7141458097619,
+            "y": 1668.337646269761,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -268.0008522535845,
+            "y": 1717.293661342018,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.027350300734948194,
+              -0.005646977758642192,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.22311723755573687,
+          "z": 13.815342107747247,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": -363.84981361526934,
+            "y": 3492.714915658254,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -659.5267489534684,
+            "y": 4044.694822070687,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.12613039630795764,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.12613039630795783,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 326.2150152304228,
+            "y": 571.0297514503927,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 293.4325570763844,
+            "y": 548.2820045044446,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.0003915391525009179,
+              -0.09202869952191389,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 491.6737296220092,
+            "y": 618.8201475657148,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 477.94119561962214,
+            "y": 607.2556145576062,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.005838883682252351,
+              0.10874113558486768,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.533647629878894,
+          "z": -7.848312991950125,
+          "yaw": 0,
+          "activity": "working",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 309.99435517394284,
+            "y": 618.4942873198124,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 279.40100005568536,
+            "y": 601.3519967682629,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.023167444018558813,
+              -0.14226319198554824,
+              0
+            ],
+            "left": [
+              0.005413958835123711,
+              -0.002435691392504251,
+              -0.845525109752375
+            ],
+            "right": [
+              -0.7352119504563661,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.527480934826823,
+          "z": -3.352766664821056,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 119.53249471822576,
+            "y": 777.9467618389718,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 71.22132374662449,
+            "y": 764.705084314773,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.14668118181458029,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.14668118181458017,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 190.684320889673,
+            "y": 721.6547187500609,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 149.50179646377052,
+            "y": 706.4885841248981,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6522296370820075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 191.3741173427033,
+            "y": 710.8544463069709,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 148.27784548987634,
+            "y": 694.5900674636184,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.010196503953580238,
+              -0.14426648941282372,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 149.63627234433318,
+            "y": 806.046543200841,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 111.4787319727856,
+            "y": 797.7977466723273,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.35058575326925223
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 140.40903877395917,
+            "y": 697.4849075063499,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 84.0054751266208,
+            "y": 676.2602377800877,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.04266692066147612,
+              0.16764766269178855,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 699,
+      "triangles": 285133,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "reading-desktop",
+      "ground": {
+        "frame": 90,
+        "x": -13,
+        "z": 11,
+        "feetRadius": 22,
+        "signedFeetRadius": 22,
+        "cameraRadius": 31.638143118710364,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1362.7729218169445,
+            "y": 429.53615986979685,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1381.7448305352887,
+            "y": 402.6260075450773,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.021286993379830123,
+              -0.11966681838953969,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 1427.0373499110117,
+            "y": 609.5068037323396,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1440.7228357899053,
+            "y": 597.7112266952372,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.005503632856363707,
+              -0.05189492943328205,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 1.199343102128456,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 936.114151327932,
+            "y": 427.6888010255005,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 930.5056289589115,
+            "y": 384.2207896716924,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              -0.12,
+              -0.20852193650276724,
+              0.13
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.1861948946958764,
+          "z": 13.721484685087272,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 1776.2054382200408,
+            "y": 923.7182778009532,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1857.680238422884,
+            "y": 915.788997780451,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.22486752280615757,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.22486752280615754,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1128.6890061411555,
+            "y": 384.91114699031493,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1133.89455038167,
+            "y": 365.75377940458026,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.025478328638223136,
+              0.0011480412717215997,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 828.673649150857,
+            "y": 434.64212537796556,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 825.3282845021714,
+            "y": 419.86721502898394,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.012988934769911547,
+              0.029755866493688818,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.533647629878894,
+          "z": -7.848312991950125,
+          "yaw": 0,
+          "activity": "working",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1048.4419028549084,
+            "y": 369.6166177785159,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1049.7608213494373,
+            "y": 349.5991025551199,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.015990637141735705,
+              -0.12555130638939666,
+              0
+            ],
+            "left": [
+              0.005413958835123711,
+              -0.002435691392504251,
+              -0.845525109752375
+            ],
+            "right": [
+              -0.7595100775466356,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.55988435822149,
+          "z": -3.5240354848316504,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 1102.4623463891471,
+            "y": 337.93224706621993,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1107.331124430463,
+            "y": 313.8710611736718,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.15769345220293443,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.15769345220293463,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1075.1610817607668,
+            "y": 346.58007873779763,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1078.474439094126,
+            "y": 323.46692279789045,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.3894137111870765
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1100.742361203336,
+            "y": 351.42803091444466,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1105.8218610593797,
+            "y": 328.5913023480735,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.010818674414675638,
+              -0.1578299916861255,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 940.4004309522156,
+            "y": 311.32395187181675,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 939.7666574714385,
+            "y": 286.31538190838563,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.5668802569028124
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1229.7822974053386,
+            "y": 366.25278261463484,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1239.0030885440704,
+            "y": 343.62083970738195,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.03511192243950376,
+              0.17512968056445002,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 1019,
+      "triangles": 310093,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "conservatory-desktop",
+      "ground": {
+        "frame": 114,
+        "x": -2,
+        "z": 12,
+        "feetRadius": 22.000000000000004,
+        "signedFeetRadius": 22.000000000000004,
+        "cameraRadius": 31.638143118710367,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1043.2807010186393,
+            "y": 1940.7012363589195,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1062.225086843411,
+            "y": 2152.63312645248,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.0009806707508633397,
+              -0.07213310770155144,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": -537.6003962260894,
+            "y": 3097.306799070065,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -823.8165487815825,
+            "y": 3498.2593034048596,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.043078030898903996,
+              0.047189065162130645,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 1.199343102128456,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 1679.2513063884828,
+            "y": 719.6633016139119,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 1740.4702467452762,
+            "y": 694.1468254458895,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              -0.12,
+              -0.2542214955804921,
+              0.13
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.1550518502245033,
+          "z": 13.641844726406484,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 862.7682752563974,
+            "y": 454.67469697713585,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 855.0823437770134,
+            "y": 411.5272123867598,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.053558687385354055,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.053558687385354076,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1947.0967743560404,
+            "y": 4858.972156897965,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2303.193865629104,
+            "y": 6242.292798540815,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.04971521969889449,
+              0.09101460185591731,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 2048.5779054939408,
+            "y": 2521.870650241776,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2154.1585230661035,
+            "y": 2670.182702317255,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.048315304747703354,
+              -0.06783555641987753,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.533647629878894,
+          "z": -7.848312991950125,
+          "yaw": 0,
+          "activity": "working",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 2267.6585698654985,
+            "y": 3936.790886315939,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2610.6680780107563,
+            "y": 4677.49907062409,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.011447014743449002,
+              -0.10712895464453492,
+              0
+            ],
+            "left": [
+              0.005413958835123711,
+              -0.002435691392504251,
+              -0.845525109752375
+            ],
+            "right": [
+              -0.7696691313940831,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.598825631843248,
+          "z": -3.7292800230241765,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 2277.9178376509085,
+            "y": 3349.288707937324,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2643.427836474984,
+            "y": 4002.362105615241,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.2000963333181341,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.2000963333181341,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 2302.9530283198915,
+            "y": 3446.9679363054775,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2666.273460356595,
+            "y": 4095.438484734579,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.42928181348028893
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 2228.254031321465,
+            "y": 3637.2055045647085,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2601.015946437146,
+            "y": 4407.489833322227,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.014691887592084871,
+              -0.168006105210604,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 2580.792839878677,
+            "y": 2600.947249691236,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2873.2212241257544,
+            "y": 2883.7326083677217,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6758199670751666
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1705.2855962189537,
+            "y": 4693.356963096313,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 2067.0843044048283,
+            "y": 6468.970257228019,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.026941039651064775,
+              0.17912384909137638,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 466,
+      "triangles": 216067,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "pool-desktop",
+      "ground": {
+        "frame": 138,
+        "x": 16,
+        "z": 14,
+        "feetRadius": 22,
+        "signedFeetRadius": 22,
+        "cameraRadius": 31.638143118710364,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 396.9611532809589,
+            "y": 584.650423669999,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 374.53695830512504,
+            "y": 567.5542717452431,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.03345559523325613,
+              0.02059919775612649,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 791.4826064721589,
+            "y": 403.6952430940343,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 786.7674671825134,
+            "y": 386.4993790865014,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.04107629410930801,
+              0.11275603547650132,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 1.199343102128456,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 7.684109049464638,
+            "y": 1118.282442575317,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -46.07690640062785,
+            "y": 1127.4740353022544,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              -0.12,
+              -0.13415881291054882,
+              0.13
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.13052198074577487,
+          "z": 13.57881013585936,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 141.13487163859156,
+            "y": 816.1295634685094,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 76.20581546474898,
+            "y": 801.0514133145404,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.2368943842759128,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.2368943842759128,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 536.0928582461778,
+            "y": 625.8516678865225,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 524.602512743892,
+            "y": 615.5081388070586,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.019664082642418722,
+              0.1193067041471416,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 589.9289082233505,
+            "y": 844.3778320359627,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 581.7431504336645,
+            "y": 840.5134983193769,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.03251215225038189,
+              -0.11860548308932203,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.541098341051658,
+          "z": -7.848268786811504,
+          "yaw": -1.564523897342324,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 508.9648806820273,
+            "y": 689.950274782991,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 497.47025653473537,
+            "y": 681.581598462636,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.2125616804405063,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.21256168044050636,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.64165962149656,
+          "z": -3.9542725436543855,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 427.0997928862645,
+            "y": 689.1270914753729,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 411.1635703531686,
+            "y": 679.3234931576753,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.11944899258554101,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.11944899258554104,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 443.6949535787804,
+            "y": 696.6770451171482,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 428.1176654355616,
+            "y": 687.9439059977768,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6692797929483678
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 451.85237276194823,
+            "y": 676.8244483740843,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 436.61356876721567,
+            "y": 667.0084895956898,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.020830448698336924,
+              -0.17492216861391519,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 375.7844079358771,
+            "y": 808.372290902966,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 357.9926528432265,
+            "y": 802.5663872800567,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.44220049377802656
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 466.72463943197573,
+            "y": 585.80291239377,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 451.6222357757503,
+            "y": 572.9548512453205,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.019564322207724912,
+              0.17991729213687685,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 1029,
+      "triangles": 297301,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "observatory-desktop",
+      "ground": {
+        "frame": 162,
+        "x": 55,
+        "z": -8,
+        "feetRadius": 22,
+        "signedFeetRadius": 22,
+        "cameraRadius": 31.63814311871036,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 756.534092087758,
+            "y": 1003.1050847765143,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 752.0773407963692,
+            "y": 1003.174977508417,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.04792194244431133,
+              0.10036937460994157,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 587.7744143668087,
+            "y": 820.0103943695478,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 579.391653738707,
+            "y": 815.6805031312246,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.004842049624163888,
+              0.10704518784126746,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 1.199343102128456,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 947.1653789978668,
+            "y": 1164.0900264436075,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 947.7549707122992,
+            "y": 1168.0263304136845,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              -0.12,
+              0.07085719436599083,
+              0.13
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.11244874437862487,
+          "z": 13.53219425161863,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 707.7957525731274,
+            "y": 1324.329916012108,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 701.0206930034084,
+            "y": 1332.7594512059675,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.022877133874162934,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.02287713387416296,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 840.8164326352951,
+            "y": 817.3747916374846,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 838.627389718657,
+            "y": 813.8249406141506,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.0009782625555269132,
+              0.07214977128065242,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 1039.120233118598,
+            "y": 731.7511043932105,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 1040.5595193895144,
+            "y": 726.6675849307935,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.000714303587267727,
+              -0.09438650466839837,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.56517181694033,
+          "z": -7.848120314181494,
+          "yaw": -1.564523897342324,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 890.8198088461838,
+            "y": 818.5569556180462,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 889.5689713162643,
+            "y": 815.2009937915494,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.12512438571395237,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.12512438571395235,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.68826148242814,
+          "z": -4.198092210284105,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 871.7113926022862,
+            "y": 882.2911583159636,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 870.274914776211,
+            "y": 880.0055675885803,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.21554370403552803,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.215543704035528,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 880.1907324048886,
+            "y": 871.6534891398218,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 879.0560967490036,
+            "y": 869.2408938354057,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.5913782940239769
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 866.0815954830011,
+            "y": 871.5622530140181,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 864.4361006598474,
+            "y": 869.1068837392685,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.02839150877528983,
+              -0.1789328318421897,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 951.4718287519579,
+            "y": 889.4175125414038,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 951.2467789959173,
+            "y": 887.7553559739405,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.37427038797432444
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 797.9070808918424,
+            "y": 888.9295133160725,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 794.8553022038291,
+            "y": 886.851468037344,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.013792337801107613,
+              0.17771543451263805,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 743,
+      "triangles": 257353,
+      "width": 1920,
+      "height": 1080,
+      "overflow": false
+    },
+    {
+      "name": "green-phone",
+      "ground": {
+        "frame": 184,
+        "x": 1.8,
+        "z": 2.2,
+        "feetRadius": 22,
+        "signedFeetRadius": 22,
+        "cameraRadius": 31.638143118710367,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -16.171715622050122,
+            "y": 358.5694249896473,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -34.602864419593615,
+            "y": 329.3337041452254,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.015029791139810969,
+              0.11748466673198028,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 398.3255661913295,
+            "y": 238.252923711663,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 408.46217966288833,
+            "y": 215.52597880478422,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.010205033090125186,
+              0.03736552149881373,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 1.199343102128456,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": -562.3139135673678,
+            "y": 879.6840929112486,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -641.5223816066589,
+            "y": 901.4375246775777,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              -0.12,
+              0.22696746526276176,
+              0.13
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.10231341646911758,
+          "z": 13.505988109332913,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 26.056260500914334,
+            "y": 1392.963436555474,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -7.348490816930335,
+            "y": 1537.4822784734877,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.23889817452194168,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.23889817452194165,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": 0,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -16.092417345548604,
+            "y": 244.0876579123606,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -26.13369019799737,
+            "y": 223.02276154630283,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.03191560780724519,
+              -0.01676178319631122,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -91.73527522575607,
+            "y": 369.2723288982979,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -100.49952741514623,
+            "y": 359.25641659513514,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.01905709281038596,
+              -0.01436630266335011,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.602501657761417,
+          "z": -7.847873034704919,
+          "yaw": -1.564523897342324,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -79.27832169735132,
+            "y": 280.48968835574476,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -91.42186582241746,
+            "y": 262.54975960555,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.20485116401004327,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.2048511640100433,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.734994688006092,
+          "z": -4.441536756295341,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": -126.0330981937648,
+            "y": 294.0542696060228,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -143.3816570301433,
+            "y": 272.7598228783318,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.10563510624188019,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.10563510624188001,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -127.47023263233956,
+            "y": 296.57114562670245,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -145.04891714857155,
+            "y": 276.1111712563736,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.36573888531393817
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -108.51523675672546,
+            "y": 285.4061277014271,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -125.08596565640963,
+            "y": 263.818260505125,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.03589881883096535,
+              -0.1799796871317795,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -242.62739764495686,
+            "y": 361.0962771163014,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -265.0599576948008,
+            "y": 345.0136379601528,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6074806753480584
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -29.9886944809787,
+            "y": 235.00351990943153,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -43.4660368173438,
+            "y": 207.66080643306373,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.010602993918680931,
+              0.17281829736562737,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 226,
+      "triangles": 203025,
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "name": "tea-phone",
+      "ground": {
+        "frame": 203,
+        "x": -9,
+        "z": -4,
+        "feetRadius": 22.36764155148718,
+        "signedFeetRadius": 22.36764155148718,
+        "cameraRadius": 31.993972496275372,
+        "view": "third",
+        "zoom": 8
+      },
+      "support": null,
+      "lighting": null,
+      "contact": null,
+      "minute": 840,
+      "weather": "clear",
+      "soundOn": "false",
+      "residents": [
+        {
+          "id": "green-neighbour",
+          "x": -2.5,
+          "z": 1.7,
+          "yaw": 0.8,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 626.6572149178587,
+            "y": 710.4502394364038,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 680.6529248670826,
+            "y": 712.4846373189682,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.0017353747486395267,
+              0.09917533074935617,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "jam-neighbour",
+          "x": 9,
+          "z": -6.8,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_4f2de0ea5418c7e6",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 662.0334954783805,
+            "y": 426.0114280556251,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 685.7317591468892,
+            "y": 412.12625313146356,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.028797795559272598,
+              -0.009141271216791796,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "reading-neighbour",
+          "x": -13.4,
+          "z": 9,
+          "yaw": 1.199343102128456,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2dce186004f3623c",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": -249.16801428693196,
+            "y": 1622.275294433918,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -349.21026302319115,
+            "y": 1826.0539909693628,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              -0.12,
+              0.2582321607758642,
+              0.13
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "garden-neighbour",
+          "x": -0.10023373587041,
+          "z": 13.50060511770984,
+          "yaw": 2.8249068849937475,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_1be557b4936c23d0",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 0,
+          "screen": {
+            "x": 860.2870466266602,
+            "y": 1926.281449593297,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 978.7782010967974,
+            "y": 2144.63082408127,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.1851094577625904,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.1851094577625905,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "tea-neighbour",
+          "x": -6.327513549324265,
+          "z": -7.8026160591149525,
+          "yaw": -0.9432770990547006,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 297.88377643117224,
+            "y": 267.6321086683438,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 305.0342960868595,
+            "y": 237.28451174027686,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              -0.01387573498972234,
+              0.04051653618825793,
+              0.0198649244972494
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.31298039428056845,
+              0.06479558871312789,
+              0.1469950985701421
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "lantern-neighbour",
+          "x": -20,
+          "z": -13.1,
+          "yaw": 3.141592653589793,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -46.862452014778526,
+            "y": 268.8302143434786,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -57.9228349815426,
+            "y": 248.92329224306522,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.03797705027446131,
+              0.03234167655424053,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-barista",
+          "x": -9.625968530691074,
+          "z": -7.8477069746304915,
+          "yaw": -1.564523897342324,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_2b05771235259c74",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 170.9898771061321,
+            "y": 267.4583489023365,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 169.28423863696156,
+            "y": 237.25101698080326,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              -0.05634063125360098,
+              0,
+              -0.075
+            ],
+            "right": [
+              0.05634063125360101,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-server",
+          "x": -8.75865860966087,
+          "z": -4.564385066189647,
+          "yaw": -2.9571684169431394,
+          "activity": "walking",
+          "walking": true,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 2,
+          "screen": {
+            "x": 207.04796716725846,
+            "y": 341.8474879155172,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 208.30017268749066,
+            "y": 310.6134015931059,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0
+            ],
+            "left": [
+              0.07777692839802727,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.0777769283980272,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-reader",
+          "x": -9.153637753958165,
+          "z": -4.796152053496601,
+          "yaw": 0.18762836739719208,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 187.48372179208332,
+            "y": 335.36946515488796,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 185.69314944750906,
+            "y": 304.16509655161843,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.3604290261455907
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-company",
+          "x": -8.282927381109355,
+          "z": -4.792729535894964,
+          "yaw": -0.85,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 230.0936848447078,
+            "y": 335.4203032589857,
+            "visible": true
+          },
+          "cueScreen": {
+            "x": 232.5211797888684,
+            "y": 304.1116264203141,
+            "visible": true
+          },
+          "rig": {
+            "head": [
+              0.03940684701057216,
+              -0.17946504029176005,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-visitor",
+          "x": -13.59926000370826,
+          "z": -3.7403952948110413,
+          "yaw": 1.6462136928194713,
+          "activity": "attending",
+          "walking": false,
+          "attending": true,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_a1f138529c72264b",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": -53.42211219865472,
+            "y": 365.2575201935732,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": -76.90374578854653,
+            "y": 336.0088186145877,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0,
+              0,
+              0.09
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -2.1,
+              0,
+              0.6849450244075903
+            ]
+          },
+          "cueVisible": false
+        },
+        {
+          "id": "coffee-listener",
+          "x": -4.400739996291743,
+          "z": -3.7403952948110413,
+          "yaw": -0.9,
+          "activity": "resting",
+          "walking": false,
+          "attending": false,
+          "partnerId": null,
+          "role": null,
+          "sourceId": "snd_89e865fd1aec6a3f",
+          "blocked": false,
+          "blockedReason": null,
+          "slot": 1,
+          "screen": {
+            "x": 443.4221121986548,
+            "y": 365.2575201935732,
+            "visible": false
+          },
+          "cueScreen": {
+            "x": 466.77622077611335,
+            "y": 335.3349712919002,
+            "visible": false
+          },
+          "rig": {
+            "head": [
+              0.010031235005276765,
+              0.16936167533775978,
+              0
+            ],
+            "left": [
+              -0.025,
+              0,
+              -0.075
+            ],
+            "right": [
+              -0.025,
+              0,
+              0.075
+            ]
+          },
+          "cueVisible": false
+        }
+      ],
+      "calls": 423,
+      "triangles": 245181,
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "writes": [],
+  "passed": true,
+  "initialEnvironment": {
+    "weather": "clear",
+    "minuteOfDay": 840,
+    "clockRunning": false,
+    "updatedAt": "2026-11-07T07:22:23.749Z",
+    "revision": 0
+  }
+}

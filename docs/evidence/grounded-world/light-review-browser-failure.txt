@@ -1,0 +1,30 @@
+(node:8404) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok green fits the 390×844 viewport
+ok tea fits the 390×844 viewport
+ok Actual close view uses the new fine shadow frustum
+ok Furniture, tree roots and moving feet share two bounded contact batches
+ok Actual actor support is a finite visible surface
+ok Actual run key moves the character on supported ground
+ok Run and jump leave the actual camera outside the globe
+ok Café arrival uses the real terrace plane
+ok Overview covers the whole globe instead of the close shadow crop
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at atmosphere (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/grounded-world.mjs:50:61)
+    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/grounded-world.mjs:100:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.10.0

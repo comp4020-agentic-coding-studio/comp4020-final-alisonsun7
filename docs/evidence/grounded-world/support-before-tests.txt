@@ -1,0 +1,136 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-support.test.ts (8 tests | 7 failed) 158ms
+   ❯ physical support on a small curved world (8)
+     × puts both actual standing shoe soles on the highest visible cafe, stage, tile and shower floor 95ms
+     × grounds every bench leg and lantern post at all four real corners, rather than only its origin 5ms
+     × physically closes wide deck edges all the way down to the curved earth 1ms
+     × places the actual cafe furniture feet on the room or terrace top instead of burying them below it 1ms
+     × lets the central cafe entrance walk down actual supported treads to the unchanged ground 2ms
+     × gives the stage sails, reading canopy, conservatory arches and cafe parasols real supporting posts 0ms
+     × lets low-opacity glass transmit shadow light while its opaque structure still casts 0ms
+ ❯ spec/planet-surface-safety.test.ts (5 tests | 1 failed) 90ms
+   ❯ the actual ground and camera on the far shore (5)
+     × removes phantom building walls at antipodes while retaining actual cafe walls and floor clearance 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > puts both actual standing shoe soles on the highest visible cafe, stage, tile and shower floor
+AssertionError: feet origin on : expected 0.009999996423722145 to be less than 0.001
+ ❯ spec/planet-support.test.ts:57:119
+     55|             figure.setMotion(0, false);figure.position.copy(vector(pla…
+     56|             figure.quaternion.copy(supportedPlanetFrame(sample.x, samp…
+     57|             expect(Math.abs(figure.position.clone().sub(hit.point).dot…
+       |                                                                                                                       ^
+     58|             for (const name of ["left-shoe", "right-shoe"]) {
+     59|                 const shoe = figure.getObjectByName(name) as THREE.Mes…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > grounds every bench leg and lantern post at all four real corners, rather than only its origin
+AssertionError:  corner must not float: expected 0.22421971377587369 to be less than 0.002
+ ❯ spec/planet-support.test.ts:83:67
+     81|                 expect(hit).toBeDefined();
+     82|                 const gap = hit.distance - .75;
+     83|                 expect(gap, `${foot.name} corner must not float`).toBe…
+       |                                                                   ^
+     84|                 gaps.push(gap);
+     85|             }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > physically closes wide deck edges all the way down to the curved earth
+AssertionError: expected 0 to be greater than or equal to 12
+ ❯ spec/planet-support.test.ts:95:36
+     93|     it("physically closes wide deck edges all the way down to the curv…
+     94|         const foundations = objects(object => object.geometry.userData…
+     95|         expect(foundations.length).toBeGreaterThanOrEqual(12);
+       |                                    ^
+     96|         for (const foundation of foundations) {
+     97|             const positions = foundation.geometry.getAttribute("positi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > places the actual cafe furniture feet on the room or terrace top instead of burying them below it
+AssertionError: expected 0.15000000953674097 to be less than 0.001
+ ❯ spec/planet-support.test.ts:130:86
+    128|             const up = new THREE.Vector3().setFromMatrixColumn(foot.ma…
+    129|             const hit = new THREE.Raycaster(base.clone().addScaledVect…
+    130|             expect(hit).toBeDefined();expect(Math.abs(hit.distance - .…
+       |                                                                                      ^
+    131|         }
+    132|         expect(world.contactAnchors.length).toBeGreaterThan(80);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > lets the central cafe entrance walk down actual supported treads to the unchanged ground
+AssertionError: expected [] to have a length of 5 but got +0
+
+- Expected
++ Received
+
+- 5
++ 0
+
+ ❯ spec/planet-support.test.ts:148:23
+    146|     it("lets the central cafe entrance walk down actual supported trea…
+    147|         const cafe = PLANET_PLACES.find(place => place.kind === "tea")…
+    148|         expect(steps).toHaveLength(5);
+       |                       ^
+    149|         const encountered = new Set<string>();let lastHeight: number |…
+    150|         for (let z = 4.55; z <= 6.4; z += .015) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > gives the stage sails, reading canopy, conservatory arches and cafe parasols real supporting posts
+AssertionError: expected [] to have a length of 12 but got +0
+
+- Expected
++ Received
+
+- 12
++ 0
+
+ ❯ spec/planet-support.test.ts:169:28
+    167|     it("gives the stage sails, reading canopy, conservatory arches and…
+    168|         const extensions = objects(object => /^(stage-sail-foot-|readi…
+    169|         expect(extensions).toHaveLength(12);
+       |                            ^
+    170|         for (const foot of extensions) {
+    171|             const p = (foot.geometry as THREE.CylinderGeometry).parame…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > lets low-opacity glass transmit shadow light while its opaque structure still casts
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ spec/planet-support.test.ts:191:100
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  spec/planet-surface-safety.test.ts > the actual ground and camera on the far shore > removes phantom building walls at antipodes while retaining actual cafe walls and floor clearance
+AssertionError: expected 0.02500000134110536 to be less than 0.001
+ ❯ spec/planet-surface-safety.test.ts:53:41
+     51|             expect(hit, "An actual terrace triangle must support the e…
+     52|             const clearance = R + scene.heightAt(p.x, p.z) - hit.point…
+     53|             expect(Math.abs(clearance)).toBeLessThan(.001);
+       |                                         ^
+     54|         }
+     55|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  8 failed | 5 passed (13)
+   Start at  17:22:16
+   Duration  474ms (tests 67%, transform 19%, import 13%, worker 1%)
+

@@ -1,0 +1,39 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-source-cues.test.ts (3 tests | 2 failed) 14ms
+   × seats a real author's bud and its actual ground glow on the transformed floor plane 3ms
+   × retains the height-only radial cue contract with the same small ground clearance 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-source-cues.test.ts > seats a real author's bud and its actual ground glow on the transformed floor plane
+AssertionError: expected 0.049037722672192405 to be less than 1e-8
+ ❯ spec/planet-source-cues.test.ts:57:122
+     55|     const bud = cues.root.getObjectByName("planet-sound-bud")!, glow =…
+     56|     expect(bud.userData).toMatchObject({ sourceId: contribution.id, au…
+     57|     expect(bud.getWorldPosition(new THREE.Vector3()).distanceTo(actual…
+       |                                                                                                                          ^
+     58|     const up = new THREE.Vector3(0, 1, 0).applyQuaternion(bud.getWorld…
+     59|     expect(up.dot(normal)).toBeCloseTo(1, 10);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/planet-source-cues.test.ts > retains the height-only radial cue contract with the same small ground clearance
+AssertionError: expected 0.04899999999999933 to be less than 1e-9
+ ❯ spec/planet-source-cues.test.ts:79:92
+     77|     cues.setAll([contribution], () => .18);
+     78|     const bud = cues.root.getObjectByName("planet-sound-bud")!, expect…
+     79|     expect(bud.position.distanceTo(new THREE.Vector3(expected.x, expec…
+       |                                                                                            ^
+     80|     expect(new THREE.Vector3(0, 1, 0).applyQuaternion(bud.quaternion).…
+     81|   } finally { cues.dispose(); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  17:13:17
+   Duration  262ms (transform 74%, import 18%, tests 7%, worker 1%)
+

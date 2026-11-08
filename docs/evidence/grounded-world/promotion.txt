@@ -1,0 +1,7 @@
+{
+  "url": "http://localhost:18861/planet",
+  "pid": 18512,
+  "allRowsPreserved": true,
+  "verifiedAssets": 68,
+  "record": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/chorus-garden-promotion.json"
+}

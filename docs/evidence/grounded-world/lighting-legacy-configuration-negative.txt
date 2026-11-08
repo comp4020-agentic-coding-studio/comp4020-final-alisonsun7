@@ -1,0 +1,41 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-lighting.test.ts (8 tests | 2 failed | 6 skipped) 7ms
+   ❯ a shared key and surface-relative painted sky (3)
+     × gives each local upward surface the sky side of hemisphere fill, including the southern coast and backside 5ms
+   ❯ bounded local contact-scale sun shadows (5)
+     × reserves fine texels and millimetre-scale offsets rather than detaching small shoes by centimetres 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-lighting.test.ts > a shared key and surface-relative painted sky > gives each local upward surface the sky side of hemisphere fill, including the southern coast and backside
+AssertionError: expected +0 to be close to 1, received difference is 1, but expected 5e-13
+ ❯ spec/planet-lighting.test.ts:34:92
+     32|                 rig.update(input({ ...place, minute }));
+     33|                 const n = planetNormal(place.x, place.z), up = new THR…
+     34|                 expect(rig.hemi.getWorldPosition(new THREE.Vector3()).…
+       |                                                                                            ^
+     35|                 expect(rig.hemi.intensity).toBeGreaterThanOrEqual(.8);
+     36|             }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/planet-lighting.test.ts > bounded local contact-scale sun shadows > reserves fine texels and millimetre-scale offsets rather than detaching small shoes by centimetres
+AssertionError: expected 0.0341796875 to be less than 0.011
+ ❯ spec/planet-lighting.test.ts:67:39
+     65|             const actualTexelMetres = (camera.right - camera.left) / r…
+     66|             expect(state.texelMetres).toBeCloseTo(actualTexelMetres, 1…
+     67|             expect(actualTexelMetres).toBeLessThan(.011);
+       |                                       ^
+     68|             const detachedScale = Math.abs(rig.sun.shadow.bias) * (cam…
+     69|             expect(detachedScale).toBeLessThan(.012);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 skipped (8)
+   Start at  17:03:17
+   Duration  139ms (transform 51%, import 35%, tests 10%, worker 4%)
+

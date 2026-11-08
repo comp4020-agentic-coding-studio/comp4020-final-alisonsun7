@@ -1,0 +1,1 @@
+export default {"resolve": {"alias": {"../src/client/planet-lighting.ts": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/planet-lighting/legacy-configuration.ts"}}, "test": {"include": ["spec/planet-lighting.test.ts"], "fileParallelism": false}};

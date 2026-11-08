@@ -1,0 +1,1 @@
+export default {"resolve": {"alias": {"../src/client/planet-world.ts": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/source-cue-grounding/world-before.ts"}}, "test": {"include": ["spec/planet-source-cues.test.ts"], "fileParallelism": false}};

@@ -1,0 +1,59 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-support.test.ts (6 tests | 1 failed) 379ms
+   ❯ physical support on a small curved world (6)
+     × grounds every bench leg and lantern post at all four real corners, rather than only its origin 53ms
+ ❯ spec/npc-routines.test.ts (9 tests | 1 failed) 275ms
+   ❯ server-controlled resident restroom routine (9)
+     × keeps the authored daily and return routes on actual traversable planet ground 182ms
+(node:6547) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6575) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6599) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6600) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6644) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/npc-routines.test.ts > server-controlled resident restroom routine > keeps the authored daily and return routes on actual traversable planet ground
+AssertionError: expected 0.065 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 0.065
+
+ ❯ spec/npc-routines.test.ts:203:50
+    201|         const state = frame(ordinary, start + elapsed);
+    202|         expect(scene.canStand(state.x, state.z, new Set())).toBe(true);
+    203|         expect(scene.heightAt(state.x, state.z)).toBe(0);
+       |                                                  ^
+    204|       }
+    205|       for (const inviteAfter of [0, 49_000, 130_000]) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > grounds every bench leg and lantern post at all four real corners, rather than only its origin
+AssertionError: lantern-ground-post has only a shallow grounded foot: expected -0.09857773964526906 to be greater than -0.025
+ ❯ spec/planet-support.test.ts:83:78
+     81|                 expect(hit).toBeDefined();
+     82|                 const gap = hit.distance - .75;
+     83|                 expect(gap, `${foot.name} corner must not float`).toBe…
+       |                                                                              ^
+     84|                 gaps.push(gap);
+     85|             }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 55 passed (57)
+      Tests  2 failed | 363 passed (365)
+   Start at  17:09:58
+   Duration  68.33s (tests 92%, import 7%, transform 1%)
+

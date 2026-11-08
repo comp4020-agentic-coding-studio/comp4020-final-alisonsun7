@@ -1,0 +1,143 @@
+{
+  "type": "read-only-cpu-boundary-audit",
+  "sourceCommit": "8f32290",
+  "priorCommit": "40ed231",
+  "compiledChecks": [
+    {
+      "commit": "40ed231",
+      "path": "client/planet-build",
+      "matches": true
+    },
+    {
+      "commit": "40ed231",
+      "path": "client/planet-surface-safety",
+      "matches": true
+    },
+    {
+      "commit": "40ed231",
+      "path": "client/planet-coast",
+      "matches": true
+    },
+    {
+      "commit": "40ed231",
+      "path": "shared/planet",
+      "matches": true
+    },
+    {
+      "commit": "8f32290",
+      "path": "client/planet-build",
+      "matches": true
+    },
+    {
+      "commit": "8f32290",
+      "path": "client/planet-support",
+      "matches": true
+    },
+    {
+      "commit": "8f32290",
+      "path": "client/planet-coast",
+      "matches": true
+    },
+    {
+      "commit": "8f32290",
+      "path": "client/planet-locomotion",
+      "matches": true
+    },
+    {
+      "commit": "8f32290",
+      "path": "shared/planet",
+      "matches": true
+    }
+  ],
+  "scope": "Exact compiled component correspondence; real Three geometry and original movement function, sign canvas only stubbed. No GPU, browser, service or database.",
+  "samePoints": [
+    {
+      "position": {
+        "x": -7.830898611031357,
+        "z": -2.0616035259021035
+      },
+      "old": {
+        "height": 0,
+        "canStand": true
+      },
+      "candidate": {
+        "height": 0.065,
+        "normal": {
+          "x": -0.34695195331545586,
+          "y": 0.0935721612760287,
+          "z": 0.9332034037254271
+        },
+        "kind": "ground",
+        "id": "promenade",
+        "canStand": true
+      }
+    },
+    {
+      "position": {
+        "x": -7.835781102195635,
+        "z": -2.061627669947289
+      },
+      "old": {
+        "height": 0,
+        "canStand": true
+      },
+      "candidate": {
+        "height": 0.5738568163615412,
+        "normal": {
+          "x": -0.3778093935576081,
+          "y": 0.3128401590441005,
+          "z": 0.8714304889254763
+        },
+        "kind": "floor",
+        "id": "cafe-entrance-step-1",
+        "canStand": true
+      }
+    }
+  ],
+  "difference": 0.5088568163615412,
+  "acceptedSideMove": {
+    "position": {
+      "x": -7.842951346825581,
+      "z": -2.0616629440010215,
+      "yaw": -1.575722222947625
+    },
+    "distance": 0.012,
+    "blocked": false,
+    "support": {
+      "height": 0.5734717198542363,
+      "normal": {
+        "x": -0.3778093935576081,
+        "y": 0.3128401590441005,
+        "z": 0.8714304889254763
+      },
+      "kind": "floor",
+      "id": "cafe-entrance-step-1"
+    }
+  },
+  "opaqueFoundationSide": {
+    "name": "cafe-entrance-step-1-ground-foundation",
+    "distance": 0.0022813712341621176
+  },
+  "historicalDeckBoundary": {
+    "difference": 0.7069462982661996,
+    "from": {
+      "localZ": 4.91800000000014,
+      "point": {
+        "x": -9,
+        "z": -2.1615498002789892
+      },
+      "height": 0.7069462982661996,
+      "canStand": true
+    },
+    "to": {
+      "localZ": 4.91900000000014,
+      "point": {
+        "x": -9,
+        "z": -2.1605974036638207
+      },
+      "height": 0,
+      "canStand": true
+    }
+  },
+  "interpretation": "The new stairs extend the stepped footprint at these points. Both versions permit the coordinates; the old tangent deck already has a larger height discontinuity at its own front edge. No gravity/step-height restriction is implemented or claimed."
+}

@@ -1,7 +1,7 @@
 # ADR 034 — Grounded places and light
 
-Date: 2026-11-08. Status: accepted repair direction; candidate implementation,
-fresh visual acceptance and promotion remain pending at this checkpoint.
+Date: 2026-11-08. Status: implemented, locally promoted and read-only verified
+as `8f32290`; source saved on the authorised independent public branch.
 
 ## Request and measured starting point
 
@@ -90,6 +90,62 @@ listening. Retain mute, reduced motion and the existing bounded render budget.
    the actual served package again.
 
 Old screenshots establish the starting complaint only. An implementation file
-or passing source assertions cannot establish the repaired visual result. Raw
-evidence archival, final build/check counts, fresh screenshots, visual judgement,
-data-preserving promotion and promoted inspection remain pending here.
+or passing source assertions cannot establish the repaired visual result.
+
+## Candidate and actual local switch
+
+`9225b21` establishes the lighting/repair decision and `8f32290` integrates the
+physical support, foundations, contact shade and source-bud alignment. The
+final candidate passes 369 checks in 57 files on an independent HTTP world
+at 18931, with direct TypeScript and production compilation exiting zero.
+The installed pnpm 10 does not satisfy this repository's pnpm >=11 contract;
+these checks use the existing local compiler/test binaries without changing
+the global package manager or package requirements.
+
+The independent 18932 browser inspection passes 18 checks and records 19 actual
+frames, including normal Green/café/coast/conservatory views, 1920×1080 and
+390×844, first person, overview, night, rain and native Chromium touch input.
+Seventy-five rendered samples follow actual continuous S-key walking across
+all five real café steps. No source is added, moved or withdrawn; every existing
+sound/history row is unchanged and local audio never starts during quiet play.
+Short frame-rate samples describe this Mac/Chrome only, not a physical-phone
+or long-session performance result. These are developer observations and
+automated checks, not unfamiliar-friend playtests or listening judgements.
+
+Fresh rendered comparisons show the large café underside filled by its real
+foundation, upright terrace characters and a readable stepped entrance. Green
+bench feet now meet the terrain/shadow, instead of hanging over a separate
+shadow. Night café illumination retains warm interiors against darker outdoor
+trees and paths. This accepts a more grounded version of the existing toy-like
+style; it does not claim cinematic light or certify every possible camera.
+
+The actual 18861 preview was switched with `scripts/local-preview.py`, retaining
+all rows in all twelve current tables and verifying 68 served asset bytes and
+cache policies. The preceding compiled application remains `40ed231`. A code
+rollback uses `python3 scripts/local-preview.py --rollback` with the current
+database; no historical database is restored.
+
+This is a support/light repair, not new vertical movement physics. The existing
+automatic change of standing height remains at raised deck edges and at the
+sides of the new stairs. The tested front entrance has complete treads; a
+sideways edge crossing can still change height abruptly. Replacing that with
+bounded step admission and falling would require a separate movement/remote
+pose decision. The repair neither invents collision walls nor claims that
+the centreline stair check proves those side transitions.
+
+The [evidence collection](../evidence/grounded-world/README.md) retains the
+initial full-suite failures, the rejected first stair geometry and two real
+browser-harness failures: an open settings panel intercepted a click, then
+sub-second weather changes correctly hit the existing rate limit. The corrected
+checks close the panel and respect the limit; they do not weaken admission,
+server ordering or listening consent.
+
+The actual promoted preview passes its separate anonymous observer: zero write
+requests/errors, all sixteen current public source identities retained, twelve
+existing residents and 383 actual continuous coast-render samples outside the
+planet. Both scoring viewports and the journal/project-note routes are checked.
+The authorised `codex/grounded-world` source branch and the before-repair tag are
+saved publicly in the existing course repository. `main` remains `e664fc4`;
+no hosted deployment, account setting or repository visibility is changed.
+The [release index](../evidence/grounded-world-2026-11-08.json) separates source
+acceptance, the local switch, promoted observation and evidence archival.

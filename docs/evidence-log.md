@@ -3192,3 +3192,38 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   Raw-command archival, repaired geometry comparisons, fresh desktop/phone
   visual checks and promotion remain pending at this checkpoint. Old accepted
   screenshots and a new implementation file do not validate the repaired view.
+
+- Candidate `8f32290` now has real deck foundations and receiver normals,
+  individually grounded furniture, stage/conservatory supports and five real
+  café entrance treads. The first ordinary-box stair attempt exposed an angular
+  gap between radial walking rays and vertical risers; the accepted radial-edge
+  geometry passes continuous 1.5 cm geometry samples. This is a real rejected
+  implementation, retained with the initial shoe/chair and obsolete y=0 check
+  failures, rather than a retrospective success-only account.
+- Final candidate checks use independent ports/databases: 369/369 in 57 files
+  at 18931 (71.41 s), and 18 actual-browser checks at 18932. Nineteen rendered
+  captures cover 1920×1080/390×844, first/third person, overview, dusk/night,
+  rain and native touch input. Seventy-five actual S-key-render samples cross
+  all five treads without a ground-fallback drop or an inward camera. Existing
+  sound rows remain byte-for-byte unchanged; no source operation or local
+  audio start occurs. These are developer/automation observations, not human
+  playtests, physical-phone measurements or listening approval.
+- Actual visual comparison accepts a clearly supported café terrace/entrance,
+  upright café figures and Green benches whose feet meet their ground/shadows.
+  The existing automatic height changes at side edges remain: a valid central
+  stair path does not establish new falling/step-limit physics. The bounded
+  repair is recorded in [ADR034](decisions/034-grounded-places-and-light.md).
+- Promotion to 18861 has completed with application `8f32290`, all twelve
+  tables' rows retained, and 68 served asset byte/cache checks. The previous
+  compiled application `40ed231` is saved for a code-only rollback. The separate
+  promoted read-only observer passes: zero writes/errors, all sixteen current
+  public source IDs retained, twelve residents and 383 actual far-shore render
+  samples outside the planet. This checks the user's served version, rather
+  than assuming the scratch candidate was installed.
+- Source `8f32290` and `before-grounded-world-2026-11-08` are saved on the
+  authorised public `codex/grounded-world` feature branch/tag. `main` remains
+  `e664fc4`; no Fly deployment, visibility or global GitHub identity changes.
+  [Release evidence](evidence/grounded-world-2026-11-08.json) separates the
+  source, local installation, actual observer, failures and known side-entry
+  movement limitation. The evidence follow-up will be saved on that same
+  independent branch, with its final delivery hash verified separately.

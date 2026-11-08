@@ -1,0 +1,40 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-support.test.ts (6 tests | 2 failed) 334ms
+   ❯ physical support on a small curved world (6)
+     × grounds every bench leg and lantern post at all four real corners, rather than only its origin 46ms
+     × places the actual cafe furniture feet on the room or terrace top instead of burying them below it 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > grounds every bench leg and lantern post at all four real corners, rather than only its origin
+AssertionError: lantern-ground-post has only a shallow grounded foot: expected -0.09857773964526906 to be greater than -0.025
+ ❯ spec/planet-support.test.ts:83:78
+     81|                 const gap = hit.distance - .75;
+     82|                 expect(gap, `${foot.name} corner must not float`).toBe…
+     83|                 expect(gap, `${foot.name} has only a shallow grounded …
+       |                                                                              ^
+     84|             }
+     85|         }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/planet-support.test.ts > physical support on a small curved world > places the actual cafe furniture feet on the room or terrace top instead of burying them below it
+AssertionError: cafe-chair-ground-leg: expected 0.015000006556509737 to be less than 0.001
+ ❯ spec/planet-support.test.ts:119:86
+    117|             const up = new THREE.Vector3().setFromMatrixColumn(foot.ma…
+    118|             const hit = new THREE.Raycaster(base.clone().addScaledVect…
+    119|             expect(hit).toBeDefined();expect(Math.abs(hit.distance - .…
+       |                                                                                      ^
+    120|         }
+    121|         expect(world.contactAnchors.length).toBeGreaterThan(80);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 9 passed (11)
+   Start at  17:08:49
+   Duration  781ms (tests 81%, transform 11%, import 7%, worker 1%)
+

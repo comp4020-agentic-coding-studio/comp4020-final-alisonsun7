@@ -1,0 +1,817 @@
+{
+  "kind": "grounded-world-evidence-scopes",
+  "archivalOnly": true,
+  "reranTestsOrBrowsers": false,
+  "finalCandidateAcceptance": true,
+  "commandProvenance": "Commands below confirmed by the executing root/component agent; raw stdout/stderr copied byte-for-byte. This archival operation executes none of them.",
+  "workingDirectory": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7",
+  "runs": [
+    {
+      "id": "lighting-current",
+      "command": "./node_modules/.bin/vitest run --config .cache/planet-lighting/vitest.config.mjs > .cache/planet-lighting/after.txt 2>&1",
+      "result": {
+        "files": 1,
+        "passed": 8
+      },
+      "scope": "Current candidate pure Three light/frustum checks; no GPU/service/DB. Native camera span is checked, not just diagnostic state.",
+      "artifacts": [
+        "lighting-after.txt",
+        "lighting.config.mjs"
+      ]
+    },
+    {
+      "id": "lighting-configuration-negative",
+      "command": "./node_modules/.bin/vitest run --config .cache/planet-lighting/legacy.config.mjs -t 'gives each local|reserves fine texels' > .cache/planet-lighting/legacy-configuration-negative.txt 2>&1",
+      "result": {
+        "failed": 2,
+        "skipped": 6
+      },
+      "scope": "Frozen candidate lighting module with current shared dependencies plus adapter restoring old global-Y fill/70m/origin-target/depth/bias settings. Configuration mutation, not old full application. First import-path/no-test and then stale-diagnostic adapter failures are retained separately.",
+      "artifacts": [
+        "lighting-legacy-configuration-negative.txt",
+        "lighting-legacy-harness-initial.txt",
+        "lighting-legacy-diagnostic-mismatch.txt",
+        "lighting-legacy.config.mjs",
+        "lighting-legacy-configuration.ts",
+        "lighting-candidate-frozen.ts"
+      ]
+    },
+    {
+      "id": "contact-current",
+      "command": "./node_modules/.bin/vitest run --config .cache/planet-contact-shadows/vitest.config.mjs > .cache/planet-contact-shadows/after.txt 2>&1",
+      "result": {
+        "files": 2,
+        "passed": 15
+      },
+      "scope": "Contact6 + resident-life9. No executed product negative: root fixed reported NaN/disposal concerns before first spec run. No GPU/service/DB.",
+      "artifacts": [
+        "contact-after.txt",
+        "contact.config.mjs"
+      ]
+    },
+    {
+      "id": "contact-typecheck",
+      "commands": [
+        "./node_modules/.bin/tsc --noEmit > .cache/planet-contact-shadows/typecheck.txt 2>&1",
+        "./node_modules/.bin/tsc --noEmit > .cache/planet-contact-shadows/typecheck-final.txt 2>&1"
+      ],
+      "result": "First fails on new spec EventListener union typing; EventDispatcher type assertion fixes it. Final exit0 confirmed by executing agent; empty stdout alone is not that proof.",
+      "artifacts": [
+        "contact-typecheck-initial.txt",
+        "contact-typecheck-final.txt"
+      ]
+    },
+    {
+      "id": "source-cues-component-negative",
+      "command": "./node_modules/.bin/vitest run --config .cache/source-cue-grounding/before.config.mjs > .cache/source-cue-grounding/before.txt 2>&1",
+      "result": {
+        "files": 1,
+        "passed": 1,
+        "failed": 2
+      },
+      "scope": "git show 40ed231:src/client/planet-world.ts frozen module with import paths rewritten to current repository dependencies. Not a frozen whole application. Two new cases reject about 4.9cm extra separation. Earlier first capture happened after concurrent root fix and passed3; it is retained as a positive, not a before failure.",
+      "artifacts": [
+        "source-cues-before.txt",
+        "source-cues-before.config.mjs",
+        "source-cues-before-component.ts",
+        "source-cues-first-capture.txt"
+      ]
+    },
+    {
+      "id": "source-cues-current",
+      "commands": [
+        "./node_modules/.bin/vitest run --config .cache/source-cue-grounding/vitest.config.mjs > .cache/source-cue-grounding/after.txt 2>&1",
+        "./node_modules/.bin/tsc --noEmit > .cache/source-cue-grounding/typecheck.txt 2>&1"
+      ],
+      "result": {
+        "files": 1,
+        "passed": 3,
+        "typecheckExit": 0
+      },
+      "scope": "Current source component + current dependencies; no GPU/service/DB.",
+      "artifacts": [
+        "source-cues-after.txt",
+        "source-cues.config.mjs",
+        "source-cues-typecheck.txt"
+      ]
+    },
+    {
+      "id": "initial-whole-source",
+      "command": "./node_modules/.bin/tsc --noEmit > .cache/grounding/typecheck.txt 2>&1 && APP_URL=http://localhost:18931 ./node_modules/.bin/vitest run > .cache/grounding/full-spec.txt 2>&1",
+      "result": {
+        "filesPassed": 55,
+        "filesFailed": 2,
+        "passed": 363,
+        "failed": 2,
+        "total": 365,
+        "seconds": 68.33
+      },
+      "scope": "Initial isolated source/HTTP run, exit1. Strict zero-height NPC route assumption and shallow lamp-corner embedding assertion fail; not final candidate acceptance.",
+      "artifacts": [
+        "initial-full-spec.txt"
+      ]
+    },
+    {
+      "id": "before-browser",
+      "command": "APP_URL=http://localhost:18930 node e2e/grounded-world.mjs .cache/grounding/baseline-artifacts > .cache/grounding/baseline-browser.txt 2>&1",
+      "result": {
+        "exit": 0,
+        "checks": 4,
+        "frames": 9,
+        "errors": 0,
+        "writes": 0
+      },
+      "scope": "Frozen compiled baseline; GET-only developer GPU capture. Only Green/cafe desktop PNGs copied; JSON covers all9 captured frames. No player comprehension or artistic listening result.",
+      "artifacts": [
+        "before-browser.txt",
+        "before-browser.json",
+        "before-green-desktop.png",
+        "before-cafe-desktop.png"
+      ]
+    },
+    {
+      "id": "candidate-browser-panel-failure",
+      "command": "APP_URL=http://localhost:18932 SCRATCH_DB=.cache/grounding/browser/history.db node e2e/grounded-world.mjs .cache/grounding/browser-artifacts > .cache/grounding/candidate-browser.txt 2>&1",
+      "result": {
+        "exit": 1,
+        "completedChecks": 9,
+        "passed": false
+      },
+      "scope": "Scratch only. After overview, still-open tools dialog intercepts travel click. Harness interaction failure, not a shader failure or completed path.",
+      "artifacts": [
+        "candidate-browser-failure.txt",
+        "candidate-failed-browser.json"
+      ]
+    },
+    {
+      "id": "light-review-rate-limit-failure",
+      "command": "APP_URL=http://localhost:18932 SCRATCH_DB=.cache/grounding/browser/history.db node e2e/grounded-world.mjs .cache/grounding/light-review-artifacts > .cache/grounding/light-review-browser.txt 2>&1",
+      "result": {
+        "exit": 1,
+        "completedChecks": 9,
+        "passed": false
+      },
+      "scope": "Scratch only. Automated atmosphere updates violate real1000ms guard, producing429/slow_down. Respect rate limit rather than disabling it. Not a light/shader rendering defect or completed path.",
+      "artifacts": [
+        "light-review-browser-failure.txt",
+        "light-review-failed-browser.json"
+      ]
+    },
+    {
+      "id": "intermediate-light-browser",
+      "result": {
+        "exit": 0,
+        "checks": 15,
+        "frames": 18,
+        "errors": 0
+      },
+      "scope": "Intermediate compiled package before final stairs/posts/source-bud changes. Real developer touch/night/quiet checks and unchanged original sound rows, not final build acceptance. Approx59.9fps/1.2s samples apply only to this Mac Chrome desktop and390x844 viewport, not physical phone/long benchmark.",
+      "artifacts": [
+        "intermediate-light-browser.txt",
+        "intermediate-light-browser.json"
+      ],
+      "command": "APP_URL=http://localhost:18932 SCRATCH_DB=.cache/grounding/browser/history.db node e2e/grounded-world.mjs .cache/grounding/weather-review-artifacts > .cache/grounding/weather-review-browser.txt 2>&1"
+    },
+    {
+      "id": "support-paired-audit",
+      "commands": [
+        "./node_modules/.bin/tsc -p tsconfig.build.json --outDir .cache/support-review/after-dist",
+        "BUILD_DIR='.cache/support-review/before-dist' OUTPUT='.cache/support-review/before-final.json' node .cache/support-review/audit.mjs > .cache/support-review/before-audit.txt",
+        "BUILD_DIR='.cache/support-review/after-dist' OUTPUT='.cache/support-review/after-final.json' node .cache/support-review/audit.mjs > .cache/support-review/after-audit.txt"
+      ],
+      "scope": "One identical actual mesh/standing-sole audit against before-dist (full source compiled before support edits) and after-dist (workspace compiled after geometry repairs). Only sign canvas rasterisation is stubbed. Actual mesh corners, sole vertices and rays; no GPU/DB. This is not a before/after browser study.",
+      "result": {
+        "benchFeet": 12,
+        "lanternFeet": 21,
+        "beforeWorstBenchCornerMetres": 0.4518026669841986,
+        "afterWorstBenchCornerMetres": 6.439293542825908e-15,
+        "beforeWorstLanternCornerMetres": 0.5377559834567123,
+        "afterWorstLanternCornerMetres": 4.107825191113079e-15,
+        "actors": 6,
+        "beforeWorstAbsoluteSoleMetres": 0.10324484937528025,
+        "afterWorstAbsoluteSoleMetres": 4.5605871856757574e-10,
+        "footAcceptanceToleranceMetres": 0.002,
+        "soleAcceptanceToleranceMetres": 0.001,
+        "afterFoundations": 21,
+        "afterFoundationVertices": 1576,
+        "afterFoundationTriangles": 1576,
+        "afterContactAnchors": 110,
+        "deckFloorUndersideToEarthMaxMetresUnchanged": 1.3574809271831225
+      },
+      "samplingBoundary": "Initial before-support-geometry.json sampled8 Green leg base centres (25.9–29.1cm) and a different set of standing sites. The final audit samples12 scene bench feet and21 lantern feet at actual corners plus6 paired actor sites. Do not turn differing initial/final samples into a paired improvement claim. The paired audit retains the raised cafe deck height; real foundations fill its gap, rather than lowering the floor1.36m.",
+      "artifacts": [
+        "support-before-final.json",
+        "support-after-final.json",
+        "support-audit.mjs",
+        "support-before-audit.txt",
+        "support-after-audit.txt"
+      ]
+    },
+    {
+      "id": "support-frozen-build-negative",
+      "command": "PLANET_SUPPORT_BUILD_UNDER_TEST='/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/support-review/before-dist/client/planet-build.js' PLANET_BUILD_UNDER_TEST='/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/support-review/before-dist/client/planet-build.js' ./node_modules/.bin/vitest run --config .cache/support-review/pure.config.mjs > .cache/support-review/before-tests.txt 2>&1",
+      "result": {
+        "exit": 1,
+        "files": 2,
+        "failed": 8,
+        "passed": 5,
+        "total": 13
+      },
+      "scope": "Frozen compiled pre-support planet-build selected by both build-under-test envs, against current specs. Config has no globalSetup/server. Not old whole application/DB/GPU. Earlier11-case negative separately retained (6fail/5pass); do not add its counts to final13.",
+      "artifacts": [
+        "support-before-tests.txt",
+        "support-before-first-11-tests.txt",
+        "support.config.mjs"
+      ]
+    },
+    {
+      "id": "support-current",
+      "command": "./node_modules/.bin/vitest run --config .cache/support-review/pure.config.mjs > .cache/support-review/after-tests.txt 2>&1",
+      "result": {
+        "exit": 0,
+        "files": 2,
+        "passed": 13,
+        "seconds": 1.37
+      },
+      "scope": "Actual current support/surface geometry. Earlier11-case initial run (9pass/2fail) preserved: real cafe chair straddles floor step; overly strong shallow lamp-corner embedding assumption. Chairs/legs subsequently ground individually; a pole may legitimately embed in the stage plinth while its lowest unsupported corner reaches ground. No GPU/service/DB.",
+      "artifacts": [
+        "support-after-tests.txt",
+        "support-initial-tests.txt",
+        "support.config.mjs"
+      ]
+    },
+    {
+      "id": "committed-package-command-status",
+      "commandProvenance": "Root executed final typecheck/build/diff checks after adding the spec hit-undefined type guard, and records explicit status with source commit. Exact build command is not reconstructed from an empty log.",
+      "result": {
+        "typecheckExit": 0,
+        "buildExit": 0,
+        "diffCheckExit": 0,
+        "sourceCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559"
+      },
+      "scope": "Committed source8f32290. Empty stdout logs are paired with explicit exit statuses; this is not final full-source/HTTP or rendered acceptance.",
+      "artifacts": [
+        "command-status.json",
+        "typecheck-final.txt",
+        "build-final.txt"
+      ]
+    },
+    {
+      "id": "final-whole-source",
+      "command": "APP_URL=http://localhost:18931 ./node_modules/.bin/vitest run > .cache/grounding/full-spec-final.txt 2>&1",
+      "result": {
+        "exit": 0,
+        "files": 57,
+        "passed": 369,
+        "total": 369,
+        "seconds": 71.41
+      },
+      "scope": "Final committed8f32290 coherent source/HTTP candidate on isolated18931. Not a public deployment, human study or visual judgement by assertion count.",
+      "artifacts": [
+        "final-full-spec.txt"
+      ]
+    },
+    {
+      "id": "final-rendered-candidate",
+      "command": "APP_URL=http://localhost:18932 SCRATCH_DB=.cache/grounding/browser/history.db node e2e/grounded-world.mjs .cache/grounding/final-artifacts > .cache/grounding/final-browser.txt 2>&1",
+      "result": {
+        "exit": 0,
+        "checks": 18,
+        "capturedFrames": 19,
+        "archivedScreenshots": 7,
+        "stairRenderedFrames": 75,
+        "visibleStepsTraversed": 5,
+        "errors": 0,
+        "atmosphereReceipts": 4,
+        "allAtmosphereReceiptsOk": true,
+        "existingSoundRowsUnchanged": true,
+        "sourceWrites": 0
+      },
+      "scope": "Accepted final8f32290 scratch package, actual GPU Chrome on this Mac,1920x1080 and390x844 with native CDP touch.75 actual rendered walking samples traverse all5 stairs without reported floor-fallback drop. Real explicit shared-atmosphere requests respect the rate guard. Join/move/environment requests exist; no source create/move/remove writes. This does not model physical gravity, every possible height transition, physical phone or unfamiliar-player understanding.",
+      "performanceBoundary": "Two about1.2s captures report60.56 desktop and59.95 phone-viewport fps on this Mac Chrome only. Not a long-session benchmark or physical-device result.",
+      "locomotionBoundary": "Existing auto-step can cross raised deck and the enlarged new stair side footprint; no gravity added. Separate same-point/component-verified CPU probe is archived and records this limitation explicitly.",
+      "artifacts": [
+        "final-browser.txt",
+        "final-browser.json",
+        "final-green-desktop.png",
+        "final-cafe-desktop.png",
+        "final-cafe-phone.png",
+        "final-cafe-night-desktop.png",
+        "final-cafe-night-phone.png",
+        "final-cafe-entrance-desktop.png",
+        "final-conservatory-rain-desktop.png"
+      ]
+    },
+    {
+      "id": "side-entry-boundary-audit",
+      "command": "node .cache/grounding/side-entry-audit.mjs > .cache/grounding/side-entry-audit.json",
+      "result": {
+        "exit": 0,
+        "compiledModuleCorrespondences": 9,
+        "allCompiledModulesMatch": true,
+        "priorCommit": "40ed231",
+        "candidateCommit": "8f32290",
+        "newSideHeightDifferenceMetres": 0.5088568163615412,
+        "acceptedMoveDistanceMetres": 0.012,
+        "historicalDeckFrontHeightDifferenceMetres": 0.7069462982661996
+      },
+      "scope": "Read-only CPU audit with actual Three geometry/original moveOnPlanet, sign rasterisation stub only. Before4/after5 compiled modules correspond exactly to their git source transpilation. At same two points about5mm apart old heights0/0, candidate .065/.573856816. The new stair footprint adds this side discontinuity and original movement accepts a12mm move climbing about.50847m through a ray-confirmed opaque foundation side. A different old deck edge already allows.706946m discontinuity. Historical existence does not establish the new side as physically correct. Root accepts retaining no-gravity/unrestricted auto-step for this support/light scope; it is not a physics/collision repair. No GPU/service/DB.",
+      "artifacts": [
+        "side-entry-audit.mjs",
+        "side-entry-audit.json"
+      ]
+    },
+    {
+      "id": "actual-data-preserving-promotion",
+      "command": "python3 scripts/local-preview.py --dist .cache/grounding/candidate/dist --commit 8f32290bbe4bab49abe32b9b8ae6fc13d7049559 --restart > .cache/grounding/promotion.txt 2>&1",
+      "exitCode": 0,
+      "scope": "Actual 18861 current database retained row-for-row, previous compiled app saved; no network deployment",
+      "artifacts": [
+        "promotion.txt",
+        "promotion-record.json"
+      ]
+    },
+    {
+      "id": "actual-promoted-read-only-browser",
+      "command": "APP_URL=http://localhost:18861 node e2e/chorus-read-only.mjs .cache/grounding/promoted > .cache/grounding/promoted-observer.txt 2>&1",
+      "exitCode": 0,
+      "scope": "Anonymous current preview, every non-GET/HEAD aborted; actual continuous far-shore walk, source identity retention,12NPCs and two viewports; developer observation not human playtest",
+      "artifacts": [
+        "promoted-browser.json",
+        "promoted-green-desktop.png",
+        "promoted-cafe-desktop.png",
+        "promoted-cafe-phone.png",
+        "promoted-coast-end-desktop.png"
+      ]
+    },
+    {
+      "id": "authorised-public-source-branch",
+      "command": "GIT_SSH_COMMAND='ssh -F /dev/null -i ~/.ssh/id_ed25519_alison -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes' git ls-remote origin refs/heads/main refs/heads/codex/grounded-world refs/tags/before-grounded-world-2026-11-08 > .cache/grounding/remote-source.txt",
+      "exitCode": 0,
+      "scope": "Source branch8f32290 and before tag459e9ec saved; main e664fc4 unchanged. No hosted deploy or account/visibility change. Evidence follow-up saved separately on the same feature branch.",
+      "artifacts": [
+        "remote-source.txt"
+      ]
+    }
+  ],
+  "geometryBaseline": {
+    "artifact": "before-support-geometry.json",
+    "method": "Initial agent-confirmed inline Node audit on pre-support before-dist; exact initial inline command not recovered. Subsequent same-script before/after support-paired-audit and its original script/logs now archived separately; no original script was fabricated."
+  },
+  "fixturePortability": "Archived configs/TS fixtures preserve original bytes and cache-relative aliases/imports. They require the corresponding original repository/cache layout; paths have not been silently rewritten into portable replay scripts.",
+  "pending": [
+    "Promotion raw evidence archival and actual18861 promoted read-only inspection",
+    "Unfamiliar-user study, artistic listening, physical-phone and long-session performance"
+  ],
+  "artifacts": [
+    {
+      "path": "starting-preview.json",
+      "source": ".cache/grounding/starting-preview.json",
+      "bytes": 250,
+      "sha256": "ac5726deaca9fc063952353a85e3b24dcfb0ec8de83d5864e643a231d136d8bb"
+    },
+    {
+      "path": "before-support-geometry.json",
+      "source": ".cache/support-review/baseline.json",
+      "bytes": 9095,
+      "sha256": "66be65a12d25ea9a9e092f498bc20927e71884c7e644a7db5c1cb618953fc917"
+    },
+    {
+      "path": "lighting-after.txt",
+      "source": ".cache/planet-lighting/after.txt",
+      "bytes": 238,
+      "sha256": "70d8289cf17e2e8a156bb68955e4c7daa253440dc193eea82f217c4eca6ace1d"
+    },
+    {
+      "path": "lighting-legacy-configuration-negative.txt",
+      "source": ".cache/planet-lighting/legacy-configuration-negative.txt",
+      "bytes": 2354,
+      "sha256": "bf01ae55e62388ceb6419f025381ab90d93da1314b480254430e302bff69d74b"
+    },
+    {
+      "path": "lighting-legacy-harness-initial.txt",
+      "source": ".cache/planet-lighting/legacy-harness-initial.txt",
+      "bytes": 1068,
+      "sha256": "b0dce6031eee8f6d52be17b126f93f35ea1d57150e8ff9ad0539c407522ed620"
+    },
+    {
+      "path": "lighting-legacy-diagnostic-mismatch.txt",
+      "source": ".cache/planet-lighting/legacy-diagnostic-mismatch.txt",
+      "bytes": 2434,
+      "sha256": "36a025b1b337c8be01ac88532ecb90621bad81139260eeae5f8d51c29ad2376b"
+    },
+    {
+      "path": "contact-after.txt",
+      "source": ".cache/planet-contact-shadows/after.txt",
+      "bytes": 240,
+      "sha256": "47e40351bd79fb04481e58d8acf91c3260fb2ffab0ab2431f0088a7e881560de"
+    },
+    {
+      "path": "contact-typecheck-initial.txt",
+      "source": ".cache/planet-contact-shadows/typecheck.txt",
+      "bytes": 524,
+      "sha256": "dd812777ab34da0bc443ba1c3929fea4361e7dce9dedbf5651f953c971e510e2"
+    },
+    {
+      "path": "contact-typecheck-final.txt",
+      "source": ".cache/planet-contact-shadows/typecheck-final.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source-cues-before.txt",
+      "source": ".cache/source-cue-grounding/before.txt",
+      "bytes": 2155,
+      "sha256": "89d354bc1036fa11631d54ed5bbbc2b47d8e4ad86fac9a4b4d9177a3e2f47d86"
+    },
+    {
+      "path": "source-cues-after.txt",
+      "source": ".cache/source-cue-grounding/after.txt",
+      "bytes": 237,
+      "sha256": "8805611fc27f94401f601c1ffba7e511d176ce6bdbaac7c37d4a821cbbef71fa"
+    },
+    {
+      "path": "source-cues-first-capture.txt",
+      "source": ".cache/source-cue-grounding/capture-after-concurrent-fix.txt",
+      "bytes": 237,
+      "sha256": "6cea1386a51cf159a0367e41506dee677f6899f4f8b662bf5dc0a0570066efc6"
+    },
+    {
+      "path": "source-cues-typecheck.txt",
+      "source": ".cache/source-cue-grounding/typecheck.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "initial-full-spec.txt",
+      "source": ".cache/grounding/full-spec.txt",
+      "bytes": 3083,
+      "sha256": "c884704f3b807ab6e165dcfa1c445936ef0585cbf53a4940db5218bd0cbf0a41"
+    },
+    {
+      "path": "candidate-browser-failure.txt",
+      "source": ".cache/grounding/candidate-browser.txt",
+      "bytes": 4163,
+      "sha256": "e56705ae74fb69bc9f541f6ef04067737b45299efcaa2970bc3eea0f71e5786d"
+    },
+    {
+      "path": "light-review-browser-failure.txt",
+      "source": ".cache/grounding/light-review-browser.txt",
+      "bytes": 1244,
+      "sha256": "3fbcd57ee6ae7876b61b004f2a45abdbb6ea1fbd24454cdf0c0f245a6165692c"
+    },
+    {
+      "path": "before-green-desktop.png",
+      "source": ".cache/grounding/baseline-artifacts/green-desktop.png",
+      "bytes": 855455,
+      "sha256": "eecf50e1aa7cadd01501530a6943f1d00a0190c248dd603dc885628ca827917d"
+    },
+    {
+      "path": "before-cafe-desktop.png",
+      "source": ".cache/grounding/baseline-artifacts/tea-desktop.png",
+      "bytes": 753296,
+      "sha256": "44ccdf48b01f87671cad477be847621f677915917f0e62e210125412bbe13fd8"
+    },
+    {
+      "path": "before-browser.json",
+      "source": ".cache/grounding/baseline-artifacts/results.json",
+      "bytes": 121395,
+      "sha256": "3493b485bba81d29767605aaa79bda74f4dff34f790acbfed149e03d0692516d"
+    },
+    {
+      "path": "before-browser.txt",
+      "source": ".cache/grounding/baseline-browser.txt",
+      "bytes": 353,
+      "sha256": "436d05dbde526f94c9af994144e105438bd0216e40729a88f823c76f9df038a8"
+    },
+    {
+      "path": "candidate-failed-browser.json",
+      "source": ".cache/grounding/browser-artifacts/results.json",
+      "bytes": 195893,
+      "sha256": "4139836cc40b956ed37dfee3775204c7a5077247ecfe8b86a674e91cc49fe917"
+    },
+    {
+      "path": "light-review-failed-browser.json",
+      "source": ".cache/grounding/light-review-artifacts/results.json",
+      "bytes": 208814,
+      "sha256": "d8b60ae7fb3e601ca07ce6c52b258449807ba786e1916059760eb550c8fe47cf"
+    },
+    {
+      "path": "lighting.config.mjs",
+      "source": ".cache/planet-lighting/vitest.config.mjs",
+      "bytes": 88,
+      "sha256": "f57fb8ac9480969abf1b4addf4a9ebd29625af903d8e85c0cf7e6b51ba115817"
+    },
+    {
+      "path": "lighting-legacy.config.mjs",
+      "source": ".cache/planet-lighting/legacy.config.mjs",
+      "bytes": 292,
+      "sha256": "7c9fafc099de8c8a9a0b2148ee40c8ad724726af65050cd972787245e2fa0575"
+    },
+    {
+      "path": "contact.config.mjs",
+      "source": ".cache/planet-contact-shadows/vitest.config.mjs",
+      "bytes": 124,
+      "sha256": "768780d76461607555393457de6d7c076d52453945dbe0808c2ef345006e99f6"
+    },
+    {
+      "path": "source-cues-before.config.mjs",
+      "source": ".cache/source-cue-grounding/before.config.mjs",
+      "bytes": 289,
+      "sha256": "2566cd938b40d9bbc1054c46b3bbdd0228ed2abccfc1998c0dff5cab7ef511f1"
+    },
+    {
+      "path": "source-cues.config.mjs",
+      "source": ".cache/source-cue-grounding/vitest.config.mjs",
+      "bytes": 91,
+      "sha256": "cf50c09842f7cf31b8dab6eec5f8db0a49de16546744e80b139f36b5b1b83991"
+    },
+    {
+      "path": "lighting-legacy-configuration.ts",
+      "source": ".cache/planet-lighting/legacy-configuration.ts",
+      "bytes": 1225,
+      "sha256": "3ff8465a57082fb0b26e2ca5627eb1a9dede60762d9abcaccc188af5ac26246c"
+    },
+    {
+      "path": "lighting-candidate-frozen.ts",
+      "source": ".cache/planet-lighting/candidate-frozen.ts",
+      "bytes": 7879,
+      "sha256": "be8198a3055155f1e4edebc7be8a52f72cd56879835850e387e999fb4068860a"
+    },
+    {
+      "path": "source-cues-before-component.ts",
+      "source": ".cache/source-cue-grounding/world-before.ts",
+      "bytes": 59692,
+      "sha256": "63a5b44cd6874b7ded7b672c7497b2446f62cc964347ef0dcaffa6e77ba7df0d"
+    },
+    {
+      "path": "intermediate-light-browser.txt",
+      "source": ".cache/grounding/weather-review-browser.txt",
+      "bytes": 1045,
+      "sha256": "458a4b40cc9149141a7b88f5cb2318c2b56c8ae2bf3350cee71665978cdf49e2"
+    },
+    {
+      "path": "intermediate-light-browser.json",
+      "source": ".cache/grounding/weather-review-artifacts/results.json",
+      "bytes": 270514,
+      "sha256": "e22317f73987a3f7f528ec1fa16b68ab3ae0ea3980f859e767ffd176ef3a789d"
+    },
+    {
+      "path": "support-before-final.json",
+      "source": ".cache/support-review/before-final.json",
+      "bytes": 45553,
+      "sha256": "da6219e3107ca054fde264b25adc8c558e241eebd458b0523662cd6f7f802b54"
+    },
+    {
+      "path": "support-after-final.json",
+      "source": ".cache/support-review/after-final.json",
+      "bytes": 54452,
+      "sha256": "cd398794b3cf48a972cb2f1c03cfa7f50b4dcc34a9a0197e792e0631f7cfb13d"
+    },
+    {
+      "path": "support-audit.mjs",
+      "source": ".cache/support-review/audit.mjs",
+      "bytes": 7381,
+      "sha256": "cac74a384cc2eb22fa958bd72f370fa88d10620021ac338cf5fb4a2c7a1c3db1"
+    },
+    {
+      "path": "support-before-audit.txt",
+      "source": ".cache/support-review/before-audit.txt",
+      "bytes": 414,
+      "sha256": "fe3157e695a7edde6a86ec30c79036c05c13cd5b30a64cefee48391be0ef6542"
+    },
+    {
+      "path": "support-after-audit.txt",
+      "source": ".cache/support-review/after-audit.txt",
+      "bytes": 429,
+      "sha256": "4228e5abfa0f40e98f870d9cc236f1c2919b217f23b8f1661eadb086d3ca74be"
+    },
+    {
+      "path": "support-before-tests.txt",
+      "source": ".cache/support-review/before-tests.txt",
+      "bytes": 7237,
+      "sha256": "291c063452b2975276a632aa79dbc883d58e5de54379d0376e852728eee9ec9e"
+    },
+    {
+      "path": "support-after-tests.txt",
+      "source": ".cache/support-review/after-tests.txt",
+      "bytes": 227,
+      "sha256": "ad882d8a858ea31b975dcc801f24832965f251f0ba23f305cef22de63ca2908e"
+    },
+    {
+      "path": "support-before-first-11-tests.txt",
+      "source": ".cache/support-review/before-first-11-tests.txt",
+      "bytes": 5426,
+      "sha256": "a5a54b6b2b36d4061f2b473a8119be1421ba8e976f1c517aabc2d493af9e790a"
+    },
+    {
+      "path": "support-initial-tests.txt",
+      "source": ".cache/support-review/initial-tests.txt",
+      "bytes": 2257,
+      "sha256": "d762ac9f58563eaeacf96f933952a6a845ba18a5f52b03465315c2931435f341"
+    },
+    {
+      "path": "support.config.mjs",
+      "source": ".cache/support-review/pure.config.mjs",
+      "bytes": 133,
+      "sha256": "bfed6a27241c0f981c19b6db1e9ab0f6a4e6ed010b35c234db1c701b48331e06"
+    },
+    {
+      "path": "command-status.json",
+      "source": ".cache/grounding/command-status.json",
+      "bytes": 127,
+      "sha256": "7564e28219a046ab607b61de2fc9dc474ac28a29c94086cf5b8fe2f19ed4e0fb"
+    },
+    {
+      "path": "typecheck-final.txt",
+      "source": ".cache/grounding/typecheck-final.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "build-final.txt",
+      "source": ".cache/grounding/build-final.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final-full-spec.txt",
+      "source": ".cache/grounding/full-spec-final.txt",
+      "bytes": 1077,
+      "sha256": "71f62a77f6bb48e0374f7dfe6d6837054f505b07ebecf74b27e46770f5bfe2ef"
+    },
+    {
+      "path": "final-browser.txt",
+      "source": ".cache/grounding/final-browser.txt",
+      "bytes": 1231,
+      "sha256": "6ea7e07669fd1d5968cfcc86dbad339722a72df37b02853a606d49bcc9f33264"
+    },
+    {
+      "path": "final-browser.json",
+      "source": ".cache/grounding/final-artifacts/results.json",
+      "bytes": 316438,
+      "sha256": "47eb0007d60b74a5965867763dc58ffca4c15abe5df43dbe9bccc4f9026236f7"
+    },
+    {
+      "path": "final-green-desktop.png",
+      "source": ".cache/grounding/final-artifacts/green-desktop.png",
+      "bytes": 772525,
+      "sha256": "542cc933341e47b7f926daad0fa4dd9d8a14542079d1d0ab1647b3a2598c7901",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "final-cafe-desktop.png",
+      "source": ".cache/grounding/final-artifacts/tea-desktop.png",
+      "bytes": 703212,
+      "sha256": "dc876ca8f3d0416e03e46804ca956b838c4d600375f99fb6f93cc7c6009e2bd5",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "final-cafe-phone.png",
+      "source": ".cache/grounding/final-artifacts/tea-phone.png",
+      "bytes": 140148,
+      "sha256": "7aacba554b68a37c51301fa732322b244ca25d4204716a8d2e54c9c3573e0047",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "path": "final-cafe-night-desktop.png",
+      "source": ".cache/grounding/final-artifacts/cafe-night-desktop.png",
+      "bytes": 714186,
+      "sha256": "a812f72fba0c798e00450b361cceab5418914151667d9398514bd9a8d48a6ab9",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "final-cafe-night-phone.png",
+      "source": ".cache/grounding/final-artifacts/cafe-night-phone.png",
+      "bytes": 173304,
+      "sha256": "3180c295e1c1a3f821e174c2f957159e45a0ac1ac81ff5726e16cf96927b56f9",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "path": "final-cafe-entrance-desktop.png",
+      "source": ".cache/grounding/final-artifacts/cafe-entrance-desktop.png",
+      "bytes": 733965,
+      "sha256": "17c90251db1b7490998dc1ceaf4d44a2febce27a6b9513517a928274db1d1829",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "final-conservatory-rain-desktop.png",
+      "source": ".cache/grounding/final-artifacts/conservatory-rain-desktop.png",
+      "bytes": 552513,
+      "sha256": "6d4431a77fd889299a750e5aa35c70176425c44f62810a23723c20150c37ac7c",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "side-entry-audit.mjs",
+      "source": ".cache/grounding/side-entry-audit.mjs",
+      "bytes": 4501,
+      "sha256": "8c3c86ddc0f79f7fa19a07bead83c86ae4e537682570f9cd220347bc67a3590a"
+    },
+    {
+      "path": "side-entry-audit.json",
+      "source": ".cache/grounding/side-entry-audit.json",
+      "bytes": 3432,
+      "sha256": "2541f92b8d17ffefb6ff3c32d769456eae026a5b19aab260b00b5216d4a4a903"
+    },
+    {
+      "path": "promotion.txt",
+      "source": ".cache/grounding/promotion.txt",
+      "bytes": 248,
+      "sha256": "a72f9cfa8adeb9582619ab1035169ce5ebe6d809da059f598d0df431d45a0e83"
+    },
+    {
+      "path": "promotion-record.json",
+      "source": ".cache/chorus-garden-promotion.json",
+      "bytes": 8860,
+      "sha256": "b1ebd97bd2a367492aae44bb4a72fa1a98b0e325a3d89bb5fcce3443d5764914"
+    },
+    {
+      "path": "promoted-browser.json",
+      "source": ".cache/grounding/promoted/results.json",
+      "bytes": 183301,
+      "sha256": "83128ba1fdbf0bbd1887d870559083a59bbe5871abfb7da64c85d8481342d07b"
+    },
+    {
+      "path": "promoted-green-desktop.png",
+      "source": ".cache/grounding/promoted/promoted-green-desktop.png",
+      "bytes": 773784,
+      "sha256": "4486a4096ed4231567cf8d53b59112407ad93d263534f721ff688a5c239d4c07",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "promoted-cafe-desktop.png",
+      "source": ".cache/grounding/promoted/promoted-cafe-desktop.png",
+      "bytes": 706010,
+      "sha256": "05b3aa86007746b338899b7cf25f35f49559bcf257905c9148d15c672afaad0c",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "promoted-cafe-phone.png",
+      "source": ".cache/grounding/promoted/promoted-cafe-phone.png",
+      "bytes": 148178,
+      "sha256": "a4b0d2c0dace1050600262414478d354ff01b235034c68c655c7d6535976e436",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "path": "promoted-coast-end-desktop.png",
+      "source": ".cache/grounding/promoted/promoted-coast-end-desktop.png",
+      "bytes": 560443,
+      "sha256": "fc4facf253654eb5c0ca2f554237d942458a8fe2cd5ef94dffa7e67882b0782b",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "path": "remote-source.txt",
+      "source": ".cache/grounding/remote-source.txt",
+      "bytes": 214,
+      "sha256": "c178a0a9455eaf53693194fd707b1a52c5daa4538c06a069bc91a7cafaf701f7"
+    }
+  ],
+  "acceptedSourceCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559",
+  "actualPromotion": {
+    "status": "passed",
+    "applicationCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559",
+    "previousCommit": "40ed231",
+    "allRowsPreserved": true,
+    "tables": 12,
+    "servedAssets": 68,
+    "observerPassed": true,
+    "coastRenderSamples": 383,
+    "retainedPublicSources": 16,
+    "writes": 0,
+    "browserErrors": 0,
+    "localOnly": true
+  }
+}

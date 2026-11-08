@@ -1,0 +1,26 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-lighting.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-lighting.test.ts [ spec/planet-lighting.test.ts ]
+Error: Cannot find module '../../../src/shared/planet.js' imported from /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/planet-lighting/candidate-frozen.ts
+ ❯ .cache/planet-lighting/candidate-frozen.ts:4:1
+      2| // coverage and soft sky fill follow the visitor's part of the sphere.
+      3| import * as THREE from "three";
+      4| import { PLANET_RADIUS, planetCoordsValid, planetNormal, planetPoint }…
+       | ^
+      5| import type { Weather } from "../../../src/shared/environment.js";
+      6|
+ ❯ .cache/planet-lighting/legacy-configuration.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  17:02:40
+   Duration  130ms (worker 97%, environment 3%)
+

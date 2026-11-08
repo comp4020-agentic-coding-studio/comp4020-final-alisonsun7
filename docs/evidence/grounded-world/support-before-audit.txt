@@ -1,0 +1,14 @@
+{
+  "output": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/support-review/before-final.json",
+  "supportAPI": false,
+  "maxBenchCornerGap": 0.4518026669841986,
+  "maxLanternCornerGap": 0.5377559834567123,
+  "maxActorSoleGap": 0.10324484937528025,
+  "foundations": {
+    "count": 0,
+    "vertices": 0,
+    "triangles": 0
+  },
+  "contactAnchors": 0,
+  "glassCastCount": 19
+}

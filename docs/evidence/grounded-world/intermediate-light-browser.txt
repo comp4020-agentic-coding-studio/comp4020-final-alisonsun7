@@ -1,0 +1,17 @@
+(node:12050) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok green fits the 390×844 viewport
+ok tea fits the 390×844 viewport
+ok Actual close view uses the new fine shadow frustum
+ok Furniture, tree roots and moving feet share two bounded contact batches
+ok Actual actor support is a finite visible surface
+ok Actual run key moves the character on supported ground
+ok Run and jump leave the actual camera outside the globe
+ok Café arrival uses the real terrace plane
+ok Overview covers the whole globe instead of the close shadow crop
+ok Touch walking still operates with supported figures
+ok Far-shore lighting keeps the actual coast camera outside the planet
+ok Light, travel, jump and weather never enable local listening
+ok Every pre-existing sound/history row is byte-for-byte retained
+ok No source is created, moved or removed during the visual inspection
+ok The actual GPU compiled/rendered without browser or shader errors

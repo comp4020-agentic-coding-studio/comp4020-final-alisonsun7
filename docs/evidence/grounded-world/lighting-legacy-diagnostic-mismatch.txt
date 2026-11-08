@@ -1,0 +1,41 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-lighting.test.ts (8 tests | 2 failed | 6 skipped) 6ms
+   ❯ a shared key and surface-relative painted sky (3)
+     × gives each local upward surface the sky side of hemisphere fill, including the southern coast and backside 4ms
+   ❯ bounded local contact-scale sun shadows (5)
+     × reserves fine texels and millimetre-scale offsets rather than detaching small shoes by centimetres 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-lighting.test.ts > a shared key and surface-relative painted sky > gives each local upward surface the sky side of hemisphere fill, including the southern coast and backside
+AssertionError: expected +0 to be close to 1, received difference is 1, but expected 5e-13
+ ❯ spec/planet-lighting.test.ts:34:92
+     32|                 rig.update(input({ ...place, minute }));
+     33|                 const n = planetNormal(place.x, place.z), up = new THR…
+     34|                 expect(rig.hemi.getWorldPosition(new THREE.Vector3()).…
+       |                                                                                            ^
+     35|                 expect(rig.hemi.intensity).toBeGreaterThanOrEqual(.8);
+     36|             }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/planet-lighting.test.ts > bounded local contact-scale sun shadows > reserves fine texels and millimetre-scale offsets rather than detaching small shoes by centimetres
+AssertionError: expected 0.0107421875 to be close to 0.0341796875, received difference is 0.0234375, but expected 5e-13
+ ❯ spec/planet-lighting.test.ts:66:39
+     64|             expect(rig.sun.shadow.mapSize.toArray()).toEqual([2048, 20…
+     65|             const actualTexelMetres = (camera.right - camera.left) / r…
+     66|             expect(state.texelMetres).toBeCloseTo(actualTexelMetres, 1…
+       |                                       ^
+     67|             expect(actualTexelMetres).toBeLessThan(.011);
+     68|             const detachedScale = Math.abs(rig.sun.shadow.bias) * (cam…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 skipped (8)
+   Start at  17:02:59
+   Duration  126ms (transform 49%, import 38%, tests 10%, worker 4%)
+

@@ -1,0 +1,74 @@
+(node:5498) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok green fits the 390×844 viewport
+ok tea fits the 390×844 viewport
+ok Actual close view uses the new fine shadow frustum
+ok Furniture, tree roots and moving feet share two bounded contact batches
+ok Actual actor support is a finite visible surface
+ok Actual run key moves the character on supported ground
+ok Run and jump leave the actual camera outside the globe
+ok Café arrival uses the real terrace plane
+ok Overview covers the whole globe instead of the close shadow crop
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 15000ms exceeded.
+Call log:
+[2m  - waiting for locator('#chorus-travel [data-place="tea"]')[22m
+[2m    - locator resolved to <button type="button" data-place="tea" aria-pressed="true">Tide & Coffee</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <dialog open="" id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title">…</dialog> intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <dialog open="" id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title">…</dialog> intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    28 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is visible, enabled and stable[22m
+[2m       - scrolling into view if needed[22m
+[2m       - done scrolling[22m
+[2m       - <dialog open="" id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title">…</dialog> intercepts pointer events[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at travel (/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/grounded-world.mjs:40:42)
+    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/grounded-world.mjs:98:9 {
+  log: [
+    `  - waiting for locator('#chorus-travel [data-place="tea"]')`,
+    '    - locator resolved to <button type="button" data-place="tea" aria-pressed="true">Tide & Coffee</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <dialog open="" id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title">…</dialog> intercepts pointer events',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is visible, enabled and stable',
+    '      - scrolling into view if needed',
+    '      - done scrolling',
+    '      - <dialog open="" id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title">…</dialog> intercepts pointer events',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '    28 × waiting for element to be visible, enabled and stable',
+    '       - element is visible, enabled and stable',
+    '       - scrolling into view if needed',
+    '       - done scrolling',
+    '       - <dialog open="" id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title">…</dialog> intercepts pointer events',
+    '     - retrying click action',
+    '       - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.10.0

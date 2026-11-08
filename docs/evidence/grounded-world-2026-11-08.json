@@ -1,0 +1,411 @@
+{
+  "kind": "little-chorus-grounded-world-local-release",
+  "date": "2026-11-08",
+  "sourceApplicationCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559",
+  "sourceCommits": [
+    "9225b21",
+    "8f32290"
+  ],
+  "previousApplicationCommit": "40ed231",
+  "branch": "codex/grounded-world",
+  "rollbackTag": "before-grounded-world-2026-11-08",
+  "releaseTag": "chorus-grounded-world-2026-11-08",
+  "scope": "Actual 3D support and original procedural contact/light repair; no schema/history/coordinate or engine migration",
+  "checks": {
+    "typecheckExit": 0,
+    "productionBuildExit": 0,
+    "fullSpec": {
+      "passed": 369,
+      "files": 57,
+      "seconds": 71.41,
+      "port": 18931,
+      "independentDatabase": true
+    },
+    "scratchBrowser": {
+      "passed": true,
+      "checks": 18,
+      "capturedFrames": 19,
+      "actualStairRenderSamples": 75,
+      "visibleTreadsCrossed": 5,
+      "port": 18932,
+      "independentDatabase": true,
+      "errors": 0,
+      "sourceWrites": 0,
+      "quietAudioStarts": 0
+    },
+    "actualPromotion": {
+      "status": "passed",
+      "applicationCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559",
+      "previousCommit": "40ed231",
+      "allRowsPreserved": true,
+      "tables": 12,
+      "servedAssets": 68,
+      "observerPassed": true,
+      "coastRenderSamples": 383,
+      "retainedPublicSources": 16,
+      "writes": 0,
+      "browserErrors": 0,
+      "localOnly": true
+    },
+    "evidenceHashes": {
+      "verified": true,
+      "rawAttachments": 65
+    }
+  },
+  "notEstablished": [
+    "unfamiliar-friend playtest or artistic listening approval",
+    "physical-phone performance or long-session benchmark",
+    "new gravity/step-height/collision physics; sideways raised edges retain observed automatic height changes",
+    "cinematic light or all possible views"
+  ],
+  "rollback": {
+    "command": "python3 scripts/local-preview.py --rollback",
+    "workingDirectory": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7",
+    "keepsCurrentDatabase": true,
+    "neverRestoreHistoricalDatabase": true
+  },
+  "networkDelivery": {
+    "authorisedPublicSourceBranchVerified": true,
+    "mainUnchanged": "e664fc467c1d0482d1facb2c2514d077c0344d26",
+    "hostedDeployment": false,
+    "globalGitHubConfigurationChanged": false,
+    "finalEvidenceCommit": "Recorded by the release tag after this index is committed, avoiding a self-referential hash"
+  },
+  "artifacts": [
+    {
+      "path": "grounded-world/README.md",
+      "bytes": 8061,
+      "sha256": "daf7aceba9ca4961f69312808ca95234f67d6abedba4b150ee21d9567ccf177b"
+    },
+    {
+      "path": "grounded-world/before-browser.json",
+      "bytes": 121395,
+      "sha256": "3493b485bba81d29767605aaa79bda74f4dff34f790acbfed149e03d0692516d"
+    },
+    {
+      "path": "grounded-world/before-browser.txt",
+      "bytes": 353,
+      "sha256": "436d05dbde526f94c9af994144e105438bd0216e40729a88f823c76f9df038a8"
+    },
+    {
+      "path": "grounded-world/before-cafe-desktop.png",
+      "bytes": 753296,
+      "sha256": "44ccdf48b01f87671cad477be847621f677915917f0e62e210125412bbe13fd8"
+    },
+    {
+      "path": "grounded-world/before-green-desktop.png",
+      "bytes": 855455,
+      "sha256": "eecf50e1aa7cadd01501530a6943f1d00a0190c248dd603dc885628ca827917d"
+    },
+    {
+      "path": "grounded-world/before-support-geometry.json",
+      "bytes": 9095,
+      "sha256": "66be65a12d25ea9a9e092f498bc20927e71884c7e644a7db5c1cb618953fc917"
+    },
+    {
+      "path": "grounded-world/build-final.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "grounded-world/candidate-browser-failure.txt",
+      "bytes": 4163,
+      "sha256": "e56705ae74fb69bc9f541f6ef04067737b45299efcaa2970bc3eea0f71e5786d"
+    },
+    {
+      "path": "grounded-world/candidate-failed-browser.json",
+      "bytes": 195893,
+      "sha256": "4139836cc40b956ed37dfee3775204c7a5077247ecfe8b86a674e91cc49fe917"
+    },
+    {
+      "path": "grounded-world/command-status.json",
+      "bytes": 127,
+      "sha256": "7564e28219a046ab607b61de2fc9dc474ac28a29c94086cf5b8fe2f19ed4e0fb"
+    },
+    {
+      "path": "grounded-world/contact-after.txt",
+      "bytes": 240,
+      "sha256": "47e40351bd79fb04481e58d8acf91c3260fb2ffab0ab2431f0088a7e881560de"
+    },
+    {
+      "path": "grounded-world/contact-typecheck-final.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "grounded-world/contact-typecheck-initial.txt",
+      "bytes": 524,
+      "sha256": "dd812777ab34da0bc443ba1c3929fea4361e7dce9dedbf5651f953c971e510e2"
+    },
+    {
+      "path": "grounded-world/contact.config.mjs",
+      "bytes": 124,
+      "sha256": "768780d76461607555393457de6d7c076d52453945dbe0808c2ef345006e99f6"
+    },
+    {
+      "path": "grounded-world/final-browser.json",
+      "bytes": 316438,
+      "sha256": "47eb0007d60b74a5965867763dc58ffca4c15abe5df43dbe9bccc4f9026236f7"
+    },
+    {
+      "path": "grounded-world/final-browser.txt",
+      "bytes": 1231,
+      "sha256": "6ea7e07669fd1d5968cfcc86dbad339722a72df37b02853a606d49bcc9f33264"
+    },
+    {
+      "path": "grounded-world/final-cafe-desktop.png",
+      "bytes": 703212,
+      "sha256": "dc876ca8f3d0416e03e46804ca956b838c4d600375f99fb6f93cc7c6009e2bd5"
+    },
+    {
+      "path": "grounded-world/final-cafe-entrance-desktop.png",
+      "bytes": 733965,
+      "sha256": "17c90251db1b7490998dc1ceaf4d44a2febce27a6b9513517a928274db1d1829"
+    },
+    {
+      "path": "grounded-world/final-cafe-night-desktop.png",
+      "bytes": 714186,
+      "sha256": "a812f72fba0c798e00450b361cceab5418914151667d9398514bd9a8d48a6ab9"
+    },
+    {
+      "path": "grounded-world/final-cafe-night-phone.png",
+      "bytes": 173304,
+      "sha256": "3180c295e1c1a3f821e174c2f957159e45a0ac1ac81ff5726e16cf96927b56f9"
+    },
+    {
+      "path": "grounded-world/final-cafe-phone.png",
+      "bytes": 140148,
+      "sha256": "7aacba554b68a37c51301fa732322b244ca25d4204716a8d2e54c9c3573e0047"
+    },
+    {
+      "path": "grounded-world/final-conservatory-rain-desktop.png",
+      "bytes": 552513,
+      "sha256": "6d4431a77fd889299a750e5aa35c70176425c44f62810a23723c20150c37ac7c"
+    },
+    {
+      "path": "grounded-world/final-full-spec.txt",
+      "bytes": 1077,
+      "sha256": "71f62a77f6bb48e0374f7dfe6d6837054f505b07ebecf74b27e46770f5bfe2ef"
+    },
+    {
+      "path": "grounded-world/final-green-desktop.png",
+      "bytes": 772525,
+      "sha256": "542cc933341e47b7f926daad0fa4dd9d8a14542079d1d0ab1647b3a2598c7901"
+    },
+    {
+      "path": "grounded-world/initial-full-spec.txt",
+      "bytes": 3083,
+      "sha256": "c884704f3b807ab6e165dcfa1c445936ef0585cbf53a4940db5218bd0cbf0a41"
+    },
+    {
+      "path": "grounded-world/intermediate-light-browser.json",
+      "bytes": 270514,
+      "sha256": "e22317f73987a3f7f528ec1fa16b68ab3ae0ea3980f859e767ffd176ef3a789d"
+    },
+    {
+      "path": "grounded-world/intermediate-light-browser.txt",
+      "bytes": 1045,
+      "sha256": "458a4b40cc9149141a7b88f5cb2318c2b56c8ae2bf3350cee71665978cdf49e2"
+    },
+    {
+      "path": "grounded-world/light-review-browser-failure.txt",
+      "bytes": 1244,
+      "sha256": "3fbcd57ee6ae7876b61b004f2a45abdbb6ea1fbd24454cdf0c0f245a6165692c"
+    },
+    {
+      "path": "grounded-world/light-review-failed-browser.json",
+      "bytes": 208814,
+      "sha256": "d8b60ae7fb3e601ca07ce6c52b258449807ba786e1916059760eb550c8fe47cf"
+    },
+    {
+      "path": "grounded-world/lighting-after.txt",
+      "bytes": 238,
+      "sha256": "70d8289cf17e2e8a156bb68955e4c7daa253440dc193eea82f217c4eca6ace1d"
+    },
+    {
+      "path": "grounded-world/lighting-candidate-frozen.ts",
+      "bytes": 7879,
+      "sha256": "be8198a3055155f1e4edebc7be8a52f72cd56879835850e387e999fb4068860a"
+    },
+    {
+      "path": "grounded-world/lighting-legacy-configuration-negative.txt",
+      "bytes": 2354,
+      "sha256": "bf01ae55e62388ceb6419f025381ab90d93da1314b480254430e302bff69d74b"
+    },
+    {
+      "path": "grounded-world/lighting-legacy-configuration.ts",
+      "bytes": 1225,
+      "sha256": "3ff8465a57082fb0b26e2ca5627eb1a9dede60762d9abcaccc188af5ac26246c"
+    },
+    {
+      "path": "grounded-world/lighting-legacy-diagnostic-mismatch.txt",
+      "bytes": 2434,
+      "sha256": "36a025b1b337c8be01ac88532ecb90621bad81139260eeae5f8d51c29ad2376b"
+    },
+    {
+      "path": "grounded-world/lighting-legacy-harness-initial.txt",
+      "bytes": 1068,
+      "sha256": "b0dce6031eee8f6d52be17b126f93f35ea1d57150e8ff9ad0539c407522ed620"
+    },
+    {
+      "path": "grounded-world/lighting-legacy.config.mjs",
+      "bytes": 292,
+      "sha256": "7c9fafc099de8c8a9a0b2148ee40c8ad724726af65050cd972787245e2fa0575"
+    },
+    {
+      "path": "grounded-world/lighting.config.mjs",
+      "bytes": 88,
+      "sha256": "f57fb8ac9480969abf1b4addf4a9ebd29625af903d8e85c0cf7e6b51ba115817"
+    },
+    {
+      "path": "grounded-world/promoted-browser.json",
+      "bytes": 183301,
+      "sha256": "83128ba1fdbf0bbd1887d870559083a59bbe5871abfb7da64c85d8481342d07b"
+    },
+    {
+      "path": "grounded-world/promoted-cafe-desktop.png",
+      "bytes": 706010,
+      "sha256": "05b3aa86007746b338899b7cf25f35f49559bcf257905c9148d15c672afaad0c"
+    },
+    {
+      "path": "grounded-world/promoted-cafe-phone.png",
+      "bytes": 148178,
+      "sha256": "a4b0d2c0dace1050600262414478d354ff01b235034c68c655c7d6535976e436"
+    },
+    {
+      "path": "grounded-world/promoted-coast-end-desktop.png",
+      "bytes": 560443,
+      "sha256": "fc4facf253654eb5c0ca2f554237d942458a8fe2cd5ef94dffa7e67882b0782b"
+    },
+    {
+      "path": "grounded-world/promoted-green-desktop.png",
+      "bytes": 773784,
+      "sha256": "4486a4096ed4231567cf8d53b59112407ad93d263534f721ff688a5c239d4c07"
+    },
+    {
+      "path": "grounded-world/promotion-record.json",
+      "bytes": 8860,
+      "sha256": "b1ebd97bd2a367492aae44bb4a72fa1a98b0e325a3d89bb5fcce3443d5764914"
+    },
+    {
+      "path": "grounded-world/promotion.txt",
+      "bytes": 248,
+      "sha256": "a72f9cfa8adeb9582619ab1035169ce5ebe6d809da059f598d0df431d45a0e83"
+    },
+    {
+      "path": "grounded-world/pure-checks.json",
+      "bytes": 34991,
+      "sha256": "45e5756c9550c3f439a2fa70afcfb8b1aa34db99799fb55fb3ca4b6bac469db8"
+    },
+    {
+      "path": "grounded-world/remote-source.txt",
+      "bytes": 214,
+      "sha256": "c178a0a9455eaf53693194fd707b1a52c5daa4538c06a069bc91a7cafaf701f7"
+    },
+    {
+      "path": "grounded-world/side-entry-audit.json",
+      "bytes": 3432,
+      "sha256": "2541f92b8d17ffefb6ff3c32d769456eae026a5b19aab260b00b5216d4a4a903"
+    },
+    {
+      "path": "grounded-world/side-entry-audit.mjs",
+      "bytes": 4501,
+      "sha256": "8c3c86ddc0f79f7fa19a07bead83c86ae4e537682570f9cd220347bc67a3590a"
+    },
+    {
+      "path": "grounded-world/source-cues-after.txt",
+      "bytes": 237,
+      "sha256": "8805611fc27f94401f601c1ffba7e511d176ce6bdbaac7c37d4a821cbbef71fa"
+    },
+    {
+      "path": "grounded-world/source-cues-before-component.ts",
+      "bytes": 59692,
+      "sha256": "63a5b44cd6874b7ded7b672c7497b2446f62cc964347ef0dcaffa6e77ba7df0d"
+    },
+    {
+      "path": "grounded-world/source-cues-before.config.mjs",
+      "bytes": 289,
+      "sha256": "2566cd938b40d9bbc1054c46b3bbdd0228ed2abccfc1998c0dff5cab7ef511f1"
+    },
+    {
+      "path": "grounded-world/source-cues-before.txt",
+      "bytes": 2155,
+      "sha256": "89d354bc1036fa11631d54ed5bbbc2b47d8e4ad86fac9a4b4d9177a3e2f47d86"
+    },
+    {
+      "path": "grounded-world/source-cues-first-capture.txt",
+      "bytes": 237,
+      "sha256": "6cea1386a51cf159a0367e41506dee677f6899f4f8b662bf5dc0a0570066efc6"
+    },
+    {
+      "path": "grounded-world/source-cues-typecheck.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "grounded-world/source-cues.config.mjs",
+      "bytes": 91,
+      "sha256": "cf50c09842f7cf31b8dab6eec5f8db0a49de16546744e80b139f36b5b1b83991"
+    },
+    {
+      "path": "grounded-world/starting-preview.json",
+      "bytes": 250,
+      "sha256": "ac5726deaca9fc063952353a85e3b24dcfb0ec8de83d5864e643a231d136d8bb"
+    },
+    {
+      "path": "grounded-world/support-after-audit.txt",
+      "bytes": 429,
+      "sha256": "4228e5abfa0f40e98f870d9cc236f1c2919b217f23b8f1661eadb086d3ca74be"
+    },
+    {
+      "path": "grounded-world/support-after-final.json",
+      "bytes": 54452,
+      "sha256": "cd398794b3cf48a972cb2f1c03cfa7f50b4dcc34a9a0197e792e0631f7cfb13d"
+    },
+    {
+      "path": "grounded-world/support-after-tests.txt",
+      "bytes": 227,
+      "sha256": "ad882d8a858ea31b975dcc801f24832965f251f0ba23f305cef22de63ca2908e"
+    },
+    {
+      "path": "grounded-world/support-audit.mjs",
+      "bytes": 7381,
+      "sha256": "cac74a384cc2eb22fa958bd72f370fa88d10620021ac338cf5fb4a2c7a1c3db1"
+    },
+    {
+      "path": "grounded-world/support-before-audit.txt",
+      "bytes": 414,
+      "sha256": "fe3157e695a7edde6a86ec30c79036c05c13cd5b30a64cefee48391be0ef6542"
+    },
+    {
+      "path": "grounded-world/support-before-final.json",
+      "bytes": 45553,
+      "sha256": "da6219e3107ca054fde264b25adc8c558e241eebd458b0523662cd6f7f802b54"
+    },
+    {
+      "path": "grounded-world/support-before-first-11-tests.txt",
+      "bytes": 5426,
+      "sha256": "a5a54b6b2b36d4061f2b473a8119be1421ba8e976f1c517aabc2d493af9e790a"
+    },
+    {
+      "path": "grounded-world/support-before-tests.txt",
+      "bytes": 7237,
+      "sha256": "291c063452b2975276a632aa79dbc883d58e5de54379d0376e852728eee9ec9e"
+    },
+    {
+      "path": "grounded-world/support-initial-tests.txt",
+      "bytes": 2257,
+      "sha256": "d762ac9f58563eaeacf96f933952a6a845ba18a5f52b03465315c2931435f341"
+    },
+    {
+      "path": "grounded-world/support.config.mjs",
+      "bytes": 133,
+      "sha256": "bfed6a27241c0f981c19b6db1e9ab0f6a4e6ed010b35c234db1c701b48331e06"
+    },
+    {
+      "path": "grounded-world/typecheck-final.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
