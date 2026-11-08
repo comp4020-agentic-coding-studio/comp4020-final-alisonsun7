@@ -200,9 +200,29 @@ async function run() {
   const a = ada.page, b = bo.page;
   // The friends choose two nearby spots through real controls, rather than
   // leaving their bodies superimposed at the common arrival position.
-  await b.locator("canvas.planet-canvas").focus();await b.keyboard.down("d");
-  await b.waitForTimeout(350);await b.keyboard.up("d");
-  await b.waitForFunction(() => Number(document.getElementById("planet-stage").dataset.at.split(",")[0]) > 2.4);
+  // Ground movement uses bounded frame deltas, and its public position is
+  // sampled every twelve frames. A fixed 350ms press cannot promise this
+  // displacement during startup/two-page GPU scheduling; observe the actual
+  // result while the key is held, without changing the production controller.
+  await b.bringToFront();await b.locator("canvas.planet-canvas").focus();
+  await b.waitForFunction(() => document.activeElement?.matches("canvas.planet-canvas")
+    && !document.querySelector("dialog:modal") && document.getElementById("planet-chat").hidden);
+  const boFrom = await at(b);
+  await b.keyboard.down("d");
+  try {
+    await b.waitForFunction(from => {
+      const position = document.getElementById("planet-stage").dataset.at.split(",").map(Number);
+      return position[0] > 2.4 && position[0] - from[0] > .5;
+    }, boFrom, { timeout: 8000, polling: 50 });
+  } catch (error) {
+    console.error("Initial real movement did not reach the nearby spot: " + JSON.stringify(await b.evaluate(from => ({
+      from, at: document.getElementById("planet-stage").dataset.at,
+      canvasFocused: document.activeElement?.matches("canvas.planet-canvas"),
+      modal: document.querySelector("dialog:modal")?.id ?? null,
+      chatOpen: !document.getElementById("planet-chat").hidden, visibility: document.visibilityState,
+    }), boFrom)));
+    throw error;
+  } finally { await b.keyboard.up("d"); }
   const runFrom = await at(a), remoteRun = b.waitForFunction(id => JSON.parse(document.getElementById("planet-stage").dataset.players ?? "[]")
     .some(player => player.id === id && player.running), ada.participantId);
   await a.locator("canvas.planet-canvas").focus();await a.keyboard.down("Shift");await a.keyboard.down("w");

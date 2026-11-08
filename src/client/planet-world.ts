@@ -270,9 +270,9 @@ export class PlanetWorld {
         const p = PLANET_PLACES.find(p => p.id === id); if (!p) return;
         // Explicit visits arrive where the person can see and approach the
         // work, outside the real base and roofs. Stored sounds never move.
-        const green = p.kind === "green", front = p.kind === "tea" ? 3 : p.kind === "stage" || p.kind === "reading" ? 4 : 0;
-        this.position = { x: p.x + (green ? 1.8 : 0), z: p.z + (green ? 2.2 : front), yaw: Math.PI };
-        this.selfYaw = Math.PI; this.keys.clear(); this.cancelWalkingIntent(); this.jumpStarted = null; this.jumpOffset = 0; this.opts.area(p);
+        const green = p.kind === "green", front = p.kind === "tea" ? 3 : p.kind === "conservatory" ? -4 : p.kind === "stage" || p.kind === "reading" ? 4 : 0;
+        this.position = { x: p.x + (green ? 1.8 : 0), z: p.z + (green ? 2.2 : front), yaw: p.kind === "conservatory" ? 0 : Math.PI };
+        this.selfYaw = this.position.yaw; this.keys.clear(); this.cancelWalkingIntent(); this.jumpStarted = null; this.jumpOffset = 0; this.opts.area(p);
     }
     setEnvironment(environment: Environment, serverNow: string): void {
         const server = Date.parse(serverNow);
