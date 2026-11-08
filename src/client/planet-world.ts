@@ -7,6 +7,7 @@ import { SoundWildlife } from "./sound-wildlife.js";
 import { SoundVessels } from "./sound-vessels.js";
 import { SoundPinwheels } from "./sound-pinwheels.js";
 import { SoundWaterlife } from "./sound-waterlife.js";
+import { PlanetBusker, PLANET_BUSKER } from "./planet-busker.js";
 import { PLANET_RESIDENT_HOMES, planetNpcFurnitureClearance } from "./planet-neighbours.js";
 import { NpcConversationCues } from "./npc-conversation-cues.js";
 import { PlanetLighting } from "./planet-lighting.js";
@@ -72,6 +73,8 @@ export class PlanetWorld {
     private soundVessels: SoundVessels;
     private soundPinwheels: SoundPinwheels;
     private soundWaterlife: SoundWaterlife;
+    private busker: PlanetBusker;
+    private buskerLabel: HTMLSpanElement;
     private examples: SoundSignal[] = [];
     readonly renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     readonly camera = new THREE.PerspectiveCamera(68, 1, .1, 220);
@@ -184,6 +187,8 @@ export class PlanetWorld {
         this.soundVessels = new SoundVessels(this.scene,{shoreline:coastlineAt,isWater:(x,z)=>z>coastlineAt(x)+.12&&planetPierHeightAt(x,z)===null});
         this.soundPinwheels = new SoundPinwheels(this.scene,{heightAt:(x,z)=>this.built.heightAt(x,z),canStand:(x,z)=>this.built.canStand(x,z,this.locked())&&this.garden.canStand(x,z)});
         this.soundWaterlife = new SoundWaterlife(this.scene,{shoreline:coastlineAt,isWater:(x,z)=>z>coastlineAt(x)+.15&&planetPierHeightAt(x,z)===null});
+        this.busker=new PlanetBusker(this.scene);
+        this.buskerLabel=this.makeLabel(PLANET_BUSKER.label,"npc");
         for (const h of PLANET_RESIDENT_HOMES) {
             const facing = "facing" in h ? h.facing : 0;
             const label = "label" in h ? h.label : "Resident · NPC";
@@ -276,6 +281,13 @@ export class PlanetWorld {
         const green = p.kind === "green", front = p.kind === "tea" ? 3 : p.kind === "conservatory" ? -4 : p.kind === "stage" || p.kind === "reading" ? 4 : 0;
         this.position = { x: p.x + (green ? 1.8 : 0), z: p.z + (green ? 2.2 : front), yaw: p.kind === "conservatory" ? 0 : Math.PI };
         this.selfYaw = this.position.yaw; this.keys.clear(); this.cancelWalkingIntent(); this.jumpStarted = null; this.jumpOffset = 0; this.opts.area(p);
+    }
+    visitBusker():boolean {
+        const at=planetStep(this.busker.at,1,0,3);
+        if(!this.built.canStand(at.x,at.z,this.locked())||!this.garden.canStand(at.x,at.z))return false;
+        this.stopWatching();this.setViewMode("third");this.zoom=4.8;this.watchedVessel=PLANET_BUSKER.id;
+        this.position={...at,yaw:bearingToward(at,this.busker.at)};this.selfYaw=this.position.yaw;
+        this.keys.clear();this.cancelWalkingIntent();this.jumpStarted=null;this.jumpOffset=0;this.opts.area(this.area);return true;
     }
     setEnvironment(environment: Environment, serverNow: string): void {
         const server = Date.parse(serverNow);
@@ -497,7 +509,8 @@ export class PlanetWorld {
             const target = head.clone().lerp(up.clone().multiplyScalar(R * .1), overview);
             if(this.watchedVessel){
                 const water=this.soundWaterlife.getFocus(this.watchedVessel),boat=this.soundVessels.state.find(boat=>boat.sourceId===this.watchedVessel&&boat.visible);
-                if(water){const p=planetPoint(water.x,water.z,water.height+(water.kind==="whale"?.35:.15));target.lerp(new THREE.Vector3(p.x,p.y,p.z),.92);}
+                if(this.watchedVessel===PLANET_BUSKER.id){const p=planetPoint(PLANET_BUSKER.x,PLANET_BUSKER.z,this.built.heightAt(PLANET_BUSKER.x,PLANET_BUSKER.z)+.95);target.lerp(new THREE.Vector3(p.x,p.y,p.z),.8);}
+                else if(water){const p=planetPoint(water.x,water.z,water.height+(water.kind==="whale"?.35:.15));target.lerp(new THREE.Vector3(p.x,p.y,p.z),.92);}
                 else if(boat&&boat.x!==undefined&&boat.z!==undefined){const p=planetPoint(boat.x,boat.z,.6);target.lerp(new THREE.Vector3(p.x,p.y,p.z),.85);}
                 else this.watchedVessel=null;
             }
@@ -588,6 +601,11 @@ export class PlanetWorld {
             this.standFigure(f, p, p.yaw);
             this.label(this.residentLabels.get(f)!, f, p);
         }
+        this.busker.frame(this.serverNow,this.reduced.matches);
+        this.busker.figure.setInteriorLight(fill(this.busker.at.x,this.busker.at.z));
+        this.standFigure(this.busker.figure,this.busker.at,this.busker.at.yaw);
+        this.standFigure(this.busker.seat,this.busker.at,this.busker.at.yaw);
+        this.label(this.buskerLabel,this.busker.figure,this.busker.at);
         this.arrangeLabels();
         for (const door of this.built.doors) {
             const n = this.npcFrames.find(n => n.hutId === door.id && n.occupying), taken = locked.has(door.id) || (own === door.id), h = PLANET_HUTS.find(h => h.id === door.id)!;
@@ -626,6 +644,7 @@ export class PlanetWorld {
         if(this.self?.visible)contactActors.push({...this.position,yaw:this.selfYaw,air:this.jumpOffset});
         for(const actor of [...this.others.values(),...this.routines.values()])if(actor.figure.visible)contactActors.push({...actor.at,air:actor.at.motion?.jump??0});
         for(const [figure,at] of this.residentPos)if(figure.visible)contactActors.push({...at,air:0});
+        contactActors.push({...this.busker.at,air:0});
         contactActors.push({...this.kangaroo.at,yaw:companionYaw,air:this.kangaroo.height+companionHop,companion:true});
         this.contacts.update(contactActors, day);
         this.renderer.render(this.scene, this.camera);
@@ -666,11 +685,13 @@ export class PlanetWorld {
             this.host.dataset.soundPinwheels = JSON.stringify(this.soundPinwheels.state);
             this.host.dataset.waterlife=JSON.stringify(this.soundWaterlife.state);
             this.host.dataset.waterlifeScenery=JSON.stringify(this.soundWaterlife.sceneryState);
+            this.host.dataset.busker=JSON.stringify({...this.busker.state,screen:this.projectPosition(this.busker.figure.headAnchor.getWorldPosition(new THREE.Vector3())),
+                guitarScreen:this.projectPosition(this.busker.figure.getObjectByName("acoustic-guitar")!.getWorldPosition(new THREE.Vector3()))});
             const waterFocus=this.watchedVessel&&this.soundWaterlife.getFocus(this.watchedVessel);
             const waterPoint=waterFocus&&planetPoint(waterFocus.x,waterFocus.z,waterFocus.height+(waterFocus.kind==="whale"?.35:.15));
             this.host.dataset.watchedWaterlife=JSON.stringify(waterFocus&&waterPoint?{sourceId:this.watchedVessel,kind:waterFocus.kind,...this.projectPosition(new THREE.Vector3(waterPoint.x,waterPoint.y,waterPoint.z))}:null);
             const watched=this.soundVessels.state.find(boat=>boat.sourceId===this.watchedVessel&&boat.visible);
-            this.host.dataset.watchingSound=waterFocus?waterFocus.kind:watched?"boat":"";
+            this.host.dataset.watchingSound=this.watchedVessel===PLANET_BUSKER.id?"performer":waterFocus?waterFocus.kind:watched?"boat":"";
             this.host.dataset.watchedVessel=JSON.stringify(watched&&watched.x!==undefined&&watched.z!==undefined?{sourceId:watched.sourceId,...this.project(watched.x,watched.z,.6)}:null);
             this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
@@ -765,7 +786,7 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.conversationCues.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.soundWaterlife.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.contacts.dispose(); this.lighting.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+        a.figure.dispose(); this.busker.dispose(); this.conversationCues.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.soundWaterlife.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.contacts.dispose(); this.lighting.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
 }
 
 /** A room wall/roof can compress the camera into the player's own head.

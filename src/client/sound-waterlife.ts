@@ -1,6 +1,7 @@
 // Original surface-water visitors. Real public ingredients cause them; neither
 // these animals nor the five small scenery fish are people or audio emitters.
 import * as THREE from "three";
+import { FROG_CALL_ENVELOPE } from "../shared/frog-call.js";
 import { PLANET_HALF, PLANET_RADIUS as R, planetBasis, planetCoordsValid, planetDistance, planetPoint, planetStep } from "../shared/planet.js";
 import type { PlacedSound, Position } from "../shared/protocol.js";
 import { authorMark } from "../shared/chorus-signature.js";
@@ -90,6 +91,15 @@ export function findWaterlifeAnchor(source: Pick<PlacedSound, "id" | "x" | "z">,
     return { anchor: null, reason: "no-water-route" };
 }
 const envelope = (time: number, start: number, duration: number): number => time >= start && time <= start + duration ? Math.sin((time - start) / duration * Math.PI) : 0;
+// The recording is a natural pond chorus, not two isolated synthetic croaks.
+// Both throat gestures follow its measured source energy, with a quieter
+// secondary gesture; no viewer-local clock or invented individual call.
+function frogVoiceEnergy(time:number):number {
+    const index=(time%FROG_CALL_ENVELOPE.interval)/FROG_CALL_ENVELOPE.stepSeconds,i=Math.floor(index);
+    const a=FROG_CALL_ENVELOPE.values[i]??0,b=FROG_CALL_ENVELOPE.values[i+1]??0;
+    return a+(b-a)*(index-i);
+}
+
 
 /** The whole pose is a sample of source time, never integrated frame deltas. */
 export function sampleWaterlife(kind: WaterlifeKind, anchor: WaterlifeAnchor, sourceAt: number, serverNow: number, member = 0, reducedMotion = false): WaterlifePose | null {
@@ -105,7 +115,7 @@ export function sampleWaterlife(kind: WaterlifeKind, anchor: WaterlifeAnchor, so
     if (kind === "frog") {
         const cycle = Math.floor(time / 54), t = time % 54, progress = Math.max(0, Math.min(1, (t - 10.5) / .8));
         const phase = anchor.phase + member * .5, radius = Math.min(2.05, Math.max(.6, (anchor.radius ?? DEFAULT_POOL.radius) - .6)) + (cycle % 2 ? -1 : 1) * (-.18 + .36 * (progress * progress * (3 - 2 * progress)));
-        const point = circle(anchor, phase, radius), throat = reducedMotion ? .2 : envelope(time % 18, member === 0 ? .8 : 1.55, member === 0 ? .4 : .6);
+        const point = circle(anchor, phase, radius), throat = reducedMotion ? .2 : frogVoiceEnergy(time) * (member === 0 ? 1 : .83);
         const hop = reducedMotion ? 0 : Math.sin(progress * Math.PI);
         return { ...point, ...blank, height: anchor.height + .035 + hop * .42, yaw: bearing(point, anchor), phase, throat, hop,
             action: hop > .01 ? "hopping" : throat > .1 ? "calling" : "resting", splash: !reducedMotion ? envelope(t, 11.3, 1.6) : 0 };

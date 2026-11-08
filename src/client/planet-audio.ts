@@ -6,9 +6,10 @@ import { PLANET_PLACES, planetDistance, planetPoint } from "../shared/planet.js"
 import type { ChorusWork } from "../shared/chorus.js";
 import type { SoundSignal } from "../shared/sound-response.js";
 import { CHORUS_BAR_SECONDS, chorusBuffer, isChorusInstrument, nextChorusBar, seamlessRecording } from "./chorus-instrument.js";
+import { PLANET_BUSKER } from "./planet-busker.js";
 
 interface Voice { source: AudioBufferSourceNode; gain: GainNode; pan: PannerNode; sound: Audible; }
-interface Audible { id: string; soundId: string; x: number; z: number; at: string; derived?: boolean; origin?: "example"; }
+interface Audible { id: string; soundId: string; x: number; z: number; at: string; derived?: boolean; origin?: "example" | "npc"; }
 // A short event is not a continuously looping texture. The 160 BPM recording
 // of claps is deliberately not offered as a tempo-compatible jam part.
 const EVENTS: Record<string, { length: number; interval: number }> = {
@@ -20,7 +21,8 @@ const EVENTS: Record<string, { length: number; interval: number }> = {
 // Catalogue-authored events retain their own quiet gaps. Textures and the
 // original tempo-compatible scores keep their existing playback behaviour.
 const soundEvent = (id: string): {length:number;interval:number}|undefined => findSound(id)?.playback ?? EVENTS[id];
-export function planetHearingRadius(source: { x: number; z: number; origin?: "example" }): number {
+export function planetHearingRadius(source: { x: number; z: number; origin?: "example" | "npc" }): number {
+    if (source.origin === "npc") return PLANET_BUSKER.hear;
     if (source.origin === "example") return 6;
     const reading = PLANET_PLACES.find(p => p.id === "reading")!;
     const stage = PLANET_PLACES.find(p => p.id === "stage")!;
@@ -54,13 +56,14 @@ export class PlanetAudio {
     private focus: string | null = null;
     private serverNow = Date.now();
     private listener: Position = { x: 0, z: 0, yaw: 0 };
-    constructor(private report: (count: number) => void) { document.addEventListener("visibilitychange", this.visibility); }
+    constructor(private report: (count: number) => void, private options: { busker?: boolean } = {}) { document.addEventListener("visibilitychange", this.visibility); }
     get on(): boolean { return this.enabled; }
     // Enabled is the listener's preference; it is not proof that autoplay or
     // the operating system has allowed this context to run. The interface can
     // offer a fresh gesture instead of claiming that suspended audio is on.
     get playbackState(): "off" | AudioContextState { return this.enabled ? this.ctx?.state ?? "suspended" : "off"; }
     get volumeLevel(): number { return this.volume; }
+    get buskerPlaying(): boolean { return this.voices.has(PLANET_BUSKER.id); }
     private context(): AudioContext {
         if (this.disposed) throw new Error("Audio disposed");
         if (!this.ctx) {
@@ -125,7 +128,7 @@ export class PlanetAudio {
         const next = [...new Map(sounds.filter(sound => sound.origin === "example" && !ended.has(sound.id)
             && !!findSound(sound.soundId) && [sound.x, sound.z, Date.parse(sound.at)].every(Number.isFinite))
             .map(({ id, soundId, x, z, at }): [string, SoundSignal] => [id, { id, soundId, x, z, at, origin: "example" }])).values()];
-        const same = (a: SoundSignal, b: SoundSignal): boolean => a.id === b.id && a.soundId === b.soundId && a.x === b.x && a.z === b.z && a.at === b.at;
+        const same = (a: Pick<Audible,"id"|"soundId"|"x"|"z"|"at">, b: Pick<Audible,"id"|"soundId"|"x"|"z"|"at">): boolean => a.id === b.id && a.soundId === b.soundId && a.x === b.x && a.z === b.z && a.at === b.at;
         const previous = this.examples ?? [];
         // Clearing then quickly showing examples cannot release an old decode.
         // Identical shared refreshes do not starve a legitimate pending load.
@@ -149,7 +152,12 @@ export class PlanetAudio {
             return child && parent && child.byId !== parent.byId;
         })).map(work => ({ id: "@chorus:" + work.id, soundId: "chorus-harmony", x: work.x, z: work.z, at: work.at, derived: true }));
         const realIds = new Set(this.sources.map(source => source.id));
-        return [...this.sources, ...support, ...(this.examples ?? []).filter(source => !realIds.has(source.id))];
+        // The requested local performer has no author, database row, work or
+        // response. Nearby real guitar takes his place rather than doubling.
+        const playerGuitar=this.sources.some(source=>!source.whileIn&&source.soundId==="guitar"
+            &&planetDistance(source,this.listener)<planetHearingRadius(source));
+        const busker:Audible[]=this.options.busker&&!playerGuitar?[{...PLANET_BUSKER,origin:"npc"}]:[];
+        return [...this.sources, ...support, ...(this.examples ?? []).filter(source => !realIds.has(source.id)),...busker];
     }
     private visibility = (): void => {
         if (document.hidden) { this.generation++; this.stopAll(); this.stopPreview(); }
@@ -165,7 +173,7 @@ export class PlanetAudio {
         const base = sound.derived ? .26 : isChorusInstrument(sound.soundId) ? .72 : soundEvent(sound.soundId) ? .28 : .42;
         const localFocus = this.focus && this.focus !== sound.id && !sound.derived ? .12 : 1;
         const headroom = 1 / Math.sqrt(Math.max(1, this.wanted.size / 3));
-        return base * spatial * localFocus * headroom * (sound.origin === "example" ? .5 : 1);
+        return base * spatial * localFocus * headroom * (sound.origin === "example" ? .5 : sound.origin === "npc" ? .55 : 1);
     }
     frame(position: Position, camera: THREE.Camera, serverNow: number): void {
         this.listener = position; this.serverNow = serverNow;
@@ -174,7 +182,7 @@ export class PlanetAudio {
             .filter(item => item.distance < planetHearingRadius(item.sound))
             // Existing in-range player work takes the mix before examples,
             // even when an example happens to sit closer to this listener.
-            .sort((a, b) => Number(a.sound.origin === "example") - Number(b.sound.origin === "example")
+            .sort((a, b) => (a.sound.origin === "npc"?2:a.sound.origin === "example"?1:0) - (b.sound.origin === "npc"?2:b.sound.origin === "example"?1:0)
                 || a.distance - b.distance || a.sound.id.localeCompare(b.sound.id));
         // A real duet's low answer occupies one seat inside the eight-voice cap.
         const support = nearby.find(item => item.sound.derived);
@@ -211,7 +219,7 @@ export class PlanetAudio {
             const source = ctx.createBufferSource(), gain = ctx.createGain(), pan = ctx.createPanner();
             source.buffer = buffer;
             pan.panningModel = "HRTF"; pan.distanceModel = "inverse"; pan.refDistance = 2; pan.maxDistance = 100; pan.rolloffFactor = 0;
-            const p = planetPoint(sound.x, sound.z, .55);
+            const p = planetPoint(sound.x, sound.z, sound.origin === "npc" ? PLANET_BUSKER.height : .55);
             pan.positionX.value = p.x; pan.positionY.value = p.y; pan.positionZ.value = p.z;
             gain.gain.value = this.gainFor(sound, planetDistance(sound, this.listener));
             source.connect(gain).connect(pan).connect(this.worldGain!);

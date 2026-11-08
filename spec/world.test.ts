@@ -127,7 +127,7 @@ describe("sounds people leave (ADR 011)", () => {
       // Keep the exact original-score and nature-event sets explicit. Neither
       // grants unknown recordings a way around the Commons/CC0 checks.
       const score = ["chorus-chords", "chorus-pulse", "chorus-bells"].includes(kind.id);
-      const waterEvent = ["pond-bubbles", "pond-frogs", "whale-song"].includes(kind.id);
+      const waterEvent = ["pond-bubbles", "whale-song"].includes(kind.id);
       const original = score || waterEvent;
       const entry = manifest.assets.find((a) => a.id === `${original ? "original" : "commons"}-${kind.id}`);
       expect(entry, kind.id).toBeDefined();
@@ -145,11 +145,19 @@ describe("sounds people leave (ADR 011)", () => {
       }else{
         expect(entry!.rights).toMatch(/^(CC0|Public domain)/);
         expect(entry!.source).toMatch(/commons\.wikimedia\.org/);
+        if(kind.id === "pond-frogs"){
+          expect(entry).toMatchObject({rights:"CC0 1.0 (public domain dedication)",publicAllowed:true,
+            sourceSha1:"e482140e86da6d21fd145fff77bacffd6e1f84f1",
+            licenseUrl:"https://creativecommons.org/publicdomain/zero/1.0/",
+            processor:{script:"scripts/process-pond-frogs.mjs",pitchOrSpeedChanged:false},playback:kind.playback});
+          expect(entry!.source).toContain("Bad Waldliesborn - Brandscherenteich.oga");
+          expect(createHash("sha256").update(readFileSync(entry!.path)).digest("hex")).toBe(entry!.sha256);
+        }
       }
       const res = await fetch(new URL(soundUrl(kind.id), baseUrl));
       expect(res.status, kind.id).toBe(200);
       expect(res.headers.get("content-type")).toBe("audio/mpeg");
-      if(original)expect(createHash("sha256").update(new Uint8Array(await res.arrayBuffer())).digest("hex")).toBe(entry!.sha256);
+      if(original || kind.id === "pond-frogs")expect(createHash("sha256").update(new Uint8Array(await res.arrayBuffer())).digest("hex")).toBe(entry!.sha256);
     }
     expect((await fetch(new URL("/assets/sounds/../../package.json", baseUrl))).status).toBe(404);
   });

@@ -113,8 +113,12 @@ describe("real sounds invite life to the actual pond and sea", () => {
             expect(life.state.find(s => s.kind === "frog")?.action).toBe("calling");expect(mesh(life, "waterlife-bubbles").count).toBe(5);
             const frogs = life.root.children.filter(child => child.name === "sound-born-frog");
             expect(frogs[0].getObjectByName("frog-calling-throat")!.scale.y).toBeGreaterThan(.13);
-            expect(frogs[1].getObjectByName("frog-calling-throat")!.scale.y).toBeCloseTo(.065);
-            life.frame(at + 1850);expect(frogs[1].getObjectByName("frog-calling-throat")!.scale.y).toBeGreaterThan(.13);expect(life.state.find(s => s.kind === "frog")?.action).toBe("calling");
+            expect(frogs[1].getObjectByName("frog-calling-throat")!.scale.y).toBeGreaterThan(.11);
+            // A real pond chorus now drives both throats; silence returns
+            // outside its bounded recorded phrase, not two invented pulses.
+            life.frame(at + 500);for(const model of frogs)expect(model.getObjectByName("frog-calling-throat")!.scale.y).toBeCloseTo(.065);
+            life.frame(at + 4100);for(const model of frogs)expect(model.getObjectByName("frog-calling-throat")!.scale.y).toBeCloseTo(.065);
+            life.frame(at + 1850);expect(frogs[1].getObjectByName("frog-calling-throat")!.scale.y).toBeGreaterThan(.11);expect(life.state.find(s => s.kind === "frog")?.action).toBe("calling");
             life.frame(at + 8000);expect(mesh(life, "waterlife-bubbles").count).toBe(0);expect(life.state.find(s => s.kind === "frog")?.action).toBe("resting");
             const pads = Array.from(mesh(life, "waterlife-lily-pads").instanceMatrix.array);
             life.frame(at + 10_900);expect(life.state.find(s => s.kind === "frog")?.action).toBe("hopping");expect(life.state.find(s => s.kind === "frog")?.height!).toBeGreaterThan(.45);

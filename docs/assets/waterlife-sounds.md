@@ -1,4 +1,80 @@
-# Original water-life sound illustrations
+# Water-life audio sources and illustrations
+
+## Frog correction requested by the author, 8 November 2026
+
+The author reported that the synthesized frog sound was wrong. The earlier
+bounded peaks, deterministic waveform and automated playback checks did not
+establish a recognizable or satisfactory frog timbre. That synthesized voice
+has been removed from the active renderer and replaced with an actual pond-frog
+chorus. No claim is made that another numerical synthesis adjustment solved the
+author's listening objection.
+
+The replacement comes from [Bad Waldliesborn — Brandscherenteich](https://commons.wikimedia.org/wiki/File:Bad_Waldliesborn_-_Brandscherenteich.oga),
+recorded by **Ath** on 14 June 2021 and explicitly dedicated under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Commons' official
+page and `imageinfo` metadata both identify the recording and its source SHA-1:
+`e482140e86da6d21fd145fff77bacffd6e1f84f1`. The downloaded 2,205,406-byte
+48 kHz stereo FLAC-in-Ogg original matched that checksum before processing.
+This is a real frog chorus in a recorded pond, not a claim that the fictional
+world or its individual stylized frogs were recorded there. No species is
+invented from the source's general description.
+
+A natural 3.2-second phrase from source time 0.4 seconds now begins at cycle
+time 0.8 seconds and ends at 4.0 seconds. Its internal rhythm and pitch remain
+unchanged. Processing uses mono 44.1 kHz, gentle 70 Hz high-pass and 6500 Hz
+low-pass filters, 35/150 ms edge fades and a single linear peak scale to 0.30.
+The existing 4.5-second event window and 18-second cycle stay unchanged, with
+real silence after the phrase. The revised MP3 is **92,104 bytes**, with SHA-256
+`a1204d6d0d102f47a4b63266a623442dcc6e5651700a5611499b68fdb52e880e`.
+
+The natural chorus is not sliced into the earlier invented two-call pattern.
+`src/shared/frog-call.ts` contains the processed recording's normalized 100 ms
+RMS envelope, including silence, so the 3D response can follow source energy.
+It does not identify two isolated animal vocalizations.
+
+Reproduce from the verified original using:
+
+```sh
+node scripts/process-pond-frogs.mjs .cache/frog-voice/pond-chorus.oga
+```
+
+The processor verifies the original SHA-1 before decoding, records its licence,
+source and processing parameters in `commons-pond-frogs`, and regenerates the
+matching visual-energy envelope. The retired `original-pond-frogs` hash remains
+under `superseded` with the author's rejection reason; it is not advertised as
+the current file. The public sound ID `pond-frogs`, existing contributions and
+their coordinates/history remain intact. Bubble and whale audio bytes are
+unchanged. Their synthesis module no longer generates or overwrites frogs.
+
+Other evaluated sources were not shipped: Rabe19's public-domain common-frog
+file decoded with peaks over full scale, and the public-domain Leptopelis
+recording was lower-rate material. Freesound had official CC0 candidates, but
+its original downloads require login; no login or download restriction was
+bypassed. The chosen Commons source was directly available with a published
+checksum and an explicit CC0 dedication.
+
+The coding agent has **not heard or artistically approved this replacement**.
+The author's earlier rejection is actual listening feedback; the replacement
+still needs their audition. Real source identity, successful decoding and
+waveform measurements cannot guarantee that its timbre suits the intended
+experience. The source original and processed WAV/MP3 are retained locally for
+that comparison in `.cache/frog-voice/` and `public/assets/sounds/pond-frogs.mp3`.
+
+Current machine verification fully decoded the replacement as mono 44.1 kHz
+MP3: exactly 793800 samples / 18 seconds, decoded peak -10.34 dBFS, and zero
+energy in the leading 0.7 seconds and after 4.1 seconds. The revised focused
+audio suite passed 23 checks in 303 ms, including real-file hashes, licence
+identity, transparent supersession, waveform-preserving phrase preparation,
+matching RMS cues and the existing mute/preview/load-cancellation contracts.
+The cached rejected synthetic file fails the new asset's hash check, providing
+an offline regression control without mutating the active file. These results
+do not turn the pending author audition into a passing listening verdict.
+Raw records are `.cache/frog-voice/focused-unit-tests.log` and
+`.cache/frog-voice/decoded-verification.json`. A short local listening handoff is
+`.cache/frog-voice/frog-audition.wav` (the 4.5-second event without its long
+inter-cycle padding). Earlier evidence below concerns the retired first version.
+
+## Initial procedural version: historical record, frog superseded
 
 The requested direction is fish releasing bubbles, frog croaks and whale sounds
 connected to environmental changes. These three assets are original procedural

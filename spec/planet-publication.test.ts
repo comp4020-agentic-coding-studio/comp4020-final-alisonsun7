@@ -33,7 +33,7 @@ function controller(): { harness: Harness; acknowledge(): void } {
   expect(snippets, "the test must execute the actual controller functions and complete SSE handler").toHaveLength(4);
   const implementation = ts.transpileModule(snippets.join("\n"), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
   const audio = Object.create(PlanetAudio.prototype) as PlanetAudio;
-  Object.assign(audio, { sources: [], works: [], seenRemoved: new Set(), voices: new Map() });
+  Object.assign(audio, { sources: [], works: [], seenRemoved: new Set(), voices: new Map(), options: {busker:false}, listener:{x:0,z:0,yaw:0} });
   let acknowledge!: () => void;
   const ack = new Promise(resolve => { acknowledge = () => resolve({ ok: true, sound: { ...child } }); });
   const harness = new Function("audio", "ack", "root", "child", `

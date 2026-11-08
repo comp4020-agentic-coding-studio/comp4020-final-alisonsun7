@@ -4,7 +4,7 @@ import { renderAbout, renderExplore, renderLanding, renderNotFound, renderReadme
 import { log } from "./log.js";
 import * as sessions from "./sessions.js";
 import { SCENES, findMode, findScene, findZone, liveMode } from "./shared/catalog.js";
-import { presentation } from "./shared/presentation.js";
+import { retiredPresentationHref } from "./shared/presentation.js";
 import { AVATARS, type Avatar } from "./shared/protocol.js";
 import { clearCookie, createUser, sessionCookie, userFromRequest } from "./users.js";
 
@@ -33,10 +33,6 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/sound-connections.js": js("/client/sound-connections.js"),
   "/client/sound-residents.js": js("/client/sound-residents.js"),
   "/client/view-mode.js": js("/client/view-mode.js"),
-  "/client/flat-world.js": js("/client/flat-world.js"),
-  "/client/flat-art.js": js("/client/flat-art.js"),
-  "/client/presentation-handoff.js": js("/client/presentation-handoff.js"),
-  "/shared/presentation.js": js("/shared/presentation.js"),
   "/client/planet.js": js("/client/planet.js"),
   "/client/chorus-studio.js": js("/client/chorus-studio.js"),
   "/client/chorus-garden.js": js("/client/chorus-garden.js"),
@@ -47,6 +43,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/client/planet-support.js": js("/client/planet-support.js"),
   "/client/planet-build.js": js("/client/planet-build.js"),
   "/client/planet-audio.js": js("/client/planet-audio.js"),
+  "/client/planet-busker.js": js("/client/planet-busker.js"),
   "/client/planet-connections.js": js("/client/planet-connections.js"),
   "/client/planet-social.js": js("/client/planet-social.js"),
   "/client/planet-sound-interactions.js": js("/client/planet-sound-interactions.js"),
@@ -71,6 +68,7 @@ export const STATIC: Record<string, { file: URL; type: string; cache?: string }>
   "/shared/catalog.js": js("/shared/catalog.js"),
   "/shared/protocol.js": js("/shared/protocol.js"),
   "/shared/sounds.js": js("/shared/sounds.js"),
+  "/shared/frog-call.js": js("/shared/frog-call.js"),
   "/shared/sound-response.js": js("/shared/sound-response.js"),
   "/shared/sound-life.js": js("/shared/sound-life.js"),
   "/shared/planet.js": js("/shared/planet.js"),
@@ -189,13 +187,13 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     return send(res, 200, await readFile(new URL("assets-manifest.json", PUBLIC_DIR), "utf8"), "application/json; charset=utf-8");
   }
   if (method === "GET" && pathname === "/about") return html(res, renderAbout());
-  if(method === "GET" && ["/2d", "/2.5d"].includes(pathname)) {
-    const target = new URLSearchParams({view:pathname.slice(1)});if(url.searchParams.get("zone"))target.set("zone",url.searchParams.get("zone")!);
-    res.writeHead(303,{location:"/planet?"+target.toString()});res.end();return;
+  const retainedPlanet = method === "GET" ? retiredPresentationHref(url) : null;
+  if(retainedPlanet) {
+    res.writeHead(303,{location:retainedPlanet});res.end();return;
   }
   if (method === "GET" && pathname === "/planet") {
     const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
-    return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view")), url.searchParams.get("work")));
+    return html(res, renderPlanet(snap, !!user, user, url.searchParams.get("work")));
   }
   if (method === "GET" && pathname === "/explore") {
     const places = SCENES.flatMap((s) => s.modes.map((m) => ({ sceneId: s.id, mode: m.id, ...sessions.placeSummary(s.id, m.id) })));
@@ -217,7 +215,7 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     if (!scene || !mode) return html(res, renderNotFound("That place isn't in Sound of a City."), 404);
     if (scene.id === "planet") {
       const snap = sessions.snapshotFor(sessions.openSession("planet", "weekday"), user);
-      return html(res, renderPlanet(snap, !!user, user, presentation(url.searchParams.get("view")), url.searchParams.get("work")));
+      return html(res, renderPlanet(snap, !!user, user, url.searchParams.get("work")));
     }
     // ?zone= (or the older ?shot=) picks where you arrive
     const zoneAsked = url.searchParams.get("zone") ?? url.searchParams.get("shot") ?? "";

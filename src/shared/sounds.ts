@@ -2,10 +2,10 @@
 // where. Shared by server (validation) and client (drawing, playing), so the
 // two can't disagree.
 //
-// Recordings are Wikimedia Commons CC0/public domain derivatives. The chorus
-// parts and stylized water-life sounds are original procedural project audio,
-// rendered without sampled music or wildlife. Sources and methods are listed
-// in public/assets-manifest.json.
+// Recordings, including the real pond-frog chorus, are Wikimedia Commons
+// CC0/public domain derivatives. Chorus parts, bubbles and whale illustrations
+// are original procedural project audio, without sampled music or wildlife.
+// Sources and methods are listed in public/assets-manifest.json.
 
 // What makes a sound, after Bernie Krause: the land and water, animals, or
 // people. Each family has a colour, so a place with many kinds of sound is

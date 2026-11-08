@@ -1,8 +1,5 @@
 // Little Chorus: cookie identity, real SSE, durable sounds,
 // ephemeral nearby words and authoritative shared restroom routines.
-import { FlatWorld } from "./flat-world.js";
-import { presentation, presentationHref } from "../shared/presentation.js";
-import { enterPresentation, leavePresentation } from "./presentation-handoff.js";
 import { PlanetWorld } from "./planet-world.js";
 import { PlanetSocial } from "./planet-social.js";
 import { PlanetAudio } from "./planet-audio.js";
@@ -29,9 +26,7 @@ const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) 
 const boot = JSON.parse($("planet-boot").textContent!) as {
     snapshot: Snapshot;
     joined: boolean;
-    view?: string;
 };
-const visualView = presentation(boot.view), flat = visualView !== "3d";
 let snapshot = boot.snapshot, connected = false;
 let chorus: ChorusWork[] = snapshot.chorus ?? [];
 const stage = $("planet-stage"), notice = $("planet-notice"), tools = $<HTMLDialogElement>("planet-tools-panel"), arrival = $<HTMLDialogElement>("planet-join");
@@ -56,13 +51,14 @@ let placementPlan: { soundId: string; parent: SoundReference | null; target: Pos
 let publicSoundPending = false;
 const invitedWork = invitationWork(new URLSearchParams(location.search).get("work"));
 function say(text: string): void { notice.textContent = text; notice.hidden = false; clearTimeout(noticeTimer); noticeTimer = setTimeout(() => notice.hidden = true, 8000); }
-const audio = new PlanetAudio(count => stage.dataset.voices = String(count));
+const audio = new PlanetAudio(count => stage.dataset.voices = String(count),{busker:true});
 audio.setVolume(.7);
 const routineAudio = new RoutineAudio({ distanceBetween: planetDistance, report: count => stage.dataset.npcFlushVoices = String(count) });
 let currentArea = PLANET_PLACES[0];
 const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l => {
         here = { x: l.x, z: l.z, yaw: l.yaw };
         audio.frame(here, l.camera, l.serverNow);
+        stage.dataset.buskerVoice=String(Number(audio.buskerPlaying));
         routineAudio.frame(npcs, here, audio.on, l.serverNow);
         soundInteractions?.frame();
         studio.frame();
@@ -80,26 +76,25 @@ const worldOptions: ConstructorParameters<typeof PlanetWorld>[1] = { listen: l =
         else if(id)studio.showJournal(id);else openLibrary();
     },
     interaction: cue => { const button = $("planet-interact");button.hidden = !cue;button.textContent = cue?.action ?? "Meet the kangaroo";button.setAttribute("aria-label", cue ? cue.label + ": " + cue.action : "Meet the kangaroo"); } };
-const world = flat ? new FlatWorld(stage, worldOptions, visualView) : new PlanetWorld(stage, worldOptions);
+const world = new PlanetWorld(stage, worldOptions);
 world.setSelf(snapshot.you);
 world.setNpcs(npcs);
 world.setEnvironment(snapshot.environment, snapshot.serverNow);
 world.setContributions([...sounds.values()]);
 audio.setAll([...sounds.values()]);
 try {
-    world.setViewMode(!flat && localStorage.getItem("soundfolk-view") === "first" ? "first" : "third");
+    world.setViewMode(localStorage.getItem("soundfolk-view") === "first" ? "first" : "third");
 }
 catch { }
 let drawnViewState = "";
 function updateView(): void {
-    const state = flat ? "flat:" + String(world.cameraDistance >= 20) : "3d:" + world.viewMode;
+    const state = "3d:" + world.viewMode;
     if(state === drawnViewState)return;
     drawnViewState = state;
     const button = $("planet-view");
-    if(flat){const overview=world.cameraDistance>=20;button.querySelector("span")!.textContent=overview?"Follow me":"Village overview";button.setAttribute("aria-pressed",String(overview));button.setAttribute("aria-label",overview?"Follow my character":"See the whole village");button.title=overview?"Follow my character":"See the whole village";return;}
     button.querySelector("span")!.textContent = world.viewMode === "third" ? "Third person" : "First person";button.setAttribute("aria-pressed", String(world.viewMode === "third"));button.setAttribute("aria-label", world.viewMode === "third" ? "Third person; switch to first person" : "First person; switch to third person");
 }
-$("planet-view").onclick = () => { if(flat)world.setCameraDistance(world.cameraDistance<20?26:8);else world.setViewMode(world.viewMode === "third" ? "first" : "third");updateView();world.focus(); };
+$("planet-view").onclick = () => { world.setViewMode(world.viewMode === "third" ? "first" : "third");updateView();world.focus(); };
 updateView();
 const zoomControls=document.createElement("div");zoomControls.className="planet-zoom";zoomControls.setAttribute("aria-label","Camera distance");
 for(const [id,label,text,delta]of [["planet-zoom-in","Camera closer","+",-2],["planet-zoom-out","See more of the world","−",2]] as const){const b=document.createElement("button");b.type="button";b.id=id;b.setAttribute("aria-label",label);b.title=label;b.textContent=text;b.onclick=()=>{world.setViewMode("third");world.setCameraDistance(world.cameraDistance+delta);updateView();world.focus();};zoomControls.append(b);}stage.append(zoomControls);
@@ -184,6 +179,11 @@ for (const p of PLANET_PLACES) {
     b.onclick = () => { hide(tools); world.goTo(p.id); lastSent = ""; setTimeout(() => world.focus(), 0); };
     $("planet-destinations").append(b);
 }
+const visitMateo=button("Visit Mateo by the sea",()=>afterDialogClose(tools,()=>{
+    cancelReply();if(world.visitBusker()){lastSent="";world.focus();}else say("The little path is busy. Try again in a moment.");
+}));
+visitMateo.id="planet-visit-mateo";visitMateo.className="planet-destination";
+$("planet-destinations").append(visitMateo);
 const scene = findScene("planet")!;
 const environmentPanel = new EnvironmentPanel({ scene, apply: async (draft, revision): Promise<ApplyEnvironmentResult> => {
         if (!connected)
@@ -274,7 +274,7 @@ function renderShared(): void {
         remove.disabled = !boot.joined || planetDistance(s, here) > 4;
         card.append(h, p, face, answer, view, remove);
         const watched = {"harbour-boat":"boat","pond-bubbles":"fish","pond-frogs":"frogs","whale-song":"whale"}[s.soundId];
-        if(!flat&&watched){
+        if(watched){
             const effect=document.createElement("p");effect.textContent=soundLifeEffect(s.soundId);
             const watch=button("Watch the " + watched,()=>afterDialogClose(shared,()=>{if(!watchSoundEffect(s.id))say(`That ${watched} is not visible here. Choose a live sound near the water.`);}));watch.dataset.planetWatch="";
             card.append(effect,watch);
@@ -397,10 +397,10 @@ async function publishPublicSound(id: string): Promise<string | null> {
     try { return await leaveSound(id); }
     finally { publicSoundPending = false;setTimeout(refreshCreationAccess, 0); }
 }
-const library = new SoundLibrary({ effect:flat?undefined:soundLifeEffect,zone: () => ({ id: currentArea.id, title: currentArea.title }), listen: id => audio.preview(id), stop: () => audio.stopPreview(), leave: publishPublicSound, cancelReply: () => {draftRevision++; reply = null; operation = null; library.setReply(null); }, close: ()=>{draftRevision++;restore();} });
+const library = new SoundLibrary({ effect:soundLifeEffect,zone: () => ({ id: currentArea.id, title: currentArea.title }), listen: id => audio.preview(id), stop: () => audio.stopPreview(), leave: publishPublicSound, cancelReply: () => {draftRevision++; reply = null; operation = null; library.setReply(null); }, close: ()=>{draftRevision++;restore();} });
 stage.append(library.element);
 const studio = new ChorusStudio(stage, {
-    effects:flat?()=>null:soundLifeEffect,
+    effects:soundLifeEffect,
     minimise: () => soundInteractions?.dismiss(),
     at: () => world.at, you: () => snapshot.you, ready: () => boot.joined && connected,
     preview: id => audio.preview(id), stop: () => audio.stopPreview(), publish: publishPublicSound,
@@ -458,14 +458,13 @@ function receiveChorus(works: readonly ChorusWork[]): void {
 receiveChorus(chorus);
 const examplesSetting=$<HTMLInputElement>("planet-examples");examplesSetting.checked=examplesEnabled;
 function refreshSoundLife():void{
-    const active=activeWorldExamples(exampleBlueprints,publicSounds(),!flat&&examplesEnabled);
+    const active=activeWorldExamples(exampleBlueprints,publicSounds(),examplesEnabled);
     audio.setExamples(active);if(world instanceof PlanetWorld)world.setExamples(active);
     stage.dataset.soundExamples=JSON.stringify(active);soundDiscovery?.frame();
 }
 function setExamplesEnabled(enabled:boolean):void{examplesEnabled=enabled;examplesSetting.checked=enabled;try{localStorage.setItem("little-chorus-examples",enabled?"on":"off");}catch{}refreshSoundLife();}
 examplesSetting.onchange=()=>setExamplesEnabled(examplesSetting.checked);
-if(flat){$("planet-examples-label").hidden=true;$("planet-examples-note").hidden=true;}
-else soundDiscovery=new SoundDiscovery(stage,{at:()=>world.at,sources:publicSounds,blueprints:()=>exampleBlueprints,enabled:()=>examplesEnabled,setEnabled:setExamplesEnabled,
+soundDiscovery=new SoundDiscovery(stage,{at:()=>world.at,sources:publicSounds,blueprints:()=>exampleBlueprints,enabled:()=>examplesEnabled,setEnabled:setExamplesEnabled,
     listen:id=>audio.preview(id),stop:()=>audio.stopPreview(),create:id=>{cancelReply();openLibrary(false,id);},watch:watchSoundEffect});
 refreshSoundLife();
 const placementIntent = document.createElement("aside");placementIntent.className="chorus-placement-intent";placementIntent.hidden=true;
@@ -700,7 +699,7 @@ $<HTMLFormElement>("planet-join-form").onsubmit = async (e) => {
             error.textContent = data.error ?? "Choose a name and character.";
             return;
         }
-        location.assign(invitationHref(invitedWork, presentationHref(visualView)));
+        location.assign(invitationHref(invitedWork));
     }
     catch {
         const error = $("planet-join-error");
@@ -723,13 +722,6 @@ $("chorus-notebook").onclick = () => afterDialogClose(tools, () => studio.showJo
 $<HTMLInputElement>("chorus-volume").oninput = e => {audio.setVolume(Number((e.target as HTMLInputElement).value)/100);updateSoundControl();};
 $("chorus-overview").onclick = () => {const overview=world.cameraDistance<20;world.setViewMode("third");world.setCameraDistance(overview?26:8);$("chorus-overview").setAttribute("aria-pressed",String(overview));$("chorus-overview").textContent=overview?"Back to my place":"World overview";world.focus();};
 document.querySelectorAll<HTMLButtonElement>("#chorus-travel [data-place]").forEach(b=>b.onclick=()=>{cancelReply();world.goTo(b.dataset.place!);world.setCameraDistance(8);lastSent="";world.focus();});
-document.querySelectorAll<HTMLAnchorElement>(".planet-presentations a[data-presentation]").forEach(link=>link.onclick=event=>{
-    event.preventDefault();const next=presentation(link.dataset.presentation);
-    if(next===visualView){if(tools.open)hide(tools);else world.focus();return;}
-    try {leavePresentation(sessionStorage,next,world.at,snapshot.you?.id??null,Date.now());}catch{}
-    location.assign(presentationHref(next));
-});
-try {const handoff=enterPresentation(sessionStorage,visualView,snapshot.you?.id??null,Date.now());if(handoff)world.correctPosition(handoff);}catch{}
 const startPlace = new URLSearchParams(location.search).get("zone");
 if (startPlace)
     world.goTo(startPlace);

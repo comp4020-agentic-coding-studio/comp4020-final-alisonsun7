@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Original, stylized water-life audio, authored for Little Chorus. These are
-// procedural illustrations, never presented as fish, frog or whale recordings.
+// Original bubble and whale illustrations, authored for Little Chorus.
+// Pond frogs now uses a licensed field recording: process-pond-frogs.mjs.
 // No downloaded samples, synthesis package or network access is used.
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -10,7 +10,6 @@ import { pathToFileURL } from "node:url";
 
 export const WATERLIFE_SOUNDS = [
   { id: "pond-bubbles", label: "Pond bubbles", family: "geophony", zones: ["pond", "tide", "creek"], length: 3, interval: 12, seed: 802012, peak: .32 },
-  { id: "pond-frogs", label: "Pond frogs", family: "biophony", zones: ["pond", "green", "creek"], length: 4.5, interval: 18, seed: 802018, peak: .30 },
   { id: "whale-song", label: "Whale song", family: "biophony", zones: ["tide", "pier", "beach"], length: 7.5, interval: 32, seed: 802032, peak: .26 },
 ];
 const TAU = Math.PI * 2;
@@ -55,27 +54,6 @@ export function renderWaterlifeSound(id, sampleRate = 44100) {
         water += .11 * (noise() - water);
         const body = Math.sin(phase) + .13 * Math.sin(phase * 2.03);
         return level * envelope(t, duration, .004, .045) * Math.exp(-t * 25) * (body + .07 * water);
-      });
-    }
-  } else if (id === "pond-frogs") {
-    // Two short, rough, vowel-like croaks. Their exact onset times are shared
-    // with the source-derived frogs' throat gestures, not random client time.
-    for (const [at, duration, pitch] of [[.8, .44, 158], [1.55, .48, 136]]) {
-      let phase = 0, filtered = 0;
-      write(at, duration, t => {
-        const p = t / duration;
-        const fundamental = pitch * (1.14 - .26 * smooth(p)) * (1 + .012 * Math.sin(TAU * 41 * t));
-        phase += TAU * fundamental / sampleRate;
-        let vowel = 0;
-        for (let h = 1; h <= 10; h++) {
-          const frequency = h * fundamental;
-          const formant = .15 + .8 * Math.exp(-(((frequency - 570) / 250) ** 2))
-            + .5 * Math.exp(-(((frequency - 1050) / 310) ** 2));
-          vowel += formant * Math.sin(h * phase + .16 * Math.sin(TAU * 23 * t)) / h;
-        }
-        filtered += .16 * (noise() - filtered);
-        const pulses = .22 + .78 * (.5 + .5 * Math.sin(TAU * 33 * t)) ** 1.65;
-        return envelope(t, duration, .025, .075) * pulses * (vowel + .055 * filtered);
       });
     }
   } else {

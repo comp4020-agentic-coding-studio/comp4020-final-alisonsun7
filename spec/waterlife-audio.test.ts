@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PlanetAudio } from "../src/client/planet-audio.ts";
 import { findSound } from "../src/shared/sounds.ts";
+import { FROG_CALL_ENVELOPE } from "../src/shared/frog-call.ts";
 import type { PlacedSound } from "../src/shared/protocol.ts";
 
 const renderer = await import(new URL("../scripts/render-waterlife-sounds.mjs", import.meta.url).href) as {
@@ -11,7 +12,13 @@ const renderer = await import(new URL("../scripts/render-waterlife-sounds.mjs", 
   renderWaterlifeSound(id: string, sampleRate?: number): Float32Array;
   measureWaterlifePcm(samples: Float32Array, rate: number, length: number): Record<string, number>;
 };
-const definitions = renderer.WATERLIFE_SOUNDS;
+const recording = await import(new URL("../scripts/process-pond-frogs.mjs", import.meta.url).href) as {
+  FROG_RECORDING: { id: string; label: string; family: string; zones: string[]; length: number; interval: number;
+    from: number; seconds: number; at: number; peak: number; sourceSha1: string; sourceUrl: string; licenseUrl: string };
+  prepareFrogCycle(source: Float32Array, sampleRate?: number): Float32Array;
+  frogCallEnvelope(samples: Float32Array, sampleRate?: number): {stepSeconds:number;interval:number;values:number[]};
+};
+const definitions = [...renderer.WATERLIFE_SOUNDS, recording.FROG_RECORDING];
 const origin = Date.parse("2026-11-08T09:00:00Z"), camera = new THREE.PerspectiveCamera();
 const listener = { x: 0, z: 0, yaw: 0 };
 const contribution = (id: string): PlacedSound => ({ id: `water-${id}`, soundId: id, x: 1, z: 0,
@@ -23,8 +30,8 @@ function rms(samples: Float32Array, rate: number, from: number, to: number): num
   return Math.sqrt(sum / count);
 }
 
-describe("the original, sparse water-life illustrations", () => {
-  it.each(definitions)("reproduces bounded, zero-ended $id PCM with a real quiet interval", definition => {
+describe("the sparse water-life assets and their honest sources", () => {
+  it.each(renderer.WATERLIFE_SOUNDS)("reproduces bounded, zero-ended $id PCM with a real quiet interval", definition => {
     const rate = 12000, a = renderer.renderWaterlifeSound(definition.id, rate), b = renderer.renderWaterlifeSound(definition.id, rate);
     expect(createHash("sha256").update(new Uint8Array(a.buffer)).digest("hex"))
       .toBe(createHash("sha256").update(new Uint8Array(b.buffer)).digest("hex"));
@@ -40,13 +47,32 @@ describe("the original, sparse water-life illustrations", () => {
       zones: definition.zones, playback: { length: definition.length, interval: definition.interval } });
   });
 
-  it("places the two frog croaks at the authored visual cues and leaves a quiet gap", () => {
-    const rate = 12000, samples = renderer.renderWaterlifeSound("pond-frogs", rate);
-    expect(rms(samples, rate, 0, .79)).toBe(0);
-    expect(rms(samples, rate, .84, 1.1)).toBeGreaterThan(.035);
-    expect(rms(samples, rate, 1.32, 1.54)).toBeLessThan(.00001);
-    expect(rms(samples, rate, 1.59, 1.9)).toBeGreaterThan(.035);
-    expect(rms(samples, rate, 2.3, 4.5)).toBeLessThan(.00001);
+  it("preserves a recorded phrase's timing and relative waveform rather than rebuilding synthetic croaks", () => {
+    const rate = 12000, input = Float32Array.from({ length: rate * 5 }, (_, i) => Math.sin(i * .137) * .05 + Math.sin(i * .023) * .02);
+    const samples = recording.prepareFrogCycle(input, rate), definition = recording.FROG_RECORDING;
+    expect(samples.length).toBe(rate * 18); expect(rms(samples, rate, 0, .8)).toBe(0);
+    expect(rms(samples, rate, .9, 3.8)).toBeGreaterThan(.05); expect(rms(samples, rate, 4, 18)).toBe(0);
+    const offset = Math.round(definition.at * rate), sourceOffset = Math.round(definition.from * rate);
+    const gain = samples[offset + 4000] / input[sourceOffset + 4000];
+    for (const i of [5000, 9000, 15000, 22000, 30000])
+      expect(samples[offset + i]).toBeCloseTo(input[sourceOffset + i] * gain, 7);
+    expect(() => renderer.renderWaterlifeSound("pond-frogs", rate)).toThrow();
+  });
+
+  it("derives bounded 100 ms visual energy from the actual recorded phrase, with silent edges", () => {
+    const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8"));
+    const entry = manifest.assets.find((asset: { id: string }) => asset.id === "commons-pond-frogs");
+    expect(FROG_CALL_ENVELOPE).toEqual(entry.callEnvelope);
+    expect(FROG_CALL_ENVELOPE.stepSeconds).toBe(.1); expect(FROG_CALL_ENVELOPE.interval).toBe(18);
+    expect(FROG_CALL_ENVELOPE.values).toHaveLength(46);
+    expect(FROG_CALL_ENVELOPE.values.slice(0, 8)).toEqual(Array(8).fill(0));
+    expect(FROG_CALL_ENVELOPE.values.slice(40)).toEqual(Array(6).fill(0));
+    expect(Math.max(...FROG_CALL_ENVELOPE.values)).toBe(1);
+    expect(FROG_CALL_ENVELOPE.values.every(value => Number.isFinite(value) && value >= 0 && value <= 1)).toBe(true);
+    const rate = 12000, fixture = new Float32Array(18 * rate); fixture.fill(.1, rate, rate * 2);
+    const energy = recording.frogCallEnvelope(fixture, rate);
+    expect(energy.values.slice(10, 20)).toEqual(Array(10).fill(1));
+    expect(energy.values.slice(20)).toEqual(Array(26).fill(0));
   });
 
   it("keeps bubbles sparse, audible in a short preview, and never calls them fish vocal recordings", () => {
@@ -61,10 +87,11 @@ describe("the original, sparse water-life illustrations", () => {
   it("rejects invalid identifiers and rates rather than creating arbitrary assets", () => {
     expect(() => renderer.renderWaterlifeSound("unknown-waterlife")).toThrow();
     for (const rate of [0, 7999, 96001, NaN, Infinity, 44100.5])
-      expect(() => renderer.renderWaterlifeSound("pond-frogs", rate)).toThrow();
+      expect(() => renderer.renderWaterlifeSound("pond-bubbles", rate)).toThrow();
+    expect(() => recording.prepareFrogCycle(new Float32Array(100))).toThrow();
   });
 
-  it.each(definitions)("ships $id with exact output bytes and transparent original provenance", definition => {
+  it.each(renderer.WATERLIFE_SOUNDS)("ships $id with exact output bytes and transparent original provenance", definition => {
     const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8"));
     const entry = manifest.assets.find((asset: { id: string }) => asset.id === `original-${definition.id}`);
     expect(entry).toMatchObject({ path: `public/assets/sounds/${definition.id}.mp3`, publicAllowed: true,
@@ -85,6 +112,24 @@ describe("the original, sparse water-life illustrations", () => {
       .find((sound: { id: string }) => sound.id === definition.id);
     expect(indexed).toMatchObject({ kind: "now-and-then", seconds: definition.length,
       interval: definition.interval, pause: definition.interval - definition.length, provenance: "original-stylized-synthesis" });
+  });
+
+  it("ships real frogs with verified CC0 source identity and preserves the rejected original as history only", () => {
+    const manifest = JSON.parse(readFileSync("public/assets-manifest.json", "utf8"));
+    const entry = manifest.assets.find((asset: { id: string }) => asset.id === "commons-pond-frogs");
+    expect(manifest.assets.some((asset: { id: string }) => asset.id === "original-pond-frogs")).toBe(false);
+    expect(entry).toMatchObject({ publicAllowed: true, rights: "CC0 1.0 (public domain dedication)",
+      sourceSha1: recording.FROG_RECORDING.sourceSha1, licenseUrl: recording.FROG_RECORDING.licenseUrl,
+      playback: { length: 4.5, interval: 18 }, processor: { script: "scripts/process-pond-frogs.mjs", sampleRate: 44100,
+        from: .4, seconds: 3.2, at: .8, pitchOrSpeedChanged: false },
+      superseded: { id: "original-pond-frogs", sha256: "91401f118d2f7423fa652511202ba8d9f6f755c03bcd32f2be225ae69b9327b4" } });
+    expect(entry.source).toContain("Bad Waldliesborn - Brandscherenteich.oga"); expect(entry.source).toContain("by Ath");
+    expect(entry.processor.sourceSha256).toBe(createHash("sha256").update(readFileSync("scripts/process-pond-frogs.mjs")).digest("hex"));
+    const bytes = readFileSync(entry.path);
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(entry.sha256);
+    expect(entry.sha256).not.toBe(entry.superseded.sha256); expect(bytes.length).toBeLessThan(180000);
+    const indexed = JSON.parse(readFileSync("public/assets/sounds/sounds.json", "utf8")).find((sound: {id:string}) => sound.id === "pond-frogs");
+    expect(indexed.provenance).toBe("commons-cc0-field-recording");
   });
 });
 

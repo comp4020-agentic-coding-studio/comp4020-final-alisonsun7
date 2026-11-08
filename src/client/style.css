@@ -2609,31 +2609,8 @@ h3 {
 /* A minimised work has one reopen action; do not stack a source pill below it. */
 .planet-stage:has(.chorus-dock:not([hidden])) .planet-nearby-reopen { display:none; }
 
-/* Three presentations, one persistent sound world. */
-.planet-bar { grid-template-columns:minmax(0,1fr) auto minmax(0,max-content) auto; }
-.planet-presentations { display:flex;align-items:center;gap:4px;padding:3px;border:1px solid #b2c1ae;border-radius:24px;background:#eeeede; }
-.planet-presentations a { display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:8px 13px;border-radius:21px;color:#3c594c;text-decoration:none;font:600 12px var(--font);transition:background .16s,color .16s; }
-.planet-presentations a[aria-current="page"] { color:#fffbee;background:#385d4c; }
-.planet-presentations a:hover { background:#dce5d4; }
-.planet-presentations a[aria-current="page"]:hover { background:#2c4e3e; }
-.planet-presentations a:focus-visible { outline:3px solid var(--quiet-focus);outline-offset:3px; }
-#planet-presentations-settings { width:max-content;max-width:100%;margin:10px 0; }
-.planet-style-caption { display:block;margin-top:3px;color:#657761;font:500 10px/1.2 var(--font);letter-spacing:.04em; }
-.planet-flat .planet-stage { background:#ece8cf; }
-.planet-flat .planet-stage>canvas { cursor:crosshair; }
-.planet-flat #planet-help .planet-form-note { display:none; }
-.planet-flat .planet-corner { background:#fff9eaeF; }
-.planet-flat .planet-sound-pin { box-shadow:0 3px 12px #34504415; }
+/* The retained 3D world keeps sharing and camera controls in the header. */
 @media(max-width:1180px) {
  .planet-bar { grid-template-columns:minmax(0,1fr) auto; }
- #planet-presentations,.planet-identity { display:none; }
+ .planet-identity { display:none; }
 }
-@media(prefers-reduced-motion:reduce) { .planet-presentations a { transition:none; } }
-
-/* Small sound seeds keep the paper characters visible; focus reveals authors. */
-.planet-flat .planet-sound-pin { width:44px;min-width:44px;max-width:44px;min-height:44px;height:44px;padding:0;place-content:center;border-radius:50%;background:#fff8e9ed;opacity:.96; }
-.planet-flat .planet-sound-pin::before { content:"";display:block;width:17px;height:17px;border:2px solid #6e9b83;border-radius:50%;box-shadow:0 0 0 4px #dbe7c6; }
-.planet-flat .planet-sound-pin::after,.planet-flat .planet-sound-pin strong,.planet-flat .planet-sound-pin span { display:none; }
-.planet-flat .planet-sound-pin:is(:hover,:focus-visible) { width:160px;max-width:160px;height:auto;min-height:48px;padding:7px 12px;border-radius:12px;place-content:initial; }
-.planet-flat .planet-sound-pin:is(:hover,:focus-visible)::before { display:none; }
-.planet-flat .planet-sound-pin:is(:hover,:focus-visible) strong,.planet-flat .planet-sound-pin:is(:hover,:focus-visible) span { display:block; }
