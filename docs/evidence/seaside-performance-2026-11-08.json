@@ -1,0 +1,436 @@
+{
+  "kind": "little-chorus-seaside-performance-local-release",
+  "date": "2026-11-08",
+  "status": "accepted-local-software-candidate-with-device-limit",
+  "sourceApplicationCommit": "9ea60097954d3f5500993c78d3f74ada11bcf7b9",
+  "sourceCommits": [
+    "6ba8b6e",
+    "b70f7cf",
+    "9ea6009"
+  ],
+  "previousApplicationCommit": "3e367ee044546a6b1b51424c83c55f1386523ac0",
+  "branch": "codex/seaside-performance",
+  "rollbackTag": "before-seaside-performance-2026-11-08",
+  "releaseTag": "chorus-seaside-performance-2026-11-08",
+  "scope": "Retained 3D, verified CC0 natural pond chorus and source-energy motion, real local seaside guitarist, evidence-bound first-person drafts; no DB/identity/coordinate migration",
+  "checks": {
+    "typecheckExit": 0,
+    "buildExit": 0,
+    "focusedAudio": {
+      "passed": 23,
+      "seconds": 0.261
+    },
+    "fullSpec": {
+      "passed": 419,
+      "files": 60,
+      "seconds": 73.61,
+      "port": 18951,
+      "independentDatabase": true
+    },
+    "retiredLinksBrowser": {
+      "passed": true,
+      "checks": 12,
+      "port": 18952,
+      "viewports": [
+        [
+          1280,
+          900
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "caveat": "The separate retired-link script uses 1280x900 for its desktop; the combined path uses 1920x1080"
+    },
+    "combinedBrowser": {
+      "passed": true,
+      "checks": 35,
+      "captures": 7,
+      "independentCookieIdentities": 2,
+      "port": 18952,
+      "sourceWrites": 3,
+      "withdrawals": 3,
+      "audioSink": "none (native silent analysis sink)",
+      "nativeDefaultOutputPassed": false,
+      "humanListeningApproval": false,
+      "browserErrors": 0
+    },
+    "actualPromotion": {
+      "allRowsPreserved": true,
+      "tables": 12,
+      "soundHistoryRows": 48,
+      "servedAssets": 67,
+      "port": 18861,
+      "localOnly": true,
+      "readOnlyObserverPassed": true,
+      "retainedPublicSources": 19,
+      "ordinaryResidentRoutes": 12,
+      "shoreRenderSamples": 388,
+      "writes": 0,
+      "errors": 0
+    },
+    "materials": {
+      "bodyWordCounts": {
+        "README.md": 516,
+        "PROCESS.md": 1030,
+        "research-note.md": 673
+      },
+      "guidanceOnlyNotGrade": true,
+      "authorReviewRequired": true,
+      "localLinksChecked": 136,
+      "processCommitObjectsChecked": 10
+    }
+  },
+  "failureScopes": [
+    "Initial scratch server lacks README sibling at compiled realpath; exits before DB creation",
+    "Initial full run417/419 loses review warning/public protocol link; both restored without weakened assertions",
+    "Week-long asset caching requires content-versioned frog URL; earlier 6ba default-output pass cannot cover this newer request",
+    "Two final default-output paths time out; running native clock stalls at0.005333 despite valid PCM/gains",
+    "Independent no-product controls reproduce default stall; native silent sink advances1.72s/nonzero RMS; underlying cause unidentified",
+    "Host ffmpeg dylib failure prevents one diagnostic; native offline decoder measures non-silent original guitar"
+  ],
+  "notEstablished": [
+    "Current physical speaker/default output acceptance",
+    "Human pleasure/recognizability approval of new frog recording or full mix",
+    "Unfamiliar-pair study, physical-phone performance or true next-day return",
+    "Author endorsement and ability to defend the first-person drafts/research position",
+    "Hosted Fly release or main deployment"
+  ],
+  "rollback": {
+    "command": "python3 scripts/local-preview.py --rollback",
+    "workingDirectory": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7",
+    "keepsCurrentDatabase": true,
+    "neverRestoreHistoricalDatabase": true,
+    "doesNotRestorePublicMediaBytes": true
+  },
+  "networkDelivery": {
+    "authorisedIndependentPublicBranch": "codex/seaside-performance",
+    "mainExpectedAndPreDeliveryObserved": "e664fc467c1d0482d1facb2c2514d077c0344d26",
+    "hostedDeployment": false,
+    "globalGitHubConfigurationChanged": false,
+    "finalEvidenceCommit": "Recorded by release tag after committing this index, avoiding a self-referential hash"
+  },
+  "artifacts": [
+    {
+      "path": "seaside-performance/3d-only/3d-only-phone.png",
+      "bytes": 149048,
+      "sha256": "15cabdf2ed89c9029fe5c8fd7ce7347fe6cfee66aed8a05b16bdcca81161d758"
+    },
+    {
+      "path": "seaside-performance/README.md",
+      "bytes": 5666,
+      "sha256": "0e2880462feec70966e7ef7b3f632ad2948ad11f97c09e8b5f1c9730ba6501f5"
+    },
+    {
+      "path": "seaside-performance/SCOPE.md",
+      "bytes": 5224,
+      "sha256": "4a71bf52cb26dfe02277f97a712fd667a8c679f538ff743e2fb0bd8be822d62b"
+    },
+    {
+      "path": "seaside-performance/browser/friends-pond-chorus-phone.png",
+      "bytes": 123796,
+      "sha256": "f7bbb5a46dda072a289784c0872593d1042fb971559eab313275e80c0fdb7846"
+    },
+    {
+      "path": "seaside-performance/browser/mateo-phone.png",
+      "bytes": 156374,
+      "sha256": "fdecdba1a6ef7a57b5bc8938971b47be9c46187f4b26209f2a0d708a882fbf6b"
+    },
+    {
+      "path": "seaside-performance/browser/mateo-playing-desktop.png",
+      "bytes": 518452,
+      "sha256": "3f6cdaf1c510ce76ade08c0790ee0336c9b7796298509ef31fdfdbd0b634fc1e"
+    },
+    {
+      "path": "seaside-performance/browser/mateo-quiet-desktop.png",
+      "bytes": 518540,
+      "sha256": "b8b3cf3da40a9f3daeda14b66673c203f402caf6aa1ca05e8313cb5f25684471"
+    },
+    {
+      "path": "seaside-performance/browser/player-guitar-desktop.png",
+      "bytes": 542767,
+      "sha256": "2582282b3c26e996690cdd10bc909f7b7c2e9473b72f4d4492d13a1ede534b17"
+    },
+    {
+      "path": "seaside-performance/browser/pond-private-listen-phone.png",
+      "bytes": 93056,
+      "sha256": "fc9017c7639da933ff27b1e50bb687783b1adb630669ef73421bb8f3ad88b899"
+    },
+    {
+      "path": "seaside-performance/browser/results.json",
+      "bytes": 38130,
+      "sha256": "1995f00bc3e4e94fa80bbcb5d0db46720da1e6febcc9ae8259d54aad1b629e9c"
+    },
+    {
+      "path": "seaside-performance/browser/withdrawn-history-phone.png",
+      "bytes": 188754,
+      "sha256": "2941c245a2fc529666be7561ae240a8d717c7a2ff38a8aacdfc9ef8f4a18301c"
+    },
+    {
+      "path": "seaside-performance/browser-cache-artifacts/browser-cache.log",
+      "bytes": 1215,
+      "sha256": "f4de8f74b5df08c9e8ebbaa2baf0bbc39db0d6aea12e63bdae0aabb5ca5627a0"
+    },
+    {
+      "path": "seaside-performance/browser-cache-artifacts/failure-Seaside-Ada.png",
+      "bytes": 520317,
+      "sha256": "aab0460cf76e17f661269444670d22407bc3c2763570845875908ea170c8e4f7"
+    },
+    {
+      "path": "seaside-performance/browser-cache-artifacts/mateo-quiet-desktop.png",
+      "bytes": 518776,
+      "sha256": "f3ae778ee0e0801b85d13a98148c18fa72ae849c2fb9c44ac9afd754feebb57b"
+    },
+    {
+      "path": "seaside-performance/browser-cache-artifacts/results.json",
+      "bytes": 11877,
+      "sha256": "5d3ca7ed0a25511c8297dff912f58368966909366f2a197c6e47b76d719730e0"
+    },
+    {
+      "path": "seaside-performance/browser-diagnostic-artifacts/browser-diagnostic.log",
+      "bytes": 1215,
+      "sha256": "0a8978cc0e867a9dd6ace4eac2ba7521531250fac71fe6e3c5ec4a38856e1536"
+    },
+    {
+      "path": "seaside-performance/browser-diagnostic-artifacts/failure-Seaside-Ada.png",
+      "bytes": 514519,
+      "sha256": "f68c5d46ba50554cf39340ae38c0d0f651f2d59089982be854988b6e1a2cf72c"
+    },
+    {
+      "path": "seaside-performance/browser-diagnostic-artifacts/mateo-quiet-desktop.png",
+      "bytes": 517363,
+      "sha256": "c23b224bf711f4ea4ff0ca65d7e082d247f240c1d9fcbd22d32f8cf63c6caf14"
+    },
+    {
+      "path": "seaside-performance/browser-diagnostic-artifacts/results.json",
+      "bytes": 13231,
+      "sha256": "1fe123dd997b8b74fc61f3d6ca7815a380393a3d738e5e32b41f07e0c4cfd901"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/browser-native-analysis.log",
+      "bytes": 2740,
+      "sha256": "905bbd33f82a69d540a64e7d2b4127219fd42f8f0ca82aca2112af2d08b40c7c"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/friends-pond-chorus-phone.png",
+      "bytes": 111709,
+      "sha256": "81a5e440c39c141d1a52f6700dab91f0368c87a8515d5b0830bd75c5a40c399e"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/mateo-phone.png",
+      "bytes": 150603,
+      "sha256": "62fdade3c9392ceb8e06e52a2eb6eb3df0370ed0234e559d5b98c1ce2478296b"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/mateo-playing-desktop.png",
+      "bytes": 517733,
+      "sha256": "523f21a127d4c0bdb0510632833665a6410befeeebb3884b3c9771a2f6f265e8"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/mateo-quiet-desktop.png",
+      "bytes": 522133,
+      "sha256": "51a1a73be9657a5310209eb2d26c0ebc005ac9d6839daf6827999508e4dd6946"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/player-guitar-desktop.png",
+      "bytes": 534430,
+      "sha256": "87f46176bef3fd7498182a3fec54d34f04a255cca786322f8f81b75319d42c99"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/pond-private-listen-phone.png",
+      "bytes": 93116,
+      "sha256": "933293d580805680efc1f1072657c29363ee10f8390a7f9a8c7eb6d861f27a63"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/results.json",
+      "bytes": 49567,
+      "sha256": "90f735907546228b5813ce3edd49c2eaf30f3f5fbf1c39c074c27d4a4a8fe2df"
+    },
+    {
+      "path": "seaside-performance/browser-native-analysis-artifacts/withdrawn-history-phone.png",
+      "bytes": 188852,
+      "sha256": "338c3a041fc7850eb8a6d6f57fc5b5535116ba929564fba506232c8986782c93"
+    },
+    {
+      "path": "seaside-performance/checks/3d-only-browser.log",
+      "bytes": 725,
+      "sha256": "7a559798bd91d3b55e8dad7bf20ce2cf9d1c90e858b0c9c4212837faa89dcd6c"
+    },
+    {
+      "path": "seaside-performance/checks/3d-only-cache-browser.log",
+      "bytes": 725,
+      "sha256": "7a559798bd91d3b55e8dad7bf20ce2cf9d1c90e858b0c9c4212837faa89dcd6c"
+    },
+    {
+      "path": "seaside-performance/checks/3d-only-presentation-entry-green.log",
+      "bytes": 228,
+      "sha256": "17ca91222bdca6974bcd882a2f55187540ef89e790ef68afe749cd922385d6f5"
+    },
+    {
+      "path": "seaside-performance/checks/3d-only-pure-initial.log",
+      "bytes": 3100,
+      "sha256": "13fc885cd5f10d250e7de1bd1f4677d9d832bb7c145b7169a78757f264845123"
+    },
+    {
+      "path": "seaside-performance/checks/audio-device-control-unmuted.json",
+      "bytes": 480,
+      "sha256": "890e47a8597b7380ea30c927919082f128d8924f9c3a788cd801a025c0b91b86"
+    },
+    {
+      "path": "seaside-performance/checks/audio-device-control-unmuted.mjs",
+      "bytes": 2003,
+      "sha256": "093c7189fe83d71dc40ea7b4a21cf435ca9f96c327ba2725da44fe64fb32e7a2"
+    },
+    {
+      "path": "seaside-performance/checks/audio-device-control.json",
+      "bytes": 490,
+      "sha256": "b3f1d00145ecbba1b8c734a1dc7b973cedbcad4a93fbbc230c4e4c88f3548163"
+    },
+    {
+      "path": "seaside-performance/checks/audio-device-control.mjs",
+      "bytes": 1960,
+      "sha256": "44a15857b41c355ecf49f42a9daf2cc7b6f1860427b3312c7b61fc5c0d8051e3"
+    },
+    {
+      "path": "seaside-performance/checks/browser-initial.log",
+      "bytes": 2722,
+      "sha256": "4dc5ba6b0d1571c9ea99060864dda93a04a6b25631a020344af5eb8658c23feb"
+    },
+    {
+      "path": "seaside-performance/checks/build-cache.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "seaside-performance/checks/busker-marine-unit-final.log",
+      "bytes": 240,
+      "sha256": "c6b6fa502242dcd354f57c4a6cabfcca23cd8f9782729c07dd8d6879ae745e74"
+    },
+    {
+      "path": "seaside-performance/checks/busker-marine-unit.log",
+      "bytes": 1451,
+      "sha256": "cd11180088007d5aaa7d1ea6a6414d751fd2b81ae16142dd5ce3067ebf4f5529"
+    },
+    {
+      "path": "seaside-performance/checks/busker-unit.log",
+      "bytes": 240,
+      "sha256": "443a2ca04fc38a14c8feec3101ae13056ca653759a77147e5540bfc3c58f9275"
+    },
+    {
+      "path": "seaside-performance/checks/candidate-runtime.json",
+      "bytes": 1119,
+      "sha256": "9a86cab1f335a72c03c04a3b218a6ca98182cd96336db166a2e3ec27834f9192"
+    },
+    {
+      "path": "seaside-performance/checks/evidence-check-accepted.log",
+      "bytes": 121,
+      "sha256": "3758b38e12cac676bd08a707ccccbcca1b691d731a02541b56fb4dc70d160a57"
+    },
+    {
+      "path": "seaside-performance/checks/frog-cache-unit.log",
+      "bytes": 240,
+      "sha256": "57778fda7a4fdbd852d366d7fcf1f62b463986353d1094200909b721418ca01d"
+    },
+    {
+      "path": "seaside-performance/checks/full-spec-cache.log",
+      "bytes": 1077,
+      "sha256": "b0445e0ac73e54278ebaa92e099175b2b5e1d99778215ee527820837ee5ab90e"
+    },
+    {
+      "path": "seaside-performance/checks/full-spec-final.log",
+      "bytes": 1077,
+      "sha256": "c1c28c965862e8c70d60142ce5f743079c46c21b8f500b32038a9a63e2d7439f"
+    },
+    {
+      "path": "seaside-performance/checks/full-spec-initial.log",
+      "bytes": 7147,
+      "sha256": "fb09494ae1896b4184a198bc2d1d440d281e8266bc0f6787bb6a2f6de4eca286"
+    },
+    {
+      "path": "seaside-performance/checks/guitar-window-rms.json",
+      "bytes": 3307,
+      "sha256": "b276543d37e4cc8218243c412e55710c7a6f80c8e9bbab31e2aeb13c58d5012d"
+    },
+    {
+      "path": "seaside-performance/checks/inspect-guitar.mjs",
+      "bytes": 982,
+      "sha256": "9d84bfb649e4e9369c3590e529634739eacd0066f7e3adcaeec3aaba74686b00"
+    },
+    {
+      "path": "seaside-performance/checks/material-check-accepted.log",
+      "bytes": 1662,
+      "sha256": "27932f439938b3fbf1c25ca8a8426d01e982b088c7f7cd4f7eab57a582d2feca"
+    },
+    {
+      "path": "seaside-performance/checks/typecheck-cache.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "seaside-performance/frog/SCOPE.md",
+      "bytes": 4898,
+      "sha256": "2cac1b3154a143a9b32b5c358104def84093ee2051da52dcc5c044f93f1e4d97"
+    },
+    {
+      "path": "seaside-performance/frog/commons-source-metadata.json",
+      "bytes": 1340,
+      "sha256": "c981284d0efb093c96fed5de89648eb49f3f7eea8c21f518a457c45dd4584582"
+    },
+    {
+      "path": "seaside-performance/frog/decoded-verification.json",
+      "bytes": 1529,
+      "sha256": "e045615a55f440d667326c2e399ce351f3e0a8292257e46ac9c42d452735ef80"
+    },
+    {
+      "path": "seaside-performance/frog/focused-unit-tests.log",
+      "bytes": 240,
+      "sha256": "8a80b2df65523f001d23c505488bd0807e3fb91c832c697adc2601d329f22ce0"
+    },
+    {
+      "path": "seaside-performance/frog/frog-audition.wav",
+      "bytes": 396978,
+      "sha256": "301c6675ad03884fdd90ee013162e6e7bffd313900e4b3211017db74a7e91ab2"
+    },
+    {
+      "path": "seaside-performance/frog/processed-verification.json",
+      "bytes": 3311,
+      "sha256": "82a5b673ab88a8c1b7ec10e78f62f05eef86dcd7e62c08bc778893755bc1ce1a"
+    },
+    {
+      "path": "seaside-performance/frog/rejected-synthetic-audition.wav",
+      "bytes": 441078,
+      "sha256": "26d73a96e75e9db6c81e969f221ff94ba91176db5b95bf183ccdbdf01def93af"
+    },
+    {
+      "path": "seaside-performance/manifest.json",
+      "bytes": 2981,
+      "sha256": "326002a2dc44b63c4c9c890e17ac0cbd6e27d6abeb14829f800d99a29ef8cea1"
+    },
+    {
+      "path": "seaside-performance/promoted/data-preserving-switch.json",
+      "bytes": 8793,
+      "sha256": "b5fa223cd2a862752b1ed9a39b601fdb25d13614e06e32fd70049f261c046445"
+    },
+    {
+      "path": "seaside-performance/promoted/promoted-green-desktop.png",
+      "bytes": 778145,
+      "sha256": "bb2dba87618dc350af093e2ad65bf880a9978a6fb72eff5dad07193dee5f4774"
+    },
+    {
+      "path": "seaside-performance/promoted/promoted-pool-phone.png",
+      "bytes": 148210,
+      "sha256": "144cd52bf70b9bfac9346b5156c9189ea658c1ab4e2830a8d6df62ff8307161f"
+    },
+    {
+      "path": "seaside-performance/promoted/results.json",
+      "bytes": 185136,
+      "sha256": "4f6a7dda19939f6eff1d04227bdc99002f93327ad5cf10a379ba5b121f8dbcb6"
+    },
+    {
+      "path": "seaside-performance/promoted/switch.log",
+      "bytes": 248,
+      "sha256": "5d41f30bebddb8db515fc72b15ba34b878d44f540897b3788a757b6f051345ad"
+    }
+  ]
+}

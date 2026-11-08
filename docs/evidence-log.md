@@ -3388,3 +3388,43 @@ The new [hashed evidence index](evidence/waterlife-2026-11-08.json) preserves th
 baseline, rejected phone frames, final results and scopes. Ear listening,
 physical phones, unfamiliar friends and next-day return remain unperformed.
 Code rollback keeps current data; no historical DB restore or hosted deploy.
+
+
+## 2026-11-08 — Retain 3D, replace the rejected frog, restore Mateo
+
+The author rejects the synthetic frog, asks for a seaside guitarist, retires
+2D/2.5D and explicitly requests first-person submission drafting. `6ba8b6e`
+implements the retained sphere, true CC0 pond phrase/energy animation and a
+separate local Mateo performer. `b70f7cf` rewrites the three root submission
+texts as evidence-bound first-person drafts, repairs safe public document
+links and records a real 35-check/seven-capture default-output browser path.
+
+The first scratch startup omits a README sibling at the compiled realpath and
+stops before DB creation. The initial full run then finds two real document
+regressions (417/419): missing author-review text and one public protocol link.
+Both are restored without weakening assertions. A rebuilt coherent candidate
+passes 419 checks / 60 files in 73.96s. Reviewing asset response headers then
+exposes a week-cache risk: the replacement frog has the same old URL.
+`9ea6009` adds the encoded sound helper/content revision, preserving its ID and
+actual bytes. Focused audio checks pass 23; the final full run passes 419 / 60
+in 73.61s and the twelve-check 3D compatibility path passes.
+
+The final default-device path twice fails real output measurement. Diagnostics
+show nonzero decoded PCM/gains and native currentTime fixed at 0.005333 despite
+running state. Independent controls outside product audio reproduce this;
+a native silent sink advances to 1.72s and renders nonzero PCM. Removing the
+automation mute flag does not cure default output. No underlying cause or
+system repair is invented. The final source's 35-check/two-cookie path and
+seven real captures pass with an explicitly recorded native silent analysis
+sink, including the content-versioned frog GET, reply/withdrawal/history,
+quiet friend and phone projection. This is software-graph evidence, not
+physical speaker output or approval of the new timbre. Failed runs remain.
+
+Actual local promotion retains every row in twelve tables, including 48 sound
+history rows, and checks 67 served modules/styles. Its unjoined observer blocks
+all non-GET/HEAD requests, retains nineteen public source IDs and all twelve
+ordinary residents, and samples 388 outward-safe shore frames: no writes or
+browser errors. No writing tests use the author's database. First-person
+materials keep assistance visible, historical reflections intact, and human
+listening, two unfamiliar pairs, a true next-day return and hosted deployment
+open. [Hashed release evidence](evidence/seaside-performance-2026-11-08.json).

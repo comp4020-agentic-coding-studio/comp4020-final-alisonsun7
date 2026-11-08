@@ -1,6 +1,39 @@
 # Little Chorus: a place that remembers an answer
 
-## Current neighbour revision
+## Current playable release — 9ea6009
+
+Open `/planet` on the current origin (the recorded local preview is
+`http://localhost:18861/planet`). This release retains one 3D presentation;
+old 2D/2.5D links redirect into the same world, identity, place and work.
+
+- Begin at Listening Green: privately Listen, explicitly Leave, then have a
+  friend using a separate browser profile Answer the live sound. Their answer
+  opens a shared form with real author marks; a same-cookie tab cannot do this.
+- At Tide pools, Pond frogs now uses a licensed real pond phrase. Its measured
+  source energy drives the throats. Bubbles invite fish; whale song brings a
+  sea visitor. Watch is a local viewing visit and keeps the sound in its place.
+- Places & friends → Visit Mateo by the sea finds the seated NPC guitarist.
+  Sound remains a local choice. A real in-range guitar takes priority over his
+  local voice; he creates no contribution or joined identity. Move or use
+  Back to exploring to leave the unobstructed observation view.
+
+Read [ADR036](decisions/036-retain-the-3d-world.md),
+[ADR037](decisions/037-seaside-performance-and-submission.md) and the
+[release evidence](evidence/seaside-performance-2026-11-08.json) for current
+scope. The final native browser audio path uses a silent analysis sink after
+the default output clock stalled in independent controls; software rendering
+is verified, physical output and human listening are not thereby established.
+
+For a **fresh, separate world**, use Node 24 and pnpm 11+, run `pnpm install`
+and `pnpm build`, then `DB_PATH=.cache/first-run.db PORT=8080 pnpm start`.
+Open `http://localhost:8080/planet`; choose an unused port. This creates a new
+scratch database. To retain the author's existing preview and data, use
+`python3 scripts/local-preview.py` instead; it reads the recorded database.
+Code rollback uses `python3 scripts/local-preview.py --rollback`, retains
+current data and does not restore old public media. Never restore an old DB
+to undo a visual choice. Everything below is dated milestone history.
+
+## Historical neighbour revision — 40ed231
 
 [ADR033](decisions/033-neighbours-have-a-day.md) gives the existing twelve
 3D neighbours a small day of walking, working, resting and conversation.

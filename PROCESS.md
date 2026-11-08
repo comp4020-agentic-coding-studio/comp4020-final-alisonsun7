@@ -82,15 +82,18 @@ acknowledgement. It tests a specified race, not every possible outage.
 
 Later, walking around the coast exposed an interior view of the planet. The
 problem was not merely camera height: a tangent building footprint also matched
-its antipode and supplied an invalid floor. The [coastal repair](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f464e75)
-adds hemisphere-aware support. [Real walking checks](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/83809a7)
-then sample actual feet and camera radii throughout movement, rather than only
+its antipode and supplied an invalid floor. The correction in
+[`f464e75`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f464e75)
+adds hemisphere-aware support. Real walking checks in
+[`83809a7`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/83809a7)
+sample actual feet and camera radii throughout movement, rather than only
 checking a destination. Existing persisted coordinates remain unchanged.
 
 My report that objects still floated led to another physical correction.
 Furniture placed on a tangent plane could leave its legs above the curved
 ground; characters could use a radial frame over a flat deck. The
-[grounding change](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/8f32290)
+grounding change in
+[`8f32290`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/8f32290)
 uses actual support surfaces, grounded furniture and curved foundations. Pure
 geometry checks measure real soles and corners. Shadows reinforce contact;
 they do not conceal an unfilled gap. [Before and after evidence](docs/evidence/grounded-world-2026-11-08.json)
@@ -99,7 +102,8 @@ records both the defects and bounded corrections.
 The water-life addition exposed a different weakness. Its first browser run
 passed twenty checks, yet phone cards covered the fish and frog. A whale view
 also relied on stale framing. Those captures were rejected rather than counted
-as visual success. The [final correction](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/3e367ee)
+as visual success. The correction in
+[`3e367ee`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/3e367ee)
 checks actual, fresh animal projection and usable controls together.
 [The retained runs](docs/evidence/waterlife/2026-11-08/browser/SCOPE.md) distinguish
 the initially green result from the accepted local path. A visible animation
@@ -107,21 +111,32 @@ state was an inadequate proxy for a visible animal.
 
 ## Keeping claims bounded
 
-The [last verified water-life release](docs/evidence/waterlife-2026-11-08.json)
-separates 414 source/HTTP checks from a 29-check, two-identity browser path and
-read-only observation after local promotion. Their scopes matter more than
-their totals. That promotion retained every row in twelve tables. The preview
-utility can change application files back while retaining today's database;
-restoring an old database would erase the work the product promises to remember.
-
 My latest rejection of the synthetic frog sound is a real listening judgement,
-not approval of the whole mix. Replacement and busker restoration require
-their own final evidence. The 3D-only candidate likewise needs final integrated
-verification. Earlier green results cannot automatically cover new changes.
+not approval of the whole mix. The implementation in
+[`6ba8b6e`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/6ba8b6e)
+replaces that timbre with a licensed pond recording, restores the sea guitarist
+and retains only 3D.
+
+The integrated application
+[`9ea6009`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/9ea6009)
+has [scoped evidence](docs/evidence/seaside-performance-2026-11-08.json): 419
+source/HTTP checks, twelve presentation browser checks, and a separate
+35-check/seven-capture two-identity path using a native silent analysis sink.
+It exercises real guitar priority, private recorded-frog audition, reply,
+withdrawal and return. Local promotion preserves all rows in twelve tables,
+including 48 sound-history rows, and verifies 67 served assets. Application
+rollback keeps the current database.
+
+The default-device reruns timed out twice: a nominally running native audio
+context had a stalled clock and zero output. An independent non-product control
+also stalled; the native silent sink advanced and produced nonzero samples.
+This narrows the failure to the tested default-output rendering path without
+identifying its underlying cause. No product or system audio repair is claimed.
+The earlier default-output pass at 6ba8b6e cannot validate newer cached audio.
+Silent analysis establishes neither speaker output nor human listening approval.
 
 The [two-pair URL-only protocol](docs/submission/human-playtest.md) is prepared,
 not conducted. No unfamiliar-player result, artistic mix approval, physical-phone
 test or next-day return is claimed. Local promotion is not Fly deployment.
 Historical reflections retain their original DayDraw, SoundGarden and Bloom
-contexts. This account selects traceable changes in direction; it does not
-rewrite those earlier moments into an inevitable Little Chorus success story.
+contexts rather than becoming a retrospective success story.

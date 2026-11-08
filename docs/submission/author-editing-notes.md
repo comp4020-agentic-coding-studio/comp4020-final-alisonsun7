@@ -7,17 +7,33 @@ avoiding divergent copies. Do not remove the brief draft notice automatically.
 
 ## Release boundary
 
-Last completed evidence: [water-life index](../evidence/waterlife-2026-11-08.json),
-application **3e367ee**, local preview `http://localhost:18861/planet`.
-That record separates 414 source/HTTP checks, the 29-check/two-identity browser
-path, rejected earlier views, and read-only observation after data-preserving
-promotion. Counts are run scope, not a quality score.
+Current local application: **9ea60097954d3f5500993c78d3f74ada11bcf7b9**, promoted
+to `http://localhost:18861/planet`. The
+[seaside-performance index](../evidence/seaside-performance-2026-11-08.json)
+records 3D-only presentation, the licensed replacement pond chorus and restored
+sea guitarist. Its full source/HTTP run passes **419 checks / 60 files / 73.61 s**;
+the separate presentation browser path passes **12 checks**. The final
+**35-check / seven-capture** native-Metal path uses two independent identities
+and a **native silent analysis sink (`none`)**. It exercises private frog
+audition with the content-hashed asset, real guitar priority, frog-to-bubble
+reply, withdrawal and return. These are separate run scopes, not a quality score.
 
-Current follow-up work selects one 3D presentation, replaces the author-rejected
-synthetic frog sound and restores the sea guitarist. Source implementation or
-focused checks do not establish the final integrated result. Update this
-boundary only from the corresponding accepted release record. Do not relabel
-old synthetic audio verification as verification of the replacement recording.
+Two default-device attempts time out after eight seconds: the native context
+reports running, but its clock remains around 0.005333 s with zero RMS. An
+independent non-product control reproduces the default-output stall; native
+`none` advances and produces nonzero samples, including when the automation's
+default mute argument is removed. This narrows the observed failure to the
+tested default-output rendering path. The underlying reason is unknown; no
+system change or product audio repair is claimed. The earlier 6ba8b6e default
+path passed, but predates the final content-hashed frog URL and cannot cover it.
+Silent output verification is not a speaker or human-ear acceptance.
+
+Actual promotion preserves **all rows in all twelve tables**, including **48
+sound-history rows**, and verifies **67 served assets**. The post-promotion
+read-only observer and final evidence hashes are being completed separately.
+This branch's remote delivery is not yet asserted; no main push or hosted
+deployment is claimed. Do not relabel old synthetic audio verification as
+verification of the replacement recording.
 
 Earlier releases are retained in the [promise map](promise-evidence-map.md)
 and structured indexes: [answer flow](../evidence/answers-2026-11-08.json),
@@ -68,9 +84,17 @@ sound history to make a visual rollback match an old screenshot.
 
 ## Word-count boundary
 
+The official [word-count guidance](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/)
+is indicative, with no automatic word-limit penalty; excessive length can still
+weaken the response. It explicitly excludes images but does not specify a general
+bibliography exclusion. Our counts therefore describe a local counting method,
+not an official exemption.
+
 The material check counts whitespace-separated English body tokens after
 removing Markdown headings, the opening draft blockquote, formatting markers
-and link destinations. Research references are excluded. Commit labels count
+and link destinations. Its body estimate excludes research references; a second
+count includes them, and a third also includes headings and the draft notice.
+Commit labels count
 as visible text. This is an explicit estimate, not a course-mandated tokenizer.
 The reproducible check and its JSON result live in
 `docs/submission/check-materials.py` and `docs/submission/material-check.json`.

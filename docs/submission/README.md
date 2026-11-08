@@ -25,12 +25,28 @@ can defend the account. Historical crit reflections are unchanged.
 
 ## Current scope
 
-The latest completed release record is [water life at application
-3e367ee](../evidence/waterlife-2026-11-08.json), with local promotion and
-GET-only observation. The newer direction selects **3D only**, replaces a
-synthetic frog timbre the author rejected, and restores a spatial sea busker.
-Those changes require their own integrated acceptance; earlier checks are not
-silently carried forward. Neither record establishes the submitted Fly version.
+The [current local release evidence](../evidence/seaside-performance-2026-11-08.json)
+records application **9ea6009**, promoted to `http://localhost:18861/planet`:
+3D only, a licensed pond chorus replacing the rejected synthetic frog timbre,
+and a restored spatial sea guitarist. It separates 419 source/HTTP checks,
+twelve 3D-presentation browser checks and the final 35-check/seven-capture
+two-identity path. Promotion preserves all rows in twelve tables, including
+48 sound-history rows, and verifies 67 served assets. Final read-only
+observation/evidence collection and this branch's remote delivery are not
+asserted complete by that earlier checkpoint. A subsequent anonymous observer
+now records zero writes/errors, the same nineteen public sources and 388 safe
+shore render samples. The current release index binds this result to its exact
+build. Branch/tag delivery is separate from main or Fly deployment; neither a
+main push nor a hosted release is claimed.
+
+The final audio browser path uses a **native silent analysis sink**. Two
+default-device reruns timed out with a stalled native audio clock and zero
+samples; an independent non-product control also stalled. Silent native output
+advanced and produced samples. This identifies a limitation in the tested
+default-output rendering path, not its underlying cause or a product repair.
+The older 6ba8b6e default-output pass does not cover the final content-hashed
+frog recording. Neither silent analysis nor native decoding establishes speaker
+output, pleasantness or approval of the replacement sound.
 
 The playable 2D/2.5D comparison remains [historical evidence](../evidence/perspectives-2026-11-08.json).
 Its automated/developer-operated testing must not become a claim that the

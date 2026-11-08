@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-08",
+  "source": {
+    "path": ".cache/frog-voice/pond-chorus.oga",
+    "bytes": 2205406,
+    "sha1": "e482140e86da6d21fd145fff77bacffd6e1f84f1",
+    "metadata": ".cache/frog-voice/selected-source-commons.json"
+  },
+  "processed": {
+    "path": "public/assets/sounds/pond-frogs.mp3",
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 1
+        }
+      ],
+      "format": {
+        "duration": "18.000000",
+        "size": "92104"
+      }
+    },
+    "sha256": "a1204d6d0d102f47a4b63266a623442dcc6e5651700a5611499b68fdb52e880e",
+    "decodedSamples": 793800,
+    "decodedPeakDbFS": -10.3411901331648,
+    "decodedRmsDbFS": -32.16027585239974,
+    "leadingQuietEnergy": 0,
+    "trailingQuietEnergy": 0
+  },
+  "regression": {
+    "rejectedSyntheticPath": ".cache/frog-voice/rejected-synthetic-pond-frogs.mp3",
+    "rejectedSha256": "91401f118d2f7423fa652511202ba8d9f6f755c03bcd32f2be225ae69b9327b4",
+    "oldAssetRejectedByCurrentHashCheck": true,
+    "negativeControlError": "Expected values to be strictly equal:\n+ actual - expected\n\n+ '91401f118d2f7423fa652511202ba8d9f6f755c03bcd32f2be225ae69b9327b4'\n- 'a1204d6d0d102f47a4b63266a623442dcc6e5651700a5611499b68fdb52e880e'\n"
+  },
+  "unchangedAssets": [
+    "pond-bubbles",
+    "whale-song"
+  ],
+  "humanListening": "Pending; the author rejected the prior synthetic timbre, not yet approved this real-recording replacement."
+}

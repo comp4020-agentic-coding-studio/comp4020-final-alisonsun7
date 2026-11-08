@@ -46,6 +46,15 @@ the current file. The public sound ID `pond-frogs`, existing contributions and
 their coordinates/history remain intact. Bubble and whale audio bytes are
 unchanged. Their synthesis module no longer generates or overwrites frogs.
 
+The sound file keeps its historical filename, while the asset server permits
+week-long caching. Reusing an unversioned URL could therefore leave a returning
+browser playing the rejected synthetic bytes. The processor now also generates
+`FROG_RECORDING_REVISION` from the published MP3 hash, and `soundUrl` requests
+`pond-frogs.mp3?v=a1204d6d0d10`. Other sound URLs retain their existing paths.
+Regenerating this revision did not change the frog audio, PCM or RMS envelope;
+only the processor fingerprint changed. The earlier 23-check log below predates
+the URL correction and does not claim to validate its cache-return behaviour.
+
 Other evaluated sources were not shipped: Rabe19's public-domain common-frog
 file decoded with peaks over full scale, and the public-domain Leptopelis
 recording was lower-rate material. Freesound had official CC0 candidates, but

@@ -12,5 +12,10 @@ occlusion. Each example names what the correction can and cannot establish.
 Before sign-off, answer [questions 1, 2 and 4](final-author-checklist.md).
 A recorded request can support first-person action. A commit cannot supply
 private learning, human listening or an unrecorded playtest. Historical crit
-reflections stay in their original context. Final 3D/frog/busker follow-up work
-needs its own acceptance rather than borrowing the preceding release's totals.
+reflections stay in their original context. Current application 9ea6009 has
+419 source/HTTP checks, twelve presentation browser checks, the separate final
+35-check path and data-preserving local promotion. That final audio path uses
+a native silent sink; two failed default-output reruns and the independent
+control remain recorded. Speaker output, human listening, real unfamiliar-pair
+play, next-day return and Fly deployment are not established. See
+[the release boundary](author-editing-notes.md) before adopting any result.

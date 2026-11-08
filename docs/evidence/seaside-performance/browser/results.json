@@ -1,0 +1,1358 @@
+{
+  "kind": "seaside-performance-native-chrome-developer-inspection",
+  "base": "http://localhost:18952",
+  "dbPath": "/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/.cache/seaside-performance/browser/history.db",
+  "limitations": [
+    "No human listening, pleasantness or playtest claim",
+    "No page-visibility test",
+    "Output analyser taps real WebAudio; no signal or timing is fabricated"
+  ],
+  "checks": [
+    "The retired 2D link really redirects 303 into the retained 3D world",
+    "Seaside Ada enters quietly without creating WebAudio",
+    "Only the retained 3D presentation is offered",
+    "Retired renderers and presentation handoff have no runtime endpoints",
+    "The real 3D renderer runs on native Metal rather than software fallback",
+    "The actual projected guitar is clear of interface cards at 1920px",
+    "Mateo is explicitly labelled as an authored NPC with a visible physical guitar",
+    "Visiting the performer neither starts quiet audio nor invents a contribution",
+    "Mateo's real server-timed pose changes without an injected clock",
+    "Audio measurement uses the native AudioContext implementation",
+    "Sound off stops local sources without changing the shared work",
+    "Seaside Bo enters quietly without creating WebAudio",
+    "Two independent cookie identities inhabit the same existing room",
+    "A late friend's arrival and travel cannot unmute Ada",
+    "Walking to Green stops the out-of-range performer while retaining the local listening choice",
+    "Audio measurement uses the native AudioContext implementation",
+    "Audio measurement uses the native AudioContext implementation",
+    "An explicit full-library guitar publication belongs to Ada and makes Mateo yield",
+    "Audio measurement uses the native AudioContext implementation",
+    "Withdrawing the real guitar restores Mateo and retains its historical row",
+    "The actual projected guitar is clear of interface cards at 390px",
+    "Phone sharing and observation-exit controls remain unobstructed 44px targets",
+    "Sound off stops local sources without changing the shared work",
+    "Audio measurement uses the native AudioContext implementation",
+    "Private Listen genuinely fetches and decodes the current eighteen-second pond chorus and emits native audio",
+    "A private frog listen neither enables world audio nor publishes a source",
+    "Seaside Ada sees the actual authors of the frog and its bubble reply",
+    "Seaside Bo sees the actual authors of the frog and its bubble reply",
+    "Bo's real reply and all incoming changes preserve his original quiet choice",
+    "The real frog-chorus response fits the phone observation layout",
+    "Exactly three explicit publications remain as withdrawn history, without fabricated NPC sources",
+    "Seaside Ada returns with the same identity, quiet audio and no revived withdrawn source",
+    "Seaside Bo returns with the same identity, quiet audio and no revived withdrawn source",
+    "Neither real document loads a retired flat renderer",
+    "Native rendering and real audio decoding produce no browser or shader errors"
+  ],
+  "captures": [
+    {
+      "name": "mateo-quiet-desktop",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:39.733Z",
+      "ground": {
+        "frame": 52,
+        "x": 13.31459938434433,
+        "z": 16.0444337246386,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.034999999999997,
+        "cameraRadius": 28.429147736082413,
+        "view": "third",
+        "zoom": 4.8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "strum",
+        "guitarVisible": true,
+        "screen": {
+          "x": 959.9810241773134,
+          "y": 457.91494678406013,
+          "visible": true
+        },
+        "guitarScreen": {
+          "x": 965.0611429649583,
+          "y": 524.2092413118228,
+          "visible": true
+        }
+      },
+      "water": [],
+      "soundOn": "false",
+      "buskerVoice": "0",
+      "voices": "0",
+      "audioState": "off",
+      "watching": "performer",
+      "sounds": "0",
+      "serverNow": 1794135219635.9,
+      "audio": {
+        "native": true,
+        "contexts": [],
+        "starts": 0,
+        "active": 0,
+        "decodes": []
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    },
+    {
+      "name": "mateo-playing-desktop",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:40.386Z",
+      "ground": {
+        "frame": 79,
+        "x": 13.31459938434433,
+        "z": 16.0444337246386,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.034999999999997,
+        "cameraRadius": 28.429147736082413,
+        "view": "third",
+        "zoom": 4.8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "strum",
+        "guitarVisible": true,
+        "screen": {
+          "x": 959.9810241773134,
+          "y": 457.91494678406013,
+          "visible": true
+        },
+        "guitarScreen": {
+          "x": 965.0611429649583,
+          "y": 524.2092413118228,
+          "visible": true
+        }
+      },
+      "water": [],
+      "soundOn": "true",
+      "buskerVoice": "1",
+      "voices": "2",
+      "audioState": "running",
+      "watching": "performer",
+      "sounds": "0",
+      "serverNow": 1794135220219.9,
+      "audio": {
+        "native": true,
+        "contexts": [
+          {
+            "state": "running",
+            "sampleRate": 48000,
+            "rms": 0.03886958718403673
+          }
+        ],
+        "starts": 2,
+        "active": 2,
+        "decodes": [
+          {
+            "duration": 16.002708333333334,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.058096011370523996
+          },
+          {
+            "duration": 130,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.10076952516652492
+          }
+        ]
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    },
+    {
+      "name": "player-guitar-desktop",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:43.434Z",
+      "ground": {
+        "frame": 261,
+        "x": 13.31459938434433,
+        "z": 16.0444337246386,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.034999999999997,
+        "cameraRadius": 28.429147736082413,
+        "view": "third",
+        "zoom": 4.8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "guitar",
+        "guitarVisible": true,
+        "screen": {
+          "x": 959.9810241773134,
+          "y": 457.91494678406013,
+          "visible": true
+        },
+        "guitarScreen": {
+          "x": 965.0611429649583,
+          "y": 524.2092413118228,
+          "visible": true
+        }
+      },
+      "water": [],
+      "soundOn": "true",
+      "buskerVoice": "0",
+      "voices": "2",
+      "audioState": "running",
+      "watching": "performer",
+      "sounds": "1",
+      "serverNow": 1794135223253.9,
+      "audio": {
+        "native": true,
+        "contexts": [
+          {
+            "state": "running",
+            "sampleRate": 48000,
+            "rms": 0.007527413087555082
+          }
+        ],
+        "starts": 7,
+        "active": 2,
+        "decodes": [
+          {
+            "duration": 16.002708333333334,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.058096011370523996
+          },
+          {
+            "duration": 130,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.10076952516652492
+          }
+        ]
+      },
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    },
+    {
+      "name": "mateo-phone",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:44.800Z",
+      "ground": {
+        "frame": 341,
+        "x": 13.31459938434433,
+        "z": 16.0444337246386,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.034999999999997,
+        "cameraRadius": 28.429147736082413,
+        "view": "third",
+        "zoom": 4.8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "guitar",
+        "guitarVisible": true,
+        "screen": {
+          "x": 194.98685236772897,
+          "y": 306.82040134657336,
+          "visible": true
+        },
+        "guitarScreen": {
+          "x": 198.48601167693394,
+          "y": 352.7989544127824,
+          "visible": true
+        }
+      },
+      "water": [],
+      "soundOn": "true",
+      "buskerVoice": "1",
+      "voices": "2",
+      "audioState": "running",
+      "watching": "performer",
+      "sounds": "0",
+      "serverNow": 1794135224685.3,
+      "audio": {
+        "native": true,
+        "contexts": [
+          {
+            "state": "running",
+            "sampleRate": 48000,
+            "rms": 0.0541628115611563
+          }
+        ],
+        "starts": 8,
+        "active": 2,
+        "decodes": [
+          {
+            "duration": 16.002708333333334,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.058096011370523996
+          },
+          {
+            "duration": 130,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.10076952516652492
+          }
+        ]
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    },
+    {
+      "name": "pond-private-listen-phone",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:46.133Z",
+      "ground": {
+        "frame": 421,
+        "x": 16,
+        "z": 14,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035000000000004,
+        "cameraRadius": 28.429147736082417,
+        "view": "third",
+        "zoom": 4.8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "strum",
+        "guitarVisible": true,
+        "screen": {
+          "x": -341.1251280424496,
+          "y": 697.2852059766899,
+          "visible": false
+        },
+        "guitarScreen": {
+          "x": -238.0656374918996,
+          "y": 679.4683323180969,
+          "visible": false
+        }
+      },
+      "water": [],
+      "soundOn": "false",
+      "buskerVoice": "0",
+      "voices": "0",
+      "audioState": "off",
+      "watching": "",
+      "sounds": "0",
+      "serverNow": 1794135226084.4,
+      "audio": {
+        "native": true,
+        "contexts": [
+          {
+            "state": "running",
+            "sampleRate": 48000,
+            "rms": 0.01727895409862514
+          }
+        ],
+        "starts": 9,
+        "active": 1,
+        "decodes": [
+          {
+            "duration": 16.002708333333334,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.058096011370523996
+          },
+          {
+            "duration": 130,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.10076952516652492
+          },
+          {
+            "duration": 18,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.02465935746232292
+          }
+        ]
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    },
+    {
+      "name": "friends-pond-chorus-phone",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:47.382Z",
+      "ground": {
+        "frame": 496,
+        "x": 16.000000000000004,
+        "z": 9.999999999999996,
+        "feetRadius": 22.065000000000005,
+        "signedFeetRadius": 22.065000000000005,
+        "cameraRadius": 27.877203607966138,
+        "view": "third",
+        "zoom": 4.2,
+        "supportId": "promenade",
+        "supportKind": "ground",
+        "supportHeight": 0.065
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "guitar",
+        "guitarVisible": true,
+        "screen": {
+          "x": 534.4577348786736,
+          "y": 291.35627500530086,
+          "visible": false
+        },
+        "guitarScreen": {
+          "x": 507.34866449478915,
+          "y": 323.05571341737704,
+          "visible": false
+        }
+      },
+      "water": [
+        {
+          "sourceId": "snd_76f6d3d9fdbc9742",
+          "byId": "par_451f157c58490e69",
+          "by": "Seaside Bo",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#c65da1",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 16.979317636256088,
+          "z": 14.33031433890958,
+          "yaw": -0.3861719624006111,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0.5960799155079456,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 5.124786717187597,
+          "action": "bubbling"
+        },
+        {
+          "sourceId": "snd_0e7bc14eaaf92b8b",
+          "byId": "par_efdea52ae1ac0764",
+          "by": "Seaside Ada",
+          "soundId": "pond-frogs",
+          "kind": "frog",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 2,
+          "color": "#c65d97",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 17.181956161993426,
+          "z": 12.521549017771349,
+          "yaw": -0.5673330126996518,
+          "throat": 0.7337772699999999,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.07,
+          "phase": 3.7394057921281973,
+          "action": "calling"
+        }
+      ],
+      "soundOn": "false",
+      "buskerVoice": "0",
+      "voices": "0",
+      "audioState": "off",
+      "watching": "frog",
+      "sounds": "2",
+      "serverNow": 1794135227285.8,
+      "audio": {
+        "native": true,
+        "contexts": [
+          {
+            "state": "running",
+            "sampleRate": 48000,
+            "rms": 0
+          }
+        ],
+        "starts": 9,
+        "active": 0,
+        "decodes": [
+          {
+            "duration": 16.002708333333334,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.058096011370523996
+          },
+          {
+            "duration": 130,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.10076952516652492
+          },
+          {
+            "duration": 18,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.02465935746232292
+          }
+        ]
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    },
+    {
+      "name": "withdrawn-history-phone",
+      "identity": "Seaside Ada",
+      "capturedAt": "2026-11-08T10:53:49.899Z",
+      "ground": {
+        "frame": 53,
+        "x": 1.8,
+        "z": 2.2,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035,
+        "cameraRadius": 31.672006961984586,
+        "view": "third",
+        "zoom": 8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "busker": {
+        "id": "@npc:mateo",
+        "label": "Mateo · guitarist · NPC",
+        "origin": "npc",
+        "x": 9.5,
+        "z": 17.184997472228392,
+        "yaw": 1.9,
+        "soundId": "guitar",
+        "pose": "guitar",
+        "guitarVisible": true,
+        "screen": {
+          "x": 789.2441156056194,
+          "y": 1847.3100779136014,
+          "visible": false
+        },
+        "guitarScreen": {
+          "x": 706.8359387712965,
+          "y": 1635.3454396164168,
+          "visible": false
+        }
+      },
+      "water": [],
+      "soundOn": "false",
+      "buskerVoice": "0",
+      "voices": "0",
+      "audioState": "off",
+      "watching": "",
+      "sounds": "0",
+      "serverNow": 1794135229783.1,
+      "audio": {
+        "native": true,
+        "contexts": [],
+        "starts": 0,
+        "active": 0,
+        "decodes": []
+      },
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "devicePixelRatio": 1
+      },
+      "overflow": false
+    }
+  ],
+  "observations": [
+    {
+      "label": "quiet-Mateo",
+      "state": {
+        "ground": {
+          "frame": 40,
+          "x": 13.31459938434433,
+          "z": 16.0444337246386,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.034999999999997,
+          "cameraRadius": 28.429147736082413,
+          "view": "third",
+          "zoom": 4.8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "guitar",
+          "guitarVisible": true,
+          "screen": {
+            "x": 959.9810241773134,
+            "y": 457.91494678406013,
+            "visible": true
+          },
+          "guitarScreen": {
+            "x": 965.0611429649583,
+            "y": 524.2092413118228,
+            "visible": true
+          }
+        },
+        "water": [],
+        "soundOn": "false",
+        "buskerVoice": "0",
+        "voices": "0",
+        "audioState": "off",
+        "watching": "performer",
+        "sounds": "0",
+        "serverNow": 1794135219436.5,
+        "audio": {
+          "native": true,
+          "contexts": [],
+          "starts": 0,
+          "active": 0,
+          "decodes": []
+        },
+        "viewport": {
+          "width": 1920,
+          "height": 1080,
+          "devicePixelRatio": 1
+        },
+        "overflow": false
+      }
+    },
+    {
+      "label": "natural-strum-change",
+      "elapsedMs": 124,
+      "beforePose": "guitar",
+      "state": {
+        "ground": {
+          "frame": 48,
+          "x": 13.31459938434433,
+          "z": 16.0444337246386,
+          "feetRadius": 22.035,
+          "signedFeetRadius": 22.034999999999997,
+          "cameraRadius": 28.429147736082413,
+          "view": "third",
+          "zoom": 4.8,
+          "supportId": "village-ground",
+          "supportKind": "ground",
+          "supportHeight": 0.035
+        },
+        "busker": {
+          "id": "@npc:mateo",
+          "label": "Mateo · guitarist · NPC",
+          "origin": "npc",
+          "x": 9.5,
+          "z": 17.184997472228392,
+          "yaw": 1.9,
+          "soundId": "guitar",
+          "pose": "strum",
+          "guitarVisible": true,
+          "screen": {
+            "x": 959.9810241773134,
+            "y": 457.91494678406013,
+            "visible": true
+          },
+          "guitarScreen": {
+            "x": 965.0611429649583,
+            "y": 524.2092413118228,
+            "visible": true
+          }
+        },
+        "water": [],
+        "soundOn": "false",
+        "buskerVoice": "0",
+        "voices": "0",
+        "audioState": "off",
+        "watching": "performer",
+        "sounds": "0",
+        "serverNow": 1794135219635.9,
+        "audio": {
+          "native": true,
+          "contexts": [],
+          "starts": 0,
+          "active": 0,
+          "decodes": []
+        },
+        "viewport": {
+          "width": 1920,
+          "height": 1080,
+          "devicePixelRatio": 1
+        },
+        "overflow": false
+      }
+    },
+    {
+      "label": "Mateo-native-output",
+      "audio": {
+        "native": true,
+        "contexts": [
+          {
+            "state": "running",
+            "sampleRate": 48000,
+            "rms": 0.0209107485582191
+          }
+        ],
+        "starts": 2,
+        "active": 2,
+        "decodes": [
+          {
+            "duration": 16.002708333333334,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.058096011370523996
+          },
+          {
+            "duration": 130,
+            "sampleRate": 48000,
+            "channels": 1,
+            "rms": 0.10076952516652492
+          }
+        ]
+      }
+    },
+    {
+      "label": "shared-real-water-source",
+      "sourceId": "snd_0e7bc14eaaf92b8b",
+      "Ada": {
+        "sourceId": "snd_0e7bc14eaaf92b8b",
+        "byId": "par_efdea52ae1ac0764",
+        "by": "Seaside Ada",
+        "soundId": "pond-frogs",
+        "kind": "frog",
+        "origin": "player",
+        "sourceX": 16,
+        "sourceZ": 14,
+        "visible": true,
+        "count": 2,
+        "color": "#c65d97",
+        "anchorX": 16,
+        "anchorZ": 14,
+        "x": 16.203324845914402,
+        "z": 12.238002881804285,
+        "yaw": -0.09261862023792548,
+        "throat": 0,
+        "hop": 0,
+        "pitch": 0,
+        "roll": 0,
+        "spray": 0,
+        "bubbles": 0,
+        "splash": 0,
+        "height": 0.07,
+        "phase": 3.2394057921281973,
+        "action": "resting"
+      },
+      "Bo": {
+        "sourceId": "snd_0e7bc14eaaf92b8b",
+        "byId": "par_efdea52ae1ac0764",
+        "by": "Seaside Ada",
+        "soundId": "pond-frogs",
+        "kind": "frog",
+        "origin": "player",
+        "sourceX": 16,
+        "sourceZ": 14,
+        "visible": true,
+        "count": 2,
+        "color": "#c65d97",
+        "anchorX": 16,
+        "anchorZ": 14,
+        "x": 16.203324845914402,
+        "z": 12.238002881804285,
+        "yaw": -0.09261862023792548,
+        "throat": 0,
+        "hop": 0,
+        "pitch": 0,
+        "roll": 0,
+        "spray": 0,
+        "bubbles": 0,
+        "splash": 0,
+        "height": 0.07,
+        "phase": 3.2394057921281973,
+        "action": "resting"
+      }
+    },
+    {
+      "label": "shared-real-water-source",
+      "sourceId": "snd_76f6d3d9fdbc9742",
+      "Ada": {
+        "sourceId": "snd_76f6d3d9fdbc9742",
+        "byId": "par_451f157c58490e69",
+        "by": "Seaside Bo",
+        "soundId": "pond-bubbles",
+        "kind": "fish",
+        "origin": "player",
+        "sourceX": 16,
+        "sourceZ": 14,
+        "visible": true,
+        "count": 3,
+        "color": "#c65da1",
+        "anchorX": 16,
+        "anchorZ": 14,
+        "x": 17.05214858072711,
+        "z": 14.093495251464535,
+        "yaw": -0.0964390222459114,
+        "throat": 0,
+        "hop": 0,
+        "pitch": 0,
+        "roll": 0,
+        "spray": 0,
+        "bubbles": 0,
+        "splash": 0,
+        "height": 0.11,
+        "phase": 4.836834764062597,
+        "action": "swimming"
+      },
+      "Bo": {
+        "sourceId": "snd_76f6d3d9fdbc9742",
+        "byId": "par_451f157c58490e69",
+        "by": "Seaside Bo",
+        "soundId": "pond-bubbles",
+        "kind": "fish",
+        "origin": "player",
+        "sourceX": 16,
+        "sourceZ": 14,
+        "visible": true,
+        "count": 3,
+        "color": "#c65da1",
+        "anchorX": 16,
+        "anchorZ": 14,
+        "x": 17.047819968293286,
+        "z": 14.123806529117905,
+        "yaw": -0.13243384616935636,
+        "throat": 0,
+        "hop": 0,
+        "pitch": 0,
+        "roll": 0,
+        "spray": 0,
+        "bubbles": 0.06970833839871853,
+        "splash": 0,
+        "height": 0.11,
+        "phase": 4.8727386703125966,
+        "action": "bubbling"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "snd_503556a233fbd3a9",
+      "soundId": "guitar",
+      "x": 13.31,
+      "z": 16.04,
+      "by": "Seaside Ada",
+      "byId": "par_efdea52ae1ac0764",
+      "at": "2026-11-08T10:53:43.317Z"
+    },
+    {
+      "id": "snd_0e7bc14eaaf92b8b",
+      "soundId": "pond-frogs",
+      "x": 16,
+      "z": 14,
+      "by": "Seaside Ada",
+      "byId": "par_efdea52ae1ac0764",
+      "at": "2026-11-08T10:53:46.347Z"
+    },
+    {
+      "id": "snd_76f6d3d9fdbc9742",
+      "soundId": "pond-bubbles",
+      "x": 16,
+      "z": 14,
+      "by": "Seaside Bo",
+      "byId": "par_451f157c58490e69",
+      "at": "2026-11-08T10:53:46.593Z",
+      "replyToId": "snd_0e7bc14eaaf92b8b",
+      "replyTo": {
+        "id": "snd_0e7bc14eaaf92b8b",
+        "soundId": "pond-frogs",
+        "x": 16,
+        "z": 14,
+        "by": "Seaside Ada",
+        "byId": "par_efdea52ae1ac0764",
+        "at": "2026-11-08T10:53:46.347Z"
+      }
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/join"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/join"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/sounds"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "DELETE",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/sounds/snd_503556a233fbd3a9"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/sounds"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/sounds"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "DELETE",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/sounds/snd_76f6d3d9fdbc9742"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "DELETE",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/sounds/snd_0e7bc14eaaf92b8b"
+    },
+    {
+      "identity": "Seaside Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    },
+    {
+      "identity": "Seaside Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_6c1d383cd7243c50/move"
+    }
+  ],
+  "runtimeAssets": [
+    "/client/style.css",
+    "/client/planet.js",
+    "/client/planet-world.js",
+    "/client/planet-social.js",
+    "/client/planet-audio.js",
+    "/client/routine-audio.js",
+    "/client/chorus-studio.js",
+    "/client/sound-discovery.js",
+    "/client/sound-library.js",
+    "/client/environment-panel.js",
+    "/client/planet-sound-interactions.js",
+    "/client/sound-conversations.js",
+    "/client/look-settings.js",
+    "/client/characters.js",
+    "/client/sound-residents.js",
+    "/client/sound-wildlife.js",
+    "/client/sound-vessels.js",
+    "/client/sound-pinwheels.js",
+    "/client/sound-waterlife.js",
+    "/client/planet-busker.js",
+    "/client/planet-neighbours.js",
+    "/client/npc-conversation-cues.js",
+    "/client/planet-lighting.js",
+    "/client/planet-contact-shadows.js",
+    "/client/planet-support.js",
+    "/client/planet-coast.js",
+    "/client/planet-build.js",
+    "/client/planet-locomotion.js",
+    "/client/planet-wildlife.js",
+    "/client/planet-connections.js",
+    "/client/chorus-garden.js",
+    "/client/chorus-instrument.js",
+    "/client/resident-life.js",
+    "/client/planet-surface-safety.js",
+    "/client/style.css",
+    "/client/planet.js",
+    "/client/planet-world.js",
+    "/client/planet-social.js",
+    "/client/planet-audio.js",
+    "/client/routine-audio.js",
+    "/client/chorus-studio.js",
+    "/client/sound-discovery.js",
+    "/client/sound-library.js",
+    "/client/environment-panel.js",
+    "/client/planet-sound-interactions.js",
+    "/client/sound-conversations.js",
+    "/client/look-settings.js",
+    "/client/characters.js",
+    "/client/sound-residents.js",
+    "/client/sound-wildlife.js",
+    "/client/sound-vessels.js",
+    "/client/sound-pinwheels.js",
+    "/client/sound-waterlife.js",
+    "/client/planet-busker.js",
+    "/client/planet-neighbours.js",
+    "/client/npc-conversation-cues.js",
+    "/client/planet-lighting.js",
+    "/client/planet-contact-shadows.js",
+    "/client/planet-support.js",
+    "/client/planet-coast.js",
+    "/client/planet-build.js",
+    "/client/planet-locomotion.js",
+    "/client/planet-wildlife.js",
+    "/client/planet-connections.js",
+    "/client/chorus-garden.js",
+    "/client/chorus-instrument.js",
+    "/client/resident-life.js",
+    "/client/planet-surface-safety.js",
+    "/client/style.css",
+    "/client/planet.js",
+    "/client/planet-world.js",
+    "/client/planet-social.js",
+    "/client/planet-audio.js",
+    "/client/routine-audio.js",
+    "/client/chorus-studio.js",
+    "/client/sound-discovery.js",
+    "/client/sound-library.js",
+    "/client/environment-panel.js",
+    "/client/planet-sound-interactions.js",
+    "/client/sound-conversations.js",
+    "/client/look-settings.js",
+    "/client/characters.js",
+    "/client/sound-residents.js",
+    "/client/sound-wildlife.js",
+    "/client/sound-vessels.js",
+    "/client/sound-pinwheels.js",
+    "/client/sound-waterlife.js",
+    "/client/planet-busker.js",
+    "/client/planet-neighbours.js",
+    "/client/npc-conversation-cues.js",
+    "/client/planet-lighting.js",
+    "/client/planet-contact-shadows.js",
+    "/client/planet-support.js",
+    "/client/planet-coast.js",
+    "/client/planet-build.js",
+    "/client/planet-locomotion.js",
+    "/client/planet-wildlife.js",
+    "/client/planet-connections.js",
+    "/client/chorus-garden.js",
+    "/client/chorus-instrument.js",
+    "/client/resident-life.js",
+    "/client/planet-surface-safety.js",
+    "/client/style.css",
+    "/client/planet.js",
+    "/client/planet-world.js",
+    "/client/planet-social.js",
+    "/client/planet-audio.js",
+    "/client/routine-audio.js",
+    "/client/chorus-studio.js",
+    "/client/sound-discovery.js",
+    "/client/sound-library.js",
+    "/client/environment-panel.js",
+    "/client/planet-sound-interactions.js",
+    "/client/sound-conversations.js",
+    "/client/look-settings.js",
+    "/client/characters.js",
+    "/client/sound-residents.js",
+    "/client/sound-wildlife.js",
+    "/client/sound-vessels.js",
+    "/client/sound-pinwheels.js",
+    "/client/sound-waterlife.js",
+    "/client/planet-busker.js",
+    "/client/planet-neighbours.js",
+    "/client/npc-conversation-cues.js",
+    "/client/planet-lighting.js",
+    "/client/planet-contact-shadows.js",
+    "/client/planet-support.js",
+    "/client/planet-coast.js",
+    "/client/planet-build.js",
+    "/client/planet-locomotion.js",
+    "/client/planet-wildlife.js",
+    "/client/planet-connections.js",
+    "/client/chorus-garden.js",
+    "/client/chorus-instrument.js",
+    "/client/resident-life.js",
+    "/client/planet-surface-safety.js",
+    "/client/style.css",
+    "/client/planet.js",
+    "/client/planet-world.js",
+    "/client/planet-social.js",
+    "/client/planet-audio.js",
+    "/client/routine-audio.js",
+    "/client/chorus-studio.js",
+    "/client/sound-discovery.js",
+    "/client/sound-library.js",
+    "/client/environment-panel.js",
+    "/client/planet-sound-interactions.js",
+    "/client/sound-conversations.js",
+    "/client/look-settings.js",
+    "/client/chorus-instrument.js",
+    "/client/planet-busker.js",
+    "/client/characters.js",
+    "/client/sound-residents.js",
+    "/client/sound-wildlife.js",
+    "/client/sound-vessels.js",
+    "/client/sound-pinwheels.js",
+    "/client/sound-waterlife.js",
+    "/client/planet-neighbours.js",
+    "/client/npc-conversation-cues.js",
+    "/client/planet-lighting.js",
+    "/client/planet-contact-shadows.js",
+    "/client/planet-support.js",
+    "/client/planet-coast.js",
+    "/client/planet-build.js",
+    "/client/planet-locomotion.js",
+    "/client/planet-wildlife.js",
+    "/client/planet-connections.js",
+    "/client/chorus-garden.js",
+    "/client/resident-life.js",
+    "/client/planet-surface-safety.js",
+    "/client/style.css",
+    "/client/planet.js",
+    "/client/planet-world.js",
+    "/client/planet-social.js",
+    "/client/planet-audio.js",
+    "/client/routine-audio.js",
+    "/client/chorus-studio.js",
+    "/client/sound-discovery.js",
+    "/client/sound-library.js",
+    "/client/environment-panel.js",
+    "/client/planet-sound-interactions.js",
+    "/client/sound-conversations.js",
+    "/client/look-settings.js",
+    "/client/characters.js",
+    "/client/sound-residents.js",
+    "/client/sound-wildlife.js",
+    "/client/sound-vessels.js",
+    "/client/sound-pinwheels.js",
+    "/client/sound-waterlife.js",
+    "/client/planet-busker.js",
+    "/client/planet-neighbours.js",
+    "/client/npc-conversation-cues.js",
+    "/client/planet-lighting.js",
+    "/client/planet-contact-shadows.js",
+    "/client/planet-support.js",
+    "/client/planet-coast.js",
+    "/client/planet-build.js",
+    "/client/planet-locomotion.js",
+    "/client/planet-wildlife.js",
+    "/client/planet-connections.js",
+    "/client/chorus-garden.js",
+    "/client/chorus-instrument.js",
+    "/client/resident-life.js",
+    "/client/planet-surface-safety.js"
+  ],
+  "recordings": [
+    {
+      "identity": "Seaside Ada",
+      "path": "/assets/sounds/coastal-gulls.mp3",
+      "status": 200
+    },
+    {
+      "identity": "Seaside Ada",
+      "path": "/assets/sounds/guitar.mp3",
+      "status": 200
+    },
+    {
+      "identity": "Seaside Ada",
+      "path": "/assets/sounds/pond-frogs.mp3",
+      "status": 200
+    }
+  ],
+  "passed": true,
+  "graphics": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)"
+  },
+  "replyRow": {
+    "sound_id": "snd_76f6d3d9fdbc9742",
+    "parent_id": "snd_0e7bc14eaaf92b8b"
+  },
+  "history": [
+    {
+      "id": "snd_0e7bc14eaaf92b8b",
+      "session_id": "ses_6c1d383cd7243c50",
+      "sound_id": "pond-frogs",
+      "x": 16,
+      "z": 14,
+      "placed_by": "par_efdea52ae1ac0764",
+      "placed_at": "2026-11-08T10:53:46.347Z",
+      "removed_by": "par_efdea52ae1ac0764",
+      "removed_at": "2026-11-08T10:53:48.163Z",
+      "while_in": null
+    },
+    {
+      "id": "snd_503556a233fbd3a9",
+      "session_id": "ses_6c1d383cd7243c50",
+      "sound_id": "guitar",
+      "x": 13.31,
+      "z": 16.04,
+      "placed_by": "par_efdea52ae1ac0764",
+      "placed_at": "2026-11-08T10:53:43.317Z",
+      "removed_by": "par_efdea52ae1ac0764",
+      "removed_at": "2026-11-08T10:53:44.582Z",
+      "while_in": null
+    },
+    {
+      "id": "snd_76f6d3d9fdbc9742",
+      "session_id": "ses_6c1d383cd7243c50",
+      "sound_id": "pond-bubbles",
+      "x": 16,
+      "z": 14,
+      "placed_by": "par_451f157c58490e69",
+      "placed_at": "2026-11-08T10:53:46.593Z",
+      "removed_by": "par_451f157c58490e69",
+      "removed_at": "2026-11-08T10:53:47.809Z",
+      "while_in": null
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+(node:85481) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85508) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85522) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85523) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85550) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  60 passed (60)
+      Tests  419 passed (419)
+   Start at  19:31:29
+   Duration  73.96s (tests 92%, import 7%, transform 1%)
+

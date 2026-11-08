@@ -7,15 +7,29 @@ that cannot be supplied by source inspection.
 
 ## Build scope before reading any result
 
-**Follow-up in progress:** the author now selects one 3D presentation, has
-rejected the synthetic frog timbre, and requested restoration of the sea
-guitarist. The implementation and any focused checks need their own integrated
-release evidence. Do not apply the following completed release's results to
-those changes or describe the replacement audio as artistically approved.
+**Current local release:** application **9ea6009** is promoted at
+`http://localhost:18861/planet`. The
+[seaside-performance index](../evidence/seaside-performance-2026-11-08.json)
+separates **419 source/HTTP checks / 60 files / 73.61 s**, a **12-check** 3D-only
+browser path, and the final **35-check/seven-capture** two-identity path. It
+retains only 3D, replaces the rejected synthetic frog timbre with a licensed
+pond recording and restores the sea guitarist. Promotion preserves every row
+in twelve tables, including **48 sound-history rows**, and verifies **67 served
+assets**. Final read-only observation, evidence hashing and this branch's remote
+delivery are not asserted complete here. No main push or Fly deployment is claimed.
+
+**Audio boundary:** the final 35-check path uses a **native silent analysis
+sink (`none`)**, not default speakers. Two default-device reruns timed out with
+a running native context but a stalled clock and zero RMS. An independent
+non-product control also stalled there; native `none` advanced and produced
+samples. The underlying default-output problem is unknown, with no system or
+product audio repair claimed. The older 6ba8b6e default-output pass cannot cover
+the final content-hashed frog recording. Musical pleasure, speaker output and
+human approval remain open.
 The [root submission drafts](README.md) now distinguish these scopes and
 the [source audit](source-verification.md) verifies their citations.
 
-The last completed local release is **`3e367ee`** on `codex/waters-answer`, at
+The preceding water-life release was **`3e367ee`** on `codex/waters-answer`, at
 `http://localhost:18861/planet`. [ADR035](../decisions/035-waters-answer-and-visible-sound-entry.md)
 and the [water-life evidence index](../evidence/waterlife-2026-11-08.json)
 record persistent Share/listening entrances, source-attributed fish/frogs/whales,
@@ -29,6 +43,13 @@ a GET-only observer retains sixteen public sources and twelve NPCs. None of
 these observations establishes human listening quality or an unfamiliar-pair
 playtest. The core Green/Stage/Reading promises below remain the priority;
 water life is source-derived exploration, not a replacement shared-work gate.
+
+| Current promise | Rule and technical/developer observation | Remaining judgement or verification |
+| --- | --- | --- |
+| One 3D world retains earlier work | Flat routes redirect to the existing room; retired renderers are not served; twelve presentation checks plus the two-identity path | The comparison history is retained; no author-operated 2D preference study is invented |
+| The guitarist provides an invitation without impersonating a person | Authored NPC and guitar; no contributor/source row; real player guitar wins; quiet, distance, withdrawal and return exercised | Default speaker output remains unverified for the final version; no pleasantness claim |
+| A recorded pond voice can start a real shared answer | Private Listen does not publish or unmute; distinct authors explicitly leave frog and bubble; removal and historical reply persist | Final browser audio observation uses native `none`; the author must hear and judge the replacement |
+| Release changes preserve the current place | Twelve-table row comparison and 67 served-asset verification at actual promotion | Read-only post-promotion observation and branch delivery require their own final record; Fly and next-day return remain separate |
 
 The following `40ed231` account is a **historical neighbour milestone**, retained
 with its original scope and results rather than presented as today's build.

@@ -1,0 +1,12 @@
+ok An old 2D link canonicalises to the existing 3D route
+ok Joining through the old link still yields a real identity in 3D
+ok Neither the header nor drawer advertises removed versions
+ok Both retained 3D cameras still work
+ok The retired 2.5D link retains the cookie identity and room
+ok An obsolete tab handoff is ignored rather than migrating a position
+ok A new document keeps the quiet listening choice
+ok Removed renderer and handoff modules have no runtime endpoint
+ok The legacy flat alias takes a phone visitor to the requested place in 3D
+ok The phone keeps a visible sound entrance with no obsolete style picker
+ok The retained header fits the phone width
+ok The retained 3D documents start without runtime errors

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "spec",
+    "port": 18951,
+    "pid": 87930,
+    "home": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/seaside-performance/spec",
+    "database": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/seaside-performance/spec/history.db",
+    "log": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/seaside-performance/spec/server.log",
+    "applicationCommit": "9ea60097954d3f5500993c78d3f74ada11bcf7b9"
+  },
+  {
+    "name": "browser",
+    "port": 18952,
+    "pid": 87944,
+    "home": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/seaside-performance/browser",
+    "database": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/seaside-performance/browser/history.db",
+    "log": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/seaside-performance/browser/server.log",
+    "applicationCommit": "9ea60097954d3f5500993c78d3f74ada11bcf7b9"
+  }
+]

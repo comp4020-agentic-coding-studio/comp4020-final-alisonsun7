@@ -31,10 +31,15 @@ The technical work can proceed while these answers remain open.
 
 4. **What did you actually hear, and what do you accept now?**
    Your rejection of the synthetic frog timbre is recorded feedback. Listen to
-   the replacement and restored guitarist when the final candidate is ready;
+   the replacement and restored guitarist in the current local candidate;
    give each an explicit verdict. Also hear a solo score, two-part answer,
    denser mix, nature layer, mute/re-entry and preview masking. Record device,
    output, volume, combination and problem/change in [the audio handoff](../chorus-audio.md).
+   The final 9ea6009 browser path uses a native silent analysis sink because
+   default output and an independent control stalled. It cannot establish
+   speaker playback. The older 6ba8b6e default pass predates the final frog
+   cache key. Confirm actual output before judging the replacement; do not
+   replace a failed or unavailable listening check with a positive verdict.
    Decoding, measured peaks and animated throats do not approve the sound.
 
 5. **What did unfamiliar friends discover without explanation?**

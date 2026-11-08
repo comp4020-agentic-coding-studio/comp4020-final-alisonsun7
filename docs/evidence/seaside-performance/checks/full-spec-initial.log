@@ -1,0 +1,131 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/project-notes.test.ts (7 tests | 1 failed) 176ms
+   ❯ readable submission entry without changing the author's Markdown (7)
+     × keeps the author draft warning while making entry and four cited notes work on the current origin 78ms
+(node:76531) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ spec/project-notes-http.test.ts (2 tests | 1 failed) 85ms
+   × serves the four public README references and manifest through their canonical GET routes 81ms
+(node:76556) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:76570) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:76583) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:76661) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/project-notes-http.test.ts > serves the four public README references and manifest through their canonical GET routes
+AssertionError: expected Set{ …(3) } to deeply equal Set{ …(4) }
+
+- Expected
++ Received
+
+  Set {
+    "/project-notes/chorus-audio",
+-   "/project-notes/human-playtest",
+    "/project-notes/little-chorus",
+    "/project-notes/promise-evidence-map",
+  }
+
+ ❯ spec/project-notes-http.test.ts:11:30
+      9|   const doc = new JSDOM(await response.text()).window.document;
+     10|   const noteLinks = Array.from(doc.querySelectorAll<HTMLAnchorElement>…
+     11|   expect(new Set(noteLinks)).toEqual(new Set([
+       |                              ^
+     12|     "/project-notes/chorus-audio", "/project-notes/promise-evidence-ma…
+     13|   ]));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/project-notes.test.ts > readable submission entry without changing the author's Markdown > keeps the author draft warning while making entry and four cited notes work on the current origin
+AssertionError: expected '\nLittle Chorus / 小小合鸣\n\nAgent-assis…' to contain 'Author review draft'
+
+- Expected
++ Received
+
+- Author review draft
++
++ Little Chorus / 小小合鸣
++
++ Agent-assisted first-person draft, pending author review.
++
++ This place changed because I answered you
++ Little Chorus is a small sound world for two to six friends without musical
++ training. My definition of good is that I can recognize my contribution, hear
++ what a friend answered, and see something we could not have made alone. A
++ five-minute visit should leave a place worth returning to, rather than a score
++ or a list of completed tasks.
++ Open the local preview, join with a nickname,
++ and choose sound or quiet browsing. At Listening Green, use Share a
++ sound, privately listen to a suggestion, then explicitly leave it. Select a
++ friend's contribution and choose Answer. The reply identifies its source
++ and offers a few contrasting ingredients. Two tabs sharing cookies remain one
++ contributor; use separate browser profiles to play together. The
++ walkthrough covers controls and continuing a work.
++ An answer changes our place
++ Contributions and their reply relationships shape a common object. Water and
++ birds grow a paper-bird canopy; melody and pulse form a beat flower; other
++ combinations light a lantern. A live answer between different real contributors
++ opens a shared form. The ensemble also gains a low musical answer. Author
++ marks connect the ingredients in the world to their record. Removing a sound
++ withdraws its effect while preserving its history.
++ Pocket Jam Stage gives compatible musical roles a common beat. Reading
++ Nook encourages quieter, closer listening. Walking changes the mixture.
++ Volume, mute, focus and private previews affect only my listening; leaving,
++ answering and withdrawing affect our work. A friend's action cannot unmute me.
++ Nearby residents and water life make sound consequences discoverable, but
++ neither NPCs nor the local kangaroo can impersonate another contributor.
++ Small, situated and remembered
++ Robin Sloan's An app can be a home-cooked meal
++ supports taking a small circle seriously. His family's disappearing messages
++ avoid an obligation to reply. I make a different choice: retain relationships
++ so friends can continue a recognizable place, while avoiding streaks and daily
++ demands. That persistence may itself create pressure; it needs observation,
++ not an assumption that every reply is welcome.
++ Aurora Harley's Visibility of System Status
++ provides a second criterion: feedback should help someone decide what to do
++ next. Here, a success message is insufficient. Authorship, sound, movement and
++ the changed object should explain the same consequence.
++ I commissioned playable 2D and 2.5D alternatives, exercised through
++ automated and developer-operated checks.
++ I subsequently chose 3D as the more lively, suitable direction. This records
++ my stated preference, not a claim that I personally performed those comparison
++ tests. The current direction concentrates on one 3D presentation, accepting its
++ camera, occlusion and performance costs. Three connected activities receive
++ priority over nine equally developed games. Existing identities and sound
++ history survive presentation changes. The audio notes
++ and asset manifest distinguish original material
++ from licensed recordings.
++ What the evidence can answer
++ The promise map separates enforced
++ identity, publication, persistence, cancellation and quiet preference from
++ judgements of pleasure and social meaning. Local browser paths establish
++ operation, not unfamiliar-player understanding. First sound within a minute
++ and a joint answer within three remain unverified targets. Final mix approval,
++ two-pair discovery and a genuine next-day return are still open. This localhost
++ preview also does not establish the submitted Fly deployment; its URL and
++ version need final verification.
++
++
+
+ ❯ spec/project-notes.test.ts:12:52
+     10|     const doc = document(renderReadme());
+     11|     const links = Array.from(doc.querySelectorAll("main a"), a => a.ge…
+     12|     expect(doc.querySelector("main")?.textContent).toContain("Author r…
+       |                                                    ^
+     13|     expect(links).toContain("/planet");
+     14|     expect(links.some(href => href?.includes("localhost"))).toBe(false…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 58 passed (60)
+      Tests  2 failed | 417 passed (419)
+   Start at  18:47:23
+   Duration  123.69s (tests 90%, import 8%, transform 1%)
+

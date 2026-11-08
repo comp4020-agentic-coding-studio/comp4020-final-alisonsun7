@@ -1,0 +1,24 @@
+[
+  {
+    "sink": "default",
+    "native": true,
+    "ready": true,
+    "firstTime": 0.005333333333333333,
+    "started": 316,
+    "elapsedMs": 1614.800000011921,
+    "currentTime": 0.005333333333333333,
+    "state": "running",
+    "rms": 0
+  },
+  {
+    "sink": "none",
+    "native": true,
+    "ready": true,
+    "firstTime": 0.10133333333333333,
+    "started": 159.5,
+    "elapsedMs": 1615.699999988079,
+    "currentTime": 1.72,
+    "state": "running",
+    "rms": 0.1224470526649768
+  }
+]

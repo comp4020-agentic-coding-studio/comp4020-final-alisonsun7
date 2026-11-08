@@ -1,7 +1,8 @@
 # ADR037 — A real frog phrase, a seaside performer, an accountable submission
 
-Date: 2026-11-08. Status: implementation candidate; integrated acceptance is
-recorded separately from the earlier water-life release.
+Date: 2026-11-08. Status: local application `9ea6009` accepted with explicit
+output-device limitations. [Current evidence](../evidence/seaside-performance-2026-11-08.json)
+separates native software rendering from unresolved default device output.
 
 ## The author's correction
 
@@ -94,3 +95,37 @@ existing row and original source coordinates. `before-seaside-performance-2026-1
 keeps the source boundary. The preview utility rolls application files back
 while keeping current data. Save only the authorized independent branch and
 release tag; do not push main or deploy as part of this local candidate.
+
+
+## Final local acceptance and audio boundary
+
+The content-versioned frog URL avoids the old unversioned, week-long cache.
+Both the planet and original coast use the same helper; the revision matches
+the served MP3 hash without changing the persistent sound ID. New private
+listening proves that actual versioned request and real native decoding.
+
+The final source/HTTP run passes 419 checks in 60 files (73.61s); retired-link
+browser verification passes twelve checks. The latest two-identity path passes
+35 checks and seven captures using native Metal and an explicitly silent native
+analysis sink. Off/range/real-guitar precedence, current frog decoding,
+source/reply identity, phone visibility and withdrawal persistence are exercised.
+
+An earlier `6ba8b6e` default-output browser path passed. Two subsequent attempts
+record a running default context with its clock frozen at 0.005333 seconds and
+zero output. A minimal control outside all product audio code reproduces this;
+a native silent sink advances to 1.72 seconds and renders real guitar PCM.
+Removing automation's mute flag does not change the control result. This
+supports a stalled default output-rendering path; its underlying cause is not
+identified. No system audio setting or service is changed, and no generated
+signal or substituted timer is used. Silent-sink rendering is not evidence of
+physical speaker output, a human listening judgement or a successful default
+output test. Preserve the failed captures/control data with the accepted scope.
+
+Promotion to 18861 retains all rows in twelve tables, including 48 sound-history
+rows, and verifies 67 served assets. A GET/HEAD-only observer retains nineteen
+public sources and all twelve original resident routes through 388 outward-safe
+shore frames with zero writes/errors. These counts describe this actual world
+at this switch; they are not product targets or frozen future fixture values.
+Code-only preview rollback retains current data. It does not restore old public
+media bytes: the licensed frog replacement remains unless explicitly rebuilt
+from the saved source boundary. No hosted release or main push is authorized.

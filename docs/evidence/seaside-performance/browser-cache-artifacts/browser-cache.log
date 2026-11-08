@@ -1,0 +1,23 @@
+(node:88094) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok The retired 2D link really redirects 303 into the retained 3D world
+ok Seaside Ada enters quietly without creating WebAudio
+ok Only the retained 3D presentation is offered
+ok Retired renderers and presentation handoff have no runtime endpoints
+ok The real 3D renderer runs on native Metal rather than software fallback
+ok The actual projected guitar is clear of interface cards at 1920px
+ok Mateo is explicitly labelled as an authored NPC with a visible physical guitar
+ok Visiting the performer neither starts quiet audio nor invents a contribution
+ok Mateo's real server-timed pose changes without an injected clock
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 8000ms exceeded.
+    at output (/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/seaside-performance.mjs:131:18)
+    at /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/seaside-performance.mjs:198:137 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.10.0

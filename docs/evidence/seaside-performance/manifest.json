@@ -1,0 +1,73 @@
+{
+  "sourceCommit": "6ba8b6e95831f37379afbc5482b520d3289e0b8e",
+  "stage": "coherent pre-final-documentation candidate; not final release/promotion evidence",
+  "copiedWithoutRerun": true,
+  "files": [
+    {
+      "path": "browser/friends-pond-chorus-phone.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/friends-pond-chorus-phone.png",
+      "bytes": 123796,
+      "sha256": "f7bbb5a46dda072a289784c0872593d1042fb971559eab313275e80c0fdb7846"
+    },
+    {
+      "path": "browser/mateo-phone.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/mateo-phone.png",
+      "bytes": 156374,
+      "sha256": "fdecdba1a6ef7a57b5bc8938971b47be9c46187f4b26209f2a0d708a882fbf6b"
+    },
+    {
+      "path": "browser/mateo-playing-desktop.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/mateo-playing-desktop.png",
+      "bytes": 518452,
+      "sha256": "3f6cdaf1c510ce76ade08c0790ee0336c9b7796298509ef31fdfdbd0b634fc1e"
+    },
+    {
+      "path": "browser/mateo-quiet-desktop.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/mateo-quiet-desktop.png",
+      "bytes": 518540,
+      "sha256": "b8b3cf3da40a9f3daeda14b66673c203f402caf6aa1ca05e8313cb5f25684471"
+    },
+    {
+      "path": "browser/player-guitar-desktop.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/player-guitar-desktop.png",
+      "bytes": 542767,
+      "sha256": "2582282b3c26e996690cdd10bc909f7b7c2e9473b72f4d4492d13a1ede534b17"
+    },
+    {
+      "path": "browser/pond-private-listen-phone.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/pond-private-listen-phone.png",
+      "bytes": 93056,
+      "sha256": "fc9017c7639da933ff27b1e50bb687783b1adb630669ef73421bb8f3ad88b899"
+    },
+    {
+      "path": "browser/results.json",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/results.json",
+      "bytes": 38130,
+      "sha256": "1995f00bc3e4e94fa80bbcb5d0db46720da1e6febcc9ae8259d54aad1b629e9c"
+    },
+    {
+      "path": "browser/withdrawn-history-phone.png",
+      "copiedFrom": ".cache/seaside-performance/browser-artifacts/withdrawn-history-phone.png",
+      "bytes": 188754,
+      "sha256": "2941c245a2fc529666be7561ae240a8d717c7a2ff38a8aacdfc9ef8f4a18301c"
+    },
+    {
+      "path": "checks/3d-only-presentation-entry-green.log",
+      "copiedFrom": ".cache/3d-only/presentation-entry-tests.txt",
+      "bytes": 228,
+      "sha256": "17ca91222bdca6974bcd882a2f55187540ef89e790ef68afe749cd922385d6f5"
+    },
+    {
+      "path": "checks/3d-only-pure-initial.log",
+      "copiedFrom": ".cache/3d-only/pure-tests.txt",
+      "bytes": 3100,
+      "sha256": "13fc885cd5f10d250e7de1bd1f4677d9d832bb7c145b7169a78757f264845123"
+    },
+    {
+      "path": "checks/browser-initial.log",
+      "copiedFrom": ".cache/seaside-performance/browser-initial.log",
+      "bytes": 2722,
+      "sha256": "4dc5ba6b0d1571c9ea99060864dda93a04a6b25631a020344af5eb8658c23feb"
+    }
+  ]
+}

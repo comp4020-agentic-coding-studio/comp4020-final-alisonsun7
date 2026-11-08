@@ -38,9 +38,16 @@ and one field-level position. The working-draft files now point to the root
 versions instead of duplicating bodies. [Source verification](source-verification.md)
 records the current official requirements and primary literature checked.
 
-The latest completed release evidence is [application 3e367ee](../evidence/waterlife-2026-11-08.json).
-The new 3D-only, replacement-frog and restored-busker candidate requires a new
-integrated acceptance record. Playable 2D/2.5D comparison is historical and
+The current local application is **9ea6009**, with
+[seaside-performance evidence](../evidence/seaside-performance-2026-11-08.json):
+419 source/HTTP checks, twelve presentation browser checks, and a final separate
+35-check/seven-capture two-identity path. Local promotion preserves all rows in
+twelve tables, including 48 sound-history rows, with 67 served assets verified.
+The final audio path uses native `none`, a silent analysis sink. Two default
+output reruns stall; an independent non-product control does too. This is not
+speaker or ear acceptance, nor proof of the underlying cause. Final read-only
+observation/evidence collection and branch delivery are not asserted complete;
+no main push or Fly deployment is claimed. Playable 2D/2.5D comparison is historical and
 developer-tested; the author's subsequent preference for 3D does not imply
 personal execution of those tests. Author approval, artistic listening, the
 two-pair study, real next-day return and submitted Fly verification remain

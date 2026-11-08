@@ -1,0 +1,27 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/sound-waterlife.test.ts (8 tests | 1 failed) 592ms
+   ❯ real sounds invite life to the actual pond and sea (8)
+     × times pond calls and bubble clusters to their event periods while frogs hop occasionally between still pads 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > times pond calls and bubble clusters to their event periods while frogs hop occasionally between still pads
+AssertionError: expected 0.1248928 to be greater than 0.13
+ ❯ spec/sound-waterlife.test.ts:116:78
+    114|             const frogs = life.root.children.filter(child => child.nam…
+    115|             expect(frogs[0].getObjectByName("frog-calling-throat")!.sc…
+    116|             expect(frogs[1].getObjectByName("frog-calling-throat")!.sc…
+       |                                                                              ^
+    117|             // A real pond chorus now drives both throats; silence ret…
+    118|             // outside its bounded recorded phrase, not two invented p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 37 passed (38)
+   Start at  18:44:12
+   Duration  1.53s (tests 67%, import 21%, transform 11%, worker 1%)
+

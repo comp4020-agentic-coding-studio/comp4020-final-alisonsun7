@@ -24,9 +24,11 @@ assert.equal(dbPath, resolve(".cache/seaside-performance/browser/history.db"));
 const db = new DatabaseSync(dbPath, { readOnly: true });
 const rows = () => db.prepare("SELECT * FROM placed_sounds ORDER BY id").all();
 assert.equal(rows().length, 0, "Preserve any previous run; use a fresh isolated database");
+const analysisOnly=process.env.AUDIO_SINK==="none";
 const base = address.origin, out = process.argv[2];assert.ok(out);mkdirSync(out, { recursive: true });
 const report = { kind: "seaside-performance-native-chrome-developer-inspection", base, dbPath,
-  limitations: ["No human listening, pleasantness or playtest claim", "No page-visibility test", "Output analyser taps real WebAudio; no signal or timing is fabricated"],
+  audioSink:analysisOnly?"none (native silent analysis sink)":"default",
+  limitations: [analysisOnly?"Native silent sink checks software rendering, not device output":"Default native output requested", "No human listening, pleasantness or playtest claim", "No page-visibility test", "Output analyser taps real WebAudio; no signal or timing is fabricated"],
   checks: [], captures: [], observations: [], sources: [], errors: [], requests: [], runtimeAssets: [], recordings: [], passed: false };
 const check = (value, label) => { assert.ok(value, label);report.checks.push(label);console.log("ok " + label); };
 const people = [];
@@ -56,9 +58,9 @@ async function shot(who, name) {
 const ready = page => page.waitForFunction(() => !!document.getElementById("planet-stage")?.dataset.groundSafety && !document.querySelector("dialog:modal"));
 async function contextPage(name, href = "/planet") {
   const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, hasTouch: true, reducedMotion: "no-preference" });
-  await context.addInitScript(() => {
+  await context.addInitScript(analysisOnly => {
     const Native = window.AudioContext, native = Function.prototype.toString.call(Native).includes("[native code]");
-    const contexts = [], sources = [], decodes = [], connect = AudioNode.prototype.connect;
+    const contexts = [], sources = [], decodes = [], gains = [], panners = [], connect = AudioNode.prototype.connect;
     // Observe the actual post-master/limiter output through a parallel analyser.
     AudioNode.prototype.connect = function(destination, ...args) {
       const result = connect.call(this, destination, ...args);
@@ -66,10 +68,12 @@ async function contextPage(name, href = "/planet") {
       return result;
     };
     window.AudioContext = class extends Native {
-      constructor(...args) { super(...args);this.__seasideMeter = this.createAnalyser();contexts.push(this); }
+      constructor(...args) { super(...(analysisOnly?[{...args[0],sinkId:{type:"none"}}]:args));this.__seasideMeter = this.createAnalyser();contexts.push(this); }
+      createGain() {const node=super.createGain();gains.push(node);return node;}
+      createPanner() {const node=super.createPanner();panners.push(node);return node;}
       createBufferSource() {
         const node = super.createBufferSource(), entry = { node, started: false, ended: false };
-        const start = node.start.bind(node);node.start = (...args) => { const result = start(...args);entry.started = true;return result; };
+        const start = node.start.bind(node);node.start = (...args) => { const result = start(...args);entry.started = true;entry.args=args;entry.at=this.currentTime;return result; };
         node.addEventListener("ended", () => { entry.ended = true; });sources.push(entry);return node;
       }
       async decodeAudioData(...args) {
@@ -80,10 +84,12 @@ async function contextPage(name, href = "/planet") {
     };
     window.__seasideMetrics = () => ({ native, contexts: contexts.map(context => {
       const samples = new Float32Array(context.__seasideMeter.fftSize);context.__seasideMeter.getFloatTimeDomainData(samples);
-      return { state: context.state, sampleRate: context.sampleRate, rms: Math.sqrt(samples.reduce((sum, sample) => sum + sample * sample, 0) / samples.length) };
+      return { state: context.state, currentTime:context.currentTime, sampleRate: context.sampleRate, rms: Math.sqrt(samples.reduce((sum, sample) => sum + sample * sample, 0) / samples.length) };
     }), starts: sources.filter(source => source.started).length,
-      active: sources.filter(source => source.started && !source.ended && source.node.context.state === "running").length, decodes: [...decodes] });
-  });
+      active: sources.filter(source => source.started && !source.ended && source.node.context.state === "running").length,
+      gains:gains.map(node=>node.gain.value),panners:panners.map(node=>({position:[node.positionX.value,node.positionY.value,node.positionZ.value],rolloff:node.rolloffFactor})),
+      activeSources:sources.filter(source=>source.started&&!source.ended).map(source=>({duration:source.node.buffer?.duration,args:source.args,startedAt:source.at,currentTime:source.node.context.currentTime})), decodes: [...decodes] });
+  },analysisOnly);
   const page = await context.newPage();page.setDefaultTimeout(18000);
   page.on("pageerror", error => report.errors.push(name + ": " + error.message));
   page.on("console", message => { if (message.type() === "error") report.errors.push(name + ": " + message.text()); });

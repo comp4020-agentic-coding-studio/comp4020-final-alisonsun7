@@ -16,6 +16,9 @@ The [assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-st
 identifies the course Fly URL as the submitted application and specifies
 1920×1080 and 390×844 Chrome marking viewports. Local preview evidence alone
 therefore leaves a deployment gap.
+Its word ranges are indicative guidance, with no automatic length penalty;
+poor scope can still affect the response judgement. Bibliography exclusion is
+not explicitly specified, so the packet reports its own count boundary.
 
 The [AI-use and integrity policy](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/ai-use-and-integrity/)
 allows AI assistance and drafting, requires an accurate account and the ability

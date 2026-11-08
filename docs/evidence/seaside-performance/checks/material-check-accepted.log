@@ -1,0 +1,54 @@
+{
+  "checkedOn": "2026-11-08",
+  "scope": "Three root draft bodies, submission Markdown file targets, PROCESS commit objects; no browser, DB, human or hosted-deployment verification",
+  "countMethod": "Local whitespace estimates, not an official bibliography exemption: body removes headings/notice/research references; second count includes reference entries; third includes headings/notice too. All remove link URLs and Markdown formatting.",
+  "documents": {
+    "README.md": {
+      "bodyWords": 516,
+      "referenceRange": [
+        400,
+        600
+      ],
+      "withinRange": true,
+      "withReferenceEntriesWords": 516,
+      "allVisibleWordsIncludingHeadingsAndNotice": 550,
+      "sha256": "69579bdb170fbf425076b528ce48c450702ae0174e4dd9b1d07d9284d144ef9c"
+    },
+    "PROCESS.md": {
+      "bodyWords": 1030,
+      "referenceRange": [
+        900,
+        1100
+      ],
+      "withinRange": true,
+      "withReferenceEntriesWords": 1030,
+      "allVisibleWordsIncludingHeadingsAndNotice": 1063,
+      "sha256": "56f78cf1503638579ed70416a4ef5edcd5892cb4bc4a6e8333df18c8e4ce9061"
+    },
+    "research-note.md": {
+      "bodyWords": 673,
+      "referenceRange": [
+        600,
+        800
+      ],
+      "withinRange": true,
+      "withReferenceEntriesWords": 770,
+      "allVisibleWordsIncludingHeadingsAndNotice": 784,
+      "sha256": "53b7b696c43f90fccf252183f4a958b445e561cdceeb4b3da88f7df0775a70a8"
+    }
+  },
+  "localLinksChecked": 136,
+  "processCommitObjectsChecked": [
+    "3e367ee",
+    "56f8215",
+    "6ba8b6e",
+    "83809a7",
+    "8f32290",
+    "92d706b",
+    "9ea6009",
+    "a79a9d3",
+    "e1f2ed7",
+    "f464e75"
+  ],
+  "failures": []
+}
