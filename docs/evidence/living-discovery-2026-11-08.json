@@ -1,0 +1,380 @@
+{
+  "date": "2026-11-08",
+  "kind": "local-release-evidence-index",
+  "applicationCommit": "cd73f2a6870da0d8bebd29bceac534624f3b3835",
+  "branch": "codex/living-sound-discovery",
+  "url": "http://localhost:18861/planet",
+  "beforeCodeTag": "before-living-sound-discovery-2026-11-08",
+  "previousApplication": "5f1fc28",
+  "design": "docs/decisions/031-living-sound-discovery.md",
+  "interpretation": "Separate developer checks and visual review. Counts are not additive quality scores. No novice comprehension or musical pleasure is inferred.",
+  "runs": [
+    {
+      "name": "source and HTTP regression",
+      "command": "APP_URL=http://localhost:18897 ./node_modules/.bin/vitest run",
+      "checks": 311,
+      "files": 48,
+      "durationSeconds": 64.95,
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/pure-checks.json",
+      "scope": "Candidate before final stopped-feedback wording and conservatory-arrival changes. Dedicated spec database; no tests target 18861."
+    },
+    {
+      "name": "focused source/DOM checks",
+      "command": "./node_modules/.bin/vitest run --config .cache/discovery/pure.config.mjs",
+      "checks": 30,
+      "files": 5,
+      "result": "passed",
+      "scope": "After preview-feedback fix, before final arrival adjustment. Source-life, wildlife, discovery modal cancellation, publication races and chooser; no HTTP writes."
+    },
+    {
+      "name": "independent-browser discovery",
+      "command": "APP_URL=http://localhost:18898 SCRATCH_DB=.cache/discovery/browser/history.db node e2e/living-discovery.mjs .cache/discovery/browser-artifacts-final",
+      "checks": 26,
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/discovery-integration.json",
+      "scope": "Two actual cookie identities, real coffee/bird/gull sources, local comparison, decoded private audition, quiet guards, phone/chat, withdrawal and read-only SQLite tombstones. This run precedes the final inland arrival correction; its rejected conservatory capture is not final art evidence. No autoplay bypass."
+    },
+    {
+      "name": "rooms and nearby chat regression",
+      "command": "APP_URL=http://localhost:18898 node e2e/planet-social-restrooms.mjs .cache/discovery/restroom-artifacts",
+      "checks": 31,
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/restrooms.json",
+      "scope": "Before final arrival-only change; actual walking, locks, shower/flush, quiet peer, phone actions and existing routine via explicitly controlled scratch schedule, not natural waiting-time study."
+    },
+    {
+      "name": "three-place creation regression",
+      "command": "APP_URL=http://localhost:18898 node e2e/chorus-creation.mjs .cache/discovery/creation-artifacts-fixed",
+      "checks": 43,
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/creation.json",
+      "scope": "Real independent-author works at Green, Stage and Nook, music, withdrawal, controlled lost stream frames/reconnect/late ACK and touch. Existing suite uses autoplay bypass; no hardware sound-quality claim. Does not visit the changed conservatory; static recompilation only changed that arrival while this run was active."
+    },
+    {
+      "name": "final inland arrival visual check",
+      "command": "APP_URL=http://localhost:18899 node e2e/discovery-arrival.mjs .cache/discovery/arrival-artifacts",
+      "checks": 3,
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/arrival.json",
+      "scope": "Final cd73f2a app, retained-history clone, no sound publications, source preservation, actual 1920x1080 and 390x844 rendered inland approach. Root also inspected this view in IAB."
+    },
+    {
+      "name": "local switch",
+      "command": "python3 scripts/local-preview.py --dist .cache/discovery/release/dist --commit cd73f2a --restart",
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/promotion.json",
+      "scope": "All rows in 12 current tables preserved, including 42 placed_sounds rows. All 66 compiled files equal the reviewed candidate; 59 served files/cache headers verified. Current data never replaced by a backup."
+    },
+    {
+      "name": "actual promoted read-only observer",
+      "command": "APP_URL=http://localhost:18861 node e2e/chorus-read-only.mjs .cache/discovery/promoted",
+      "result": "passed",
+      "evidence": "docs/evidence/living-discovery/promoted-observer.json",
+      "scope": "Fresh unjoined browser, all non-GET/HEAD requests blocked, 19 current live planet sources match fresh server source IDs, true author marks, 3D and Sound off, desktop/phone views, notes/README routes, zero writes/page errors."
+    }
+  ],
+  "failures": [
+    {
+      "evidence": "docs/evidence/living-discovery/first-phone-failure.json",
+      "kind": "product bug",
+      "observation": "Immediately after chat opened, its correctly sized input was hit-tested as sound-discovery-create. A later screenshot already hides the card; targetRects capture the transient obstruction.",
+      "correction": "Synchronous :has(chat) CSS and modal early return; hidden guide never stops another dialog preview."
+    },
+    {
+      "evidence": "docs/evidence/living-discovery/withdrawal-test-failure.json",
+      "kind": "test assumptions",
+      "observation": "Desktop soundscape header is intentionally hidden on phone; public live snapshot excludes removed sources.",
+      "correction": "Use actual desktop action; verify tombstones through explicitly isolated read-only SQLite, preserving all initial stored rows."
+    },
+    {
+      "evidence": "docs/evidence/living-discovery/fixed-duration-failure.json",
+      "kind": "test timing assumption",
+      "observation": "A fixed 350ms key press did not reach the required actual displacement; no initial creation assertions completed.",
+      "correction": "Bounded position observation while holding real input, always release in finally. No speed change or position injection."
+    },
+    {
+      "evidence": "docs/evidence/living-discovery/rejected-conservatory-obstruction.png",
+      "kind": "visual failure beyond state checks",
+      "observation": "Beam obscures the body and effect despite passing canonical wildlife-state assertions.",
+      "correction": "Default arrival outside the structure."
+    },
+    {
+      "evidence": "docs/evidence/living-discovery/rejected-conservatory-seaside-approach.png",
+      "kind": "rejected visual correction",
+      "observation": "The first outside approach framed the sea under the avatar.",
+      "correction": "Final approach is inland at -2,12 facing the open structure; verified separately in both rating viewports."
+    }
+  ],
+  "isolation": "Spec port18897, discovery/room/creation port18898 with its own DB, view clone18899, frozen before clone18896. A core script intentionally retained a Reading Nook fixture; a later discovery precondition rejected it. That scratch history was archived before making a fresh discovery DB. User port18861 received read-only inspection and the explicit app-only promotion, never write tests.",
+  "humanStatus": {
+    "author3DPreference": "Explicitly supplied by author; playable 2D/2.5D evidence remains historical and linked in README/PROCESS.",
+    "hardwareListening": "not performed",
+    "unfamiliarPairs": "not performed",
+    "physicalPhone": "not performed",
+    "nextDayReturn": "not performed",
+    "publicDeployment": "not authorized or performed"
+  },
+  "limits": [
+    "Examples are three stable-seed local teaching spots, not randomly inserted shared contributions. Visitors can intentionally hide them independently.",
+    "Real-source birds/gulls use a twelve-bird/six-source global budget with canonical real-first selection. Very dense histories can exhaust it.",
+    "No universal camera/aliasing guarantee; final approach is checked, all possible indoor positions are not.",
+    "Actual audio node starts and lifecycle checks do not establish pleasantness."
+  ],
+  "rollback": {
+    "command": "python3 scripts/local-preview.py --rollback",
+    "targetApplication": "5f1fc28",
+    "data": "Retain the current SQLite file. Never restore an old database for a visual rollback.",
+    "start": "python3 scripts/local-preview.py",
+    "retainedFilesMatchFrozenBefore": true,
+    "retainedFileCount": 63,
+    "fullRollbackRehearsalThisIteration": false
+  },
+  "artifacts": [
+    {
+      "path": "docs/evidence/living-discovery/arrival.json",
+      "bytes": 544,
+      "sha256": "dd80f5ebd480e6e534d0c9c960065e508de902627bc5855dee06064ee60b4daa"
+    },
+    {
+      "path": "docs/evidence/living-discovery/build-check.json",
+      "bytes": 6397,
+      "sha256": "ee27bfd7eab9908b556896b6d0d3ad7375eea8686bd966885406b10de2d7070d"
+    },
+    {
+      "path": "docs/evidence/living-discovery/cafe-desktop.png",
+      "bytes": 747119,
+      "sha256": "a37a8bc1ca1f6d87703270d8454441da4bd953fe36898bd7f355d6e28377d1ea"
+    },
+    {
+      "path": "docs/evidence/living-discovery/cafe-phone.png",
+      "bytes": 154531,
+      "sha256": "a0d11f57239f87b774199f5e3674939965decc0220f011ae6688ade8800cc42a"
+    },
+    {
+      "path": "docs/evidence/living-discovery/conservatory-desktop.png",
+      "bytes": 596957,
+      "sha256": "d3d0f17df6a2abf66a6c6c4425d402afde9bf8dfdb341c47832aa46f5d78eb34"
+    },
+    {
+      "path": "docs/evidence/living-discovery/conservatory-phone.png",
+      "bytes": 153266,
+      "sha256": "7cab11eaa17346bd2eeb7e7685da81e9cb4394e1f6127209fc46f3482f4796f8"
+    },
+    {
+      "path": "docs/evidence/living-discovery/creation.json",
+      "bytes": 8096,
+      "sha256": "c9e09443a0476110c2b8a53bf554a7062464ed5e92c93cd5b7a516813e564596"
+    },
+    {
+      "path": "docs/evidence/living-discovery/creation.txt",
+      "bytes": 6234,
+      "sha256": "f867f01bd8136ff363c3cff961749127b7b06f543f8c0bd3f7756ed06f036037"
+    },
+    {
+      "path": "docs/evidence/living-discovery/discovery-before-arrival-fix.json",
+      "bytes": 9742,
+      "sha256": "9f14786cbb25e507c23587b561b905aac5303a4be2c0a57794a7795250553486"
+    },
+    {
+      "path": "docs/evidence/living-discovery/discovery-before-arrival-fix.txt",
+      "bytes": 2568,
+      "sha256": "a46512fa0eb31b9b6c7c5e4977f44f16ad6bfa36a7c1ae9474e23270fb8683ba"
+    },
+    {
+      "path": "docs/evidence/living-discovery/discovery-integration.json",
+      "bytes": 9742,
+      "sha256": "d77bc3acbe2e04efd3e1be152cc2eb86429166d0377583d8c62b84aab1caf1f7"
+    },
+    {
+      "path": "docs/evidence/living-discovery/discovery-integration.txt",
+      "bytes": 2568,
+      "sha256": "3addeed7e38df679fc0a07d5e6c4d40d6bc8eee2b9a587dad66dc92243d2b880"
+    },
+    {
+      "path": "docs/evidence/living-discovery/first-phone-failure.json",
+      "bytes": 4013,
+      "sha256": "20433e142dc3a4b830553a004a7da900ac8705689494588ace27c8ae3437bf37"
+    },
+    {
+      "path": "docs/evidence/living-discovery/first-phone-failure.txt",
+      "bytes": 1568,
+      "sha256": "a8ca518ba2b5f88b9f286bd7f4e6412b9254cabc7524561355edf9a264285bc7"
+    },
+    {
+      "path": "docs/evidence/living-discovery/fixed-duration-failure.json",
+      "bytes": 562,
+      "sha256": "9d60d65272942c1ec1d7b27f0357252d7ecc4cae5dfe55140e359693270d7885"
+    },
+    {
+      "path": "docs/evidence/living-discovery/fixed-duration-failure.png",
+      "bytes": 837999,
+      "sha256": "c5d28c0fd0e1296c0d34928a23a20f818d670bf301a74e7de63a19343090cfef"
+    },
+    {
+      "path": "docs/evidence/living-discovery/fixed-duration-failure.txt",
+      "bytes": 526,
+      "sha256": "e27f4380a76dacfc447b21e7bbfb678167b4f3934e422e1ece609a0986816ffa"
+    },
+    {
+      "path": "docs/evidence/living-discovery/full-source-final-config.txt",
+      "bytes": 552,
+      "sha256": "fabc353d9677d3995cf2097be45cd9fdb5c017fc12695cbf3b0a4feba2e7ba11"
+    },
+    {
+      "path": "docs/evidence/living-discovery/full-source-final.txt",
+      "bytes": 1072,
+      "sha256": "ace79ee2f94806f012392d9a00380614e2445a8122b27dea9f1d59cb45f9cc32"
+    },
+    {
+      "path": "docs/evidence/living-discovery/phone-failure-after-next-frame.png",
+      "bytes": 153178,
+      "sha256": "f82a2e96e6a26200a5a3e0ca2f8da6f3aa55353335802a467c2555203ece016b"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pool-desktop.png",
+      "bytes": 668470,
+      "sha256": "a8d0481cd95a025d29f871d5f475208e10ab715c9e8c1f7a591859006c07ff17"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pool-phone-clear.png",
+      "bytes": 162178,
+      "sha256": "88e5a262ac30d7244e49f25a6d2c9bea7e01ba4fdb862fe614b4186496879eea"
+    },
+    {
+      "path": "docs/evidence/living-discovery/promoted-observer.json",
+      "bytes": 5507,
+      "sha256": "e2482d752fcef1c9c27ad59334c2edcd44c91356ad4a00ee234cc8c75b46c82c"
+    },
+    {
+      "path": "docs/evidence/living-discovery/promoted-pool-desktop.png",
+      "bytes": 662134,
+      "sha256": "dba09c98133cc6f19f401445cc00b6df390653d552ae622bd85907e6598ade51"
+    },
+    {
+      "path": "docs/evidence/living-discovery/promoted-pool-phone.png",
+      "bytes": 155128,
+      "sha256": "d87cb1254883efc9aac2ed7347775ca9eacaca5a7a155cf1b7db39a3924012b3"
+    },
+    {
+      "path": "docs/evidence/living-discovery/promotion.json",
+      "bytes": 7893,
+      "sha256": "0c09524924ab85edfdd7208ed3c6994431c21f2f5831d39cac532aa4175ec33a"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pure-checks.json",
+      "bytes": 14702,
+      "sha256": "ae29dd4432a78e6df7f53bbf7ab4d357bb5a0ae5e081b5fa800a775fdd4ce870"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pure-final-config.txt",
+      "bytes": 214,
+      "sha256": "3587080835548d103fd53a25d851ad9c0be52d710eece04882b39a08771440c0"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pure-final.txt",
+      "bytes": 438,
+      "sha256": "fe4514099393d548e0042463de0ee86a19ea1d5995ee5a32c01467ebc504c42b"
+    },
+    {
+      "path": "docs/evidence/living-discovery/rejected-conservatory-obstruction.png",
+      "bytes": 915138,
+      "sha256": "28432f03658a1824a52bca3885af254ac204de58f31b2d9b2dad948197001ac8"
+    },
+    {
+      "path": "docs/evidence/living-discovery/rejected-conservatory-seaside-approach.png",
+      "bytes": 668720,
+      "sha256": "bb091b07078c35e89773632237794e87b4ca6ac6e2d8b8fbd7dc65e0c3a06a52"
+    },
+    {
+      "path": "docs/evidence/living-discovery/reported-runs.txt",
+      "bytes": 3337,
+      "sha256": "7e666b0759346ce7e396e96e1982cd9fbabbd3055cd1989d913c3e55bda7c29a"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-balance-after.txt",
+      "bytes": 409,
+      "sha256": "0fe7667d4dd26bb1b53a7f65db8885c95a2f85d0aded965285027c405b89f769"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-balance-before.txt",
+      "bytes": 2264,
+      "sha256": "e3cb78e0936bf985ee6dd130e3c060e04156137c6897437b462dd060fb69e1e2"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-balance-config.txt",
+      "bytes": 157,
+      "sha256": "dd496af75d27c63dbf5a3613f734789253a397eed8d2c4e2de72772b685a7360"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-real-priority-after.txt",
+      "bytes": 240,
+      "sha256": "c7eb4638c86b0339c8a2412d3fa20394841592b097d8822a3e594e48da517bf5"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-real-priority-before.txt",
+      "bytes": 2440,
+      "sha256": "aa088a00e69833ec1b27e7e2a232b4400e6c3b425e2f68d281df1e57c86105b8"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-real-priority-config.txt",
+      "bytes": 154,
+      "sha256": "a8e1be30378a231d9124797cd8e40e4620e846387b31b11b24d30e6894af4b16"
+    },
+    {
+      "path": "docs/evidence/living-discovery/restrooms.json",
+      "bytes": 2493,
+      "sha256": "816be199e5cfe45235be6be66870e9e683df9f979551d341086c66606c8da55b"
+    },
+    {
+      "path": "docs/evidence/living-discovery/restrooms.txt",
+      "bytes": 2129,
+      "sha256": "0367140b4fa0e8a0203f87feac8b2b7848e1367f3a9614aa2045da41272c7a7f"
+    },
+    {
+      "path": "docs/evidence/living-discovery/shore-paths-after-archive-rerun.txt",
+      "bytes": 238,
+      "sha256": "e8c64a51238044ab74ea571aff6f33ddf5f0b9cbc3ee7c5c405d21a446c73cdd"
+    },
+    {
+      "path": "docs/evidence/living-discovery/shore-paths-before-archive-rerun.txt",
+      "bytes": 3847,
+      "sha256": "9e0deb27e38715e5a9372c441dc69077c04765aa18bee2ed3bbc36dc8203d8b8"
+    },
+    {
+      "path": "docs/evidence/living-discovery/shore-paths-config.txt",
+      "bytes": 153,
+      "sha256": "6789a29453150176414b726cd441fe12366b702e3ac99695d286362274e2209f"
+    },
+    {
+      "path": "docs/evidence/living-discovery/sound-wildlife-config.txt",
+      "bytes": 162,
+      "sha256": "189e348faed2d739fe9d8c31213697c7641b48814335925e1f7a4bba1f78088f"
+    },
+    {
+      "path": "docs/evidence/living-discovery/withdrawal-test-failure.json",
+      "bytes": 7908,
+      "sha256": "253b44d115d633699c3ef42be10d8aecd3337640a5dc3d50d366dbbf2ed238e8"
+    },
+    {
+      "path": "docs/evidence/living-discovery/withdrawal-test-failure.txt",
+      "bytes": 3695,
+      "sha256": "fa107d4f2925e742b957fa3710e9638d628e15caca1224610f88e0faf462b938"
+    },
+    {
+      "path": "docs/evidence/living-discovery/world-example-audio-after.txt",
+      "bytes": 227,
+      "sha256": "ca879c3a51ddf527325ab8a7de724daa44b45c57d815bdbb4aa9ce492b2ed224"
+    },
+    {
+      "path": "docs/evidence/living-discovery/world-example-audio-before.txt",
+      "bytes": 6808,
+      "sha256": "2d5647471e6252d7775e8f370b8d42daa11d0a4204d3b83efef18b5274cb317c"
+    },
+    {
+      "path": "docs/evidence/living-discovery/world-example-audio-config.txt",
+      "bytes": 122,
+      "sha256": "a97ad2ec26ac943c867362da7a46afe1531197f297675693617bfae218760533"
+    }
+  ]
+}

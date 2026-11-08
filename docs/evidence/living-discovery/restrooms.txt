@@ -1,0 +1,31 @@
+ok  Two real independent cookie identities are used
+ok  A nearby Talk action is visible in the world without opening settings
+ok  T opens chat and focuses its input
+ok  Typing movement letters in chat does not move the player
+ok  A nearby friend's real message appears over its speaker and in the accessible log
+ok  Escape closes chat and returns to walking
+ok  A player beyond twelve metres does not receive the message
+ok  Private rooms offer natural visits without a player-facing resident or lock-test invitation
+ok  Talk remains reachable while restroom controls are open
+ok  Entering reveals Flush and Walk outside controls directly in the world
+ok  A second player's actual walk is stopped outside the occupied door
+ok  planet-toilet: server rejects a second occupant and returns a safe outside position
+ok  planet-toilet: visible stay action creates the correct server-confirmed private sound
+ok  planet-toilet: actual decoded browser audio starts with the correct event/texture role
+ok  A friend's flush does not override a quiet browser's sound choice
+ok  Walking out releases the real lock and the stay sound is removed by the server
+ok  The waiting friend can enter after the occupant leaves
+ok  A visible room switch helps players discover the shower and restroom
+ok  planet-shower: visible stay action creates the correct server-confirmed private sound
+ok  planet-shower: actual decoded browser audio starts with the correct event/texture role
+ok  390×844 room controls fit and the exit remains a finger-sized action
+ok  Touch users can dismiss the room panel
+ok  Leaving the shower ends its shared private sound
+ok  Touch users can open, send and close chat
+ok  planet-toilet: server rejects a second occupant and returns a safe outside position
+ok  Both browsers see the actual resident and occupied-door explanation
+ok  The authoritative resident visit reaches a real flush token and actual nearby browser audio
+ok  The resident releases the same lock on exit
+ok  The resident is never counted as a real online player
+ok  Original ordinary sounds and coastal history remain unchanged
+ok  No browser page errors

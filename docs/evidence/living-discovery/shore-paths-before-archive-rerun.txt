@@ -1,0 +1,80 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-paths.test.ts (5 tests | 4 failed) 124ms
+   ❯ continuous ground paths around the tide pool (5)
+     × uses one bounded mesh for the road network and joins branches without overlapping road faces 42ms
+     × keeps the promenade and the curved pool-bank approach continuously covered 29ms
+     × leaves the pool and its open sea channel free of floating road, without relocating or blocking historical points 18ms
+     × subdivides both directions over the sphere, with outward normals and an actual coloured shoulder 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-paths.test.ts > continuous ground paths around the tide pool > uses one bounded mesh for the road network and joins branches without overlapping road faces
+AssertionError: expected [ …(11) ] to have a length of 1 but got 11
+
+- Expected
++ Received
+
+- 1
++ 11
+
+ ❯ spec/planet-paths.test.ts:26:23
+     24|
+     25|     it("uses one bounded mesh for the road network and joins branches …
+     26|         expect(roads).toHaveLength(1);
+       |                       ^
+     27|         const geometry = roads[0].geometry;
+     28|         expect(geometry.getAttribute("position").count).toBeLessThan(1…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  spec/planet-paths.test.ts > continuous ground paths around the tide pool > keeps the promenade and the curved pool-bank approach continuously covered
+AssertionError: pool bank at 12.893560416332472,10.431373289649022: expected 0 to be greater than 0
+ ❯ spec/planet-paths.test.ts:43:103
+     41|         }
+     42|         const bank = new THREE.CatmullRomCurve3([[14, 10], [12, 11], […
+     43|         for (const p of bank.getPoints(70)) expect(at(p.x, p.z).length…
+       |                                                                                                       ^
+     44|     });
+     45|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  spec/planet-paths.test.ts > continuous ground paths around the tide pool > leaves the pool and its open sea channel free of floating road, without relocating or blocking historical points
+AssertionError: open water at 16,14: expected [ { …(7) } ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ spec/planet-paths.test.ts:48:65
+     46|     it("leaves the pool and its open sea channel free of floating road…
+     47|         for (const p of [{ x: 16, z: 14 }, { x: 16.5, z: 15 }, { x: 16…
+     48|             expect(at(p.x, p.z), `open water at ${p.x},${p.z}`).toHave…
+       |                                                                 ^
+     49|             expect(scene.canStand(p.x, p.z, new Set())).toBe(true);
+     50|         }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  spec/planet-paths.test.ts > continuous ground paths around the tide pool > subdivides both directions over the sphere, with outward normals and an actual coloured shoulder
+AssertionError: expected undefined to be defined
+ ❯ spec/planet-paths.test.ts:57:25
+     55|     it("subdivides both directions over the sphere, with outward norma…
+     56|         const geometry = roads[0].geometry, positions = geometry.getAt…
+     57|         expect(colours).toBeDefined();
+       |                         ^
+     58|         let darkest = Infinity, lightest = -Infinity;
+     59|         for (let i = 0; i < positions.count; i++) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  15:03:31
+   Duration  249ms (tests 65%, transform 22%, import 12%, worker 1%)
+

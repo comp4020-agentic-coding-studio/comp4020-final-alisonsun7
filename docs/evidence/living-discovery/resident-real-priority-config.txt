@@ -1,0 +1,1 @@
+export default { test: { include: ["spec/sound-life.test.ts", "spec/sound-response.test.ts", "spec/sound-residents.test.ts"], fileParallelism: false } };

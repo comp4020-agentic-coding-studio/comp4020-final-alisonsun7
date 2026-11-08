@@ -1,0 +1,58 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/sound-life.test.ts (6 tests | 2 failed) 10ms
+   ❯ world examples without invented contributors (6)
+     × lets an in-range real ingredient take the resident's attention before a closer example 3ms
+     × keeps real-source distance, preference and oldest-first ties deterministic for late and reordered snapshots 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/sound-life.test.ts > world examples without invented contributors > lets an in-range real ingredient take the resident's attention before a closer example
+AssertionError: expected { sourceId: '@world:coffee', …(6) } to match object { sourceId: 'real-chords', …(1) }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "profile": {
+-     "behavior": "sway",
++     "behavior": "chat",
+    },
+-   "sourceId": "real-chords",
++   "sourceId": "@world:coffee",
+  }
+
+ ❯ spec/sound-life.test.ts:29:54
+     27|     const now=Date.parse(example.at)+3000;
+     28|     for(const order of [[example,real],[real,example]]){
+     29|       expect(chooseResidentResponse(home,order,now)).toMatchObject({so…
+       |                                                      ^
+     30|       expect(chooseResidentResponse(home,order,now)).not.toHavePropert…
+     31|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/sound-life.test.ts > world examples without invented contributors > keeps real-source distance, preference and oldest-first ties deterministic for late and reordered snapshots
+AssertionError: expected '@world:coffee' to be 'a-real' // Object.is equality
+
+Expected: "a-real"
+Received: "@world:coffee"
+
+ ❯ spec/sound-life.test.ts:49:64
+     47|     const now=Date.parse(example.at)+4000;
+     48|     for(const order of [[example,distant,newer,tied,older],[older,tied…
+     49|       expect(chooseResidentResponse(home,order,now)?.sourceId).toBe(ol…
+       |                                                                ^
+     50|       expect(chooseResidentResponse(home,order,now+60_000)?.sourceId).…
+     51|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  14:53:52
+   Duration  98ms (transform 55%, tests 24%, import 17%, worker 4%)
+

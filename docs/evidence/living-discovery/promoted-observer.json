@@ -1,0 +1,206 @@
+{
+  "kind": "read-only-promoted-browser-inspection",
+  "base": "http://localhost:18861",
+  "viewports": [
+    {
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "writes": [],
+  "errors": [],
+  "passed": true,
+  "expectedSourceIds": [
+    "snd_1be557b4936c23d0",
+    "snd_2dce186004f3623c",
+    "snd_4a4ec2fde0373c67",
+    "snd_4f2de0ea5418c7e6",
+    "snd_5a7c771f4e0aa57a",
+    "snd_603cd0bfc4133ee7",
+    "snd_6bfa640cd56910bf",
+    "snd_89e865fd1aec6a3f",
+    "snd_9c1d88c6ccbf90aa",
+    "snd_9f4fa1a1e93d6095",
+    "snd_a1f138529c72264b",
+    "snd_aeefdcc98ddac8ae",
+    "snd_b3d911c87c60f488",
+    "snd_b524461ba6881d03",
+    "snd_c4e9629a4311a097",
+    "snd_d4a9827e8738988f",
+    "snd_dabc7267711ab428",
+    "snd_dd641be51053df12",
+    "snd_ea9edb5a9f6be1c9"
+  ],
+  "actual": {
+    "joined": false,
+    "presentation": "3d",
+    "soundOn": "false",
+    "sourceCount": 19,
+    "forms": [
+      {
+        "placeId": "green",
+        "workId": "snd_b524461ba6881d03",
+        "variant": "habitat",
+        "duet": true,
+        "sourceIds": [
+          "snd_b524461ba6881d03",
+          "snd_b3d911c87c60f488",
+          "snd_dabc7267711ab428"
+        ],
+        "contributors": [
+          "par_547363be62e467e6",
+          "par_c474dbe30a929ad3"
+        ],
+        "open": 1,
+        "phase": 0.6755199432373047,
+        "focused": false,
+        "signature": "081vpdg",
+        "marks": [
+          {
+            "sourceId": "snd_b524461ba6881d03",
+            "authorId": "par_547363be62e467e6",
+            "color": "#93c65d",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_b3d911c87c60f488",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_dabc7267711ab428",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          }
+        ],
+        "answers": [
+          {
+            "sourceId": "snd_b3d911c87c60f488",
+            "parentId": "snd_b524461ba6881d03",
+            "fromAuthorId": "par_547363be62e467e6",
+            "toAuthorId": "par_c474dbe30a929ad3"
+          },
+          {
+            "sourceId": "snd_dabc7267711ab428",
+            "parentId": "snd_b524461ba6881d03",
+            "fromAuthorId": "par_547363be62e467e6",
+            "toAuthorId": "par_c474dbe30a929ad3"
+          }
+        ]
+      },
+      {
+        "placeId": "stage",
+        "workId": "snd_4f2de0ea5418c7e6",
+        "variant": "ensemble",
+        "duet": false,
+        "sourceIds": [
+          "snd_4f2de0ea5418c7e6",
+          "snd_9f4fa1a1e93d6095",
+          "snd_5a7c771f4e0aa57a",
+          "snd_9c1d88c6ccbf90aa",
+          "snd_c4e9629a4311a097"
+        ],
+        "contributors": [
+          "par_c474dbe30a929ad3"
+        ],
+        "open": 0,
+        "phase": 0.6755199432373047,
+        "focused": false,
+        "signature": "1gjerv0",
+        "marks": [
+          {
+            "sourceId": "snd_4f2de0ea5418c7e6",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_9f4fa1a1e93d6095",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_5a7c771f4e0aa57a",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_9c1d88c6ccbf90aa",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_c4e9629a4311a097",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          }
+        ],
+        "answers": []
+      },
+      {
+        "placeId": "reading",
+        "workId": "snd_2dce186004f3623c",
+        "variant": "lantern",
+        "duet": false,
+        "sourceIds": [
+          "snd_2dce186004f3623c",
+          "snd_d4a9827e8738988f",
+          "snd_4a4ec2fde0373c67",
+          "snd_ea9edb5a9f6be1c9"
+        ],
+        "contributors": [
+          "par_c474dbe30a929ad3"
+        ],
+        "open": 0,
+        "phase": 0.6755199432373047,
+        "focused": false,
+        "signature": "1ag4fed",
+        "marks": [
+          {
+            "sourceId": "snd_2dce186004f3623c",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_d4a9827e8738988f",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_4a4ec2fde0373c67",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          },
+          {
+            "sourceId": "snd_ea9edb5a9f6be1c9",
+            "authorId": "par_c474dbe30a929ad3",
+            "color": "#c65daa",
+            "shape": "round"
+          }
+        ],
+        "answers": []
+      }
+    ],
+    "brand": "Little Chorus — The little world"
+  },
+  "authorMarks": 19,
+  "notes": [
+    "/project-notes/chorus-audio",
+    "/project-notes/promise-evidence-map",
+    "/project-notes/human-playtest",
+    "/project-notes/little-chorus"
+  ]
+}

@@ -1,0 +1,23 @@
+ok  Two independent cookie identities enter the same actual planet
+ok  The labelled café world example drives real steam and a separately labelled NPC response
+ok  World examples remain silent in genuinely quiet browsers without an autoplay bypass
+ok  World examples create no sound rows, shared works, invented authors or human presence
+ok  The nearby explanation can be dismissed
+ok  The explanation has an explicit reachable restore
+ok  A local comparison removes example steam and NPC effects without publishing or modifying the shared world
+ok  An explicit private Listen starts a decoded example while preserving quiet shared listening and publishing nothing
+ok  390×844 #sound-discovery-listen has a reachable 44px touch target
+ok  390×844 #sound-discovery-create has a reachable 44px touch target
+ok  390×844 #sound-example-compare has a reachable 44px touch target
+ok  390×844 #sound-discovery-close has a reachable 44px touch target
+AssertionError [ERR_ASSERTION]: The phone explanation does not obstruct chat input, Say or Close
+    at check (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/living-discovery.mjs:22:12)
+    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/living-discovery.mjs:183:5 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+ok  Cleanup preserves every initial planet and coastal source exactly; only acknowledged own fixtures are soft-removed

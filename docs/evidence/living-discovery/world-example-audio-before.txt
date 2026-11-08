@@ -1,0 +1,109 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-audio.test.ts (18 tests | 9 failed) 18ms
+   ❯ the new planet's optional shared recording playback (18)
+     × keeps examples silent without local permission while still allowing a private audition 2ms
+     × gives eight real in-range sounds priority over nearby examples without expanding the budget 0ms
+     × plays a nearby example at half gain and removes it at its own six-metre boundary 0ms
+     × removes real sources independently and immediately stops examples when they are hidden 0ms
+     × does not revive an example decode removed before completion, including a quick off/on without a new frame 0ms
+     × does not cancel a pending example when the same example list is refreshed 0ms
+     × never starts a pending example after this page becomes hidden 0ms
+     × never starts a pending example after this page becomes off 0ms
+     × never starts a pending example after this page becomes disposed 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > keeps examples silent without local permission while still allowing a private audition
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:158:40
+    156|
+    157|   it("keeps examples silent without local permission while still allow…
+    158|     const instance = audio(); instance.setExamples([example()]);
+       |                                        ^
+    159|     instance.frame(listener, camera, at + 1000); await settle();
+    160|     expect(instance.on).toBe(false); expect(contexts).toHaveLength(0);…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > gives eight real in-range sounds priority over nearby examples without expanding the budget
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:169:14
+    167|   it("gives eight real in-range sounds priority over nearby examples w…
+    168|     const report = vi.fn(), instance = audio(report);
+    169|     instance.setExamples(Array.from({ length: 8 }, (_, i) => example(`…
+       |              ^
+    170|     instance.setAll(Array.from({ length: 8 }, (_, i) => sound(`real-${…
+    171|     instance.setOn(true); instance.frame(listener, camera, at); await …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > plays a nearby example at half gain and removes it at its own six-metre boundary
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:178:84
+    176|
+    177|   it("plays a nearby example at half gain and removes it at its own si…
+    178|     const instance = audio(); instance.setAll([sound("real", { x: 0 })…
+       |                                                                                    ^
+    179|     instance.setOn(true); instance.frame(listener, camera, at); await …
+    180|     expect(sources).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > removes real sources independently and immediately stops examples when they are hidden
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:189:74
+    187|
+    188|   it("removes real sources independently and immediately stops example…
+    189|     const instance = audio(); instance.setAll([sound("real")]); instan…
+       |                                                                          ^
+    190|     instance.setOn(true); instance.frame(listener, camera, at); await …
+    191|     expect(sources).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > does not revive an example decode removed before completion, including a quick off/on without a new frame
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:200:40
+    198|   it("does not revive an example decode removed before completion, inc…
+    199|     const waiting = deferred<AudioBuffer>(); decode.mockReturnValueOnc…
+    200|     const instance = audio(); instance.setExamples([example()]); insta…
+       |                                        ^
+    201|     await settle(); instance.setExamples([]); instance.setExamples([ex…
+    202|     expect(sources).toHaveLength(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > does not cancel a pending example when the same example list is refreshed
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:208:40
+    206|   it("does not cancel a pending example when the same example list is …
+    207|     const waiting = deferred<AudioBuffer>(); decode.mockReturnValueOnc…
+    208|     const instance = audio(); instance.setExamples([example()]); insta…
+       |                                        ^
+    209|     await settle(); instance.setExamples([example()]); waiting.resolve…
+    210|     expect(sources).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > never starts a pending example after this page becomes hidden
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > never starts a pending example after this page becomes off
+ FAIL  spec/planet-audio.test.ts > the new planet's optional shared recording playback > never starts a pending example after this page becomes disposed
+TypeError: instance.setExamples is not a function
+ ❯ spec/planet-audio.test.ts:215:40
+    213|   it.each(["hidden", "off", "disposed"])("never starts a pending examp…
+    214|     const waiting = deferred<AudioBuffer>(); decode.mockReturnValueOnc…
+    215|     const instance = audio(); instance.setExamples([example()]); insta…
+       |                                        ^
+    216|     await settle();
+    217|     if (mode === "hidden") { document.hidden = true; document.dispatch…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 9 passed (18)
+   Start at  14:43:31
+   Duration  137ms (transform 47%, import 28%, tests 22%, worker 2%)
+

@@ -113,6 +113,14 @@ A friend's contribution cannot set the local enabled preference or volume.
 
 ## Human listening checklist — pending
 
+ADR031 adds three optional local teaching signals using the existing espresso,
+bird and gull recordings and their existing playback roles. They have a 6 m
+range, half-level gain and yield the eight-voice budget to real contributions.
+Clearing or re-enabling them invalidates stale loads; they never unmute a page.
+The discovery path verifies actual decoded private playback under a gesture,
+not speaker output or an artistic verdict. See the
+[scoped release evidence](evidence/living-discovery-2026-11-08.json).
+
 Use headphones first at modest volume, then phone/laptop speakers. For each row,
 record device, volume, first impression and one concrete requested change.
 
@@ -127,6 +135,9 @@ record device, volume, first impression and one concrete requested change.
 | Preview while a work plays | Audition clear, world politely ducks, restoration smooth |
 | Remove/focus/mute during a note | No alarming click; cancellation understandable; no delayed restart |
 | Headphones vs phone speaker | Bass not essential to understanding the shared result |
+| Café example, then an actual coffee contribution | Example is unobtrusive; real source takes over clearly; NPC/steam consequence understandable |
+| Bird and gull examples near and far | Natural pacing and spatial falloff; species and visible visitors feel connected |
+| Pause examples while a real friend's source plays | Only demonstration audio/effects stop; friend's source remains identifiable |
 
 No human listening result, successful friend test or next-day return is claimed
 in this document. Those remain evidence to collect, not prose to fill in.

@@ -7,7 +7,27 @@ that cannot be supplied by source inspection.
 
 ## Build scope before reading any result
 
-The verified local application is **`5f1fc28`**, served at
+The current verified local application is **`cd73f2a`**, served at
+`http://localhost:18861/planet`, on `codex/living-sound-discovery`.
+[ADR031](../decisions/031-living-sound-discovery.md) and the
+[discovery release index](../evidence/living-discovery-2026-11-08.json)
+separate actual browser checks, the earlier full source run, rejected views,
+data-preserving promotion and open human judgement.
+
+| Current promise | Agent rule / automatic rejection | Human judgement still needed |
+| --- | --- | --- |
+| I can discover what a sound changes | Clearly labelled local examples; private Listen and explicit Leave; 26-check independent-browser discovery path | Do unfamiliar players infer the cause and then try their own combination? |
+| A teaching prop cannot impersonate a friend | No author, source row, reply, work or presence; real eligible sources win; quiet/off and withdrawal checks | Are the distinction and local comparison understandable? |
+| The world feels continuous and lived in | One spherical road surface, no pool/channel road; bounded NPC waits and ordinary routes; geometry negative control and actual screenshots | Road finish, character expressiveness and whether ordinary life feels convincing |
+
+Promotion preserves all twelve tables including **42** sound-history rows;
+59 served assets match the reviewed build. The read-only observer sees the
+current **19** public planet sounds. No human listening, unfamiliar-pair,
+physical-phone, next-day or public-deployment result is implied.
+
+### Preceding answer release — historical scope
+
+The preceding verified local application was **`5f1fc28`**, served at
 `http://localhost:18861/planet`, on `codex/chorus-answers`. It follows
 [ADR030](../decisions/030-a-place-that-remembers-your-answer.md).
 [The final release index](../evidence/answers-2026-11-08.json) separates the

@@ -1,0 +1,1 @@
+export default { test: { include: ["spec/npc-routines.test.ts", "spec/npc-hut-admission.test.ts", "spec/routine-audio.test.ts"], fileParallelism: false } };

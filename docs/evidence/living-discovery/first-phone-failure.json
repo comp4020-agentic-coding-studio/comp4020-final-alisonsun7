@@ -1,0 +1,131 @@
+{
+  "kind": "automated-developer-browser-test",
+  "base": "http://localhost:18898",
+  "failed": true,
+  "failure": "AssertionError [ERR_ASSERTION]: The phone explanation does not obstruct chat input, Say or Close\n    at check (file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/living-discovery.mjs:22:12)\n    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/living-discovery.mjs:183:5",
+  "checks": [
+    {
+      "label": "Two independent cookie identities enter the same actual planet",
+      "elapsedMs": 3551
+    },
+    {
+      "label": "The labelled café world example drives real steam and a separately labelled NPC response",
+      "elapsedMs": 3915
+    },
+    {
+      "label": "World examples remain silent in genuinely quiet browsers without an autoplay bypass",
+      "elapsedMs": 3920,
+      "detail": [
+        {
+          "soundOn": "false",
+          "voices": "0",
+          "starts": 0
+        },
+        {
+          "soundOn": "false",
+          "voices": "0",
+          "starts": 0
+        }
+      ]
+    },
+    {
+      "label": "World examples create no sound rows, shared works, invented authors or human presence",
+      "elapsedMs": 3922
+    },
+    {
+      "label": "The nearby explanation can be dismissed",
+      "elapsedMs": 4164
+    },
+    {
+      "label": "The explanation has an explicit reachable restore",
+      "elapsedMs": 4198
+    },
+    {
+      "label": "A local comparison removes example steam and NPC effects without publishing or modifying the shared world",
+      "elapsedMs": 4266
+    },
+    {
+      "label": "An explicit private Listen starts a decoded example while preserving quiet shared listening and publishing nothing",
+      "elapsedMs": 4732
+    },
+    {
+      "label": "390×844 #sound-discovery-listen has a reachable 44px touch target",
+      "elapsedMs": 5047
+    },
+    {
+      "label": "390×844 #sound-discovery-create has a reachable 44px touch target",
+      "elapsedMs": 5049
+    },
+    {
+      "label": "390×844 #sound-example-compare has a reachable 44px touch target",
+      "elapsedMs": 5051
+    },
+    {
+      "label": "390×844 #sound-discovery-close has a reachable 44px touch target",
+      "elapsedMs": 5052
+    },
+    {
+      "label": "Cleanup preserves every initial planet and coastal source exactly; only acknowledged own fixtures are soft-removed",
+      "elapsedMs": 5464
+    }
+  ],
+  "errors": [],
+  "targetRects": [
+    {
+      "selector": "sound-discovery-listen",
+      "x": 28,
+      "y": 609.203125,
+      "width": 102.3125,
+      "height": 44,
+      "interceptor": "sound-discovery-listen",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-create",
+      "x": 137.3125,
+      "y": 609.203125,
+      "width": 100.28125,
+      "height": 44,
+      "interceptor": "sound-discovery-create",
+      "usable": true
+    },
+    {
+      "selector": "sound-example-compare",
+      "x": 244.59375,
+      "y": 609.203125,
+      "width": 100.96875,
+      "height": 44,
+      "interceptor": "sound-example-compare",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-close",
+      "x": 328,
+      "y": 518.03125,
+      "width": 44,
+      "height": 44,
+      "interceptor": "sound-discovery-close",
+      "usable": true
+    },
+    {
+      "selector": "planet-chat-input",
+      "x": 25,
+      "y": 626.5,
+      "width": 271.375,
+      "height": 46,
+      "interceptor": "sound-discovery-create",
+      "usable": false
+    }
+  ],
+  "created": [],
+  "independentCookieIdentities": true,
+  "physicalPhone": false,
+  "unfamiliarPairPlaytest": false,
+  "humanListening": false,
+  "nextDayReturn": false,
+  "limitations": [
+    "Seeded examples are explicitly local teaching material, never people or shared contribution history.",
+    "Native audio node starts verify playback lifecycle, not pleasantness or what a person hears.",
+    "390×844 is touch-browser emulation, not physical-phone evidence."
+  ]
+}

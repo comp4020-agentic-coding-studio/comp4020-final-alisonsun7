@@ -1,0 +1,52 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/npc-routines.test.ts (7 tests | 2 failed) 8ms
+   ❯ server-controlled resident restroom routine (7)
+     × has a shared outdoor daily walk instead of making an idle resident look like a queue 2ms
+     × gives up a busy door after a short wait, walks away without reserving it and cools down 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/npc-routines.test.ts > server-controlled resident restroom routine > has a shared outdoor daily walk instead of making an idle resident look like a queue
+AssertionError: expected 2.995084965952007 to be greater than 4
+ ❯ spec/npc-routines.test.ts:109:43
+    107|       expect(state).toMatchObject({ phase: "idle", occupying: false });
+    108|       expect(first.frames(now)).toEqual(second.frames(now));
+    109|       expect(planetDistance(state, door)).toBeGreaterThan(4);
+       |                                           ^
+    110|       expect(sceneHutAt("planet", state.x, state.z)).toBeUndefined();
+    111|       sampled.add(`${state.x},${state.z}`);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/npc-routines.test.ts > server-controlled resident restroom routine > gives up a busy door after a short wait, walks away without reserving it and cools down
+AssertionError: expected { …(10) } to match object { phase: 'leaving', occupying: false }
+(8 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "occupying": false,
+-   "phase": "leaving",
++   "occupying": true,
++   "phase": "entering",
+  }
+
+ ❯ spec/npc-routines.test.ts:128:21
+    126|     routines.advance(deadline, () => true);
+    127|     const leaving = frame(routines, deadline);
+    128|     expect(leaving).toMatchObject({ phase: "leaving", occupying: false…
+       |                     ^
+    129|     expect(leaving.z).toBeGreaterThan(hut.z1);
+    130|     expect(leaving.flushId).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  14:37:17
+   Duration  109ms (transform 60%, tests 19%, import 17%, worker 5%)
+

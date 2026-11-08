@@ -1,0 +1,60 @@
+ok  Two independent cookie identities enter the same actual planet
+ok  The labelled café world example drives real steam and a separately labelled NPC response
+ok  World examples remain silent in genuinely quiet browsers without an autoplay bypass
+ok  World examples create no sound rows, shared works, invented authors or human presence
+ok  The nearby explanation can be dismissed
+ok  The explanation has an explicit reachable restore
+ok  A local comparison removes example steam and NPC effects without publishing or modifying the shared world
+ok  An explicit private Listen starts a decoded example while preserving quiet shared listening and publishing nothing
+ok  390×844 #sound-discovery-listen has a reachable 44px touch target
+ok  390×844 #sound-discovery-create has a reachable 44px touch target
+ok  390×844 #sound-example-compare has a reachable 44px touch target
+ok  390×844 #sound-discovery-close has a reachable 44px touch target
+ok  The phone explanation does not obstruct chat input, Say or Close
+ok  A curated creation dialog prevents movement keys from moving the player behind it
+ok  Keyboard cancellation restores world focus and never publishes a demonstrated sound
+ok  Only explicit Leave writes an actual authored coffee sound; both browsers keep its real steam and NPC response when examples are hidden locally
+ok  A real forest-bird ingredient visibly creates the same two source-attributed birds for both independent identities
+ok  Hiding examples preserves real birds and neither a friend's addition nor the comparison unmutes either browser
+ok  Seagull calls produce distinguishable gulls rather than reusing the forest-bird response
+ok  The 390×844 shore keeps contextual creation and Talk reachable beside the authored gull result
+ok  Dismissing the phone shore guide restores reachable Share and Talk actions
+locator.click: Timeout 20000ms exceeded.
+Call log:
+[2m  - waiting for locator('#planet-shared')[22m
+[2m    - locator resolved to <button type="button" id="planet-shared" aria-haspopup="dialog" aria-label="Our soundscape: sounds and responses">…</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    37 × waiting for element to be visible, enabled and stable[22m
+[2m       - element is not visible[22m
+[2m     - retrying click action[22m
+[2m       - waiting 500ms[22m
+
+    at /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/living-discovery.mjs:235:39 {
+  log: [
+    "  - waiting for locator('#planet-shared')",
+    '    - locator resolved to <button type="button" id="planet-shared" aria-haspopup="dialog" aria-label="Our soundscape: sounds and responses">…</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '    37 × waiting for element to be visible, enabled and stable',
+    '       - element is not visible',
+    '     - retrying click action',
+    '       - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+History preservation: Fixture snd_2d6a93bbbfd3a857 remains as a soft-removed history row

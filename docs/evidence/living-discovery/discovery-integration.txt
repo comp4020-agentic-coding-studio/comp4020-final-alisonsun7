@@ -1,0 +1,28 @@
+(node:15577) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok  Two independent cookie identities enter the same actual planet
+ok  The labelled café world example drives real steam and a separately labelled NPC response
+ok  World examples remain silent in genuinely quiet browsers without an autoplay bypass
+ok  World examples create no sound rows, shared works, invented authors or human presence
+ok  The nearby explanation can be dismissed
+ok  The explanation has an explicit reachable restore
+ok  A local comparison removes example steam and NPC effects without publishing or modifying the shared world
+ok  An explicit private Listen starts a decoded example while preserving quiet shared listening and publishing nothing
+ok  390×844 #sound-discovery-listen has a reachable 44px touch target
+ok  390×844 #sound-discovery-create has a reachable 44px touch target
+ok  390×844 #sound-example-compare has a reachable 44px touch target
+ok  390×844 #sound-discovery-close has a reachable 44px touch target
+ok  The phone explanation does not obstruct chat input, Say or Close
+ok  A curated creation dialog prevents movement keys from moving the player behind it
+ok  Keyboard cancellation restores world focus and never publishes a demonstrated sound
+ok  Only explicit Leave writes an actual authored coffee sound; both browsers keep its real steam and NPC response when examples are hidden locally
+ok  A real forest-bird ingredient visibly creates the same two source-attributed birds for both independent identities
+ok  Hiding examples preserves real birds and neither a friend's addition nor the comparison unmutes either browser
+ok  Seagull calls produce distinguishable gulls rather than reusing the forest-bird response
+ok  The 390×844 shore keeps contextual creation and Talk reachable beside the authored gull result
+ok  Dismissing the phone shore guide restores reachable Share and Talk actions
+ok  The acknowledged withdrawal removes the real bird source and its wildlife from both live browser snapshots
+ok  Read-only scratch SQLite confirms the removed bird remains with its original author, position, sound and timestamp plus a real removal tombstone
+ok  One visitor's example preference remains local after shared removal
+ok  No browser page errors in the verified discovery path
+ok  Cleanup preserves every initial planet/coastal live source and every stored history row exactly; only acknowledged own fixtures receive soft-removal tombstones

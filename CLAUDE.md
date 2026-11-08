@@ -111,7 +111,9 @@ Sound-driven NPC choices are in `shared/sound-response.ts`, their safe movements
 in `client/sound-residents.ts`, and integration in `client/world.ts`. Feed them
 the canonical contribution list; use anchored server time for selection/phase.
 Local sound preference and the viewer's position must never select a different
-resident response. The busker, staff and existing children's game keep their
+response to real player sources. ADR031's optional teaching examples may have
+local-only effects when no eligible real source is heard; do not call those a
+shared resident response. The busker, staff and existing children's game keep their
 roles; reacting residents are clearly NPCs, never counted as joined people.
 
 The planet controller is `client/planet.ts`, spherical view/camera in

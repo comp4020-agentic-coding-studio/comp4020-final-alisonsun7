@@ -1,0 +1,54 @@
+Reported run notes — not original stdout
+Date: 2026-11-08. These notes preserve implementation-agent reports and the
+initial wildlife tool result. They do not reconstruct missing terminal logs.
+
+SHORE GEOMETRY
+The road agent reports these executed commands from the project root:
+./node_modules/.bin/vitest run --config .cache/shore-paths.config.mjs
+Result: three files, ten passing tests (paths 5, café 2, lived-in geometry 3).
+PLANET_BUILD_UNDER_TEST=../.cache/answers/baseline/dist/client/planet-build.js ./node_modules/.bin/vitest run spec/planet-paths.test.ts --config .cache/shore-paths.config.mjs
+Result: five path tests, four failed and one passed against the frozen older
+37e055b planet-build.js. The failures expose segmented meshes, missing new
+bank coverage, a road across pool water, and missing coloured shoulder data.
+The seam test already passed. This is an old-geometry negative comparison,
+not a complete baseline-application or database experiment. The agent ran
+TypeScript compilation successfully. Original stdout was returned through
+tools/chat and was NOT saved to a file. The original absence is retained.
+At Root's request, the current road checks and frozen-geometry negative case
+were genuinely rerun at archive time (15:03:31), and their actual stdout is
+now archived separately. The rerun reproduces four failures/one pass for the
+older geometry and ten passes/three files for the current config. Those files
+are new evidence, not recovered logs of the earlier run.
+
+INITIAL WILDLIFE CHECK
+The wildlife implementation tool ran:
+./node_modules/.bin/vitest run --config .cache/sound-wildlife/vitest.config.mts
+Result: one file, five passing tests, 172 ms, start 14:41:17. TypeScript
+compilation also passed. This original stdout exists in the tool response,
+not a saved raw file; the config is archived. The later 30-test focused run
+includes these five tests and has its own preserved stdout.
+
+RESIDENT PRIORITY FIXTURE FAILURE
+The resident agent reports an intermediate after-run failure: a new fixture
+incorrectly expected a 0.3 m nonpreferred source and a 4 m preferred source
+to have different scores. Under the existing three-metre preference-band
+rule they tie. The fixture's farther source moved to 7 m; source ordering
+was not changed to satisfy it. Final after.txt overwrote that intermediate
+stdout. No independent raw failure transcript survives. The archived before
+output still preserves the two actual pre-fix real-priority failures.
+
+AUDIO CHECK GROWTH
+After implementing example support, an initial after-run passed 37 checks.
+An additional explicit-focus-with-example case made the final saved run
+38 checks. The before-run's nine failures all report missing setExamples;
+it demonstrates missing API support, not a separate implementation mutation
+for each lifecycle condition.
+
+BOUNDARIES
+These records are developer checks. Sign drawing, Web Audio and DOM are
+stubbed where stated in specifications. No GPU rendering, artistic listening,
+unfamiliar-player study, physical-phone test or next-day experience is
+established. Some NPC checks use their own temporary SQLite database. The
+full source suite uses the isolated scratch HTTP server separately identified
+in pure-checks.json. No database, cookie jar, server log or private player
+content has been copied into this evidence packet.

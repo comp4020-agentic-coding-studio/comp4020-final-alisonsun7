@@ -1,0 +1,45 @@
+fixture  persistent Reading Nook bird prepared through public API: snd_123df0a61fe45348
+ok  Shift plus movement changes the actual ground position and the friend receives the running pose
+ok  Space lifts the real local body above its ground and the other browser renders the shared jump before landing
+ok  two independent cookie identities, rather than two shared-cookie tabs, enter the actual world
+ok  the welcome offers a sounding visit and a genuinely quiet visit
+ok  keyboard Listen starts a real private buffer without publishing anything
+ok  the native studio traps keyboard focus and movement keys do not move the character behind it
+ok  the first real ingredient visibly grows one attributed source and leaves room for a friend's answer
+ok  the friend's first contribution leaves the quiet browser silent
+ok  the reply names the actual friend and the exact ingredient being answered
+ok  the other open session sees the shared duet within one second of the accepted reply
+ok  the server's durable reply chain forms one ensemble work with the two real contributors
+ok  the actual renderer draws additional sculptural geometry after the duet, with solo and duet screenshots retained
+ok  the real sounding browser schedules three compatible bar-aligned voices, including the duet's derived harmony
+ok  forming the duet changes the quiet visitor's world and residents without starting local audio
+ok  an extra shared-cookie tab stays the same person and cannot supply a third contributor
+ok  a real reload restores the same work, identity, source relationship and both original authors
+ok  at 390 × 844, contribution, records, mute, run, jump and all four movement directions have reachable 44px targets
+ok  the phone's essential buttons do not overlap
+ok  the scoring phone viewport has no horizontal page overflow
+ok  real touch input moves the phone character, returns through a place button and performs a real jump
+ok  the first curated Listen is visible and finger-sized on the phone's first screen
+ok  a quiet visitor can explicitly preview on touch without publishing or turning on the shared world mix
+ok  resizing an open studio to landscape keeps its content within the dialog
+ok  phone Cancel and resize preserve the quiet preference and create no contribution
+ok  Our works presents real authors, the exact parent relationship and the work's place
+ok  withdrawing a record preserves keyboard focus inside the journal after its focused button is removed by SSE
+ok  the author's production handler misses both the real child's creation and its removal, leaving the held child unknown locally
+ok  a real reconnect snapshot imports the previously unknown removed-child history before its original acknowledgement arrives
+ok  after both missed events and a fresh snapshot, the held late acknowledgement cannot revive the source, sculpture, pin or real audio even beyond the next bar
+ok  withdrawing the reply closes the shared form in both browsers while all sources, authors and reply history remain
+ok  withdrawal removes the derived harmony while preserving the other visitor's quiet preference
+ok  the disconnected browser actually misses a real final withdrawal
+ok  a real reconnect clears the missed source and active sculpture while preserving the complete authored work in its archive
+ok  answering a distant saved sound closes the real journal before starting its walk and returns keyboard focus to the canvas
+ok  a quick manual key and Cancel stop the distant reply intent without publishing or changing the historical source
+ok  holding real movement toward the beat flower stops the avatar outside its physical base instead of crossing the sculpture
+ok  the same friends can make a second bar-based ensemble at the actual Pocket Jam Stage without changing rooms
+ok  an existing place offers a clear way to begin a new work instead of forcing a reply to its old sound
+Reading Nook actual walking samples: [{"x":-13,"z":11,"coast":11.494974724620482,"water":0,"oldBird":2.121840472066413},{"x":-13,"z":10.787,"coast":11.494974724620482,"water":0.21299999999999902,"oldBird":2.010763062052066},{"x":-13,"z":10.573,"coast":11.494974724620482,"water":0.42700000000000055,"oldBird":1.9165481720520148},{"x":-13,"z":10.36,"coast":11.494974724620482,"water":0.6400000000000012,"oldBird":1.8427239372620712},{"x":-13,"z":10.146,"coast":11.494974724620482,"water":0.8540000000000013,"oldBird":1.79108517495377},{"x":-13,"z":9.933,"coast":11.494974724620482,"water":1.066999999999999,"oldBird":1.7640789115408886},{"x":-13.237,"z":9.932,"coast":11.322760737141088,"water":1.0885751159543535,"oldBird":1.9768696091353022},{"x":-13.474,"z":9.931,"coast":11.155324652352798,"water":1.1490217985272595,"oldBird":2.1898095466890126},{"x":-13.711,"z":9.928,"coast":10.992745223659803,"water":1.2444114828893116,"oldBird":2.4027847801761437},{"x":-13.948,"z":9.925,"coast":10.835084927118523,"water":1.3658935081391916,"oldBird":2.6158704249643474},{"x":-14.185,"z":9.92,"coast":10.68239062027257,"water":1.5086230868061536,"oldBird":2.829002825495055},{"x":-14.422,"z":9.915,"coast":10.53469424827922,"water":1.6658673201916485,"oldBird":3.0422293705527297},{"x":-14.658,"z":9.908,"coast":10.39260507042318,"water":1.8344034636924313,"oldBird":3.254623713072231},{"x":-14.895,"z":9.901,"coast":10.2549233441828,"water":2.011526642180779,"oldBird":3.468006318967471},{"x":-15.131,"z":9.892,"coast":10.122802874512217,"water":2.1949317418729213,"oldBird":3.6805818359940097},{"x":-15.368,"z":9.883,"coast":9.9951041873611,"water":2.3835752668632124,"oldBird":3.8941452240715084},{"x":-15.604,"z":9.872,"coast":9.872874403992899,"water":2.5758549490290585,"oldBird":4.106928472419279},{"x":-15.841,"z":9.861,"coast":9.755036969218176,"water":2.7716118886539913,"oldBird":4.320702084959823}]
+ok  water answered by a friend's bird creates a different shared canopy at the actual Reading Nook
+ok  the quiet nook has a smaller real playback radius than the stage and shared transformations do not undo either visitor's mute
+ok  the complete new creation path preserves every pre-existing planet and coastal contribution
+ok  no runtime browser errors
+ok  normal API cleanup leaves the complete work archived and no test sound playing

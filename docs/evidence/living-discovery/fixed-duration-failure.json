@@ -1,0 +1,9 @@
+{
+  "type": "automated developer check",
+  "mode": "complete three-place creation",
+  "transportFixture": "The missed-both-events case retains native presence but drops the two real sound frames before the production message handler. It then closes that transport and opens a fresh native connection using the production handlers. All HTTP acknowledgements, event data and snapshots are real; this is logical frame loss, not a claim to reproduce native network failure or retry timing.",
+  "failed": true,
+  "checks": [],
+  "errors": [],
+  "cleanupErrors": []
+}

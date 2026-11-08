@@ -1,0 +1,1 @@
+export default { test: { include: ["spec/planet-paths.test.ts", "spec/planet-cafe.test.ts", "spec/planet-lived-in.test.ts"], fileParallelism: false } };

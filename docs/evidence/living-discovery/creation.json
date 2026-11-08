@@ -1,0 +1,243 @@
+{
+  "type": "automated developer check",
+  "mode": "complete three-place creation",
+  "transportFixture": "The missed-both-events case retains native presence but drops the two real sound frames before the production message handler. It then closes that transport and opens a fresh native connection using the production handlers. All HTTP acknowledgements, event data and snapshots are real; this is logical frame loss, not a claim to reproduce native network failure or retry timing.",
+  "failed": false,
+  "checks": [
+    {
+      "label": "Shift plus movement changes the actual ground position and the friend receives the running pose"
+    },
+    {
+      "label": "Space lifts the real local body above its ground and the other browser renders the shared jump before landing"
+    },
+    {
+      "label": "two independent cookie identities, rather than two shared-cookie tabs, enter the actual world"
+    },
+    {
+      "label": "the welcome offers a sounding visit and a genuinely quiet visit"
+    },
+    {
+      "label": "keyboard Listen starts a real private buffer without publishing anything"
+    },
+    {
+      "label": "the native studio traps keyboard focus and movement keys do not move the character behind it"
+    },
+    {
+      "label": "the first real ingredient visibly grows one attributed source and leaves room for a friend's answer"
+    },
+    {
+      "label": "the friend's first contribution leaves the quiet browser silent"
+    },
+    {
+      "label": "the reply names the actual friend and the exact ingredient being answered"
+    },
+    {
+      "label": "the other open session sees the shared duet within one second of the accepted reply",
+      "detail": {
+        "latencyMs": 34
+      }
+    },
+    {
+      "label": "the server's durable reply chain forms one ensemble work with the two real contributors"
+    },
+    {
+      "label": "the actual renderer draws additional sculptural geometry after the duet, with solo and duet screenshots retained",
+      "detail": {
+        "soloRender": {
+          "calls": 884,
+          "triangles": 346611
+        },
+        "duetRender": {
+          "calls": 913,
+          "triangles": 350875
+        }
+      }
+    },
+    {
+      "label": "the real sounding browser schedules three compatible bar-aligned voices, including the duet's derived harmony"
+    },
+    {
+      "label": "forming the duet changes the quiet visitor's world and residents without starting local audio"
+    },
+    {
+      "label": "an extra shared-cookie tab stays the same person and cannot supply a third contributor"
+    },
+    {
+      "label": "a real reload restores the same work, identity, source relationship and both original authors"
+    },
+    {
+      "label": "at 390 × 844, contribution, records, mute, run, jump and all four movement directions have reachable 44px targets",
+      "detail": [
+        {
+          "text": "Answer Creation Ada",
+          "x": 26,
+          "y": 601,
+          "width": 142.953125,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Our works",
+          "x": 174.953125,
+          "y": 601,
+          "width": 83.046875,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Sound off; turn on",
+          "x": 284,
+          "y": 5.5,
+          "width": 44,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Run Shift",
+          "x": 215,
+          "y": 778,
+          "width": 78,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Jump Space",
+          "x": 300,
+          "y": 778,
+          "width": 78,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Move forward",
+          "x": 64,
+          "y": 726,
+          "width": 44,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Move left",
+          "x": 12,
+          "y": 778,
+          "width": 44,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Move back",
+          "x": 64,
+          "y": 778,
+          "width": 44,
+          "height": 44,
+          "usable": true
+        },
+        {
+          "text": "Move right",
+          "x": 116,
+          "y": 778,
+          "width": 44,
+          "height": 44,
+          "usable": true
+        }
+      ]
+    },
+    {
+      "label": "the phone's essential buttons do not overlap"
+    },
+    {
+      "label": "the scoring phone viewport has no horizontal page overflow"
+    },
+    {
+      "label": "real touch input moves the phone character, returns through a place button and performs a real jump"
+    },
+    {
+      "label": "the first curated Listen is visible and finger-sized on the phone's first screen"
+    },
+    {
+      "label": "a quiet visitor can explicitly preview on touch without publishing or turning on the shared world mix"
+    },
+    {
+      "label": "resizing an open studio to landscape keeps its content within the dialog"
+    },
+    {
+      "label": "phone Cancel and resize preserve the quiet preference and create no contribution"
+    },
+    {
+      "label": "Our works presents real authors, the exact parent relationship and the work's place"
+    },
+    {
+      "label": "withdrawing a record preserves keyboard focus inside the journal after its focused button is removed by SSE"
+    },
+    {
+      "label": "the author's production handler misses both the real child's creation and its removal, leaving the held child unknown locally"
+    },
+    {
+      "label": "a real reconnect snapshot imports the previously unknown removed-child history before its original acknowledgement arrives"
+    },
+    {
+      "label": "after both missed events and a fresh snapshot, the held late acknowledgement cannot revive the source, sculpture, pin or real audio even beyond the next bar"
+    },
+    {
+      "label": "withdrawing the reply closes the shared form in both browsers while all sources, authors and reply history remain"
+    },
+    {
+      "label": "withdrawal removes the derived harmony while preserving the other visitor's quiet preference"
+    },
+    {
+      "label": "the disconnected browser actually misses a real final withdrawal"
+    },
+    {
+      "label": "a real reconnect clears the missed source and active sculpture while preserving the complete authored work in its archive"
+    },
+    {
+      "label": "answering a distant saved sound closes the real journal before starting its walk and returns keyboard focus to the canvas"
+    },
+    {
+      "label": "a quick manual key and Cancel stop the distant reply intent without publishing or changing the historical source"
+    },
+    {
+      "label": "holding real movement toward the beat flower stops the avatar outside its physical base instead of crossing the sculpture",
+      "detail": {
+        "x": 10,
+        "z": -7.453,
+        "distance": 1.5470000000000004
+      }
+    },
+    {
+      "label": "the same friends can make a second bar-based ensemble at the actual Pocket Jam Stage without changing rooms"
+    },
+    {
+      "label": "an existing place offers a clear way to begin a new work instead of forcing a reply to its old sound"
+    },
+    {
+      "label": "water answered by a friend's bird creates a different shared canopy at the actual Reading Nook",
+      "detail": {
+        "x": -15.841,
+        "z": 9.861,
+        "coast": 9.755036969218176,
+        "water": 2.7716118886539913,
+        "oldBird": 4.320702084959823
+      }
+    },
+    {
+      "label": "the quiet nook has a smaller real playback radius than the stage and shared transformations do not undo either visitor's mute",
+      "detail": {
+        "reading": 6,
+        "stage": 18
+      }
+    },
+    {
+      "label": "the complete new creation path preserves every pre-existing planet and coastal contribution"
+    },
+    {
+      "label": "no runtime browser errors",
+      "detail": []
+    },
+    {
+      "label": "normal API cleanup leaves the complete work archived and no test sound playing"
+    }
+  ],
+  "errors": [],
+  "cleanupErrors": []
+}

@@ -3,18 +3,29 @@
 Audit date: 2026-11-08. Agent-prepared factual notes, not a rewrite of the
 author's argument. Root materials at the start of this audit came from
 [`f86e1d6`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f86e1d6).
-The verified local application is **`5f1fc28`**, now serving
+The current local application is **`cd73f2a`** on
+`codex/living-sound-discovery`, serving `http://localhost:18861/planet`.
+The [discovery release index](../evidence/living-discovery-2026-11-08.json)
+records optional labelled demonstrations, true-source priority, the road and
+resident corrections, actual browser scopes and preserved current history.
+README and PROCESS now explicitly record the playable 2D/2.5D comparison and
+the author's stated preference for livelier, more suitable 3D; no unfamiliar
+player preference or artistic listening result was invented.
+
+## Preceding answer-release audit — historical results
+
+The preceding verified local application was **`5f1fc28`**, serving
 `http://localhost:18861/planet`. It follows
 [ADR030](../decisions/030-a-place-that-remembers-your-answer.md).
 [The final release index](../evidence/answers-2026-11-08.json) and
 [promise map](promise-evidence-map.md) keep these scopes separate:
 
-- Final application plus current tests pass **277 checks in 44 files,
+- That application plus its tests passed **277 checks in 44 files,
   99.60 s**. Test-only commit
   [`686a048`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/686a048)
   adds two checks executing the actual placement controller with adapters.
   Frozen `a68a642` fails the new travel handoff check; one unrelated case is
-  deliberately skipped in that negative run. Both current checks pass.
+  deliberately skipped in that negative run. Both candidate checks passed.
 - The final [answer/invitation browser path](../evidence/answers/answer-flow.json)
   passes 33 checks with two independent identities, a shared-cookie control,
   no autoplay bypass, quiet linked joining, withdrawal/recomposition and
@@ -35,7 +46,8 @@ The [actual local promotion](../evidence/answers/promotion.json) preserves all
 rows in all twelve tables, including **31 sound rows at promotion**, and
 verifies 56 served assets/cache behaviour. The initial planning count of 29
 rows must not be reused as the final comparison. Previous application
-`37e055b` remains available for rollback with the current database.
+`37e055b` was the rollback target at that checkpoint. The current target is
+`5f1fc28`, always retaining the current database.
 The [fresh unjoined Chrome observer](../evidence/answers/promoted-observer.json)
 passes desktop/phone checks with zero writes/page errors, nine existing public
 sounds, four note routes returning 200, unlisted notes returning 404 and no
@@ -49,7 +61,7 @@ playtest or a public deployment.
 | [README](../../README.md), opening notice and final AUTHOR INPUT paragraph | Explicitly an unapproved author-review draft | Review every personal/product claim using the [five questions](final-author-checklist.md). Retain honest limits. Remove scaffolding only after review. |
 | README, “Enter the planet”, line 13 at audit | Raw Markdown links `http://localhost:18861/planet` | The candidate renderer repairs the deployed entry to `/planet`; the raw GitHub README still needs the author-approved, verified course URL. The marker cannot use another computer's localhost. |
 | README, “Small enough to matter” | Sloan and Harley are design arguments selected in an agent-assisted draft | Confirm reading and specify what each source changes about the actual product; remove or replace unsupported personal interpretation. |
-| README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules, before the clearer author marks and work invitations | Walk final `5f1fc28` and confirm the terms and visible/audible consequence. The final answer path observes two actual authors' marks, quiet joining through a work link, withdrawal and a different shared result; add these only if they support the author's argument. Human understanding remains unverified. |
+| README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules | Walk current `cd73f2a` and confirm the terms and visible/audible consequence. Scoped answer, creation and discovery paths establish technical behaviour, not human comprehension. |
 | README, relative evidence/audio/manifest links | GitHub-relative links are valid there, but the previous renderer resolved them under `/readme/`; those application routes did not exist | Four exact note routes, `/assets-manifest.json` and current-origin `/planet` are repaired. Other repository references use fixed public GitHub links. Final source checks and the promoted observer verify route 200/404 behaviour. Docker-image verification remains separate. No author prose was changed for this repair. |
 | [PROCESS](../../PROCESS.md), “Failures changed the harness” | The earlier audit found garden-release checks described as current | The 2026-11-08 edit now names the 43-check browser path and 190-test source run as historical garden results with their [build scope](../evidence/chorus-garden-2026-11-07.json). Later candidate evidence remains in the release index; do not replace every old number with the newest count. |
 | README, “Small enough to matter”, and PROCESS, “Keeping dependable foundations” | Updated on 2026-11-08 following the author's explicit request to record testing 2D/2.5D and finding 3D more lively and suitable | The drafts now distinguish the author's stated design preference from the developer's [playable comparison checks](../evidence/perspectives-2026-11-08.json). [ADR028](../decisions/028-optional-paper-world-presentations.md) and [ADR029](../decisions/029-a-lived-in-3d-world.md) record the alternatives and return to 3D. Retain the explicit cost: occlusion, camera and rendering work. No unfamiliar-player preference study is implied. |

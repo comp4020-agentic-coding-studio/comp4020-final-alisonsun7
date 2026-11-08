@@ -1,0 +1,304 @@
+{
+  "kind": "source-check-evidence-index",
+  "date": "2026-11-08",
+  "workingDirectory": "repository root",
+  "archivedFromCheckout": "bbbb94914ca3640fd6b4166b7653c45d26e7d10f",
+  "checkoutMeaning": "Archive context only; individual historical commands were not all executed at this commit. Exact run scopes and known missing raw records are listed separately.",
+  "countsAreNotAdditive": true,
+  "artifacts": [
+    {
+      "path": "docs/evidence/living-discovery/resident-balance-before.txt",
+      "copiedFrom": ".cache/resident-balance/before.txt",
+      "bytes": 2264,
+      "sha256": "e3cb78e0936bf985ee6dd130e3c060e04156137c6897437b462dd060fb69e1e2",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-balance-after.txt",
+      "copiedFrom": ".cache/resident-balance/after.txt",
+      "bytes": 409,
+      "sha256": "0fe7667d4dd26bb1b53a7f65db8885c95a2f85d0aded965285027c405b89f769",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-balance-config.txt",
+      "copiedFrom": ".cache/resident-balance/vitest.config.mjs",
+      "bytes": 157,
+      "sha256": "dd496af75d27c63dbf5a3613f734789253a397eed8d2c4e2de72772b685a7360",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-real-priority-before.txt",
+      "copiedFrom": ".cache/resident-real-priority/before.txt",
+      "bytes": 2440,
+      "sha256": "aa088a00e69833ec1b27e7e2a232b4400e6c3b425e2f68d281df1e57c86105b8",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-real-priority-after.txt",
+      "copiedFrom": ".cache/resident-real-priority/after.txt",
+      "bytes": 240,
+      "sha256": "c7eb4638c86b0339c8a2412d3fa20394841592b097d8822a3e594e48da517bf5",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/resident-real-priority-config.txt",
+      "copiedFrom": ".cache/resident-real-priority/vitest.config.mjs",
+      "bytes": 154,
+      "sha256": "a8e1be30378a231d9124797cd8e40e4620e846387b31b11b24d30e6894af4b16",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/world-example-audio-before.txt",
+      "copiedFrom": ".cache/world-example-audio/before.txt",
+      "bytes": 6808,
+      "sha256": "2d5647471e6252d7775e8f370b8d42daa11d0a4204d3b83efef18b5274cb317c",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/world-example-audio-after.txt",
+      "copiedFrom": ".cache/world-example-audio/after.txt",
+      "bytes": 227,
+      "sha256": "ca879c3a51ddf527325ab8a7de724daa44b45c57d815bdbb4aa9ce492b2ed224",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/world-example-audio-config.txt",
+      "copiedFrom": ".cache/world-example-audio/vitest.config.mjs",
+      "bytes": 122,
+      "sha256": "a97ad2ec26ac943c867362da7a46afe1531197f297675693617bfae218760533",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/shore-paths-config.txt",
+      "copiedFrom": ".cache/shore-paths.config.mjs",
+      "bytes": 153,
+      "sha256": "6789a29453150176414b726cd441fe12366b702e3ac99695d286362274e2209f",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/sound-wildlife-config.txt",
+      "copiedFrom": ".cache/sound-wildlife/vitest.config.mts",
+      "bytes": 162,
+      "sha256": "189e348faed2d739fe9d8c31213697c7641b48814335925e1f7a4bba1f78088f",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/full-source-final.txt",
+      "copiedFrom": ".cache/discovery/full-spec-final.txt",
+      "bytes": 1072,
+      "sha256": "ace79ee2f94806f012392d9a00380614e2445a8122b27dea9f1d59cb45f9cc32",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/full-source-final-config.txt",
+      "copiedFrom": "vitest.config.ts",
+      "bytes": 552,
+      "sha256": "fabc353d9677d3995cf2097be45cd9fdb5c017fc12695cbf3b0a4feba2e7ba11",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pure-final.txt",
+      "copiedFrom": ".cache/discovery/pure-final.txt",
+      "bytes": 438,
+      "sha256": "fe4514099393d548e0042463de0ee86a19ea1d5995ee5a32c01467ebc504c42b",
+      "kind": "verbatim-test-output"
+    },
+    {
+      "path": "docs/evidence/living-discovery/pure-final-config.txt",
+      "copiedFrom": ".cache/discovery/pure.config.mjs",
+      "bytes": 214,
+      "sha256": "3587080835548d103fd53a25d851ad9c0be52d710eece04882b39a08771440c0",
+      "kind": "verbatim-test-configuration"
+    },
+    {
+      "path": "docs/evidence/living-discovery/reported-runs.txt",
+      "bytes": 3337,
+      "sha256": "7e666b0759346ce7e396e96e1982cd9fbabbd3055cd1989d913c3e55bda7c29a",
+      "kind": "reported-run-note-not-stdout"
+    },
+    {
+      "path": "docs/evidence/living-discovery/shore-paths-before-archive-rerun.txt",
+      "copiedFrom": ".cache/shore-paths/before-archive-rerun.txt",
+      "bytes": 3847,
+      "sha256": "9e0deb27e38715e5a9372c441dc69077c04765aa18bee2ed3bbc36dc8203d8b8",
+      "kind": "verbatim-test-output-archive-time-rerun"
+    },
+    {
+      "path": "docs/evidence/living-discovery/shore-paths-after-archive-rerun.txt",
+      "copiedFrom": ".cache/shore-paths/after-archive-rerun.txt",
+      "bytes": 238,
+      "sha256": "e8c64a51238044ab74ea571aff6f33ddf5f0b9cbc3ee7c5c405d21a446c73cdd",
+      "kind": "verbatim-test-output-archive-time-rerun"
+    }
+  ],
+  "runs": [
+    {
+      "id": "resident-balance-before",
+      "command": "./node_modules/.bin/vitest run --config .cache/resident-balance/vitest.config.mjs spec/npc-routines.test.ts > .cache/resident-balance/before.txt 2>&1",
+      "output": "resident-balance-before.txt",
+      "files": 1,
+      "passed": 5,
+      "failed": 2,
+      "mode": "new expectations against then-current implementation before its forward repair",
+      "scope": "Ordinary outdoor activity and busy-door wait deadline; no frozen import or temporary source replacement."
+    },
+    {
+      "id": "resident-balance-after",
+      "command": "./node_modules/.bin/vitest run --config .cache/resident-balance/vitest.config.mjs > .cache/resident-balance/after.txt 2>&1",
+      "output": "resident-balance-after.txt",
+      "files": 3,
+      "passed": 23,
+      "failed": 0,
+      "scope": "Final expanded routines, admission and transient routine-audio checks. Admission checks create and clean their own temporary SQLite DB; no application service or player DB."
+    },
+    {
+      "id": "resident-real-priority-before",
+      "command": "./node_modules/.bin/vitest run --config .cache/resident-real-priority/vitest.config.mjs spec/sound-life.test.ts > .cache/resident-real-priority/before.txt 2>&1",
+      "output": "resident-real-priority-before.txt",
+      "files": 1,
+      "passed": 4,
+      "failed": 2,
+      "mode": "new expectations before the forward source repair",
+      "scope": "A nearby example incorrectly outranks a real eligible source, including reordered inputs."
+    },
+    {
+      "id": "resident-real-priority-after",
+      "command": "./node_modules/.bin/vitest run --config .cache/resident-real-priority/vitest.config.mjs > .cache/resident-real-priority/after.txt 2>&1",
+      "output": "resident-real-priority-after.txt",
+      "files": 2,
+      "passed": 14,
+      "failed": 0,
+      "scope": "Actual sound-life and sound-response files only; config also lists nonexistent spec/sound-residents.test.ts, which did not execute. Intermediate fixture failure is reported separately; raw output was overwritten."
+    },
+    {
+      "id": "world-example-audio-before",
+      "command": "./node_modules/.bin/vitest run --config .cache/world-example-audio/vitest.config.mjs spec/planet-audio.test.ts > .cache/world-example-audio/before.txt 2>&1",
+      "output": "world-example-audio-before.txt",
+      "files": 1,
+      "passed": 9,
+      "failed": 9,
+      "mode": "new expectations before the forward audio implementation",
+      "scope": "All nine added failures are missing-setExamples API errors. This is not per-case mutation testing."
+    },
+    {
+      "id": "world-example-audio-after",
+      "command": "./node_modules/.bin/vitest run --config .cache/world-example-audio/vitest.config.mjs > .cache/world-example-audio/after.txt 2>&1",
+      "output": "world-example-audio-after.txt",
+      "files": 2,
+      "passed": 38,
+      "failed": 0,
+      "scope": "Planet/chorus audio tests use stubbed Web Audio and controlled decode completion, not hardware listening, a browser audio context or a server."
+    },
+    {
+      "id": "shore-paths-after-reported",
+      "command": "./node_modules/.bin/vitest run --config .cache/shore-paths.config.mjs",
+      "files": 3,
+      "passed": 10,
+      "failed": 0,
+      "rawOutputArchived": false,
+      "note": "reported-runs.txt",
+      "scope": "Reported real Three.js geometry tests with sign rasterisation stubbed; no server/DB/GPU."
+    },
+    {
+      "id": "shore-paths-before-reported",
+      "command": "PLANET_BUILD_UNDER_TEST=../.cache/answers/baseline/dist/client/planet-build.js ./node_modules/.bin/vitest run spec/planet-paths.test.ts --config .cache/shore-paths.config.mjs",
+      "files": 1,
+      "passed": 1,
+      "failed": 4,
+      "rawOutputArchived": false,
+      "note": "reported-runs.txt",
+      "scope": "Frozen older 37e055b road geometry only. No persisted original stdout; not a complete preceding-release regression."
+    },
+    {
+      "id": "sound-wildlife-initial-reported",
+      "command": "./node_modules/.bin/vitest run --config .cache/sound-wildlife/vitest.config.mts",
+      "files": 1,
+      "passed": 5,
+      "failed": 0,
+      "rawOutputArchived": false,
+      "note": "reported-runs.txt",
+      "scope": "Native Three.js geometry/matrices/resources; no WebGL context, sound playback or service. Its five tests execute again within the archived final focused run."
+    },
+    {
+      "id": "full-source-final",
+      "command": "APP_URL=http://localhost:18897 ./node_modules/.bin/vitest run > .cache/discovery/full-spec-final.txt 2>&1",
+      "output": "full-source-final.txt",
+      "files": 48,
+      "passed": 311,
+      "failed": 0,
+      "durationSeconds": 64.95,
+      "scope": "Full source suite, including HTTP/SSE, against candidate compiled server at .cache/discovery/candidate/dist with isolated .cache/discovery/spec/history.db. Root confirms server sources unchanged since that build. This run predates the final local discovery stopped-feedback text change; it is not the final GPU/browser release check."
+    },
+    {
+      "id": "pure-final",
+      "command": "./node_modules/.bin/vitest run --config .cache/discovery/pure.config.mjs > .cache/discovery/pure-final.txt 2>&1",
+      "output": "pure-final.txt",
+      "files": 5,
+      "passed": 30,
+      "failed": 0,
+      "durationSeconds": 1.85,
+      "scope": "Focused source/DOM suite after the latest stopped-feedback change: sound-life, sound-discovery, sound-wildlife, planet-publication, chorus-studio. No HTTP application server or player database is used by this config."
+    },
+    {
+      "id": "shore-paths-before-archive-rerun",
+      "command": "PLANET_BUILD_UNDER_TEST=../.cache/answers/baseline/dist/client/planet-build.js ./node_modules/.bin/vitest run spec/planet-paths.test.ts --config .cache/shore-paths.config.mjs > .cache/shore-paths/before-archive-rerun.txt 2>&1",
+      "output": "shore-paths-before-archive-rerun.txt",
+      "files": 1,
+      "passed": 1,
+      "failed": 4,
+      "exitCode": 1,
+      "startTime": "15:03:31",
+      "durationSeconds": 0.249,
+      "scope": "Newly executed at evidence-archive time, not an original implementation transcript. Only frozen older 37e055b planet-build.js geometry is substituted; tests and dependent context are current. Expected failures: eleven separate meshes, missing bank coverage, road crossing pool water, missing vertex-colour shoulder. Seam already passes."
+    },
+    {
+      "id": "shore-paths-after-archive-rerun",
+      "command": "./node_modules/.bin/vitest run --config .cache/shore-paths.config.mjs > .cache/shore-paths/after-archive-rerun.txt 2>&1",
+      "output": "shore-paths-after-archive-rerun.txt",
+      "files": 3,
+      "passed": 10,
+      "failed": 0,
+      "exitCode": 0,
+      "startTime": "15:03:31",
+      "durationSeconds": 0.818,
+      "scope": "Newly executed at evidence-archive time. Current road five checks plus café two and lived-in geometry three; real Three.js geometry with sign drawing stubbed, no WebGL/server/DB."
+    }
+  ],
+  "notEstablished": [
+    "Artistic audio pleasantness or listening approval",
+    "GPU rendering quality or motion inspection",
+    "Unfamiliar-player understanding or preference",
+    "Physical-phone performance",
+    "Real next-day return",
+    "Public deployment"
+  ],
+  "privacy": "Only explicitly listed terminal summaries/configuration and labelled factual run notes were copied. No database, cookie jar, runtime/server log or private player content is included.",
+  "integrity": "sha256 values cover original copied bytes or the explicitly labelled reported-run note. Manifest does not hash itself. A .txt configuration copy is an archival copy, not the original executable config path.",
+  "independence": "Before/after source checks, current full suite, focused rerun and later browser/runtime acceptance are distinct observations; do not sum their assertion counts into a quality score.",
+  "archiveTimeRoadFingerprints": {
+    "meaning": "Inputs inspected for the new archive-time road reruns only, not a retrospective hash claim for every earlier run. Compiled frozen input is not copied into the public evidence packet.",
+    "files": [
+      {
+        "path": ".cache/answers/baseline/dist/client/planet-build.js",
+        "sha256": "3af40d553d474c5fbe0948ed96a0a56f49f5e12fcd99f6f2d6a565af2a3d066b"
+      },
+      {
+        "path": "src/client/planet-build.ts",
+        "sha256": "d7f8c9f865d7f0550207fde1a10193314d95bae96be9ea5c1578157b506ac7da"
+      },
+      {
+        "path": "spec/planet-paths.test.ts",
+        "sha256": "2cabec859ae88cd0247042c24cdf0f8b9075f8c41248231c6e4efd7107f5bc3b"
+      },
+      {
+        "path": "spec/planet-cafe.test.ts",
+        "sha256": "e0b7baa10b51b78c7ed9be5053addd44189db932959599dd93631a205201e41e"
+      },
+      {
+        "path": "spec/planet-lived-in.test.ts",
+        "sha256": "914e9faf702f462279f084b7473deb9506c8cf6e21e79f65e463f0bb497a6d2e"
+      }
+    ]
+  }
+}

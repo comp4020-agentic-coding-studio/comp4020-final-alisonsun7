@@ -1,7 +1,8 @@
 # ADR 031 — Discover sound by seeing a place answer
 
-Date: 2026-11-08. Status: accepted and implemented as a local candidate;
-final integrated browser, GPU and listening acceptance are not asserted here.
+Date: 2026-11-08. Status: implemented and locally promoted; executed browser
+and geometry scopes are in the [release index](../evidence/living-discovery-2026-11-08.json).
+Artistic listening and unfamiliar-player acceptance remain unverified.
 
 ## Request and design judgement
 
@@ -79,6 +80,14 @@ The discovery card then names the actual author and sound. Turning examples
 off never removes, changes or silences a friend's contribution. Real in-range
 sources also precede examples in the existing audio voice budget.
 
+For resident attention, an eligible live public contribution within hearing
+range takes precedence over every example, after the existing two-second
+settling period. Only when no real responsive source is eligible can an
+example lead that resident. Distance/preference bands and canonical time/ID
+ties still choose among real sources. This is broader than the eight-metre
+matching rule that hides a discovery prop; a nearby demonstration cannot take
+attention away from a friend's eligible sound of another type.
+
 Coffee reuses the existing source-driven steam and resident responses. Bird
 and gull calls bring visibly different small volumetric visitors: sage birds
 and white, long-winged gulls. The same mapping applies to actual player sources.
@@ -129,13 +138,47 @@ cancellation, dismissible guidance and source-derived wildlife cleanup.
 Wildlife's five pure checks and TypeScript compilation passed during its
 implementation; this establishes neither visual charm nor sound quality.
 
-Final acceptance needs actual desktop and phone browser paths, comparison
+Developer acceptance requires actual desktop and phone browser paths, comparison
 before/after locally pausing examples, a real source replacing a demonstration,
 withdrawal, quiet-browser protection, and preservation of current history.
-Screenshots must show rendered geometry, not concept art. Report the actual
+Screenshots must show rendered geometry, not concept art. The final browser
+outcomes and exact build are recorded in the
+[current discovery index](../evidence/living-discovery-2026-11-08.json); earlier
+answer-release checks are not evidence for this iteration. Report each actual
 build and run scope separately. No artistic listening, unfamiliar-player
 understanding, physical-phone performance, next-day return or public release
 has been verified by this decision record.
+
+## Observed implementation outcomes
+
+The 26-check independent-browser discovery path passed: locally pausing
+examples, explicit private listening without unmuting, real coffee/bird/gull
+sources in both browsers, withdrawal and actual SQLite tombstones. The
+31-check room/chat regression and 43-check three-place creation regression
+also passed on isolated data. These are different scopes, not an accumulated
+quality score. The source/HTTP run passed 311 checks before the final
+conservatory-arrival adjustment; a separate actual-view check verifies that
+adjustment at 1920×1080 and 390×844. See the index for exact boundaries.
+
+The first phone run caught a real one-frame chat obstruction. CSS now clears
+the guide synchronously with chat opening. A hidden guide also stops touching
+another dialog's preview after a friend's update. Two later script failures
+were incorrect desktop/tombstone assumptions; checks now use the actual
+desktop control and read-only scratch SQLite. The old creation script's
+350 ms movement assumption was replaced by bounded observation while the
+real key remains held, without changing movement speed or injecting position.
+
+Visual review caught a conservatory beam obscuring the body even though
+source-state checks passed. An initial arrival correction faced the sea;
+the final visit approaches from inland, preserving all historical sources.
+The rejected captures remain evidence. This does not establish a polished
+camera from every possible indoor position.
+
+Local promotion preserves every row in all twelve durable tables, including
+42 sound rows; 59 served module/style assets match the reviewed build. A new
+unjoined read-only browser sees 19 current public planet sounds with zero
+writes or page errors. The former app `5f1fc28` is retained with the current
+database for application-only rollback. No public release occurred.
 
 Branch: `codex/living-sound-discovery`. Before-code tag:
 `before-living-sound-discovery-2026-11-08`. No schema migration, database seed,

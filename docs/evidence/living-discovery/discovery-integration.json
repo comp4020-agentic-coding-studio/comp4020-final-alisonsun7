@@ -1,0 +1,348 @@
+{
+  "kind": "automated-developer-browser-test",
+  "base": "http://localhost:18898",
+  "failed": false,
+  "checks": [
+    {
+      "label": "Two independent cookie identities enter the same actual planet",
+      "elapsedMs": 2678
+    },
+    {
+      "label": "The labelled café world example drives real steam and a separately labelled NPC response",
+      "elapsedMs": 3029
+    },
+    {
+      "label": "World examples remain silent in genuinely quiet browsers without an autoplay bypass",
+      "elapsedMs": 3034,
+      "detail": [
+        {
+          "soundOn": "false",
+          "voices": "0",
+          "starts": 0
+        },
+        {
+          "soundOn": "false",
+          "voices": "0",
+          "starts": 0
+        }
+      ]
+    },
+    {
+      "label": "World examples create no sound rows, shared works, invented authors or human presence",
+      "elapsedMs": 3036
+    },
+    {
+      "label": "The nearby explanation can be dismissed",
+      "elapsedMs": 3193
+    },
+    {
+      "label": "The explanation has an explicit reachable restore",
+      "elapsedMs": 3226
+    },
+    {
+      "label": "A local comparison removes example steam and NPC effects without publishing or modifying the shared world",
+      "elapsedMs": 3428
+    },
+    {
+      "label": "An explicit private Listen starts a decoded example while preserving quiet shared listening and publishing nothing",
+      "elapsedMs": 3865
+    },
+    {
+      "label": "390×844 #sound-discovery-listen has a reachable 44px touch target",
+      "elapsedMs": 4175
+    },
+    {
+      "label": "390×844 #sound-discovery-create has a reachable 44px touch target",
+      "elapsedMs": 4177
+    },
+    {
+      "label": "390×844 #sound-example-compare has a reachable 44px touch target",
+      "elapsedMs": 4178
+    },
+    {
+      "label": "390×844 #sound-discovery-close has a reachable 44px touch target",
+      "elapsedMs": 4180
+    },
+    {
+      "label": "The phone explanation does not obstruct chat input, Say or Close",
+      "elapsedMs": 4296
+    },
+    {
+      "label": "A curated creation dialog prevents movement keys from moving the player behind it",
+      "elapsedMs": 4639
+    },
+    {
+      "label": "Keyboard cancellation restores world focus and never publishes a demonstrated sound",
+      "elapsedMs": 4646
+    },
+    {
+      "label": "Only explicit Leave writes an actual authored coffee sound; both browsers keep its real steam and NPC response when examples are hidden locally",
+      "elapsedMs": 6983
+    },
+    {
+      "label": "A real forest-bird ingredient visibly creates the same two source-attributed birds for both independent identities",
+      "elapsedMs": 7743,
+      "detail": {
+        "sourceId": "snd_7fb1f14eea868257",
+        "kind": "bird",
+        "origin": "player",
+        "count": 2,
+        "x": -2,
+        "z": 20
+      }
+    },
+    {
+      "label": "Hiding examples preserves real birds and neither a friend's addition nor the comparison unmutes either browser",
+      "elapsedMs": 7848
+    },
+    {
+      "label": "Seagull calls produce distinguishable gulls rather than reusing the forest-bird response",
+      "elapsedMs": 8778,
+      "detail": {
+        "sourceId": "snd_3f85d409ff1a216a",
+        "kind": "gull",
+        "origin": "player",
+        "count": 2,
+        "x": 16,
+        "z": 14
+      }
+    },
+    {
+      "label": "The 390×844 shore keeps contextual creation and Talk reachable beside the authored gull result",
+      "elapsedMs": 9281
+    },
+    {
+      "label": "Dismissing the phone shore guide restores reachable Share and Talk actions",
+      "elapsedMs": 9312
+    },
+    {
+      "label": "The acknowledged withdrawal removes the real bird source and its wildlife from both live browser snapshots",
+      "elapsedMs": 10297
+    },
+    {
+      "label": "Read-only scratch SQLite confirms the removed bird remains with its original author, position, sound and timestamp plus a real removal tombstone",
+      "elapsedMs": 10297
+    },
+    {
+      "label": "One visitor's example preference remains local after shared removal",
+      "elapsedMs": 10301
+    },
+    {
+      "label": "No browser page errors in the verified discovery path",
+      "elapsedMs": 10301
+    },
+    {
+      "label": "Cleanup preserves every initial planet/coastal live source and every stored history row exactly; only acknowledged own fixtures receive soft-removal tombstones",
+      "elapsedMs": 12555,
+      "detail": {
+        "mode": "read-only SQLite",
+        "database": ".cache/discovery/browser/history.db",
+        "initialRows": 0,
+        "initialRowsPreserved": true,
+        "onlyOwnedRowsAdded": true,
+        "finalRows": 3,
+        "fixtureTombstones": [
+          {
+            "id": "snd_fa838720d6d09305",
+            "soundId": "espresso",
+            "byId": "par_27460f5425ac335f",
+            "x": -9,
+            "z": -4,
+            "at": "2026-11-08T07:05:17.395Z",
+            "removedAt": "2026-11-08T07:05:25.224Z"
+          },
+          {
+            "id": "snd_7fb1f14eea868257",
+            "soundId": "evening-forest",
+            "byId": "par_27460f5425ac335f",
+            "x": -2,
+            "z": 20,
+            "at": "2026-11-08T07:05:20.213Z",
+            "removedAt": "2026-11-08T07:05:22.612Z"
+          },
+          {
+            "id": "snd_3f85d409ff1a216a",
+            "soundId": "coastal-gulls",
+            "byId": "par_27460f5425ac335f",
+            "x": 16,
+            "z": 14,
+            "at": "2026-11-08T07:05:21.362Z",
+            "removedAt": "2026-11-08T07:05:24.118Z"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "targetRects": [
+    {
+      "selector": "sound-discovery-listen",
+      "x": 28,
+      "y": 609.203125,
+      "width": 102.3125,
+      "height": 44,
+      "interceptor": "sound-discovery-listen",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-create",
+      "x": 137.3125,
+      "y": 609.203125,
+      "width": 100.28125,
+      "height": 44,
+      "interceptor": "sound-discovery-create",
+      "usable": true
+    },
+    {
+      "selector": "sound-example-compare",
+      "x": 244.59375,
+      "y": 609.203125,
+      "width": 100.96875,
+      "height": 44,
+      "interceptor": "sound-example-compare",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-close",
+      "x": 328,
+      "y": 518.03125,
+      "width": 44,
+      "height": 44,
+      "interceptor": "sound-discovery-close",
+      "usable": true
+    },
+    {
+      "selector": "planet-chat-input",
+      "x": 25,
+      "y": 626.5,
+      "width": 271.375,
+      "height": 46,
+      "interceptor": "planet-chat-input",
+      "usable": true
+    },
+    {
+      "selector": "planet-chat-submit",
+      "x": 304.375,
+      "y": 626.5,
+      "width": 60.625,
+      "height": 46,
+      "interceptor": "planet-chat-submit",
+      "usable": true
+    },
+    {
+      "selector": "planet-chat-close",
+      "x": 317.796875,
+      "y": 577.5,
+      "width": 47.203125,
+      "height": 44,
+      "interceptor": "planet-chat-close",
+      "usable": true
+    },
+    {
+      "selector": "sound-discovery-create",
+      "x": 144.796875,
+      "y": 632,
+      "width": 100.28125,
+      "height": 44,
+      "interceptor": "sound-discovery-create",
+      "usable": true
+    },
+    {
+      "selector": "planet-talk",
+      "x": 271.6875,
+      "y": 713,
+      "width": 106.3125,
+      "height": 44,
+      "interceptor": "planet-talk",
+      "usable": true
+    },
+    {
+      "selector": "planet-place",
+      "x": 12,
+      "y": 172,
+      "width": 174,
+      "height": 54,
+      "interceptor": "planet-place",
+      "usable": true
+    },
+    {
+      "selector": "planet-talk",
+      "x": 271.6875,
+      "y": 713,
+      "width": 106.3125,
+      "height": 44,
+      "interceptor": "planet-talk",
+      "usable": true
+    }
+  ],
+  "historyEvidence": {
+    "mode": "read-only SQLite",
+    "database": ".cache/discovery/browser/history.db",
+    "initialRows": 0,
+    "initialRowsPreserved": true,
+    "onlyOwnedRowsAdded": true,
+    "finalRows": 3,
+    "fixtureTombstones": [
+      {
+        "id": "snd_fa838720d6d09305",
+        "soundId": "espresso",
+        "byId": "par_27460f5425ac335f",
+        "x": -9,
+        "z": -4,
+        "at": "2026-11-08T07:05:17.395Z",
+        "removedAt": "2026-11-08T07:05:25.224Z"
+      },
+      {
+        "id": "snd_7fb1f14eea868257",
+        "soundId": "evening-forest",
+        "byId": "par_27460f5425ac335f",
+        "x": -2,
+        "z": 20,
+        "at": "2026-11-08T07:05:20.213Z",
+        "removedAt": "2026-11-08T07:05:22.612Z"
+      },
+      {
+        "id": "snd_3f85d409ff1a216a",
+        "soundId": "coastal-gulls",
+        "byId": "par_27460f5425ac335f",
+        "x": 16,
+        "z": 14,
+        "at": "2026-11-08T07:05:21.362Z",
+        "removedAt": "2026-11-08T07:05:24.118Z"
+      }
+    ]
+  },
+  "created": [
+    {
+      "id": "snd_fa838720d6d09305",
+      "byId": "par_27460f5425ac335f",
+      "soundId": "espresso",
+      "x": -9,
+      "z": -4
+    },
+    {
+      "id": "snd_7fb1f14eea868257",
+      "byId": "par_27460f5425ac335f",
+      "soundId": "evening-forest",
+      "x": -2,
+      "z": 20
+    },
+    {
+      "id": "snd_3f85d409ff1a216a",
+      "byId": "par_27460f5425ac335f",
+      "soundId": "coastal-gulls",
+      "x": 16,
+      "z": 14
+    }
+  ],
+  "independentCookieIdentities": true,
+  "physicalPhone": false,
+  "unfamiliarPairPlaytest": false,
+  "humanListening": false,
+  "nextDayReturn": false,
+  "limitations": [
+    "Seeded examples are explicitly local teaching material, never people or shared contribution history.",
+    "Native audio node starts verify playback lifecycle, not pleasantness or what a person hears.",
+    "390×844 is touch-browser emulation, not physical-phone evidence."
+  ]
+}

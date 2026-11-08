@@ -1,0 +1,1 @@
+export default { test: { include: ['spec/sound-life.test.ts','spec/sound-discovery.test.ts','spec/sound-wildlife.test.ts','spec/planet-publication.test.ts','spec/chorus-studio.test.ts'], fileParallelism:false } };

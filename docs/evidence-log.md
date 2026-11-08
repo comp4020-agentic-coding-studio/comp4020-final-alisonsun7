@@ -2907,3 +2907,56 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   overflow. Final raw records, observed failures and unmodified screenshots
   are in `docs/evidence/answers-2026-11-08.json`. This is local promotion,
   not an authorized public deployment or a completed unfamiliar-pair study.
+## 2026-11-08 — Living sound discovery and ordinary days
+
+- The author explicitly supplied the view judgement: playable 2D and 2.5D
+  were compared, but 3D feels livelier and more suitable. README and PROCESS
+  now say this as an author judgement, linked to the existing comparison
+  evidence, without inventing an unfamiliar-player preference study.
+- Reports of detached tide-pool roads and a permanently waiting resident led
+  to actual geometry/routine corrections: one joined spherical road network,
+  a bank route clear of the pool channel, ordinary strolling/resting, a
+  five-minute daily-life interval and an eight-second busy-door wait limit.
+  Frozen geometry rejects four of five new checks; current geometry passes.
+- [ADR031](decisions/031-living-sound-discovery.md) records the explicit
+  exception for three local world examples, clearly distinguished from real
+  contributions. Examples create no source, author, work or presence. Local
+  pause leaves real friends intact. Actual coffee sources animate the café;
+  actual bird/gull sources bring distinct volumetric visitors. Eligible real
+  sources have priority in residents' attention and the audio/visitor budget.
+- The first phone path found a real chat obstruction before the next animation
+  frame. Synchronous CSS clears it; a separate modal guard stops a hidden guide
+  from interrupting another dialog's preview. The first withdrawal script also
+  misused a hidden desktop header and expected tombstones in a live-only
+  snapshot. It now uses actual UI and read-only scratch SQLite. Both failed
+  records remain alongside the corrected 26-check discovery path.
+- Visual review then rejected a conservatory view despite passing source-state
+  assertions: the structural beam obscured the body and birds. A first outside
+  approach framed the sea; the final visit approaches from inland. Both rejected
+  captures and the final desktop/phone views remain. This is a developer visual
+  judgement, not unfamiliar-player or artistic listening acceptance.
+- The old creation script's fixed 350 ms movement press failed before its
+  first assertion. Waiting for actual displacement while holding real input
+  fixes that assumption without changing walking speed or injecting position.
+  The three-place creation regression then passes 43 checks. Room/chat
+  regression passes 31; source/HTTP regression passes 311 in 48 files before
+  the final arrival-only correction; final focused checks pass 30. These are
+  independent scopes, not a summed quality claim. The creation suite uses its
+  historical autoplay bypass; the discovery and room paths do not.
+- A script intentionally retains a Reading Nook fixture. Reusing that scratch
+  world triggered the later discovery run's fresh-world precondition; its
+  history was archived before starting a dedicated empty scratch DB. This
+  never reset or wrote the player's database. Final inland-arrival captures
+  use a separate retained-history clone and publish no sounds.
+- Application `cd73f2a` is locally promoted on
+  `codex/living-sound-discovery`. A fresh release equals all 66 reviewed
+  compiled files; all current rows in 12 tables, including 42 sound rows,
+  are preserved, and 59 served assets/cache headers match. A fresh unjoined
+  observer blocks non-GET/HEAD requests, sees 19 current live public planet
+  sounds, and verifies desktop/phone, records and notes with zero writes/errors.
+  The prior compiled app `5f1fc28` remains available with the **current** DB.
+- [The release evidence index](evidence/living-discovery-2026-11-08.json)
+  contains actual commands, exact scope, raw failures, screenshots and hashes.
+  No main push, public deployment, new asset licence, unfamiliar-pair study,
+  human listening verdict, physical-phone test or real next-day return is
+  claimed. Those human judgements remain actionable author work.

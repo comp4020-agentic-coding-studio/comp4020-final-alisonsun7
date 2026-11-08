@@ -14,11 +14,49 @@ coordinates. The original coast at `/scene/seaside?mode=weekday` retains its
 own room and history. Camera, travel and listening preferences never create a
 new room or reinterpret a contribution's position.
 
-The 2026-11-08 answer-focused revision follows
-[ADR030](decisions/030-a-place-that-remembers-your-answer.md). The local
-candidate at `http://localhost:18861/planet` retains the existing world;
-refresh an already-open page to load the new interface. Its exact executed
-checks and limits are in [the release index](evidence/answers-2026-11-08.json).
+The current discovery candidate follows
+[ADR031](decisions/031-living-sound-discovery.md), retaining the answer-focused
+work in [ADR030](decisions/030-a-place-that-remembers-your-answer.md).
+The local address is `http://localhost:18861/planet`; refresh after a candidate
+switch to load its interface. The [current release index](evidence/living-discovery-2026-11-08.json)
+records the exact build, executed checks and remaining human judgements.
+Application `cd73f2a` is served on branch `codex/living-sound-discovery`.
+The [preceding answer-release index](evidence/answers-2026-11-08.json)
+is historical evidence, not verification of this candidate.
+
+## Current discovery candidate: see a sound make a difference
+
+Visit **Tide & Coffee**, **Rain conservatory** and **Tide pools** to find three
+labelled **World example · local demonstration** spots: coffee, birds and gulls.
+They introduce existing responses without pretending that another player left
+a sound. Hearing them still needs **Enter with sound** or an explicit Sound
+control; exploring quietly remains quiet.
+
+Use **Pause examples** beside a spot, or **Places & friends → Your listening →
+World sound examples**, to compare the place with and without demonstrations.
+This changes only your examples; friends' sounds and effects remain. The card
+can be closed and reopened. **Make it yours** opens a private sound choice;
+only a later **Leave it here** publishes your real contribution.
+
+A nearby matching real sound replaces its example. Actual bird calls bring two
+small birds; gull calls bring two long-winged gulls, within a twelve-visitor
+budget. For NPC attention, eligible, settled real sounds take priority over
+examples. The demonstrations never count as players, replies or shared works.
+Answer a real friend's sound to create the lasting joint result described below;
+examples support discovering that core rather than replacing it.
+
+The tide-pool road now follows the bank as one continuous ground surface,
+instead of scattered patches across the water. Rowan spends at least five
+minutes on ordinary activity between automatic restroom visits, strolling and
+resting away from the door. If the room is busy, the wait is at most eight
+seconds before returning to the day; the shared occupancy lock still applies.
+
+The local switch preserves all rows in twelve current tables, including 42
+sound-history rows; a fresh unjoined observer sees the 19 current live public
+planet sounds. Start with `python3 scripts/local-preview.py` from the project.
+To return to the previous compiled application, use
+`python3 scripts/local-preview.py --rollback`. It retains the **current**
+database, including later contributions; do not restore a historical database.
 
 ## First visit: make a beginning
 
@@ -202,7 +240,7 @@ Those exploration features support the world without replacing its core work.
 
 This section records the first garden release. Its build identifiers, totals
 and rollback targets are historical. The current candidate is described at
-the top of this document and in the current local-release section below.
+the top of this document; the release sections below retain their dated scopes.
 
 The candidate is reviewed on isolated port 18885, with separate data for HTTP
 restart checks and other tests. The working preview at
@@ -349,9 +387,9 @@ The local candidate is running. To start it again from the repository, use
 Build source with Node 24 and `npm run build` (or pnpm 11+). For a deliberate
 local file switch, build to another directory and use the tracked preview
 utility with `--dist`, `--commit` and `--restart`; it checks all rows and retains
-the preceding compiled app. The quick rollback on this machine is
-`python3 scripts/local-preview.py --rollback`: it switches the application back
-to `91ff33d` while keeping the **current** DB. Never restore a historical DB to
+the preceding compiled app. At that comparison checkpoint,
+`python3 scripts/local-preview.py --rollback` switched the application back
+to `91ff33d` while keeping the then-current DB. Never restore a historical DB to
 undo a visual choice. Git tag `before-chorus-perspectives-2026-11-08` preserves
 the source boundary; branch `codex/chorus-perspectives` contains the comparison.
 
@@ -401,22 +439,23 @@ build scopes. The course-readiness audit in
 listening and unfamiliar-pair evidence, and an authorised course deployment.
 
 
-## Current local release: recognisable answers (2026-11-08)
+## Preceding local release: recognisable answers (2026-11-08)
 
-The application is now `5f1fc28`, on branch `codex/chorus-answers`.
+This preceding application was `5f1fc28`, on branch `codex/chorus-answers`.
 From the project directory, `python3 scripts/local-preview.py` starts the
 retained local build if needed. Open `http://localhost:18861/planet`; refresh
 an old tab to load the current interface. The source boundary is
 `before-chorus-answers-2026-11-08` at `2c0a9cc`.
 
-`python3 scripts/local-preview.py --rollback` returns to the retained
-`37e055b` application **with the current database**. It does not restore an
+At that answer-release checkpoint, `python3 scripts/local-preview.py --rollback`
+returned to the retained `37e055b` application **with the then-current database**.
+The current target is specified at the top of this document. The utility never restores an
 old DB, erase new work or move existing sources. At this promotion all rows
 in twelve tables, including 31 sound rows, were preserved; 56 served module
 and style files matched the reviewed build. No public deployment occurred.
 
-The [current release index](evidence/answers-2026-11-08.json) separates the
-final 33-check browser answer path, 20-check historical placement path,
+The [answer-release index](evidence/answers-2026-11-08.json) separates that
+release's final 33-check browser answer path, 20-check historical placement path,
 277-source-check run, earlier three-area regression and process-restart
 observations. It also preserves the actual failed immediate-travel screenshot
 and its correction. These are developer checks. Human listening, two

@@ -1,0 +1,13 @@
+fixture  persistent Reading Nook bird prepared through public API: snd_8eeb65ae1a6ffb87
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 15000ms exceeded.
+    at run (/Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7/e2e/chorus-creation.mjs:205:11)
+    at async file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/chorus-creation.mjs:537:7 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.10.0

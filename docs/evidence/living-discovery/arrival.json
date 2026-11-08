@@ -1,0 +1,22 @@
+{
+  "kind": "automated-developer-visual-check",
+  "failed": false,
+  "checks": [
+    "The explicit conservatory visit arrives on the inland approach, facing the open structure, in both rating viewports",
+    "Visiting and resizing publish no sounds and preserve every original live source",
+    "No browser page errors"
+  ],
+  "errors": [],
+  "arrivals": [
+    {
+      "kind": "desktop",
+      "at": "-2.000,12.000"
+    },
+    {
+      "kind": "phone",
+      "at": "-2.000,12.000"
+    }
+  ],
+  "physicalPhone": false,
+  "humanListening": false
+}

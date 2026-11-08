@@ -1,0 +1,1 @@
+export default { test: { include: ["spec/planet-audio.test.ts", "spec/chorus-audio.test.ts"], fileParallelism: false } };
