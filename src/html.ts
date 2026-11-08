@@ -280,6 +280,7 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
 <dialog id="planet-tools-panel" class="planet-dialog planet-drawer" aria-labelledby="planet-tools-title" hidden>
   <div class="planet-dialog-heading"><div><p class="planet-kicker">Your kind of world</p><h2 id="planet-tools-title">Places &amp; friends</h2></div><button type="button" id="planet-tools-close" class="btn ghost" autofocus>Close</button></div>
   <p class="planet-dialog-intro">A little world, made together through sound.</p>
+  <button type="button" id="planet-open-soundscape" class="btn ghost">Our soundscape · sounds &amp; responses</button>
   <section class="planet-panel-section"><h3>World style</h3><p>Same friends. Same sounds. A different view.</p><nav id="planet-presentations-settings" class="planet-presentations" aria-label="Choose world style">${viewLinks}</nav></section>
   <section class="planet-panel-section" aria-labelledby="planet-places-title"><h3 id="planet-places-title">Find a little place</h3><div id="planet-destinations" class="planet-destinations"></div></section>
   <section class="planet-panel-section" aria-labelledby="planet-friends-title"><h3 id="planet-friends-title">Here together</h3><div id="planet-people" class="planet-people"></div><button type="button" id="planet-chat-toggle" class="btn ghost">Talk nearby</button></section>

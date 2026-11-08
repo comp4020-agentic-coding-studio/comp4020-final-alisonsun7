@@ -3,6 +3,7 @@
 import * as THREE from "three";
 import { PLANET_HALF, planetBasis, planetCoordsValid, planetPoint, planetStep } from "../shared/planet.js";
 import type { PlacedSound, Position } from "../shared/protocol.js";
+import { authorMark } from "../shared/chorus-signature.js";
 
 type Point = { x: number; z: number };
 export interface SoundVesselOptions {
@@ -25,6 +26,7 @@ export interface SoundVesselState {
   soundId: "harbour-boat";
   sourceX: number;
   sourceZ: number;
+  color: string;
   visible: boolean;
   reason?: "budget" | "no-water-route";
   anchorX?: number;
@@ -37,9 +39,11 @@ interface Vessel {
   source: PlacedSound;
   route: HarbourRoute;
   model: THREE.Group;
+  roofMaterial: THREE.MeshStandardMaterial;
   pose: Position;
 }
 const TAU = Math.PI * 2, MAX_VESSELS = 3, PERIOD_MS = 86_000;
+const roofColor = (byId: string): THREE.Color => new THREE.Color(authorMark(byId).color).lerp(new THREE.Color(0xeee3c9), .2);
 const wrap = (x: number): number => ((x + PLANET_HALF) % (PLANET_HALF * 2) + PLANET_HALF * 2) % (PLANET_HALF * 2) - PLANET_HALF;
 function phaseFor(id: string): number {
   let hash = 2166136261;
@@ -190,6 +194,7 @@ export class SoundVessels {
     return this.sources.map(source => {
       const vessel = this.vessels.get(source.id), reason = this.rejected.get(source.id);
       return { sourceId: source.id, byId: source.byId, by: source.by, soundId: "harbour-boat", sourceX: source.x, sourceZ: source.z,
+        color: "#" + (vessel?.roofMaterial.color ?? roofColor(source.byId)).getHexString(),
         visible: !!vessel?.model.visible, ...(reason ? { reason } : {}),
         ...(vessel ? { anchorX: vessel.route.anchorX, anchorZ: vessel.route.anchorZ, ...vessel.pose } : {}) };
     });
@@ -216,14 +221,18 @@ export class SoundVessels {
       let vessel = existing;
       if (!vessel) {
         const model = new THREE.Group();model.name = "sound-born-ferry";
-        for (const part of this.templates) { const mesh = new THREE.Mesh(part.geometry, part.material);mesh.name = part.name;mesh.castShadow = true;mesh.receiveShadow = true;model.add(mesh); }
-        vessel = { source, route, model, pose: { x: route.anchorX, z: route.anchorZ, yaw: 0 } };
+        // The roof, pennant, ring and chimney cuff share one author tint and
+        // one existing draw call. Only this material belongs to the vessel.
+        const roofMaterial = this.templates.find(part => part.name === "ferry-coral-roof")!.material.clone();
+        for (const part of this.templates) { const mesh = new THREE.Mesh(part.geometry, part.name === "ferry-coral-roof" ? roofMaterial : part.material);mesh.name = part.name;mesh.castShadow = true;mesh.receiveShadow = true;model.add(mesh); }
+        vessel = { source, route, model, roofMaterial, pose: { x: route.anchorX, z: route.anchorZ, yaw: 0 } };
         this.vessels.set(source.id, vessel);this.root.add(model);
       }
       vessel.source = source;vessel.route = route;
+      vessel.roofMaterial.color.copy(roofColor(source.byId));
       vessel.model.traverse(object => { object.userData.soundVessel = { sourceId: source.id, byId: source.byId, by: source.by, kind: "passing-ferry" }; });
     }
-    for (const [id, vessel] of this.vessels) if (!wanted.has(id)) { vessel.model.removeFromParent();this.vessels.delete(id); }
+    for (const [id, vessel] of this.vessels) if (!wanted.has(id)) { vessel.roofMaterial.dispose();vessel.model.removeFromParent();this.vessels.delete(id); }
     // Incremental arrivals and a fresh snapshot use the same instance order,
     // including the translucent smoke and wake and their provenance indices.
     const ordered = new Map<string, Vessel>();
@@ -283,7 +292,9 @@ export class SoundVessels {
 
   dispose(): void {
     if (this.disposed) return;
-    this.disposed = true;this.sources = [];this.vessels.clear();this.rejected.clear();this.removed.clear();
+    this.disposed = true;this.sources = [];
+    for (const vessel of this.vessels.values()) vessel.roofMaterial.dispose();
+    this.vessels.clear();this.rejected.clear();this.removed.clear();
     this.smoke.dispose();this.wake.dispose();
     for (const geometry of this.geometries) geometry.dispose();
     for (const material of this.materials) material.dispose();

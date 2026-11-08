@@ -49,6 +49,13 @@ describe("studio dialog handoffs and interrupted choices", () => {
   });
   afterEach(() => { studio.dispose(); vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); dom.window.close(); });
 
+  it("offers local coastal ingredients through ordinary Share, without needing an example shortcut",()=>{
+    opts.at=()=>({x:16,z:14});studio.open(null);
+    expect([...studio.element.querySelectorAll<HTMLElement>("[data-leave]")].map(button=>button.dataset.leave)).toEqual(["beach-waves","coastal-gulls","harbour-boat"]);
+    expect(studio.element.querySelector('[data-sound="harbour-boat"] .chorus-choice-outcome')?.textContent).toContain("ferry");
+    expect(studio.element.textContent).not.toContain("A glowing petal will mark");expect(opts.publish).not.toHaveBeenCalled();
+  });
+
   it("resumes the actual world before answering a distant saved source, so the walking intent survives the close event", async () => {
     const target = source("target"); studio.setWorks([work([target])]); studio.showJournal();
     const answer = studio.journal.querySelector<HTMLButtonElement>('[data-record-action="reply:target"]')!;

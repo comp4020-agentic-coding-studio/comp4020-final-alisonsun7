@@ -48,7 +48,7 @@ export class SoundDiscovery {
       void this.opts.listen(this.selectedSound).then(ok=>{if(revision!==this.revision||this.panel.hidden)return;this.audition=ok;this.listen.textContent=ok?"Stop listening":"Listen privately";this.feedback.textContent=ok?"Only your preview. The shared place has not changed.":"Try Listen again when the sound is available.";if(ok)this.previewTimer=setTimeout(()=>{if(revision===this.revision){this.audition=false;this.listen.textContent="Listen privately";}},5000);});
     };
     this.create.onclick=()=>{this.stop();this.opts.create(this.selectedSound);};
-    this.watch.onclick=()=>{this.stop();if(!this.opts.watch?.(this.sourceId))this.feedback.textContent="The boat is not visible here yet. Try again beside the coast.";};
+    this.watch.onclick=()=>{this.stop();if(this.opts.watch?.(this.sourceId)){this.collapsed=true;this.frame();}else this.feedback.textContent="The boat is not visible here yet. Try again beside the coast.";};
     this.compare.onclick=()=>{this.stop();this.opts.setEnabled(!this.opts.enabled());this.signature="";this.frame();};
     const buttons=element("div","sound-discovery-actions");buttons.append(this.listen,this.create,this.watch,this.compare);
     this.panel.append(close,this.origin,this.title,this.cause,buttons,this.feedback);host.append(this.panel,this.reopen);

@@ -134,6 +134,7 @@ export class PlanetWorld {
     private last = performance.now();
     private walking = 0;
     private frameNumber = 0;
+    private watchedVessel:string|null=null;
     private disposed = false;
     private environment: Environment = { weather: "clear", minuteOfDay: 840, clockRunning: false, updatedAt: new Date().toISOString(), revision: 0 };
     private serverSample = { server: Date.now(), received: performance.now() };
@@ -228,8 +229,8 @@ export class PlanetWorld {
         this.selfLabel=this.makeLabel(person.name+" · YOU","player");
     } }
     get cameraDistance():number{return this.zoom;}
-    setCameraDistance(distance:number):void{if(Number.isFinite(distance))this.zoom=THREE.MathUtils.clamp(distance,4.2,28);}
-    setViewMode(mode: "first" | "third"): void { this._viewMode = mode; try {
+    setCameraDistance(distance:number):void{if(Number.isFinite(distance)){this.watchedVessel=null;this.zoom=THREE.MathUtils.clamp(distance,4.2,28);}}
+    setViewMode(mode: "first" | "third"): void { this.watchedVessel=null;this._viewMode = mode; try {
         localStorage.setItem("soundfolk-view", mode);
     }
     catch { } this.keys.clear(); }
@@ -274,6 +275,7 @@ export class PlanetWorld {
         this.jumpStarted = null; this.jumpOffset = 0;
     } }
     goTo(id: string): void {
+        this.watchedVessel=null;
         const p = PLANET_PLACES.find(p => p.id === id); if (!p) return;
         // Explicit visits arrive where the person can see and approach the
         // work, outside the real base and roofs. Stored sounds never move.
@@ -345,6 +347,7 @@ export class PlanetWorld {
         if(!this.publicSounds.some(source=>source.id===sourceId&&!source.removedAt))return false;
         const at=this.soundVessels.viewpoint(sourceId);
         if(!at||!this.built.canStand(at.x,at.z,this.locked())||!this.garden.canStand(at.x,at.z))return false;
+        this.setViewMode("third");this.zoom=4.2;this.watchedVessel=sourceId;
         this.position={...at};this.selfYaw=at.yaw;this.keys.clear();this.cancelWalkingIntent();this.jumpStarted=null;this.jumpOffset=0;this.opts.area(this.area);this.focus();return true;
     }
     setWorks(works: readonly ChorusWork[]): void {
@@ -367,6 +370,7 @@ export class PlanetWorld {
             return; if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright", "shift"].includes(e.key.toLowerCase())) {
             e.preventDefault();
             this.keys.add(e.key.toLowerCase());
+            this.watchedVessel=null;
             if (e.key.toLowerCase() !== "shift") this.cancelWalkingIntent();
         } if (e.code === "Space") { e.preventDefault(); if (!e.repeat) this.jump(); }
         if (e.key.toLowerCase() === "e" && !e.repeat && !e.defaultPrevented) { if (this.interact()) e.preventDefault(); }
@@ -375,7 +379,7 @@ export class PlanetWorld {
         window.addEventListener("keyup", e => this.keys.delete(e.key.toLowerCase()), { signal });
         window.addEventListener("blur", () => { this.keys.clear(); this.runRequested = false; this._running = false; this.cancelWalkingIntent(); }, { signal });
         canvas.addEventListener("pointerdown", e => { if (this.paused)
-            return; this.focus(); this.dragTravel = 0; this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); }, { signal });
+            return; this.watchedVessel=null;this.focus(); this.dragTravel = 0; this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); }, { signal });
         canvas.addEventListener("pointermove", e => { if (!this.drag || this.drag.id !== e.pointerId || this.paused)
             return; const dx = e.clientX - this.drag.x, dy = e.clientY - this.drag.y, sign = this.look === "follow" ? 1 : -1; this.dragTravel += Math.hypot(dx, dy); this.position.yaw -= dx * .006 * sign; this.pitch = THREE.MathUtils.clamp(this.pitch + dy * .004 * sign, -.5, .8); this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; }, { signal });
         canvas.addEventListener("pointerup", e => { if (this.paused || this.dragTravel > 6 || this.drag?.id !== e.pointerId)
@@ -430,6 +434,7 @@ export class PlanetWorld {
         const right = Number(this.keys.has("d") || this.keys.has("arrowright")) - Number(this.keys.has("a") || this.keys.has("arrowleft"));
         if (forward || right)
             this.cancelWalkingIntent();
+        if(forward||right||this.walkingTarget)this.watchedVessel=null;
         if (!this.paused && this.walkingTarget) {
             if (planetDistance(this.position, this.walkingTarget) <= this.walkingTarget.stopDistance + .015)
                 this.cancelWalkingIntent();
@@ -490,6 +495,7 @@ export class PlanetWorld {
             this.camera.position.copy(head).addScaledVector(ray, distance);
             const overview = THREE.MathUtils.clamp((this.zoom - 12) / 10, 0, 1) * (this.camera.aspect < .8 ? .5 : 1);
             const target = head.clone().lerp(up.clone().multiplyScalar(R * .1), overview);
+            if(this.watchedVessel){const boat=this.soundVessels.state.find(boat=>boat.sourceId===this.watchedVessel&&boat.visible);if(boat&&boat.x!==undefined&&boat.z!==undefined){const p=planetPoint(boat.x,boat.z,.6);target.lerp(new THREE.Vector3(p.x,p.y,p.z),.85);}else this.watchedVessel=null;}
             // Portrait controls occupy the lower view. Aim below the head so
             // the body and nearby work remain above the contribution card.
             // Fade with overview and scale at close zoom; collision is unchanged.
@@ -646,6 +652,8 @@ export class PlanetWorld {
             this.host.dataset.soundWildlife = JSON.stringify(this.soundWildlife.state);
             this.host.dataset.soundVessels = JSON.stringify(this.soundVessels.state);
             this.host.dataset.soundPinwheels = JSON.stringify(this.soundPinwheels.state);
+            const watched=this.soundVessels.state.find(boat=>boat.sourceId===this.watchedVessel&&boat.visible);
+            this.host.dataset.watchedVessel=JSON.stringify(watched&&watched.x!==undefined&&watched.z!==undefined?{sourceId:watched.sourceId,...this.project(watched.x,watched.z,.6)}:null);
             this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
                 id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,

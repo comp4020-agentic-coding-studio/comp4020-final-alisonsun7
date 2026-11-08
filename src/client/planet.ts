@@ -213,7 +213,14 @@ stage.append(shared);
 native(shared, $("planet-shared"));
 containFocus(shared);
 $("planet-shared").onclick = () => { renderShared(); show(shared); };
+$("planet-open-soundscape").onclick=()=>afterDialogClose(tools,()=>{renderShared();show(shared);});
+shared.addEventListener("close",()=>{if(!document.querySelector("dialog:modal")&&!$("planet-shared").getClientRects().length)$("planet-tools").focus();});
 function publicSounds(): PlacedSound[] { return [...sounds.values()].filter(s => !s.whileIn && !s.removedAt && !ended.has(s.id)); }
+function watchSoundEffect(sourceId:string):boolean {
+    const source=publicSounds().find(source=>source.id===sourceId);
+    if(!source||!(world instanceof PlanetWorld)||!world.watchSound(sourceId))return false;
+    lastSent="";updateView();say(`Watching ${source.by}'s boat. The sound stays in its original spot.`);return true;
+}
 function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list);refreshSoundLife(); soundInteractions?.setAll(list);studio.setWorks(chorus);conversations.changed();renderShared(); renderPeople(); }
 function record(kind: string, s: PlacedSound, by = s.by): void { if (s.whileIn)
     return; const id = s.id + ":" + kind; if (events.has(id))
@@ -222,7 +229,7 @@ function button(label: string, run: () => void): HTMLButtonElement { const b = d
 function renderShared(): void {
     const list = publicSounds().sort((a, b) => b.at.localeCompare(a.at) || a.id.localeCompare(b.id)), near = list.filter(s => planetDistance(s, here) <= 18), authors = new Set(near.map(s => s.byId));
     sharedMix.textContent = `${list.length} lasting sounds · ${snapshot.online.length} people here. This corner: ${near.length} ingredients by ${authors.size} people.`;
-    const focus = document.activeElement as HTMLElement | null, key = focus?.closest<HTMLElement>("[data-id]")?.dataset.id, action = focus?.dataset.planetReply !== undefined ? "reply" : focus?.dataset.planetRemove !== undefined ? "remove" : "";
+    const focus = document.activeElement as HTMLElement | null, key = focus?.closest<HTMLElement>("[data-id]")?.dataset.id, action = focus?.dataset.planetReply !== undefined ? "reply" : focus?.dataset.planetRemove !== undefined ? "remove" : focus?.dataset.planetWatch !== undefined ? "watch" : "";
     const rows = list.map(s => {
         const card = document.createElement("article");
         card.className = "planet-sound-card";
@@ -243,6 +250,11 @@ function renderShared(): void {
         remove.dataset.planetRemove = "";
         remove.disabled = !boot.joined || planetDistance(s, here) > 4;
         card.append(h, p, face, answer, view, remove);
+        if(!flat&&s.soundId==="harbour-boat"){
+            const effect=document.createElement("p");effect.textContent=soundLifeEffect(s.soundId);
+            const watch=button("Watch the boat",()=>afterDialogClose(shared,()=>{if(!watchSoundEffect(s.id))say("That boat is not visible at the moment. Try another live horn.");}));watch.dataset.planetWatch="";
+            card.append(effect,watch);
+        }
         return card;
     });
     if (!rows.length) {
@@ -380,7 +392,7 @@ function setExamplesEnabled(enabled:boolean):void{examplesEnabled=enabled;exampl
 examplesSetting.onchange=()=>setExamplesEnabled(examplesSetting.checked);
 if(flat){$("planet-examples-label").hidden=true;$("planet-examples-note").hidden=true;}
 else soundDiscovery=new SoundDiscovery(stage,{at:()=>world.at,sources:publicSounds,blueprints:()=>exampleBlueprints,enabled:()=>examplesEnabled,setEnabled:setExamplesEnabled,
-    listen:id=>audio.preview(id),stop:()=>audio.stopPreview(),create:id=>{cancelReply();openLibrary(false,id);},watch:id=>{const moved=world instanceof PlanetWorld&&world.watchSound(id);if(moved){lastSent="";say("Watching the boat. Your horn stays where you left it.");}return moved;}});
+    listen:id=>audio.preview(id),stop:()=>audio.stopPreview(),create:id=>{cancelReply();openLibrary(false,id);},watch:watchSoundEffect});
 refreshSoundLife();
 const placementIntent = document.createElement("aside");placementIntent.className="chorus-placement-intent";placementIntent.hidden=true;
 const placementText=document.createElement("p"), stopPlacing=button("Cancel walk",()=>{cancelPlacement();world.focus();});stopPlacing.id="chorus-walk-cancel";placementIntent.append(placementText,stopPlacing);stage.append(placementIntent);

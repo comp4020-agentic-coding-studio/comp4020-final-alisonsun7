@@ -114,13 +114,13 @@ export class ChorusStudio {
     this.parent = parent;this.previewRevision++;this.opts.stop();this.feedback.textContent = "";
     const cafe = PLANET_PLACES.find(p => p.id === "tea")!;
     const inCafe = planetDistance(this.opts.at(), cafe) <= 8;
-    const place = chorusPlaceAt(this.opts.at()) ?? "green";
+    const workPlace = chorusPlaceAt(this.opts.at()),place = workPlace ?? "green";
     this.title.textContent = parent ? "What would you answer?" : "What will you bring?";
     this.context.textContent = parent ? `Answering ${parent.by}'s ${soundName(parent)}. Listen privately, then choose the change you want to bring. Your answer keeps both names.` : inCafe ? "Make this café your kind of company. Coffee brings steam, conversation warms the tables, music sets the record spinning. Listen is private; Leave it here is shared." : "Listen to one ingredient, then leave the one you like. A glowing petal will mark your sound; a friend's answer can open it into a shared place.";
     const nearest=[...PLANET_PLACES].sort((a,b)=>planetDistance(a,this.opts.at())-planetDistance(b,this.opts.at()))[0];
-    const defaults=inCafe && !parent ? ["espresso", "cafe-chatter", "cafe-music"] : recommendedSounds(parent, place);
+    const defaults=inCafe && !parent ? ["espresso", "cafe-chatter", "cafe-music"] : !parent&&!workPlace&&nearest.sounds.length?nearest.sounds:recommendedSounds(parent, place);
     const choices=!parent&&suggested&&findSound(suggested)?[suggested,...nearest.sounds.filter(id=>id!==suggested&&!!findSound(id)),...defaults.filter(id=>id!==suggested)]:defaults;
-    if(!parent&&suggested&&!chorusPlaceAt(this.opts.at())&&!inCafe)this.context.textContent="Listen to a little ingredient, then leave one here to change this corner. Your sound keeps your name; nothing is shared until you choose Leave.";
+    if(!parent&&!workPlace&&!inCafe)this.context.textContent="Listen to a little ingredient, then leave one here to change this corner. Your sound keeps your name; nothing is shared until you choose Leave.";
     this.renderChoices([...new Set(choices)].slice(0,3));this.opts.pause();this.element.showModal();
   }
   close(): void { this.viewRevision++;this.previewRevision++;this.opts.stop();this.element.close(); }

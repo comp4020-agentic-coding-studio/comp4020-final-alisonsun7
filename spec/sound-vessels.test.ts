@@ -4,6 +4,7 @@ import { SoundVessels, findHarbourRoute, harbourVesselPose, type SoundVesselOpti
 import { coastlineAt, planetPierHeightAt } from "../src/client/planet-coast.ts";
 import { PLANET_HALF, PLANET_RADIUS } from "../src/shared/planet.ts";
 import type { PlacedSound } from "../src/shared/protocol.ts";
+import { authorMark } from "../src/shared/chorus-signature.ts";
 
 const at = Date.parse("2026-11-08T12:00:00Z");
 const options: SoundVesselOptions = { shoreline: coastlineAt, isWater: (x, z) => z > coastlineAt(x) + .12 && planetPierHeightAt(x, z) === null };
@@ -104,6 +105,29 @@ describe("actual horn ingredients bring passing ferries", () => {
       expect(snapshot(first)).toEqual(still);expect(first.state[0].visible).toBe(true);
       expect((first.root.getObjectByName("sound-vessel-wake") as THREE.InstancedMesh).count).toBe(0);
     } finally { first.dispose();late.dispose(); }
+  });
+
+  it("gives each author's roof and pennant their shared mark, releasing per-vessel materials on removal", () => {
+    const vessels = new SoundVessels(new THREE.Scene(), options);
+    const first = source("ada"), second = source("bo", { byId: "person-b", by: "Bo", at: new Date(at + 1000).toISOString() });
+    try {
+      vessels.setSources([first, second]);
+      const ships = vessels.root.children.filter(child => child.name === "sound-born-ferry");
+      const ada = ships.find(ship => ship.userData.soundVessel.sourceId === first.id)!;
+      const bo = ships.find(ship => ship.userData.soundVessel.sourceId === second.id)!;
+      const roof = (ship: THREE.Object3D) => (ship.getObjectByName("ferry-coral-roof") as THREE.Mesh).material as THREE.MeshStandardMaterial;
+      const expected = (id: string) => "#" + new THREE.Color(authorMark(id).color).lerp(new THREE.Color(0xeee3c9), .2).getHexString();
+      expect(vessels.state.find(state => state.sourceId === first.id)?.color).toBe(expected(first.byId));
+      expect(vessels.state.find(state => state.sourceId === second.id)?.color).toBe(expected(second.byId));
+      expect(roof(ada).color.getHexString()).not.toBe(roof(bo).color.getHexString());
+      expect(roof(ada)).not.toBe(roof(bo));
+      expect((ada.getObjectByName("ferry-hull") as THREE.Mesh).geometry).toBe((bo.getObjectByName("ferry-hull") as THREE.Mesh).geometry);
+      let adaReleased = 0, boReleased = 0;
+      roof(ada).addEventListener("dispose", () => adaReleased++);roof(bo).addEventListener("dispose", () => boReleased++);
+      vessels.setSources([second]);expect(adaReleased).toBe(1);expect(boReleased).toBe(0);
+      vessels.setSources([second]);expect(adaReleased).toBe(1);
+      vessels.dispose();expect(adaReleased).toBe(1);expect(boReleased).toBe(1);
+    } finally { vessels.dispose(); }
   });
 
   it("disposes shared resources exactly once and cannot revive after disposal", () => {

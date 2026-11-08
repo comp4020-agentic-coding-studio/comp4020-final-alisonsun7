@@ -39,7 +39,7 @@ export function soundLifeEffect(soundId: string): string | null {
   return soundId==="evening-forest" ? "Bird calls invite little birds to circle nearby."
     : soundId==="coastal-gulls" ? "Gull calls bring a small flock above the shore."
     : soundId==="espresso" ? "The coffee machine steams; nearby neighbours turn to chat."
-    : soundId==="harbour-boat" ? "A little ferry sails the nearest coast. Your horn stays where you leave it."
+    : soundId==="harbour-boat" ? "A little ferry sails the nearest coast. The horn stays where it was left."
     : soundId==="gentle-breeze" ? "A little paper pinwheel turns beside your breeze."
     : ["cafe-chatter","cafe-dishes"].includes(soundId) ? "Company brings neighbours into conversation."
     : ["cafe-music","guitar","chorus-chords","chorus-pulse"].includes(soundId) ? "Music gives nearby neighbours a rhythm to sway to."
