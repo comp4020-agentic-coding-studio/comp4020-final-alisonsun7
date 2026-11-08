@@ -250,6 +250,9 @@ export class PlanetWorld {
     cancelWalkingIntent(): void { if (this.walkingTarget) this.walkingRevision++;this.walkingTarget = null; }
     project(x: number, z: number, height = 0): { x: number; y: number; visible: boolean } {
         const p = planetPoint(x, z, this.built.heightAt(x, z) + height), point = new THREE.Vector3(p.x, p.y, p.z);
+        return this.projectPosition(point);
+    }
+    private projectPosition(point:THREE.Vector3): {x:number;y:number;visible:boolean} {
         const delta = point.clone().sub(this.camera.position), length = delta.length();
         const hit = length > 0 ? new THREE.Ray(this.camera.position, delta.clone().normalize()).intersectSphere(new THREE.Sphere(new THREE.Vector3(), R - .03), new THREE.Vector3()) : null;
         const wall = length > .15 ? new THREE.Raycaster(this.camera.position, delta.clone().normalize(), .1, length - .08).intersectObjects(this.built.solids, false)[0] : undefined;
@@ -655,7 +658,7 @@ export class PlanetWorld {
             this.host.dataset.residentLife = JSON.stringify(this.residents.figures.map(figure => ({
                 ...figure.userData.residentLife,id:figure.userData.soundResident.id,...this.residentPos.get(figure),
                 screen:this.project(this.residentPos.get(figure)!.x,this.residentPos.get(figure)!.z,1.2),
-                cueScreen:this.project(this.residentPos.get(figure)!.x,this.residentPos.get(figure)!.z,1.92),
+                cueScreen:this.projectPosition(figure.getObjectByName("npc-conversation-turn")!.getWorldPosition(new THREE.Vector3())),
                 rig:{head:this.gestureRig(figure).head?.rotation.toArray().slice(0,3),left:this.gestureRig(figure).left?.rotation.toArray().slice(0,3),right:this.gestureRig(figure).right?.rotation.toArray().slice(0,3)},
                 cueVisible:figure.getObjectByName("npc-conversation-turn")?.visible??false,
             })));
@@ -718,7 +721,7 @@ export class PlanetWorld {
         x: number;
         z: number;
     }): void {
-        const head = f.headAnchor.getWorldPosition(new THREE.Vector3()).addScaledVector(f.position.clone().normalize(), .2), distance = planetDistance(at, this.position);
+        const head = f.headAnchor.getWorldPosition(new THREE.Vector3()).addScaledVector(f.position.clone().normalize(), f.userData.residentLife?.role==="speaking"?.55:.2), distance = planetDistance(at, this.position);
         const focused = this.works.find(work => work.id === this.focusedWork);
         const focusedNpc = e.classList.contains("npc") && distance <= 8 && !!focused?.liveSources.some(source => source.id === f.userData.soundResident?.sourceId);
         const near = e === this.selfLabel || distance <= (e.classList.contains("npc") ? 3 : 8) || focusedNpc;
