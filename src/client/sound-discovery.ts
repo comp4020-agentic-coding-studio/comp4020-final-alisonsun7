@@ -49,7 +49,7 @@ export class SoundDiscovery {
     const buttons=element("div","sound-discovery-actions");buttons.append(this.listen,this.create,this.compare);
     this.panel.append(close,this.origin,this.title,this.cause,buttons,this.feedback);host.append(this.panel,this.reopen);
   }
-  private stop():void{clearTimeout(this.previewTimer);this.revision++;this.audition=false;this.listen.textContent="Listen privately";this.opts.stop();}
+  private stop():void{clearTimeout(this.previewTimer);this.revision++;this.audition=false;this.listen.textContent="Listen privately";this.feedback.textContent="";this.opts.stop();}
   frame():void{
     const nearest=this.opts.blueprints().map(example=>({example,distance:planetDistance(this.opts.at(),example)})).sort((a,b)=>a.distance-b.distance)[0];
     const selected=nearest&&nearest.distance<=8?nearest.example:null;

@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 // Developer UI automation on an explicitly isolated scratch world. This is
 // not an unfamiliar-pair study, human listening approval or a physical phone.
-// APP_URL=http://localhost:18898 node e2e/living-discovery.mjs [artifact-directory]
+// APP_URL=http://localhost:18898 SCRATCH_DB=.cache/discovery/browser/history.db
+// node e2e/living-discovery.mjs [artifact-directory]
 import assert from "node:assert/strict";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { chromium } from "playwright";
 
 const base = process.env.APP_URL;
@@ -11,6 +14,14 @@ assert.ok(base, "Set APP_URL to an explicitly isolated local scratch server");
 const address = new URL(base);
 assert.ok(["localhost", "127.0.0.1", "[::1]"].includes(address.hostname), "Use a local scratch world");
 assert.equal(address.port, "18898", "This writing test is reserved for the independent discovery-test database on port 18898");
+assert.ok(process.env.SCRATCH_DB, "Set SCRATCH_DB to the independent discovery-test database for read-only history verification");
+const databasePath = realpathSync(resolve(process.env.SCRATCH_DB));
+assert.equal(databasePath, resolve(".cache/discovery/browser/history.db"), "Read only the explicitly isolated .cache/discovery/browser/history.db; never the player's database");
+const database = new DatabaseSync(databasePath, { readOnly: true });
+const storedRows = () => database.prepare("SELECT * FROM placed_sounds ORDER BY id").all().map(row => ({ ...row }));
+const storedSource = id => database.prepare("SELECT * FROM placed_sounds WHERE id = ?").get(id);
+const initialStored = storedRows();
+const historyEvidence = { mode: "read-only SQLite", database: ".cache/discovery/browser/history.db", initialRows: initialStored.length, initialRowsPreserved: false, onlyOwnedRowsAdded: false, finalRows: null, fixtureTombstones: [] };
 const out = process.argv[2];
 if (out) mkdirSync(out, { recursive: true });
 mkdirSync(".cache", { recursive: true });
@@ -25,7 +36,16 @@ const check = (condition, label, detail) => {
 const shot = async (page, name) => { if (out && !page.isClosed()) await page.screenshot({ path: `${out}/${name}.png`, fullPage: true }); };
 const dataset = (page, key) => page.locator("#planet-stage").evaluate((stage, key) => stage.dataset[key], key);
 const state = async (page, key) => JSON.parse(await dataset(page, key) ?? "[]");
-const history = snap => snap.sounds.filter(sound => !sound.whileIn).map(sound => ({ ...sound })).sort((a, b) => a.id.localeCompare(b.id));
+// Snapshot.sounds intentionally contains living sources only. Durable removal
+// history is checked separately through the strictly scoped read-only DB.
+const liveSources = snap => snap.sounds.filter(sound => !sound.whileIn).map(sound => ({ ...sound })).sort((a, b) => a.id.localeCompare(b.id));
+const assertStoredSource = (row, who, sound) => {
+    assert.ok(row, `Keep actual stored source ${sound.id}`);
+    assert.equal(row.id, sound.id);assert.equal(row.session_id, who.sessionId);
+    assert.equal(row.sound_id, sound.soundId);assert.equal(row.placed_by, sound.byId);
+    assert.equal(row.placed_at, sound.at);assert.equal(row.x, sound.x);assert.equal(row.z, sound.z);
+    assert.equal(row.while_in, null);
+};
 const saveRecovery = () => writeFileSync(recoveryPath, JSON.stringify({ base,
     identities: people.map(({ name, id, sessionId, cookies }) => ({ name, id, sessionId, cookies })),
     sounds: [...made.values()].map(({ sound }) => sound),
@@ -139,7 +159,7 @@ try {
     browser = await chromium.launch({ channel: "chrome", args: ["--use-angle=metal", "--enable-gpu"] });
     const ada = await quietPerson("Discovery Ada", "cat"), bo = await quietPerson("Discovery Bo", "dog");
     const a = ada.page, b = bo.page;
-    initialPlanet = history(await snapshot(ada));initialCoast = history(await snapshot(ada, "/scene/seaside"));
+    initialPlanet = liveSources(await snapshot(ada));initialCoast = liveSources(await snapshot(ada, "/scene/seaside"));
     assert.equal(initialPlanet.filter(source => !source.removedAt).length, 0, "Use a fresh or cleaned isolated world so real ingredients cannot mask the example comparison");
     check(ada.id !== bo.id && (await ada.context.cookies()).find(c => c.name === "soac_session")?.value !== (await bo.context.cookies()).find(c => c.name === "soac_session")?.value,
         "Two independent cookie identities enter the same actual planet");
@@ -153,7 +173,7 @@ try {
     const quiet = await Promise.all([a, b].map(async page => ({ soundOn: await dataset(page, "soundOn"), voices: await dataset(page, "voices"), starts: await page.evaluate(() => window.__discoveryAudioStarts.length) })));
     check(quiet.every(row => row.soundOn === "false" && row.voices === "0" && row.starts === 0), "World examples remain silent in genuinely quiet browsers without an autoplay bypass", quiet);
     const beforeExample = await snapshot(ada);
-    check(ada.posts + bo.posts === 0 && history(beforeExample).length === initialPlanet.length && beforeExample.chorus.length === 0
+    check(ada.posts + bo.posts === 0 && liveSources(beforeExample).length === initialPlanet.length && beforeExample.chorus.length === 0
         && beforeExample.online.length === 2 && !beforeExample.sounds.some(sound => exampleIds.includes(sound.id)),
         "World examples create no sound rows, shared works, invented authors or human presence");
     await shot(a, "discovery-cafe-desktop");
@@ -232,6 +252,9 @@ try {
 
     await examples(ada, false);
     await place(ada, "conservatory", "Rain conservatory");
+    // The compact phone intentionally hides the desktop soundscape header.
+    // Return to its supported desktop alternative before using that action.
+    await a.setViewportSize({ width: 1920, height: 1080 });
     await a.locator("#planet-shared").click();
     const [deleted] = await Promise.all([
         a.waitForResponse(response => response.request().method() === "DELETE" && new URL(response.url()).pathname === `/api/sessions/${ada.sessionId}/sounds/${birds.id}`),
@@ -240,8 +263,11 @@ try {
     assert.ok(deleted.ok() && (await deleted.json()).ok);
     await a.locator("#planet-soundscape").getByRole("button", { name: "Close", exact: true }).click();
     await Promise.all([wildlife(a, birds.id, "bird", false), wildlife(b, birds.id, "bird", false)]);
-    const removed = (await snapshot(bo)).sounds.find(source => source.id === birds.id);
-    check(!!removed?.removedAt && removed.byId === ada.id && removed.soundId === "evening-forest", "Withdrawing the real bird ingredient removes its wildlife in both browsers while preserving authorship and the tombstoned source history");
+    const afterRemoval = await Promise.all([snapshot(ada), snapshot(bo)]);
+    check(afterRemoval.every(snap => !snap.sounds.some(source => source.id === birds.id)), "The acknowledged withdrawal removes the real bird source and its wildlife from both live browser snapshots");
+    const removed = storedSource(birds.id);assertStoredSource(removed, ada, birds);
+    check(!!removed.removed_at && Number.isFinite(Date.parse(removed.removed_at)) && removed.removed_by === ada.id,
+        "Read-only scratch SQLite confirms the removed bird remains with its original author, position, sound and timestamp plus a real removal tombstone");
     check((await state(a, "soundExamples")).length === 0 && (await state(b, "soundExamples")).length > 0, "One visitor's example preference remains local after shared removal");
     check(errors.length === 0, "No browser page errors in the verified discovery path");
 }
@@ -254,8 +280,8 @@ finally {
     for (const who of people) await who.page.goto("about:blank").catch(() => {});
     for (const { who, sound } of [...made.values()].reverse()) {
         try {
-            const current = (await snapshot(who)).sounds.find(source => source.id === sound.id);
-            if (current?.removedAt) continue;
+            const current = storedSource(sound.id);assertStoredSource(current, who, sound);
+            if (current.removed_at) continue;
             await who.page.waitForTimeout(1100);
             while (Date.now() - who.lastMoveAt < 140) await who.page.waitForTimeout(140 - (Date.now() - who.lastMoveAt));
             const moved = await who.context.request.post(`${base}/api/sessions/${who.sessionId}/move`, { data: { x: sound.x, z: sound.z, yaw: 0 } });
@@ -267,20 +293,31 @@ finally {
     }
     if (people[0] && initialPlanet && initialCoast) {
         try {
-            const final = history(await snapshot(people[0])), ids = new Set(made.keys());
+            const final = liveSources(await snapshot(people[0])), ids = new Set(made.keys());
             assert.deepEqual(final.filter(source => !ids.has(source.id)), initialPlanet);
-            assert.deepEqual(history(await snapshot(people[0], "/scene/seaside")), initialCoast);
-            for (const id of ids) assert.ok(final.find(source => source.id === id)?.removedAt, `Fixture ${id} remains as a soft-removed history row`);
-            check(true, "Cleanup preserves every initial planet and coastal source exactly; only acknowledged own fixtures are soft-removed");
+            assert.deepEqual(liveSources(await snapshot(people[0], "/scene/seaside")), initialCoast);
+            assert.ok(final.every(source => !ids.has(source.id)), "No cleaned fixture remains in a live snapshot");
+            const finalStored = storedRows();
+            assert.deepEqual(finalStored.filter(row => !ids.has(row.id)), initialStored, "Every original placed_sounds row, including prior tombstones and the coastal world, remains exactly unchanged");
+            for (const { who, sound } of made.values()) {
+                assert.ok(!initialStored.some(row => row.id === sound.id), "Only this run's acknowledged new IDs are cleanup targets");
+                const row = finalStored.find(row => row.id === sound.id);assertStoredSource(row, who, sound);
+                assert.ok(row.removed_at && Number.isFinite(Date.parse(row.removed_at)), `Fixture ${sound.id} remains as a real soft-removed stored row`);
+                assert.equal(row.removed_by, who.id);
+                historyEvidence.fixtureTombstones.push({ id: row.id, soundId: row.sound_id, byId: row.placed_by, x: row.x, z: row.z, at: row.placed_at, removedAt: row.removed_at });
+            }
+            Object.assign(historyEvidence, { initialRowsPreserved: true, onlyOwnedRowsAdded: true, finalRows: finalStored.length });
+            check(true, "Cleanup preserves every initial planet/coastal live source and every stored history row exactly; only acknowledged own fixtures receive soft-removal tombstones", historyEvidence);
             rmSync(recoveryPath, { force: true });
         }
         catch (error) { failed = true;process.exitCode = 1;console.error("History preservation:", error.message); }
     }
-    if (out) writeFileSync(`${out}/results.json`, JSON.stringify({ kind: "automated-developer-browser-test", base, failed, failure, checks, errors, targetRects,
+    if (out) writeFileSync(`${out}/results.json`, JSON.stringify({ kind: "automated-developer-browser-test", base, failed, failure, checks, errors, targetRects, historyEvidence,
         created: [...made.values()].map(({ sound }) => ({ id: sound.id, byId: sound.byId, soundId: sound.soundId, x: sound.x, z: sound.z })),
         independentCookieIdentities: people.length === 2 && people[0].id !== people[1].id,
         physicalPhone: false, unfamiliarPairPlaytest: false, humanListening: false, nextDayReturn: false,
         limitations: ["Seeded examples are explicitly local teaching material, never people or shared contribution history.", "Native audio node starts verify playback lifecycle, not pleasantness or what a person hears.", "390×844 is touch-browser emulation, not physical-phone evidence."],
     }, null, 2));
     if (browser) await browser.close();
+    database.close();
 }
