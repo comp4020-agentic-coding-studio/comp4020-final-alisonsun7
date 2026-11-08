@@ -2,9 +2,10 @@
 // where. Shared by server (validation) and client (drawing, playing), so the
 // two can't disagree.
 //
-// Recordings are Wikimedia Commons CC0/public domain derivatives. The three
-// chorus-* parts are original project scores rendered without sampled music.
-// Both forms are listed in public/assets-manifest.json.
+// Recordings are Wikimedia Commons CC0/public domain derivatives. The chorus
+// parts and stylized water-life sounds are original procedural project audio,
+// rendered without sampled music or wildlife. Sources and methods are listed
+// in public/assets-manifest.json.
 
 // What makes a sound, after Bernie Krause: the land and water, animals, or
 // people. Each family has a colour, so a place with many kinds of sound is
@@ -23,6 +24,9 @@ export interface SoundKind {
   family: Family;
   // the zones it suits; it can still be left anywhere
   zones: string[];
+  // A bounded unquantized event on a server-anchored cycle. Audio outside this
+  // window is quiet padding for the older coastal loop player, not a bed.
+  playback?: { length: number; interval: number };
 }
 
 export const SOUNDS: SoundKind[] = [
@@ -47,6 +51,9 @@ export const SOUNDS: SoundKind[] = [
   { id: "chorus-chords", label: "Warm chords", family: "anthrophony", zones: ["green", "stage"] },
   { id: "chorus-pulse", label: "Soft pulse", family: "anthrophony", zones: ["green", "stage"] },
   { id: "chorus-bells", label: "Little bell notes", family: "anthrophony", zones: ["green", "stage", "reading"] },
+  { id: "pond-bubbles", label: "Pond bubbles", family: "geophony", zones: ["pond", "tide", "creek"], playback: { length: 3, interval: 12 } },
+  { id: "pond-frogs", label: "Pond frogs", family: "biophony", zones: ["pond", "green", "creek"], playback: { length: 4.5, interval: 18 } },
+  { id: "whale-song", label: "Whale song", family: "biophony", zones: ["tide", "pier", "beach"], playback: { length: 7.5, interval: 32 } },
 ];
 
 export const findSound = (id: unknown): SoundKind | undefined => SOUNDS.find((s) => s.id === id);

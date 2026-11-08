@@ -17,6 +17,9 @@ const EVENTS: Record<string, { length: number; interval: number }> = {
     "toilet-flush": { length: 12, interval: 70 },
     "espresso": { length: 8, interval: 30 },
 };
+// Catalogue-authored events retain their own quiet gaps. Textures and the
+// original tempo-compatible scores keep their existing playback behaviour.
+const soundEvent = (id: string): {length:number;interval:number}|undefined => findSound(id)?.playback ?? EVENTS[id];
 export function planetHearingRadius(source: { x: number; z: number; origin?: "example" }): number {
     if (source.origin === "example") return 6;
     const reading = PLANET_PLACES.find(p => p.id === "reading")!;
@@ -84,7 +87,7 @@ export class PlanetAudio {
             else promise = fetch(`/assets/sounds/${encodeURIComponent(id)}.mp3`).then(async response => {
                 if (!response.ok) throw new Error("Recording unavailable");
                 const context = this.context(), decoded = await context.decodeAudioData(await response.arrayBuffer());
-                return EVENTS[id] ? decoded : seamlessRecording(context, decoded);
+                return soundEvent(id) ? decoded : seamlessRecording(context, decoded);
             });
             this.buffers.set(id, promise); promise.catch(() => this.buffers.delete(id));
         }
@@ -159,7 +162,7 @@ export class PlanetAudio {
         const radius = planetHearingRadius(sound), near = Math.min(1.5, radius / 4);
         const edge = Math.max(0, Math.min(1, (distance - near) / (radius - near)));
         const spatial = Math.cos(edge * Math.PI / 2) ** 2;
-        const base = sound.derived ? .26 : isChorusInstrument(sound.soundId) ? .72 : EVENTS[sound.soundId] ? .28 : .42;
+        const base = sound.derived ? .26 : isChorusInstrument(sound.soundId) ? .72 : soundEvent(sound.soundId) ? .28 : .42;
         const localFocus = this.focus && this.focus !== sound.id && !sound.derived ? .12 : 1;
         const headroom = 1 / Math.sqrt(Math.max(1, this.wanted.size / 3));
         return base * spatial * localFocus * headroom * (sound.origin === "example" ? .5 : 1);
@@ -217,9 +220,9 @@ export class PlanetAudio {
                 // Correct rounded PCM length so repeated bars do not drift.
                 if (source.playbackRate) source.playbackRate.value = buffer.duration / CHORUS_BAR_SECONDS;
                 source.start(ctx.currentTime + nextChorusBar(this.serverNow), 0);
-            } else if (EVENTS[sound.soundId]) {
+            } else if (soundEvent(sound.soundId)) {
                 source.loop = false;
-                const event = EVENTS[sound.soundId], length = Math.min(event.length, buffer.duration);
+                const event = soundEvent(sound.soundId)!, length = Math.min(event.length, buffer.duration);
                 const age = Math.max(0, (this.serverNow - Date.parse(sound.at)) / 1000), phase = age % event.interval;
                 const delay = phase < length ? 0 : event.interval - phase, offset = phase < length ? phase : 0;
                 source.start(ctx.currentTime + delay, offset, Math.max(.01, length - offset));
@@ -241,10 +244,20 @@ export class PlanetAudio {
             if (this.disposed || revision !== this.previewRevision || document.hidden) return false;
             const source = ctx.createBufferSource(), gain = ctx.createGain();
             source.buffer = buffer; source.loop = false;
-            gain.gain.value = isChorusInstrument(id) ? .72 : EVENTS[id] ? .28 : .42;
+            gain.gain.value = isChorusInstrument(id) ? .72 : soundEvent(id) ? .28 : .42;
             source.connect(gain).connect(this.master!);
             this.previewing = true; this.worldGain!.gain.setTargetAtTime(.18, ctx.currentTime, .035);
-            source.start(0, 0, Math.min(5, buffer.duration));
+            const duration=Math.min(5,buffer.duration);
+            // New nature events can outlast the five-second private audition.
+            // Soften its cutoff without changing anyone's world playback.
+            const event=findSound(id)?.playback;
+            if(event&&event.length>duration&&duration>.045){
+                if(typeof gain.gain.linearRampToValueAtTime==="function"){
+                    gain.gain.setValueAtTime(gain.gain.value,ctx.currentTime+duration-.045);
+                    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+duration);
+                }else gain.gain.setTargetAtTime(0,ctx.currentTime+duration-.045,.012);
+            }
+            source.start(0, 0, duration);
             source.onended = () => {
                 source.disconnect(); gain.disconnect();
                 if (this.previewSource === source) { this.previewSource = null; this.previewGain = null; this.restoreWorld(); }

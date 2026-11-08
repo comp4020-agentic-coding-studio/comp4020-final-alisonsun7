@@ -1003,6 +1003,126 @@
       },
       "processing": "Deterministic mono PCM from renderChorusPart; bounded envelopes, short zero-ended seam, 128 kbps MP3 fallback for the legacy coast. Planet uses PCM directly with exact-bar playback-rate correction. Reproduce after build: node scripts/render-chorus-sounds.mjs",
       "listeningStatus": "Numerical and lifecycle checks only; musical comfort and blend still require human listening."
+    },
+    {
+      "id": "original-pond-bubbles",
+      "path": "public/assets/sounds/pond-bubbles.mp3",
+      "usage": "sound",
+      "publicAllowed": true,
+      "source": "Original Little Chorus procedural sound illustration, authored in scripts/render-waterlife-sounds.mjs with coding-agent assistance; no wildlife recordings, samples or third-party composition",
+      "rights": "Original project-generated sound; not a third-party CC0 asset",
+      "sha256": "102d7ce6742cef168b9a4ec7319f242436d84ff90dad810c73e28f1b96d3b185",
+      "pcmSha256": "4c9ac5d58d77e55ed17f0c6cdc71f2e519a51730fc23955ad599202962096870",
+      "generator": {
+        "script": "scripts/render-waterlife-sounds.mjs",
+        "version": 1,
+        "seed": 802012,
+        "sampleRate": 44100,
+        "sourceSha256": "2ca5056cc5663c0a3ad7b350c9a58e9c972f8e2656e53e07a4957c2ca25c82a4",
+        "peakAmplitude": 0.32,
+        "noise": "deterministic integer PRNG",
+        "externalSamples": false
+      },
+      "playback": {
+        "length": 3,
+        "interval": 12
+      },
+      "measuredPcm": {
+        "sampleRate": 44100,
+        "samples": 529200,
+        "fileSeconds": 12,
+        "eventSeconds": 3,
+        "peakDbFS": -9.897000627746644,
+        "rmsDbFS": -34.84240054960872,
+        "eventRmsDbFS": -28.821800636329094,
+        "mean": 1.2125715994837469e-12,
+        "largestStep": 0.028090189211070538,
+        "activeFraction": 0.09423091458805745,
+        "start": 0,
+        "end": 0
+      },
+      "processing": "Deterministic original synthesis; mono 44.1 kHz PCM, 35 Hz DC-removal high-pass, bounded smooth envelopes and exact-zero tail; LAME VBR quality 4 MP3 without source metadata. Full-cycle quiet padding is for legacy coastal playback; planet uses only the bounded event. Reproduce: node scripts/render-waterlife-sounds.mjs",
+      "listeningStatus": "Machine PCM, encoding and lifecycle checks only; human listening remains pending. Stylized synthesis, not a field recording."
+    },
+    {
+      "id": "original-pond-frogs",
+      "path": "public/assets/sounds/pond-frogs.mp3",
+      "usage": "sound",
+      "publicAllowed": true,
+      "source": "Original Little Chorus procedural sound illustration, authored in scripts/render-waterlife-sounds.mjs with coding-agent assistance; no wildlife recordings, samples or third-party composition",
+      "rights": "Original project-generated sound; not a third-party CC0 asset",
+      "sha256": "91401f118d2f7423fa652511202ba8d9f6f755c03bcd32f2be225ae69b9327b4",
+      "pcmSha256": "a37cacef8714022481c6574b3c3a3ced11f3392e6070ef23cdd3c3dc18560b07",
+      "generator": {
+        "script": "scripts/render-waterlife-sounds.mjs",
+        "version": 1,
+        "seed": 802018,
+        "sampleRate": 44100,
+        "sourceSha256": "2ca5056cc5663c0a3ad7b350c9a58e9c972f8e2656e53e07a4957c2ca25c82a4",
+        "peakAmplitude": 0.3,
+        "noise": "deterministic integer PRNG",
+        "externalSamples": false
+      },
+      "playback": {
+        "length": 4.5,
+        "interval": 18
+      },
+      "measuredPcm": {
+        "sampleRate": 44100,
+        "samples": 793800,
+        "fileSeconds": 18,
+        "eventSeconds": 4.5,
+        "peakDbFS": -10.457574560460515,
+        "rmsDbFS": -38.45784911125456,
+        "eventRmsDbFS": -32.437249197974936,
+        "mean": -6.437409431137245e-13,
+        "largestStep": 0.03440358769148588,
+        "activeFraction": 0.04989292013101537,
+        "start": 0,
+        "end": 0
+      },
+      "processing": "Deterministic original synthesis; mono 44.1 kHz PCM, 35 Hz DC-removal high-pass, bounded smooth envelopes and exact-zero tail; LAME VBR quality 4 MP3 without source metadata. Full-cycle quiet padding is for legacy coastal playback; planet uses only the bounded event. Reproduce: node scripts/render-waterlife-sounds.mjs",
+      "listeningStatus": "Machine PCM, encoding and lifecycle checks only; human listening remains pending. Stylized synthesis, not a field recording."
+    },
+    {
+      "id": "original-whale-song",
+      "path": "public/assets/sounds/whale-song.mp3",
+      "usage": "sound",
+      "publicAllowed": true,
+      "source": "Original Little Chorus procedural sound illustration, authored in scripts/render-waterlife-sounds.mjs with coding-agent assistance; no wildlife recordings, samples or third-party composition",
+      "rights": "Original project-generated sound; not a third-party CC0 asset",
+      "sha256": "ed27405e6ec5b8d6356b54b26dfb9e456bca734c4096ea7c3fe76aeffd8309ad",
+      "pcmSha256": "0550e0d5469c074052a27358a1cb99058796ed5fc99db6ef377bcfcb98c4b6d8",
+      "generator": {
+        "script": "scripts/render-waterlife-sounds.mjs",
+        "version": 1,
+        "seed": 802032,
+        "sampleRate": 44100,
+        "sourceSha256": "2ca5056cc5663c0a3ad7b350c9a58e9c972f8e2656e53e07a4957c2ca25c82a4",
+        "peakAmplitude": 0.26,
+        "noise": "deterministic integer PRNG",
+        "externalSamples": false
+      },
+      "playback": {
+        "length": 7.5,
+        "interval": 32
+      },
+      "measuredPcm": {
+        "sampleRate": 44100,
+        "samples": 1411200,
+        "fileSeconds": 32,
+        "eventSeconds": 7.5,
+        "peakDbFS": -11.70053335918018,
+        "rmsDbFS": -27.116881132641222,
+        "eventRmsDbFS": -20.81599398335916,
+        "mean": -6.14908643007669e-13,
+        "largestStep": 0.01397321280092001,
+        "activeFraction": 0.19443310657596372,
+        "start": 0,
+        "end": 0
+      },
+      "processing": "Deterministic original synthesis; mono 44.1 kHz PCM, 35 Hz DC-removal high-pass, bounded smooth envelopes and exact-zero tail; LAME VBR quality 4 MP3 without source metadata. Full-cycle quiet padding is for legacy coastal playback; planet uses only the bounded event. Reproduce: node scripts/render-waterlife-sounds.mjs",
+      "listeningStatus": "Machine PCM, encoding and lifecycle checks only; human listening remains pending. Stylized synthesis, not a field recording."
     }
   ],
   "notUsed": [

@@ -217,5 +217,11 @@ const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const replaced = new Set(entries.map((a) => a.id));
 manifest.assets = [...manifest.assets.filter((a) => !replaced.has(a.id)), ...entries];
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-writeFileSync(join(OUT, "sounds.json"), `${JSON.stringify(SOUNDS.map(({ file, from, highpassHz, reportMeasurements, ...s }) => s), null, 2)}\n`);
+// Commons and original renderers share this index. Refresh Commons metadata
+// by id without erasing original scores or water-life illustrations.
+const soundIndexPath = join(OUT, "sounds.json");
+const soundIndex = existsSync(soundIndexPath) ? JSON.parse(readFileSync(soundIndexPath, "utf8")) : [];
+const indexedSounds = new Map(soundIndex.map((sound) => [sound.id, sound]));
+for (const { file, from, highpassHz, reportMeasurements, ...sound } of SOUNDS) indexedSounds.set(sound.id, sound);
+writeFileSync(soundIndexPath, `${JSON.stringify([...indexedSounds.values()], null, 2)}\n`);
 console.log(`${entries.length} sounds`);

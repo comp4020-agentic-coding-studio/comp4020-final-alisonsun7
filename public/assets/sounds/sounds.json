@@ -203,5 +203,50 @@
       "pier"
     ],
     "seconds": 12
+  },
+  {
+    "id": "pond-bubbles",
+    "label": "Pond bubbles",
+    "family": "geophony",
+    "kind": "now-and-then",
+    "zones": [
+      "pond",
+      "tide",
+      "creek"
+    ],
+    "seconds": 3,
+    "pause": 9,
+    "interval": 12,
+    "provenance": "original-stylized-synthesis"
+  },
+  {
+    "id": "pond-frogs",
+    "label": "Pond frogs",
+    "family": "biophony",
+    "kind": "now-and-then",
+    "zones": [
+      "pond",
+      "green",
+      "creek"
+    ],
+    "seconds": 4.5,
+    "pause": 13.5,
+    "interval": 18,
+    "provenance": "original-stylized-synthesis"
+  },
+  {
+    "id": "whale-song",
+    "label": "Whale song",
+    "family": "biophony",
+    "kind": "now-and-then",
+    "zones": [
+      "tide",
+      "pier",
+      "beach"
+    ],
+    "seconds": 7.5,
+    "pause": 24.5,
+    "interval": 32,
+    "provenance": "original-stylized-synthesis"
   }
 ]
