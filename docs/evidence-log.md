@@ -3227,3 +3227,79 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   source, local installation, actual observer, failures and known side-entry
   movement limitation. The evidence follow-up will be saved on that same
   independent branch, with its final delivery hash verified separately.
+
+
+## 2026-11-08 — Water-life ingredients and a visible sound entrance: checkpoint
+
+- The author reports that sound settings/placement cannot reliably be found,
+  and requests fish, frog and whale sounds with corresponding visible 3D life.
+  [ADR035](decisions/035-waters-answer-and-visible-sound-entry.md) records the
+  approved implementation direction while integrated acceptance is pending.
+  The starting-preview record is `.cache/waterlife/starting-preview.json`:
+  application `8f32290` at 18861. A separate baseline package/runtime is
+  recorded in `.cache/waterlife/before-runtime.json`; it is not the user's DB.
+- The entry diagnosis executes actual `renderPlanet` HTML and the complete CSS
+  in JSDOM. Four contextual fixtures (expanded work dock, collapsed work dock,
+  discovery and private room) all hide Share with `display: none`; a fifth
+  check finds no direct listening-settings entrance. After the repair the
+  focused entry file passes nine checks, adding actual-controller Join,
+  offline/private/crowded guards and the unchanged local-preference path.
+  These initial red/green outputs are in the executing agent's tool record,
+  not an archived cache raw log. No GPU, HTTP, audio context or DB is involved
+  in those focused checks. The initial broader 31-check run has 30 passes and
+  one existing coastal-choice assertion still expecting the previous three
+  IDs; that mismatch belongs to the new catalogue integration, not a green
+  full-suite result.
+- Share now remains in the header outside world-card hiding selectors; its
+  compact settings shortcut opens the existing drawer and one real set of
+  listening controls. Local Sound and explicit public Leave remain different
+  actions. Both choosers keep private Listen available when offline, inside a
+  private stay or blocked by room density, with unavailable Leave actions and
+  visible reasons. Reconnect/room exit never publishes a draft. Header layout,
+  modal close/focus and real phone interaction still need browser acceptance.
+- The new water-life module distinguishes up to five small scenery fish from
+  effects caused by actual public `sourceId`/`byId` ingredients. Source-owned
+  fish/bubbles, frog pads/calls/hops and whale breath/breach/spray retain the
+  original contribution coordinates and anchored server/source time. Canonical
+  bounded selection, real-water route checks, withdrawal/tombstones and still
+  reduced-motion poses are requirements, not substitute evidence of charm.
+  The first source run in `.cache/waterlife/initial-tests.txt` fails seven of
+  eight checks: rejected anchors/routes leave models invisible and cause
+  downstream particle/budget/disposal assertions to fail. The later
+  `.cache/waterlife/routes-fixed-tests.txt` passes its eight source checks
+  (799 ms). Integrated marine route/render review remains in progress; neither
+  result is a final GPU or complete-package acceptance claim.
+- Audio has a separate evidence scope. Three original, stylised procedural
+  assets have 12/18/32-second padded files with 3/4.5/7.5-second audible event
+  windows. They are not natural wildlife recordings or third-party CC0 media.
+  `.cache/waterlife-sounds/verification.json` records actual offline decoding,
+  finite samples, exact hashes and quiet tails. Its earlier focused audio run
+  is 23 passes/304 ms. The fresh raw log
+  `.cache/waterlife-sounds/focused-unit-tests.log` independently records
+  23 passes/257 ms using `/private/tmp/little-chorus-waterlife-vitest.config.mjs`.
+  These are the same focused test scope at different executions, not 46 checks
+  of product quality. The real PlanetAudio controller runs with controlled
+  audio-node adapters; this is not speaker-output or artistic-listening proof.
+- The audio agent reports an initial default-8080 HTTP-global-setup failure
+  with zero tests executed, followed by a unit-only configuration. A later
+  newly added whale-preview regression first gives 22 passes/one failure:
+  five seconds cut through its second call. The production preview adds a
+  45 ms release only for a truncated declared event, and the final focused run
+  passes. Those two initial failures were observed in that agent's tool output
+  and were not saved as contemporaneous raw log files. The asset record
+  [waterlife-sounds.md](assets/waterlife-sounds.md) keeps the provenance and
+  pending by-ear review explicit.
+- Index-upsert verification is separately recorded in
+  `/private/tmp/little-chorus-waterlife-index-check/verification.json`: existing
+  original entries and Commons mappings are preserved, while a stale Commons
+  mapping is updated in a temporary fixture with zero network/download calls.
+  Three historical score entries are additional fixture cases derived from the
+  actual catalogue, not invented claims that those rows already existed in the
+  project index. No original project index is modified by that verification.
+- Implementation approval does not establish final acceptance. The coherent
+  final source/HTTP run, fresh desktop/phone GPU views, actual quiet/shared
+  playback path and data-preserving local promotion are still pending at this
+  checkpoint. Human listening, unfamiliar-player understanding and next-day
+  return remain separate unperformed judgements. Keep every current identity,
+  source/reply row, coordinate and table; do not restore an old DB for rollback.
+  No new preview promotion, public push, `main` change or deployment is claimed.

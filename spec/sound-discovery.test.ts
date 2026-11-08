@@ -43,3 +43,13 @@ it("a hidden guide never stops the chooser's unrelated preview after a friend's 
   expect(guide!.panel.hidden).toBe(true);
   f.setModal(false);expect(document.getElementById("sound-discovery-origin")!.textContent).toContain("By Bo");
 });
+it.each([["pond-bubbles","Watch the fish"],["pond-frogs","Watch the frogs"],["whale-song","Watch the whale"]])("shows the real %s water response without inventing an example author",(soundId,label)=>{
+  const f=fixture(2),source:PlacedSound={...f.examples[2],soundId,id:"water-"+soundId,by:"Ada",byId:"ada",origin:undefined} as PlacedSound;
+  const original=structuredClone(source);f.setSources([source]);
+  const watch=document.getElementById("sound-discovery-watch")!;
+  expect(watch.hidden).toBe(false);expect(watch.textContent).toBe(label);
+  expect(document.getElementById("sound-discovery-origin")!.textContent).toContain("By Ada");
+  expect(f.opts.watch).not.toHaveBeenCalled();watch.click();expect(f.opts.watch).toHaveBeenCalledWith(source.id);
+  expect(source).toEqual(original);expect(f.opts.create).not.toHaveBeenCalled();expect(f.opts.setEnabled).not.toHaveBeenCalled();
+  f.setSources([]);expect(watch.hidden).toBe(true);
+});

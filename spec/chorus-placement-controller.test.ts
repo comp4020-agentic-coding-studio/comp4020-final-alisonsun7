@@ -5,7 +5,7 @@ import ts from "typescript";
 import { describe, expect, it, vi } from "vitest";
 import { chorusPlaceAt, deriveChorusWorks } from "../src/shared/chorus.ts";
 import { placementAvailability, findNearbyPlan } from "../src/shared/chorus-placement.ts";
-import { PLANET_PLACES, planetDistance } from "../src/shared/planet.ts";
+import { PLANET_PLACES, planetDistance, sceneHutAt } from "../src/shared/planet.ts";
 import { findSound } from "../src/shared/sounds.ts";
 import type { Position, SoundReference } from "../src/shared/protocol.ts";
 
@@ -22,7 +22,7 @@ interface Cancellation { chat?: boolean; modal?: boolean; walking?: boolean; rev
 function controller(cancellation?: Cancellation) {
   const path = resolve(process.env.CHORUS_PLACEMENT_CONTROLLER_SOURCE ?? "src/client/planet.ts");
   const source = readFileSync(path, "utf8"), tree = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-  const names = new Set(["makeRoom", "updatePlacementPlan", "cancelPlacement"]), snippets: string[] = [];
+  const names = new Set(["makeRoom", "updatePlacementPlan", "cancelPlacement", "creationAvailability"]), snippets: string[] = [];
   let hooks: ts.ObjectLiteralExpression | undefined;
   for (const statement of tree.statements) {
     if (ts.isFunctionDeclaration(statement) && statement.name && names.has(statement.name.text)) snippets.push(statement.getText(tree));
@@ -32,7 +32,7 @@ function controller(cancellation?: Cancellation) {
       if (options && ts.isObjectLiteralExpression(options)) hooks = options;
     }
   }
-  expect(snippets, "extract all three actual placement functions").toHaveLength(3);
+  expect(snippets, "extract the actual placement functions and their shared availability guard").toHaveLength(4);
   const hookSource = hooks?.properties.filter(property => property.name && ["at", "availability"].includes(property.name.getText(tree))).map(property => property.getText(tree));
   expect(hookSource, "extract the real studio position and availability bindings").toHaveLength(2);
   const implementation = ts.transpileModule(`const studioHooks={${hookSource!.join(",")}};\n${snippets.join("\n")}`, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
@@ -44,8 +44,9 @@ function controller(cancellation?: Cancellation) {
   const modal = document.getElementById("other")!;
   const documentAdapter = { querySelector: (selector: string) => selector === "dialog:modal" ? cancellation?.modal ? modal : null : document.querySelector(selector) };
   const adapters = { afterDialogClose: vi.fn(), walkToward: vi.fn(() => true), publish: vi.fn(), openLibrary: vi.fn(), cancelWalking: vi.fn(), focusWorld: vi.fn(), notices: [] as string[] };
-  const harness = new Function("document", "realDocument", "dialog", "adapters", "initial", "cancellation", "chorusPlaceAt", "planetDistance", "findNearbyPlan", "placementAvailability", "findSound", "PLANET_PLACES", "deriveChorusWorks", `
+  const harness = new Function("document", "realDocument", "dialog", "adapters", "initial", "cancellation", "chorusPlaceAt", "planetDistance", "findNearbyPlan", "placementAvailability", "findSound", "PLANET_PLACES", "deriveChorusWorks", "sceneHutAt", `
     let here={...initial.staleGreen}, reply=null, walkingReply=null, lastSent='';
+    const boot={joined:true},connected=true;
     const sounds=new Map([[initial.oldGreen.id,initial.oldGreen]]),ended=new Set();
     const chorus=deriveChorusWorks([...sounds.values()]);
     let walking=cancellation?.walking ?? true,revision=cancellation?.revision ?? 7;
@@ -65,7 +66,7 @@ function controller(cancellation?: Cancellation) {
     return {makeRoom:()=>makeRoom('chorus-chords',null),update:()=>updatePlacementPlan(),
       read:()=>({plan:placementPlan,intentHidden:placementIntent.hidden,refreshes,at:studioHooks.at(),leaveDisabled:dialog.querySelector('[data-leave="chorus-chords"]').disabled,
         focused:realDocument.activeElement?.id || realDocument.activeElement?.getAttribute('data-leave'),draft:realDocument.getElementById('typing').value,open:dialog.open})};
-  `)(documentAdapter, document, dialog, adapters, { stage, staleGreen, oldGreen }, cancellation, chorusPlaceAt, planetDistance, findNearbyPlan, placementAvailability, findSound, PLANET_PLACES, deriveChorusWorks) as {
+  `)(documentAdapter, document, dialog, adapters, { stage, staleGreen, oldGreen }, cancellation, chorusPlaceAt, planetDistance, findNearbyPlan, placementAvailability, findSound, PLANET_PLACES, deriveChorusWorks, sceneHutAt) as {
     makeRoom(): void; update(): void; read(): { plan: unknown; intentHidden: boolean; refreshes: number; at: Position; leaveDisabled: boolean; focused: string | null; draft: string; open: boolean };
   };
   return { harness, adapters, dispose: () => dom.window.close() };

@@ -41,6 +41,9 @@ export function soundLifeEffect(soundId: string): string | null {
     : soundId==="espresso" ? "The coffee machine steams; nearby neighbours turn to chat."
     : soundId==="harbour-boat" ? "A little ferry sails the nearest coast. The horn stays where it was left."
     : soundId==="gentle-breeze" ? "A little paper pinwheel turns beside your breeze."
+    : soundId==="pond-bubbles" ? "Bubbles gather a little shoal at nearby water. Try them beside the pool or shore."
+    : soundId==="pond-frogs" ? "At the tide pools, frogs answer with puffed cheeks, little hops and ripples."
+    : soundId==="whale-song" ? "Near the coast, a whale surfaces, breathes and sometimes leaps."
     : ["cafe-chatter","cafe-dishes"].includes(soundId) ? "Company brings neighbours into conversation."
     : ["cafe-music","guitar","chorus-chords","chorus-pulse"].includes(soundId) ? "Music gives nearby neighbours a rhythm to sway to."
     : soundId==="chorus-bells" ? "Little notes invite a wave from nearby neighbours." : null;

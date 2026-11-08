@@ -2376,8 +2376,7 @@ h3 {
 .chorus-dock-actions #chorus-focus { border:0;padding:2px 0;min-height:44px;color:#385448;background:none;flex-basis:100%;text-align:left;justify-content:flex-start; }
 .planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-nearby-sound,
 .planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-nearby-reopen,
-.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-sound-pins,
-.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden]))>.planet-place { display:none; }
+.planet-stage:has(.chorus-dock[data-collapsed="false"]:not([hidden])) .planet-sound-pins { display:none; }
 .planet-page .planet-sound-response { display:none; }
 .planet-page .planet-zoom { top:96px;right:22px; }
 .planet-page .planet-sound-pin { max-width:152px;font-size:12px; }
@@ -2449,8 +2448,7 @@ h3 {
 .sound-discovery-reopen { position:absolute;z-index:20;left:22px;bottom:24px;box-shadow:0 4px 15px #243d3220; }
 .planet-stage:has(#sound-discovery:not([hidden])) .planet-nearby-sound,
 .planet-stage:has(#sound-discovery:not([hidden])) .planet-nearby-reopen,
-.planet-stage:has(#sound-discovery:not([hidden])) .planet-sound-pins,
-.planet-stage:has(#sound-discovery:not([hidden]))>.planet-place { display:none; }
+.planet-stage:has(#sound-discovery:not([hidden])) .planet-sound-pins { display:none; }
 @media(max-width:620px){
  .sound-discovery { left:12px;bottom:154px;width:calc(100% - 24px);padding:13px 15px; }
  .sound-discovery>strong { font-size:22px; }
@@ -2534,7 +2532,7 @@ h3 {
 .planet-restroom-actions { display:flex;gap:8px;flex-wrap:wrap; }
 .planet-restroom-actions #planet-stay-action,.planet-restroom-actions #planet-enter-room { color:#fffbed;background:#375d4c;border-color:#375d4c; }
 .planet-restroom-card button:disabled { opacity:.55;cursor:default; }
-.planet-stage:has(.planet-restroom-card:not([hidden])) .planet-nearby-sound,.planet-stage:has(.planet-restroom-card:not([hidden]))>.planet-place { display:none; }
+.planet-stage:has(.planet-restroom-card:not([hidden])) .planet-nearby-sound { display:none; }
 .chorus-dock { width:min(330px,calc(100% - 44px));padding:12px 16px; }
 .chorus-dock-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px; }
 .chorus-dock-heading button,.planet-card-close { min-width:44px;min-height:44px;padding:0;border:0;background:transparent;color:#4b6253;font:24px var(--font);cursor:pointer;border-radius:50%; }
@@ -2579,10 +2577,25 @@ h3 {
 
 @media(min-width:621px) { .planet-stage:has(.planet-restroom-card:not([hidden])) .planet-talk { right:390px;bottom:24px; } }
 
-/* Outside the work areas, sharing needs its own touch lane above locomotion. */
-.planet-stage:has(.chorus-dock:not([hidden]))>.planet-place { display:none; }
-@media(max-width:620px) {
- .planet-page .planet-place { top:116px;bottom:auto;left:12px;right:auto;width:174px;min-height:44px; }
+/* Sharing stays in the header, outside every contextual world card. */
+.planet-brand-actions { display:flex;align-items:center;gap:14px;min-width:0; }
+.planet-sound-actions { display:flex;align-items:center;gap:6px;flex-shrink:0; }
+.planet-page .planet-create-control { display:inline-flex;gap:7px;min-height:44px;padding:10px 13px;border:1px solid #315d4e;border-radius:10px;background:#315d4e;color:#fffbee;font-size:12px;white-space:nowrap; }
+.planet-page .planet-create-control:hover { background:#244d40;border-color:#244d40;color:#fffbee; }
+.planet-create-control svg { width:19px;height:19px;flex-shrink:0; }
+.planet-listening-settings { width:44px;padding:10px; }
+.planet-creation-note { padding:10px 12px;border:1px solid #c7b88c;border-radius:10px;background:#f4edd8;color:#5e5336!important;font-size:12px!important;line-height:1.5!important; }
+.planet-library-placement { grid-column:1/-1;width:100%;margin:4px 0 0!important;color:#685935!important;font-size:12px!important;line-height:1.5!important; }
+#planet-listening-settings-section { scroll-margin-top:110px; }
+#planet-listening-toggle { display:flex;margin-bottom:12px; }
+@media(max-width:640px) {
+ .planet-page { --world-header-height:calc(88px + env(safe-area-inset-top,0px)); }
+ .planet-brand-actions { flex-direction:column;align-items:flex-start;gap:2px; }
+ .planet-brand-actions .planet-brand { min-height:26px;font-size:23px; }
+ .planet-brand-actions .planet-brand-mark { height:22px; }
+ .planet-page .planet-create-control { min-height:44px;padding:9px 10px;gap:6px;font-size:12px; }
+ .planet-page .planet-actions { gap:6px; }
+ .planet-page .planet-bar { gap:6px;padding-left:10px;padding-right:10px; }
 }
 
 .planet-notice { pointer-events:none; }
@@ -2606,7 +2619,7 @@ h3 {
 .planet-flat #planet-help .planet-form-note { display:none; }
 .planet-flat .planet-corner { background:#fff9eaeF; }
 .planet-flat .planet-sound-pin { box-shadow:0 3px 12px #34504415; }
-@media(max-width:1050px) {
+@media(max-width:1180px) {
  .planet-bar { grid-template-columns:minmax(0,1fr) auto; }
  #planet-presentations,.planet-identity { display:none; }
 }
