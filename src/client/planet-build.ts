@@ -1,8 +1,9 @@
 import type { SoundSignal } from "../shared/sound-response.js";
 // Original low-cost, volumetric Soundfolk architecture. No downloaded models.
 import * as THREE from "three";
-import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, PLANET_CAFE_SCALE, planetBasis, planetPoint, planetDistance, planetLocal, type PlanetPlace } from "../shared/planet.js";
+import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, PLANET_CAFE_SCALE, planetBasis, planetPoint, planetDistance, type PlanetPlace } from "../shared/planet.js";
 import { coastlineAt, createPlanetCoast, planetPierHeightAt } from "./planet-coast.js";
+import { frontPlanetLocal, raisedPlanetFloorHeight } from "./planet-surface-safety.js";
 import type { PlacedSound } from "../shared/protocol.js";
 export interface PlanetDoor {
     id: string;
@@ -709,11 +710,11 @@ export function buildPlanet(): PlanetBuild {
     function heightAt(x: number, z: number): number {
         const pier = planetPierHeightAt(x, z);
         if (pier !== null) return pier;
-        const p = buildings.find(p => { const local = planetLocal({ x, z }, p); return p.kind === "tea" ? Math.abs(local.x) < 5.8 && local.z > -2.97 && local.z < 4.8 : Math.abs(local.x) < 2.5 && Math.abs(local.z) < 2.2; });
+        const p = buildings.find(p => { const local = frontPlanetLocal({ x, z }, p); return !!local && (p.kind === "tea" ? Math.abs(local.x) < 5.8 && local.z > -2.97 && local.z < 4.8 : Math.abs(local.x) < 2.5 && Math.abs(local.z) < 2.2); });
         const h = PLANET_HUTS.find(h => x > h.x0 && x < h.x1 && z > h.z0 && z < h.z1);
         const center = p ?? (h ? { x: (h.x0 + h.x1) / 2, z: (h.z0 + h.z1) / 2 } : null);
         if (center)
-            return (R + .16) / Math.cos(planetDistance({ x, z }, center) / R) - R;
+            return raisedPlanetFloorHeight({ x, z }, center, .16) ?? 0;
         const stage = PLANET_PLACES.find(p => p.kind === "stage")!;
         return planetDistance({ x, z }, stage) < 3 ? (R + .24) / Math.cos(planetDistance({ x, z }, stage) / R) - R : 0;
     }
@@ -722,7 +723,9 @@ export function buildPlanet(): PlanetBuild {
         // the whole planet; only the actual timber pier carries people at sea.
         if (z > coastlineAt(x) + .12 && planetPierHeightAt(x, z) === null) return false;
         for (const p of buildings) {
-            const { x: dx, z: dz } = planetLocal({ x, z }, p);
+            const local = frontPlanetLocal({ x, z }, p);
+            if (!local) continue;
+            const { x: dx, z: dz } = local;
             const scale = p.kind === "tea" ? PLANET_CAFE_SCALE : { x: 1, z: 1 };
             if (Math.abs(dx) > 2.7*scale.x || Math.abs(dz) > 2.5*scale.z)
                 continue;
@@ -741,7 +744,7 @@ export function buildPlanet(): PlanetBuild {
         }
         return true;
     }
-    const inside = (x: number, z: number): boolean => buildings.some(p => { const local = planetLocal({ x, z }, p), scale = p.kind === "tea" ? PLANET_CAFE_SCALE : { x: 1, z: 1 }; return Math.abs(local.x) < 2.3*scale.x && Math.abs(local.z) < 1.95*scale.z; });
+    const inside = (x: number, z: number): boolean => buildings.some(p => { const local = frontPlanetLocal({ x, z }, p), scale = p.kind === "tea" ? PLANET_CAFE_SCALE : { x: 1, z: 1 }; return !!local && Math.abs(local.x) < 2.3*scale.x && Math.abs(local.z) < 1.95*scale.z; });
     function setContributions(sounds: readonly SoundSignal[]): void {
         const cafe = PLANET_PLACES.find(place => place.kind === "tea")!;
         const live = sounds.filter(source => !source.removedAt && !source.whileIn && planetDistance(source, cafe) <= 8)

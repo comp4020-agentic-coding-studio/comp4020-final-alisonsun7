@@ -5,12 +5,12 @@ import {worldSoundExamples} from "../src/shared/sound-life.ts";
 import type {PlacedSound} from "../src/shared/protocol.ts";
 let dom:JSDOM|undefined,guide:SoundDiscovery|undefined;
 afterEach(()=>{guide?.dispose();dom?.window.close();vi.unstubAllGlobals();});
-function fixture(){
+function fixture(index=0){
   dom=new JSDOM('<!doctype html><form id="planet-chat" hidden></form><main></main>');vi.stubGlobal("document",dom.window.document);
   let modal=false,on=true,sources:PlacedSound[]=[];const query=document.querySelector.bind(document);
   vi.spyOn(document,"querySelector").mockImplementation(selector=>selector==="dialog:modal"?modal?document.body:null:query(selector));
-  const examples=worldSoundExamples("room"),at={x:examples[0].x,z:examples[0].z,yaw:0};
-  const opts={at:()=>at,sources:()=>sources,blueprints:()=>examples,enabled:()=>on,setEnabled:vi.fn((value:boolean)=>{on=value;}),listen:vi.fn(async()=>true),stop:vi.fn(),create:vi.fn()};
+  const examples=worldSoundExamples("room"),at={x:examples[index].x,z:examples[index].z,yaw:0};
+  const opts={at:()=>at,sources:()=>sources,blueprints:()=>examples,enabled:()=>on,setEnabled:vi.fn((value:boolean)=>{on=value;}),listen:vi.fn(async()=>true),stop:vi.fn(),create:vi.fn(),watch:vi.fn(()=>true)};
   guide=new SoundDiscovery(document.querySelector("main")!,opts);guide.frame();
   return {opts,examples,setModal:(value:boolean)=>{modal=value;guide!.frame();},setSources:(value:PlacedSound[])=>{sources=value;guide!.frame();}};
 }
@@ -19,6 +19,14 @@ it("a modal cancels an in-flight private listen without publishing or claiming s
   document.getElementById("sound-discovery-listen")!.click();const before=f.opts.stop.mock.calls.length;
   f.setModal(true);expect(f.opts.stop.mock.calls.length).toBeGreaterThan(before);finish(true);await Promise.resolve();await Promise.resolve();
   expect(document.getElementById("sound-discovery-feedback")!.textContent).not.toContain("Only your preview");expect(f.opts.create).not.toHaveBeenCalled();
+});
+it("names the real coastal horn and makes watching an explicit local action without moving its source",()=>{
+ const f=fixture(2),source:PlacedSound={...f.examples[2],soundId:"harbour-boat",id:"real-horn",by:"Bo",byId:"bo",origin:undefined} as PlacedSound;
+ const original=structuredClone(source);f.setSources([source]);
+ expect(document.getElementById("sound-discovery-origin")!.textContent).toContain("By Bo");
+ const watch=document.getElementById("sound-discovery-watch")!;expect(watch.hidden).toBe(false);expect(f.opts.watch).not.toHaveBeenCalled();
+ watch.click();expect(f.opts.watch).toHaveBeenCalledWith(source.id);expect(source).toEqual(original);expect(f.opts.create).not.toHaveBeenCalled();
+ f.setSources([]);expect(watch.hidden).toBe(true);
 });
 it("credits the real source while local comparison and dismissal preserve the contribution",()=>{
   const f=fixture(),source:PlacedSound={...f.examples[0],id:"real",by:"Ada",byId:"ada",origin:undefined} as PlacedSound;

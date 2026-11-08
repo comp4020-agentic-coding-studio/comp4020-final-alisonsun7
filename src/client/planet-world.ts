@@ -4,6 +4,9 @@ import * as THREE from "three";
 import { AnimalFigure } from "./characters.js";
 import { SoundResidents } from "./sound-residents.js";
 import { SoundWildlife } from "./sound-wildlife.js";
+import { SoundVessels } from "./sound-vessels.js";
+import { SoundPinwheels } from "./sound-pinwheels.js";
+import { coastlineAt, planetPierHeightAt } from "./planet-coast.js";
 import type { SoundSignal } from "../shared/sound-response.js";
 import { buildPlanet, onPlanet, surfaceFrame } from "./planet-build.js";
 import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, planetBasis, planetPoint, planetDistance, planetStep, sceneHutAt, type PlanetPlace } from "../shared/planet.js";
@@ -73,6 +76,8 @@ type Listener = Position & {
 };
 export class PlanetWorld {
     private soundWildlife: SoundWildlife;
+    private soundVessels: SoundVessels;
+    private soundPinwheels: SoundPinwheels;
     private examples: SoundSignal[] = [];
     readonly renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     readonly camera = new THREE.PerspectiveCamera(68, 1, .1, 220);
@@ -185,6 +190,8 @@ export class PlanetWorld {
         this.scene.add(this.rain);
         this.residents = new SoundResidents({ surfaceHeight: (x, z) => this.built.heightAt(x, z), canStand: (x, z) => this.garden.canStand(x, z) && this.built.canStand(x, z, new Set()) && !sceneHutAt("planet", x, z), distanceBetween: planetDistance });
         this.soundWildlife = new SoundWildlife(this.scene, (x,z)=>this.built.heightAt(x,z)+(this.built.inside(x,z)?3.2:0));
+        this.soundVessels = new SoundVessels(this.scene,{shoreline:coastlineAt,isWater:(x,z)=>z>coastlineAt(x)+.12&&planetPierHeightAt(x,z)===null});
+        this.soundPinwheels = new SoundPinwheels(this.scene,{heightAt:(x,z)=>this.built.heightAt(x,z),canStand:(x,z)=>this.built.canStand(x,z,this.locked())&&this.garden.canStand(x,z)});
         const homes = [{ id: "green-neighbour", x: -3, z: 1, avatar: "cat", preference: "cozy" }, { id: "jam-neighbour", x: 9, z: -6.8, avatar: "dog", preference: "lively" }, { id: "reading-neighbour", x: -12, z: 8.5, avatar: "cat", preference: "cozy" }, { id: "garden-neighbour", x: -.5, z: 14.5, avatar: "dog", preference: "wild" }, { id: "tea-neighbour", x: -8, z: -6, avatar: "dog", preference: "lively" }, { id: "lantern-neighbour", x: -20, z: -14, avatar: "cat", preference: "lively" }] as const;
         for (const h of [...homes, ...CAFE_RESIDENT_HOMES]) {
             const facing = "facing" in h ? h.facing : 0;
@@ -331,6 +338,14 @@ export class PlanetWorld {
     private refreshSoundLife(): void {
         const signals=[...this.publicSounds,...this.examples];
         this.residents.setContributions(signals);this.built.setContributions(signals);this.soundWildlife.setSources(signals);
+        this.soundVessels.setSources(this.publicSounds);this.soundPinwheels.setSources(this.publicSounds);
+    }
+    /** Explicit local visit; neither the source nor its audio follows the boat. */
+    watchSound(sourceId:string):boolean {
+        if(!this.publicSounds.some(source=>source.id===sourceId&&!source.removedAt))return false;
+        const at=this.soundVessels.viewpoint(sourceId);
+        if(!at||!this.built.canStand(at.x,at.z,this.locked())||!this.garden.canStand(at.x,at.z))return false;
+        this.position={...at};this.selfYaw=at.yaw;this.keys.clear();this.cancelWalkingIntent();this.jumpStarted=null;this.jumpOffset=0;this.opts.area(this.area);this.focus();return true;
     }
     setWorks(works: readonly ChorusWork[]): void {
         this.works = works.map(work => ({ ...work, liveSources: work.liveSources.map(source => ({ ...source })),
@@ -488,6 +503,8 @@ export class PlanetWorld {
         this.built.animate?.(this.serverNow / 1000, this.reduced.matches);
         this.garden.frame(this.serverNow, this.reduced.matches);
         this.soundWildlife.frame(this.serverNow, this.reduced.matches);
+        this.soundVessels.frame(this.serverNow, this.reduced.matches);
+        this.soundPinwheels.frame(this.serverNow, this.reduced.matches);
         this.cues.frame(this.serverNow, this.reduced.matches);
         this.kangaroo.frame(dt, this.position, this.jumpOffset, (x, z) => this.garden.canStand(x, z) && !sceneHutAt("planet", x, z) && this.built.canStand(x, z, locked), this.reduced.matches);
         const companionWork = this.garden.workNear(this.kangaroo.at, 7, false);
@@ -597,6 +614,7 @@ export class PlanetWorld {
             this.rain.geometry.getAttribute("position").needsUpdate = true;
         }
         this.renderer.render(this.scene, this.camera);
+        this.host.dataset.groundSafety=JSON.stringify({frame:this.frameNumber,x:this.position.x,z:this.position.z,feetRadius:feet.length(),signedFeetRadius:feet.dot(up),cameraRadius:this.camera.position.length(),view:this.viewMode,zoom:this.zoom});
         this.opts.listen({ ...this.at, camera: this.camera, serverNow: this.serverNow });
         this.host.dataset.running = String(this._running);
         this.host.dataset.jumpHeight = this.jumpOffset.toFixed(3);
@@ -626,6 +644,8 @@ export class PlanetWorld {
             this.host.dataset.chorusGardens = JSON.stringify(this.garden.state);
             this.host.dataset.cafe = JSON.stringify(this.built.cafeState);
             this.host.dataset.soundWildlife = JSON.stringify(this.soundWildlife.state);
+            this.host.dataset.soundVessels = JSON.stringify(this.soundVessels.state);
+            this.host.dataset.soundPinwheels = JSON.stringify(this.soundPinwheels.state);
             this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({
                 id: figure.userData.soundResident.id, workId: figure.userData.chorusWorkId ?? null,
@@ -704,7 +724,7 @@ export class PlanetWorld {
     }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+        a.figure.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
 }
 
 /** A room wall/roof can compress the camera into the player's own head.

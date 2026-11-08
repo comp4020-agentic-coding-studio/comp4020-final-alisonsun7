@@ -7,6 +7,7 @@ import { authorMark } from "../shared/chorus-signature.js";
 import { soundLifeEffect } from "../shared/sound-life.js";
 
 interface Options {
+  effects?:(id:string)=>string|null;
   at: () => { x: number; z: number };
   you: () => Person | null;
   ready: () => boolean;
@@ -148,7 +149,7 @@ export class ChorusStudio {
       const work = this.parent ? this.works.find(work => work.sources.some(source => source.id === this.parent!.id)) : undefined;
       const cafe = ["espresso", "cafe-chatter", "cafe-music"].includes(id) && !this.parent;
       card.append(symbol, title, node("p", copy));
-      const localEffect=!this.parent&&!chorusPlaceAt(this.opts.at())?soundLifeEffect(id):null;
+      const localEffect=!this.parent&&!chorusPlaceAt(this.opts.at())?(this.opts.effects??soundLifeEffect)(id):null;
       if (!cafe) {const outcome=node("p", localEffect??choiceConsequence(id, this.parent, work, this.opts.you()?.id), "chorus-choice-outcome");if(localEffect)outcome.dataset.localEffect=localEffect;card.append(outcome);}
       card.append(listen, leave);
       if (this.opts.makeRoom) {

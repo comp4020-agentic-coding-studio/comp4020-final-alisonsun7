@@ -9,7 +9,7 @@ import { PlanetAudio } from "./planet-audio.js";
 import { RoutineAudio } from "./routine-audio.js";
 import { ChorusStudio } from "./chorus-studio.js";
 import { SoundDiscovery } from "./sound-discovery.js";
-import { worldSoundExamples, activeWorldExamples } from "../shared/sound-life.js";
+import { worldSoundExamples, activeWorldExamples, soundLifeEffect } from "../shared/sound-life.js";
 import { chorusPlaceAt, type ChorusWork } from "../shared/chorus.js";
 import { invitationHref, invitationWork } from "../shared/chorus-invitation.js";
 import { placementAvailability, findNearbyPlan } from "../shared/chorus-placement.js";
@@ -347,9 +347,10 @@ async function removeSound(s: PlacedSound): Promise<void> { try {
 catch {
     say("Connection interrupted; your sound was not removed.");
 } }
-const library = new SoundLibrary({ zone: () => ({ id: currentArea.id, title: currentArea.title }), listen: id => audio.preview(id), stop: () => audio.stopPreview(), leave: id => leaveSound(id), cancelReply: () => {draftRevision++; reply = null; operation = null; library.setReply(null); }, close: ()=>{draftRevision++;restore();} });
+const library = new SoundLibrary({ effect:flat?undefined:soundLifeEffect,zone: () => ({ id: currentArea.id, title: currentArea.title }), listen: id => audio.preview(id), stop: () => audio.stopPreview(), leave: id => leaveSound(id), cancelReply: () => {draftRevision++; reply = null; operation = null; library.setReply(null); }, close: ()=>{draftRevision++;restore();} });
 stage.append(library.element);
 const studio = new ChorusStudio(stage, {
+    effects:flat?()=>null:soundLifeEffect,
     minimise: () => soundInteractions?.dismiss(),
     at: () => world.at, you: () => snapshot.you, ready: () => boot.joined && connected,
     preview: id => audio.preview(id), stop: () => audio.stopPreview(), publish: id => leaveSound(id),
@@ -379,7 +380,7 @@ function setExamplesEnabled(enabled:boolean):void{examplesEnabled=enabled;exampl
 examplesSetting.onchange=()=>setExamplesEnabled(examplesSetting.checked);
 if(flat){$("planet-examples-label").hidden=true;$("planet-examples-note").hidden=true;}
 else soundDiscovery=new SoundDiscovery(stage,{at:()=>world.at,sources:publicSounds,blueprints:()=>exampleBlueprints,enabled:()=>examplesEnabled,setEnabled:setExamplesEnabled,
-    listen:id=>audio.preview(id),stop:()=>audio.stopPreview(),create:id=>{cancelReply();openLibrary(false,id);}});
+    listen:id=>audio.preview(id),stop:()=>audio.stopPreview(),create:id=>{cancelReply();openLibrary(false,id);},watch:id=>{const moved=world instanceof PlanetWorld&&world.watchSound(id);if(moved){lastSent="";say("Watching the boat. Your horn stays where you left it.");}return moved;}});
 refreshSoundLife();
 const placementIntent = document.createElement("aside");placementIntent.className="chorus-placement-intent";placementIntent.hidden=true;
 const placementText=document.createElement("p"), stopPlacing=button("Cancel walk",()=>{cancelPlacement();world.focus();});stopPlacing.id="chorus-walk-cancel";placementIntent.append(placementText,stopPlacing);stage.append(placementIntent);

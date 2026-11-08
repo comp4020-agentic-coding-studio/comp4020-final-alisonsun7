@@ -13,6 +13,7 @@ const INTENTIONS: { id: Intention; label: string; note: string }[] = [
 ];
 
 interface Options {
+  effect?: (id:string)=>string|null;
   zone: () => { id: string; title: string };
   listen: (id: string) => Promise<boolean>;
   stop: () => void;
@@ -296,10 +297,11 @@ export class SoundLibrary {
       family.textContent = FAMILIES[kind.family].label + (kind.zones.includes(this.zone.id) ? " · suits here" : "");
       text.append(name, family);
       const response = soundResponseFor(kind.id);
-      if (response) {
+      const effect=this.opts.effect?.(kind.id);
+      if (response||effect) {
         const hint = document.createElement("span");
         hint.className = "palette-response";
-        hint.textContent = response.hint;
+        hint.textContent = effect??response!.hint;
         text.append(hint);
       }
       const listen = document.createElement("button");
