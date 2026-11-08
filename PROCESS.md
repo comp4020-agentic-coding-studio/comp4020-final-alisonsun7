@@ -1,6 +1,6 @@
 # Little Chorus — process overview
 
-> Agent-assisted first-person draft, pending author review.
+
 
 ## Directing toward a shared consequence
 

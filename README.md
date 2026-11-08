@@ -1,6 +1,6 @@
-# Little Chorus / 小小合鸣
+# Little Chorus
 
-> **Author review draft.** Agent-assisted first-person text, pending my review.
+
 
 ## This place changed because I answered you
 

@@ -1,6 +1,6 @@
 # Autonomy needs evidence that can say no
 
-> Agent-assisted first-person draft, pending author review.
+
 
 I argue that useful agentic development requires verification capacity to grow
 with production capacity. Otherwise, rapid generation accumulates verification
