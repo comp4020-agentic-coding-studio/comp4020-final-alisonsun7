@@ -1,7 +1,7 @@
 # Author editing and release notes
 
 Audit date: 2026-11-08. Agent-prepared factual notes, not a rewrite of the
-author's argument. Root materials were last changed in
+author's argument. Root materials at the start of this audit came from
 [`f86e1d6`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f86e1d6).
 The verified local application is **`5f1fc28`**, now serving
 `http://localhost:18861/planet`. It follows
@@ -51,8 +51,8 @@ playtest or a public deployment.
 | README, “Small enough to matter” | Sloan and Harley are design arguments selected in an agent-assisted draft | Confirm reading and specify what each source changes about the actual product; remove or replace unsupported personal interpretation. |
 | README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules, before the clearer author marks and work invitations | Walk final `5f1fc28` and confirm the terms and visible/audible consequence. The final answer path observes two actual authors' marks, quiet joining through a work link, withdrawal and a different shared result; add these only if they support the author's argument. Human understanding remains unverified. |
 | README, relative evidence/audio/manifest links | GitHub-relative links are valid there, but the previous renderer resolved them under `/readme/`; those application routes did not exist | Four exact note routes, `/assets-manifest.json` and current-origin `/planet` are repaired. Other repository references use fixed public GitHub links. Final source checks and the promoted observer verify route 200/404 behaviour. Docker-image verification remains separate. No author prose was changed for this repair. |
-| [PROCESS](../../PROCESS.md), “Failures changed the harness”, lines 111–114 at audit | Calls a 43-check browser path and 190-test source run “current” although they describe the earlier garden release | Preserve them as historical results with their [build scope](../evidence/chorus-garden-2026-11-07.json), or select a later relevant run and cite its exact release. Never replace every old number with the newest count. |
-| PROCESS, “Keeping dependable foundations” | Explains 3D/stack choice but predates the real 2D/2.5D comparison and return to 3D | If this choice matters to the argument, cite [ADR028](../decisions/028-optional-paper-world-presentations.md) and [ADR029](../decisions/029-a-lived-in-3d-world.md), explain the actual trade-off and cut weaker repetition. |
+| [PROCESS](../../PROCESS.md), “Failures changed the harness” | The earlier audit found garden-release checks described as current | The 2026-11-08 edit now names the 43-check browser path and 190-test source run as historical garden results with their [build scope](../evidence/chorus-garden-2026-11-07.json). Later candidate evidence remains in the release index; do not replace every old number with the newest count. |
+| README, “Small enough to matter”, and PROCESS, “Keeping dependable foundations” | Updated on 2026-11-08 following the author's explicit request to record testing 2D/2.5D and finding 3D more lively and suitable | The drafts now distinguish the author's stated design preference from the developer's [playable comparison checks](../evidence/perspectives-2026-11-08.json). [ADR028](../decisions/028-optional-paper-world-presentations.md) and [ADR029](../decisions/029-a-lived-in-3d-world.md) record the alternatives and return to 3D. Retain the explicit cost: occlusion, camera and rendering work. No unfamiliar-player preference study is implied. |
 | PROCESS, final acceptance and failure selection | Predates the populated-Green `too_close` failure and ADR030's reply clarity/placement changes | Explain why a brighter sculpture could not fix impossible placement. Cite `2ca764f` planning, `f557ade` cancellation/SSE repair, the real failed travel path and `5f1fc28` current-position/zero-walk correction, then `686a048` actual-controller checks. The final historical path and local promotion are now verified; preserve the earlier failed attempts rather than presenting first-pass success. |
 | PROCESS, technical versus harness failure | Does not yet distinguish the wrong fixture assumptions and coastal timeout from the real travel failure | Nine live planet sources are not nine Green sources: the fixture has five in Green. Separately, the coastal workflow deliberately waits 4.56 s inside a five-second overall budget; `5f1fc28` raises only that whole-workflow budget to ten seconds, preserving every one-second SSE assertion. A clean 275-check run takes 107.04 s before the separate final 277-check run. These repairs diagnose the harness; they do not establish better application latency. |
 | PROCESS, two AUTHOR INPUT paragraphs | Asks for a real change in directing practice and personal reading/listening | Supply the real experience; commits establish events, not what the author learned or believed. Add a bounded before/fix/harness example rather than another totals paragraph. |
@@ -72,8 +72,8 @@ does not tell the author what they felt, learned or personally noticed.
 
 ## Length audit, with a reproducible boundary
 
-At this audit, approximate body counts are README **476**, PROCESS **926**,
-research note **624** whitespace-separated words. This excludes whole
+After the author's 3D-choice edit, approximate body counts are README **527**,
+PROCESS **1022**, research note **624** whitespace-separated words. This excludes whole
 heading, upfront blockquote and AUTHOR INPUT paragraphs, and excludes the
 research note's reference section. Markdown links count only their labels;
 inline emphasis/backticks are removed. This is a planning count, not a
@@ -84,8 +84,10 @@ The bodies fit the course's indicative ranges of 400–600, 900–1100 and
 On 2026-11-08, `node scripts/check-evidence.ts` passed: three named historical
 reflections exist and all eleven PROCESS commit citations resolve. That script
 does not evaluate truth, source interpretation, authorship, rendered images,
-musical quality or the research argument. No root personal narrative was
-edited by this audit.
+musical quality or the research argument. That technical audit did not edit
+root personal narrative. A subsequent
+2026-11-08 edit records the author's explicitly supplied 3D preference in
+README and PROCESS; it does not supply missing listening or player findings.
 
 ## Deployment preparation: inspected, not released
 

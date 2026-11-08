@@ -46,13 +46,19 @@ provides another criterion: people should understand what their action did.
 For this product, an acknowledgement alone is insufficient; authorship,
 audible arrangement and moving objects should explain the same consequence.
 
-The candidate retains Three.js and its existing persistent backend. A close
-activity camera serves recognizable characters; overview is optional.
-Concentrating on three connected places sacrifices nine equally developed
-activities. The older coast, other destinations and existing contributions
-remain accessible. Original score generation and third-party recording
-provenance are distinguished in the [audio handoff](docs/chorus-audio.md)
-and [asset manifest](public/assets-manifest.json).
+I compared playable **2D Storybook** and **2.5D Paper theatre** versions before
+choosing to retain 3D. I find 3D more lively and better suited to moving among
+friends, sounds and responsive objects. This is my design judgement, not an
+unfamiliar-player preference result. The [view comparison](docs/evidence/perspectives-2026-11-08.json)
+records the technical checks and remaining limits.
+
+The candidate retains Three.js and the persistent backend. A close activity
+camera serves recognizable characters; overview is optional. Concentrating on
+three connected places sacrifices nine equally developed activities. The older
+coast, optional flat views and existing contributions remain accessible.
+Original score generation and third-party recording provenance are distinguished
+in the [audio handoff](docs/chorus-audio.md) and
+[asset manifest](public/assets-manifest.json).
 
 ## What is enforced, what still needs judgement
 

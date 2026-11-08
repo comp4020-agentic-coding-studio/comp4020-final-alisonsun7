@@ -45,10 +45,21 @@ supply that memory.
 The candidate retains TypeScript, Node HTTP, SQLite, SSE and Three.js.
 [ADR026](docs/decisions/026-a-world-that-remembers-an-answer.md), authored in
 [`5d696e5`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/5d696e5),
-rejects both an engine rewrite and nine shallow games. A closer activity
-camera keeps existing coordinates, collision and social presence while making
-characters and sound objects legible. The cost is sphere-specific
-camera and distance logic.
+rejects an engine rewrite and nine shallow games. I nevertheless requested
+playable alternatives: **2D Storybook** and **2.5D Paper theatre**, recorded in
+[ADR028](docs/decisions/028-optional-paper-world-presentations.md). They present
+the same room, contributions and replies rather than starting new worlds.
+
+The [comparison evidence](docs/evidence/perspectives-2026-11-08.json) includes
+two independent browser identities answering across the flat views, private
+audition, nearby chat, quiet-state protection and phone operation. It establishes
+playable alternatives, not an unfamiliar-player preference study. After comparing
+them, I still found 3D more lively and suitable for Little Chorus; [ADR029](docs/decisions/029-a-lived-in-3d-world.md)
+records that choice. Moving around expressive characters and situated sounds
+better fits the world I want friends to inhabit. Keeping 3D also keeps its
+occlusion, camera and rendering costs. A close activity camera and bounded
+sampling address those costs; optional flat views remain available, without
+parallel art expansion.
 
 The server obtains identity from the HttpOnly cookie, confirms mutations and
 keeps response metadata. SSE supplies canonical snapshots and changes; SQLite
@@ -99,8 +110,8 @@ code. The browser case drops two real SSE frames before the production handler,
 then opens a fresh native connection for the actual snapshot before releasing
 the ACK. This is controlled frame loss, not natural outage timing.
 
-The current HTTP/SSE check used two independent cookie jars and three server
-processes on isolated port 18886. It observed identical shared work, duplicate
+The earlier garden HTTP/SSE check used two independent cookie jars and three
+server processes on isolated port 18886. It observed identical shared work, duplicate
 delivery deduplication, reconnection, two real restarts and removed-parent
 history. Four local server-to-stream update measurements ranged from 1.97 to
 2.71 ms. These establish bounded backend behaviour, not browser presentation
@@ -108,10 +119,10 @@ latency, novice success or next-day return.
 
 In the new journal, withdrawal removed the focused button during a live
 rerender. [`51cb210`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/51cb210)
-restores the surviving action or Back button. The integrated 43-check browser
+restores the surviving action or Back button. The garden release's 43-check browser
 path verifies that correction, real shared outcomes at all three places,
 quiet-browser behaviour, touch/keyboard/resize and late-acknowledgement removal.
-The source run passes 190 tests in 28 files, 63.48 s, against isolated port 18887.
+That source run passed 190 tests in 28 files, 63.48 s, against isolated port 18887.
 
 A rollback rehearsal initially passed 17 checks, but missed a normal restart
 losing the previous-application pointer.
