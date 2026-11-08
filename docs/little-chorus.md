@@ -443,7 +443,13 @@ unfamiliar-pair study remains a separate human activity.
 
 ## Historical 2D and 2.5D comparison (ADR 028)
 
-Three local presentations share the same identity, source history, responses,
+**Retired by ADR036.** This section records the former experiment, not current
+controls. Only 3D is available now; old links redirect to it. The author's
+recorded choice is that 3D is more lively and appropriate. Automated/developer
+comparison evidence does not imply the author personally ran every test.
+
+
+At that historical checkpoint, three local presentations shared the same identity, source history, responses,
 clock and private-room admission:
 
 - **2D Storybook:** `http://localhost:18861/2d`, an illustrated overhead village.
@@ -451,8 +457,8 @@ clock and private-room admission:
   upright characters, building sides and foreground/background depth.
 - **3D Little planet:** `http://localhost:18861/planet`, the retained default.
 
-Use the desktop header's 2D / 2.5D / 3D links, or **Places & friends → World
-style** on a phone. Changing style keeps the same participant and briefly hands
+The former interface offered desktop 2D / 2.5D / 3D links and a phone
+**World style** control; those controls have now been removed. Changing style keeps the same participant and briefly hands
 off the current position within that tab. It starts the new document quietly;
 use Sound to listen again. A style is not a second room or a copied save.
 
@@ -550,3 +556,25 @@ unfamiliar pairs, a real next-day return, physical-phone evaluation and author
 approval of the submission arguments remain open. Use the
 [author checklist](submission/final-author-checklist.md) and
 [two-pair protocol](submission/human-playtest.md) to complete those judgements.
+
+
+## Current 3D edition — frogs and a seaside guitar
+
+Use Share a sound in the persistent header. At the Tide pools, Pond frogs is a
+short phrase from Ath's real CC0 pond recording; its 18-second cycle has a quiet
+gap. Frogs' throats follow measured recording energy, and their pads/hops remain
+source-derived. The old synthetic timbre was rejected by the author; technical
+checks do not establish approval of this replacement.
+
+Open Places & friends → Visit Mateo by the sea for the seated seaside guitarist.
+This is an explicit local visit, not a shared modification. Sound off stays off;
+use Sound to hear him. Move or Back to exploring leaves the unobstructed visit
+view. His guitar uses the existing licensed recording and yields to an in-range
+real guitar contribution. Mateo has an NPC label, creates no source/work/player
+and remains separate from the twelve ordinary resident routes.
+
+[ADR036](decisions/036-retain-the-3d-world.md) and
+[ADR037](decisions/037-seaside-performance-and-submission.md) record the new scope.
+The first-person submission drafts remain visibly pending author review; the
+historical reflections have not been rewritten. Current code-only rollback
+uses the preview utility and the current database, never an old save.

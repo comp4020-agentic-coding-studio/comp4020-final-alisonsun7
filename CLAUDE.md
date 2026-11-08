@@ -2,6 +2,22 @@
 
 # Little Chorus agent rules
 
+ADR036 retires the optional 2D/2.5D product versions at the author's request.
+Keep their historical experiments and evidence; old links canonically reach
+3D with the original room, identity, work and place context. No flat renderer
+or position handoff remains in the active application. ADR037 replaces the
+rejected synthetic frog with Ath's verified CC0 pond recording, keeping its
+sound ID/history and real source-energy animation. Mateo's seaside figure and
+local guitar share one anchored position, take one seat inside the eight-voice
+budget, yield to real guitar and respect quiet/visibility/cancellation. He is
+an NPC, never a player, authored reply or persisted contribution.
+
+The author explicitly requested first-person submission drafting on 2026-11-08.
+Use evidence-bound first-person text with a visible author-review/AI-assistance
+notice; preserve original historical reflections. Do not invent listening
+approval, personal experience, unfamiliar-player results or a next-day return.
+Source/capture checks and author judgements remain different acceptance gates.
+
 ADR035 keeps the one Share action and local listening-settings entrance in the
 header. Contextual cards must not remove either. Visible sharing still requires
 explicit identity, authoritative admission and an explicit Leave; blocked
@@ -11,8 +27,9 @@ withdrawal precedence. The five smaller scenery fish have no author/source.
 Do not relocate historical audio emitters to follow animals. Watch is an
 explicit local visit; suppress obstructing cards while it is active, restore
 them on exit/movement, and keep Share, quiet consent and keyboard/touch access.
-Original synthesized frog/whale illustrations are not species recordings or
-external CC0 assets. Native decode/start checks do not replace human listening.
+Original bubbles/whale illustrations are not species recordings or external
+CC0 assets. The formerly synthetic frog is superseded by ADR037's real CC0
+recording. Native decode/start checks do not replace human listening.
 
 ADR034 grounds objects against the highest actual visible receiver, including
 its transformed normal. Keep the front-hemisphere gate for every tangent floor;
@@ -218,17 +235,14 @@ shortened indoor-camera body clearance while changing their presentation.
 
 ## Product invariants
 
-ADR 028 adds optional `2D Storybook` and `2.5D Paper theatre` lenses alongside
-the retained default 3D. `client/flat-world.ts` and `client/flat-art.ts` render
-the same canonical planet state in Canvas2D. They must never create a separate
-room, copy source rows or reinterpret persisted coordinates. The camera remains
-spherical for spatial audio; movement and privacy use the existing great-circle
-metric and authoritative admission. `client/presentation-handoff.ts` consumes
-only a short-lived, identity-bound tab-local position when changing lenses.
-New documents still require explicit listening. Preserve scene-level chat,
-private-room actions, run/jump and actual reply-derived forms in every lens.
-Use CSS to keep competing context cards clear of an open chat; animation-frame
-timing must not decide whether Say can be reached. Build styles as well as TS.
+ADR028's playable 2D and 2.5D alternatives are historical experiments,
+retired by ADR036. Their checks and captures remain evidence of the choice,
+not currently available product features. Old URLs redirect to 3D without
+reinterpreting saved coordinates or consuming an obsolete tab handoff. Keep
+scene-level chat, private-room actions, run/jump and real reply-derived forms.
+Use CSS to keep competing context cards clear of chat and explicit observation;
+an animation-frame delay must not decide whether Say can be reached. Build
+styles as well as TypeScript.
 
 ADR029 records Wen's selection of 3D after the view studies. Prioritise that
 presentation and the shared sound experience. The café shell/terrace is wider
@@ -377,11 +391,10 @@ without Wen's go-ahead.
   encounter, visible author pins, direct responses and spherical threads,
   native conversation-to-walk handoff, travel cancellation, missed removals
   and reachable phone actions. It uses scratch data and verifies soft cleanup.
-- `APP_URL=http://localhost:<scratch-port> node e2e/flat-versions.mjs <shots>`
-  compares actual 2D/2.5D views with independent browser identities, real decoded
-  audition, shared replies and rendered forms, quiet preference, chat, local
-  handoff and 390×844 touch controls. It refuses port 18861 and verifies public
-  API cleanup. Never mistake automated WebAudio checks for hardware listening.
+- `APP_URL=http://localhost:<scratch-port> node e2e/3d-only.mjs <shots>`
+  verifies retired links, same cookie/room/history, ignored obsolete handoffs,
+  retained cameras and reachable 390×844 controls. The retired comparison
+  harness and its images remain in Git history, not the active renderer.
 - `spec/planet-audio.test.ts` tests actual WebAudio lifecycles with fake nodes:
   cancelled decodes, off/on generations, removal, the eight-voice limit,
   five-second private previews and disposal. NPC admission and routine audio

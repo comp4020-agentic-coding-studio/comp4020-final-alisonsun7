@@ -7,7 +7,15 @@ that cannot be supplied by source inspection.
 
 ## Build scope before reading any result
 
-The current local application is **`3e367ee`** on `codex/waters-answer`, at
+**Follow-up in progress:** the author now selects one 3D presentation, has
+rejected the synthetic frog timbre, and requested restoration of the sea
+guitarist. The implementation and any focused checks need their own integrated
+release evidence. Do not apply the following completed release's results to
+those changes or describe the replacement audio as artistically approved.
+The [root submission drafts](README.md) now distinguish these scopes and
+the [source audit](source-verification.md) verifies their citations.
+
+The last completed local release is **`3e367ee`** on `codex/waters-answer`, at
 `http://localhost:18861/planet`. [ADR035](../decisions/035-waters-answer-and-visible-sound-entry.md)
 and the [water-life evidence index](../evidence/waterlife-2026-11-08.json)
 record persistent Share/listening entrances, source-attributed fish/frogs/whales,
@@ -98,7 +106,9 @@ desktop coast walk. The 19-check scratch coast run precedes the final Watch
 framing/menu adjustments, with ordinary movement/camera formulas unchanged;
 the promoted desktop observation is not a second mobile coast run.
 Its application rollback target was `cd73f2a`, retaining the then-current
-database rather than an old database snapshot. The current target is `3ee3493`.
+database rather than an old database snapshot. At the subsequent neighbour
+checkpoint the target became `3ee3493`; consult the latest release record for
+the current utility pointer.
 No human listening, unfamiliar-pair, physical-phone, next-day or public-
 deployment result is implied.
 
@@ -187,7 +197,7 @@ It does not establish what the course Fly deployment currently serves.
 | Product promise | Agent rule | Automatic / developer evidence | Human boundary |
 | --- | --- | --- | --- |
 | Sharing and local settings stay findable | One permanent header entrance each; unavailable Leave keeps private Listen and an explanation | Actual frozen baseline reproduces missing Share; 11 entry/CSS/controller checks; final phone hit targets, settings/exit focus and clear animal projection | Unfamiliar-player discovery and physical-phone usability remain untested |
-| Real sounds bring recognisable water life | True public source/author, server-time phases, actual water footprints, bounded geometry, removal outranks late snapshots; scenery never acts as a person | 8 marine checks plus two independent real-cookie browser identities; actual bubbles, inflated throat, spray and whole-whale leap captures; 3 withdrawals/history/reload | Stylized surface animals and synthetic timbres, not a biological simulation or artistically approved mix |
+| Real sounds bring recognisable water life | True public source/author, server-time phases, actual water footprints, bounded geometry, removal outranks late snapshots; scenery never acts as a person | At 3e367ee: 8 marine checks plus two independent real-cookie browser identities; actual bubbles, inflated throat, spray and whole-whale leap captures; 3 withdrawals/history/reload | Stylized surface animals, not a biological simulation. The author subsequently rejected the synthetic frog timbre; replacement needs separate technical and listening evidence |
 
 ## Failures that changed the harness
 

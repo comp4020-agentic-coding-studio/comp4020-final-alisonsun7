@@ -1,157 +1,127 @@
 # Little Chorus — process overview
 
-> **Author review draft.** Prepared with coding-agent assistance from recorded requests and repository evidence. Personal judgements and marked author inputs need Alison’s review. No human listening, uncoached playtest or next-day result is claimed.
+> Agent-assisted first-person draft, pending author review.
 
-## Directing toward one shared consequence
+## Directing toward a shared consequence
 
-My current brief defines Little Chorus for two to six friends without musical
-training. I want them to recognize a place changed because one answered the
-other. The unit of quality is a complete experience: discover, leave a sound,
-receive an answer, notice a common change and find the work again. More
-destinations or passing checks do not by themselves answer that brief.
+My brief is for friends without musical training to recognize a place changed
+because one answered the other. I asked the agent to implement and exercise a
+complete discovery, contribution, response and return path, rather than deliver
+another proposal. Durable contributions and replies already existed in
+[`e1f2ed7`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/e1f2ed7)
+and [`a79a9d3`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a79a9d3).
+The design problem was making their relationship perceptible and worth using.
 
-The repository contains earlier answers. Explicit spatial contributions landed
-in [`e1f2ed7`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/e1f2ed7),
-and durable replies in [`a79a9d3`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a79a9d3).
-Those foundations preserve who answered whom. They do not guarantee that
-players understand what changed. The current brief therefore prioritizes
-Listening Green, followed by a stage and reading nook with different uses.
+I repeatedly rejected visual attempts that diverged from a chosen reference.
+Then I clarified that a coherent, distinctive style and making sound together
+mattered more than cinematic fidelity. [ADR022](docs/decisions/022-shared-sound-identity.md)
+and [`56f8215`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/56f8215)
+record that correction. The first planet also lost running, jumping, direct
+responses, the sea and kangaroo. I reported those regressions; [the restoration
+decision](docs/decisions/025-little-chorus-play.md) made preserving play a
+constraint. A new scene could no longer stand in for a complete product.
 
-## Rejection changed the criterion
+## Alternatives without discarding the world
 
-I asked for stronger art and rejected attempts that fell far short of a chosen
-reference. I later clarified that coherence, harmony, a distinctive style and
-making sound together mattered more than cinematic fidelity.
-[ADR022](docs/decisions/022-shared-sound-identity.md) and
-[`56f8215`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/56f8215)
-record that correction. That changed the criterion; it did not establish success.
+I requested playable 2D and 2.5D versions. The [comparison record](docs/evidence/perspectives-2026-11-08.json)
+documents automated and developer-operated paths through both, including two
+independent identities responding across presentations. These were functioning
+alternatives over the same state, not concept images. I subsequently chose 3D
+as more lively and appropriate. This is my recorded design preference; I am
+not claiming to have personally conducted those tests. The latest direction
+removes parallel flat presentations while retaining their evidence and history.
 
-The first planet then lost basic play. I reported missing running, jumping,
-direct responses, sea and kangaroo, and rejected its quality. The Little Chorus
-name and restoration priority appear in
-[`f282fde`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f282fde);
-movement returned in
-[`8e4e43b`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/8e4e43b),
-and direct response in
-[`92bef2c`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/92bef2c).
-These are regression repairs, not evidence of surpassing Little Ritual.
+That choice carries costs: camera obstruction, curved-surface geometry,
+legible characters and phone performance require continuing work. Keeping
+Three.js avoids rebuilding dependable interaction and audio foundations.
+TypeScript, Node HTTP, SQLite and SSE also remain. For this small shared world,
+a single persistent backend and ordered event stream are easier to inspect
+than a new engine or distributed service. [ADR026](docs/decisions/026-a-world-that-remembers-an-answer.md)
+records the rejected rewrite and the choice to prioritize three connected places.
 
-**AUTHOR INPUT:** Which rejection most changed how you personally directed
-the agent? Explain the actual change in your method; the commits alone cannot
-supply that memory.
+## Delegating implementation, specifying authority
 
-## Keeping dependable foundations
+I delegated product implementation, asset integration and checks to coding
+agents, with bounded file ownership for parallel work. Their completion reports
+were inputs to acceptance, not acceptance itself. Repository rules require real
+browser operation, isolated test databases, traceable assets and application
+rollback that retains current data. The [promise map](docs/submission/promise-evidence-map.md)
+connects those rules to observations and questions still needing people.
 
-The candidate retains TypeScript, Node HTTP, SQLite, SSE and Three.js.
-[ADR026](docs/decisions/026-a-world-that-remembers-an-answer.md), authored in
-[`5d696e5`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/5d696e5),
-rejects an engine rewrite and nine shallow games. I nevertheless requested
-playable alternatives: **2D Storybook** and **2.5D Paper theatre**, recorded in
-[ADR028](docs/decisions/028-optional-paper-world-presentations.md). They present
-the same room, contributions and replies rather than starting new worlds.
+The server obtains identity from its cookie and confirms shared mutations.
+Same-cookie tabs cannot create a second author. NPCs and the local companion
+cannot qualify either. Existing public sound history derives the shared works;
+there is no second editable sculpture database to synchronize. Live cross-author
+replies enable the common form, while removed ingredients retain provenance
+without effects. Listening preferences, previews and cameras stay local.
 
-The [comparison evidence](docs/evidence/perspectives-2026-11-08.json) includes
-two independent browser identities answering across the flat views, private
-audition, nearby chat, quiet-state protection and phone operation. It establishes
-playable alternatives, not an unfamiliar-player preference study. After comparing
-them, I still found 3D more lively and suitable for Little Chorus; [ADR029](docs/decisions/029-a-lived-in-3d-world.md)
-records that choice. Moving around expressive characters and situated sounds
-better fits the world I want friends to inhabit. Keeping 3D also keeps its
-occlusion, camera and rendering costs. A close activity camera and bounded
-sampling address those costs; optional flat views remain available, without
-parallel art expansion.
+This makes two product decisions explicit. A solo visitor can leave a beginning
+without waiting for a partner; a real friend's answer changes the common form
+and arrangement. Green introduces that relationship, the stage makes musical
+roles clearer, and the nook reduces listening range. The cost is a deliberately
+bounded vocabulary of outcomes. Whether friends recognize ownership and choose
+to try another combination remains a question for play, not a deduction from
+the reply graph.
 
-The server obtains identity from the HttpOnly cookie, confirms mutations and
-keeps response metadata. SSE supplies canonical snapshots and changes; SQLite
-stores contributions across process restarts. Movement remains transient.
-Audio preference, audition, focus and camera remain local. The kangaroo cannot
-stand in for a second human. This distinction makes the multiplayer claim
-auditable without forcing every playful behaviour into persistent shared state.
+Three original musical parts share compatible pitches and 72 BPM timing.
+Server-time bars give later arrivals a common phase, without promising
+sample-accurate playback across devices. Nature textures and short events keep
+different schedules. Encoding, peak measurements and native decoding are useful
+checks; they cannot establish a pleasant arrangement. [The audio handoff](docs/chorus-audio.md)
+keeps that distinction and source licensing visible.
 
-Shared objects are projections of existing public contribution history, not a
-second editable work database. Root IDs retain work identity. A live direct
-reply between different authenticated authors enables the common form;
-same-cookie tabs cannot. Removed endpoints keep provenance but lose effects.
-This avoids synchronization between duplicate stores, at the cost of explicit
-grouping, ordering and variant rules that need adversarial checks.
+## Failures that changed the harness
 
-## A small score, not every recording on repeat
-
-The new score has three original 72 BPM parts in compatible pentatonic pitches,
-with different registers and roles. Server-time bars give late joiners the
-same phase without promising sample-accurate synchronization across devices.
-Nature textures retain their own timing; short events have quiet intervals.
-Distance, voice limits, headroom and preview ducking protect intelligibility.
-The [audio handoff](docs/chorus-audio.md) explains the remaining listening work.
-
-When ffmpeg failed with a local library error, the build used installed LAME
-rather than altering system packages. The manifest distinguishes original generated score derivatives
-from licensed third-party recordings. Successful encoding and measured PCM
-are technical evidence; neither establishes a pleasant mix.
-
-## Failures changed the harness
-
-The earlier NoteGrid served a healthy page but imported modules the server did
-not expose. The [SoundGarden correction](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/fcb3ec9)
-added import checking. That history supports the continuing CLAUDE rule that
-green specs do not prove the client works, rather than serving as current
-planet evidence.
-
-A previous planet screenshot revealed a tree crown hiding the player's body.
-[`2ead55d`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/2ead55d)
-added an actual-geometry raycast and widened the planting gap. The check failed
-before the correction. It protects a sightline, not artistic quality.
-
-A later audit found that missing both source events during a pending POST let
-its late ACK revive audio and labels while the sculpture stayed correct.
+A delayed publication acknowledgement could revive removed audio after the
+client missed both relevant events. The correction in
 [`92d706b`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/92d706b)
-makes ACKs receipts; six controller checks pass and fail against frozen old
-code. The browser case drops two real SSE frames before the production handler,
-then opens a fresh native connection for the actual snapshot before releasing
-the ACK. This is controlled frame loss, not natural outage timing.
+makes acknowledgements receipts rather than state authority. Actual-controller
+checks fail against frozen old code. The browser fixture deliberately loses
+two SSE frames, receives a genuine reconnection snapshot, then releases the
+acknowledgement. It tests a specified race, not every possible outage.
 
-The earlier garden HTTP/SSE check used two independent cookie jars and three
-server processes on isolated port 18886. It observed identical shared work, duplicate
-delivery deduplication, reconnection, two real restarts and removed-parent
-history. Four local server-to-stream update measurements ranged from 1.97 to
-2.71 ms. These establish bounded backend behaviour, not browser presentation
-latency, novice success or next-day return.
+Later, walking around the coast exposed an interior view of the planet. The
+problem was not merely camera height: a tangent building footprint also matched
+its antipode and supplied an invalid floor. The [coastal repair](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f464e75)
+adds hemisphere-aware support. [Real walking checks](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/83809a7)
+then sample actual feet and camera radii throughout movement, rather than only
+checking a destination. Existing persisted coordinates remain unchanged.
 
-In the new journal, withdrawal removed the focused button during a live
-rerender. [`51cb210`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/51cb210)
-restores the surviving action or Back button. The garden release's 43-check browser
-path verifies that correction, real shared outcomes at all three places,
-quiet-browser behaviour, touch/keyboard/resize and late-acknowledgement removal.
-That source run passed 190 tests in 28 files, 63.48 s, against isolated port 18887.
+My report that objects still floated led to another physical correction.
+Furniture placed on a tangent plane could leave its legs above the curved
+ground; characters could use a radial frame over a flat deck. The
+[grounding change](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/8f32290)
+uses actual support surfaces, grounded furniture and curved foundations. Pure
+geometry checks measure real soles and corners. Shadows reinforce contact;
+they do not conceal an unfilled gap. [Before and after evidence](docs/evidence/grounded-world-2026-11-08.json)
+records both the defects and bounded corrections.
 
-A rollback rehearsal initially passed 17 checks, but missed a normal restart
-losing the previous-application pointer.
-[`a3d6cf6`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/a3d6cf6)
-preserves it; an expanded 20-check fixture verifies startup, switch, ordinary
-restart and rollback with all twelve tables unchanged. This failure shows why
-an operation's lifecycle needs checking beyond its successful first path. The
-[release record](docs/evidence/chorus-garden-2026-11-07.json) separates these
-runs, later visual refinements and preview promotion; none proves public deployment.
+The water-life addition exposed a different weakness. Its first browser run
+passed twenty checks, yet phone cards covered the fish and frog. A whale view
+also relied on stale framing. Those captures were rejected rather than counted
+as visual success. The [final correction](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/3e367ee)
+checks actual, fresh animal projection and usable controls together.
+[The retained runs](docs/evidence/waterlife/2026-11-08/browser/SCOPE.md) distinguish
+the initially green result from the accepted local path. A visible animation
+state was an inadequate proxy for a visible animal.
 
-## Acceptance has different observers
+## Keeping claims bounded
 
-Automation can establish identity, deterministic work state, explicit
-publication, persistence and cancellation. Developer-operated browsers can
-establish that a complete path is operable at 1920×1080 and 390×844. Neither
-proves an unfamiliar friend understands the invitation or enjoys the music.
-Those require separate observations. The [promise map](docs/submission/promise-evidence-map.md)
-connects product claims to agent rules, technical checks and human judgement.
+The [last verified water-life release](docs/evidence/waterlife-2026-11-08.json)
+separates 414 source/HTTP checks from a 29-check, two-identity browser path and
+read-only observation after local promotion. Their scopes matter more than
+their totals. That promotion retained every row in twelve tables. The preview
+utility can change application files back while retaining today's database;
+restoring an old database would erase the work the product promises to remember.
 
-The [two-pair protocol](docs/submission/human-playtest.md) is prepared, not a
-completed study. First sound within sixty seconds, a shared answer within three
-minutes, voluntary recombination and a real next-day return remain unverified
-until observed. Tests write only isolated databases; application rollback keeps
-current data. No public deployment or main-branch push is implied by local
-acceptance.
+My latest rejection of the synthetic frog sound is a real listening judgement,
+not approval of the whole mix. Replacement and busker restoration require
+their own final evidence. The 3D-only candidate likewise needs final integrated
+verification. Earlier green results cannot automatically cover new changes.
 
-**AUTHOR INPUT:** Confirm the account and research argument, identify what you
-actually read and heard, and add only real unfamiliar-player findings. The old
-README/PROCESS mismatch was a submission defect; labelled drafts correct the
-product description while leaving personal sign-off visible. Historical
-reflections retain their original context rather than being rewritten as a
-successful Little Chorus narrative.
+The [two-pair URL-only protocol](docs/submission/human-playtest.md) is prepared,
+not conducted. No unfamiliar-player result, artistic mix approval, physical-phone
+test or next-day return is claimed. Local promotion is not Fly deployment.
+Historical reflections retain their original DayDraw, SoundGarden and Bloom
+contexts. This account selects traceable changes in direction; it does not
+rewrite those earlier moments into an inevitable Little Chorus success story.

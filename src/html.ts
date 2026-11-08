@@ -15,7 +15,7 @@ const PROJECT_NOTES = {
   "human-playtest": { file: "docs/submission/human-playtest.md", title: "Two-pair playtest protocol" },
   "little-chorus": { file: "docs/little-chorus.md", title: "Little Chorus walkthrough" },
 } as const;
-const REPOSITORY = "https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/blob/main/";
+const REPOSITORY = "https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/blob/chorus-seaside-performance-2026-11-08/";
 
 function projectDocumentHref(href: string, sourcePath: string): string {
   const localPlanet = href.match(/^http:\/\/localhost:18861(\/planet(?:[?#].*)?)$/);

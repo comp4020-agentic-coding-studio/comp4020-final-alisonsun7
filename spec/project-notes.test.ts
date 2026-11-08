@@ -33,7 +33,7 @@ describe("readable submission entry without changing the author's Markdown", () 
     expect(protocol.querySelector('a[href="/project-notes/chorus-audio"]')).not.toBeNull();
     const map = document(renderProjectNote("promise-evidence-map")!);
     expect(map.querySelector('a[href="/project-notes/human-playtest"]')).not.toBeNull();
-    expect(map.querySelector('a[href="https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/blob/main/spec/chorus-state.test.ts"]')).not.toBeNull();
+    expect(map.querySelector('a[href="https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/blob/chorus-seaside-performance-2026-11-08/spec/chorus-state.test.ts"]')).not.toBeNull();
   });
 
   it("rejects unlisted files, traversal and prototype names before any note read", () => {

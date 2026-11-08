@@ -1,0 +1,46 @@
+{
+  "checkedOn": "2026-11-08",
+  "scope": "Three root draft bodies, submission Markdown file targets, PROCESS commit objects; no browser, DB, human or hosted-deployment verification",
+  "countMethod": "Whitespace body tokens; Markdown headings, draft blockquote, link destinations and formatting removed; research reference section excluded",
+  "documents": {
+    "README.md": {
+      "bodyWords": 516,
+      "referenceRange": [
+        400,
+        600
+      ],
+      "withinRange": true,
+      "sha256": "69579bdb170fbf425076b528ce48c450702ae0174e4dd9b1d07d9284d144ef9c"
+    },
+    "PROCESS.md": {
+      "bodyWords": 966,
+      "referenceRange": [
+        900,
+        1100
+      ],
+      "withinRange": true,
+      "sha256": "d3ced5f6f493ed73af04fb83e519c8bebd1d577327e76d79fedee22c5b0a2d52"
+    },
+    "research-note.md": {
+      "bodyWords": 673,
+      "referenceRange": [
+        600,
+        800
+      ],
+      "withinRange": true,
+      "sha256": "53b7b696c43f90fccf252183f4a958b445e561cdceeb4b3da88f7df0775a70a8"
+    }
+  },
+  "localLinksChecked": 134,
+  "processCommitObjectsChecked": [
+    "3e367ee",
+    "56f8215",
+    "83809a7",
+    "8f32290",
+    "92d706b",
+    "a79a9d3",
+    "e1f2ed7",
+    "f464e75"
+  ],
+  "failures": []
+}

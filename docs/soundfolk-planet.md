@@ -1,3 +1,8 @@
+> Historical original-planet milestone (7 November 2026), retained as process
+> evidence. The current product is Little Chorus, with one 3D presentation;
+> see [the current walkthrough](little-chorus.md), ADR036 and ADR037. Values and
+> checks below belong to the original milestone, not the latest release.
+
 > **Historical edition.** This document describes ADR024's first Soundfolk
 > planet, including its then-current camera, catalogue and checks. The current
 > product is **Little Chorus**: see the [current playable flow](little-chorus.md)

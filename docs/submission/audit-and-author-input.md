@@ -29,7 +29,25 @@ No `AGENTS.md` was found at the repository root, its project parent or the
 workspace root during this audit. The current root `CLAUDE.md` is applicable.
 The design pack's older instructions are navigated through current ADRs.
 
-## Current material status
+## Current material status — superseding audit, 2026-11-08
+
+The root README, PROCESS and research note have been rewritten as explicitly
+authorized **agent-assisted first-person drafts, pending author review**.
+Their bodies respectively argue for the product, the development decisions
+and one field-level position. The working-draft files now point to the root
+versions instead of duplicating bodies. [Source verification](source-verification.md)
+records the current official requirements and primary literature checked.
+
+The latest completed release evidence is [application 3e367ee](../evidence/waterlife-2026-11-08.json).
+The new 3D-only, replacement-frog and restored-busker candidate requires a new
+integrated acceptance record. Playable 2D/2.5D comparison is historical and
+developer-tested; the author's subsequent preference for 3D does not imply
+personal execution of those tests. Author approval, artistic listening, the
+two-pair study, real next-day return and submitted Fly verification remain
+separate. See [editing notes](author-editing-notes.md) and
+[five author questions](final-author-checklist.md).
+
+## Garden-stage material status — historical checkpoint
 
 The root README and PROCESS have now adopted Little Chorus descriptions with
 explicit **Author review draft** notices. Root `research-note.md` now exists
@@ -54,7 +72,7 @@ joining, starting audio or changing any table hash. The final annotated tag
 `chorus-garden-2026-11-07` is applied by integration after its last evidence
 commit; resolve its target from Git rather than a self-referential hash.
 
-## Current rules versus historical decisions
+## Rules versus historical decisions — garden-stage audit
 
 - **Retain:** browser-cookie identity, server-authored mutations, durable reply
   metadata, soft removal, idempotent operations, current databases and source
@@ -73,7 +91,7 @@ commit; resolve its target from Git rather than a self-referential hash.
   natural textures, short events and late entry. Old contributions and source
   coordinates remain meaningful; pleasantness still requires human listening.
 
-## Author questions that cannot be answered from code
+## Author questions retained from the initial audit
 
 1. In your own words, why do you want friends to answer sounds rather than
    compose alone or exchange text? Which personal example, if any, is true?
@@ -93,7 +111,9 @@ commit; resolve its target from Git rather than a self-referential hash.
    to the course Fly URL? Supply dates/commit links instead of inference.
 
 The implementation can continue while these answers are pending. They block
-personal claims and final document sign-off, not reversible technical work.
+unsupported personal claims and final document sign-off, not reversible technical
+work. The current [five-question checklist](final-author-checklist.md) groups
+these inputs and includes the later frog-timbre rejection and 3D-only decision.
 
 ## Suggested final structures
 
@@ -106,7 +126,7 @@ personal claims and final document sign-off, not reversible technical work.
 
 ## Before author sign-off and submission
 
-- Resolve each **AUTHOR INPUT**, **CANDIDATE EVIDENCE** and **NOT RUN** marker.
+- Review each draft notice and any **AUTHOR INPUT**, **CANDIDATE EVIDENCE** or **NOT RUN** marker.
   A missing observation may be resolved honestly as unperformed; it must not
   be replaced by a success claim. Author review is still required even when
   the proposed statement follows the recorded brief.

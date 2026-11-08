@@ -1,93 +1,85 @@
-# Production is useful only as fast as its claims can be checked
+# Autonomy needs evidence that can say no
 
-> **Author review draft.** Prepared with coding-agent assistance from recorded requests and repository evidence. Personal judgements and marked author inputs need Alison’s review. No human listening, uncoached playtest or next-day result is claimed.
+> Agent-assisted first-person draft, pending author review.
 
-I propose that good agentic development should expand verification capacity
-alongside production capacity. When generated changes accumulate faster than
-their consequential claims can be checked, a team acquires verification debt:
-unresolved uncertainty about behaviour, maintenance and user value. More green
-checks can reduce that debt, but cannot settle claims they never observe. This
-position joins technical reliability with human judgement without making every
-change wait for personal approval.
+I argue that useful agentic development requires verification capacity to grow
+with production capacity. Otherwise, rapid generation accumulates verification
+debt: consequential claims about behaviour and value that nobody has adequately
+tested. The remedy is not human approval of every generated line. It is a
+workflow in which each important claim has an observer capable of rejecting
+it, while the person directing the work remains responsible for choosing and
+revising the standard of good.
 
-[Lopopolo's OpenAI account](https://openai.com/index/harness-engineering/)
-offers a productive response to this bottleneck. Its agents receive isolated
-applications, browser access and observable runtime state, making outcome
-inspection part of their work. The report also describes human QA becoming a
-constraint as code throughput grows. My inference is that autonomous production
-requires investment in feedback infrastructure, rather than merely stronger
-prompts. However, this is a vendor's report about its own internal product.
-Its estimated acceleration lacks a randomized manual-development comparison;
-the account supplies plausible mechanisms, not a general productivity law.
+[Ryan Lopopolo's OpenAI account](https://openai.com/index/harness-engineering/)
+describes human QA becoming a bottleneck as agent output increased. Isolated
+applications, browser control and accessible runtime evidence then made more
+checking available to agents. This suggests that autonomy depends partly on
+environment design, not simply model capability. However, a vendor's account
+of its own internal beta is not a controlled productivity comparison. Its
+estimated acceleration offers a plausible mechanism and an engineering agenda,
+not a general causal result.
 
-[Anthropic's evaluation guidance](https://www.anthropic.com/research/demystifying-evals-for-ai-agents)
-helps specify what that infrastructure should observe. It distinguishes a
-reported action from the resulting environment state, and code, model and
-human graders. A successful transcript is therefore weaker evidence than a
-confirmed durable change. Yet even the latter is incomplete for an experiential
-claim: a test can establish synchronized musical entry without establishing
-that the result is pleasant. This practitioner taxonomy complements OpenAI's
-engineering mechanisms, but neither vendor account establishes that its chosen
-checks adequately represent every product's value.
+[Grace and colleagues' evaluation guidance](https://www.anthropic.com/research/demystifying-evals-for-ai-agents)
+helps distinguish a reported action from its outcome in the environment. It
+also distinguishes code, model and human graders. This improves on evaluating
+an agent's persuasive completion message. Nevertheless, checking a durable
+database change only settles the relevant state claim. It cannot alone establish
+that a collaborative interaction is understandable. The two practitioner
+accounts therefore support better observation, but leave the adequacy of the
+chosen observations open. Both also have commercial interests in agent adoption.
 
-[Becker and colleagues' 2025 randomized study](https://arxiv.org/abs/2507.09089)
-provides a useful empirical challenge. Sixteen experienced open-source
-developers completed 246 tasks in familiar mature repositories. Allowing the
-studied early-2025 tools increased completion time by 19%, despite participants'
-belief that assistance helped. Perceived fluency can therefore diverge from
-measured productivity. This does not prove that verification debt caused the
-slowdown, or that creative prototypes and current agents have the same result.
-It instead challenges treating confidence, generated volume or subjective
-speed as adequate measures of useful work.
+[Becker, Rush, Barnes and Rein's randomized study](https://arxiv.org/abs/2507.09089v2)
+offers a stronger causal design with a narrower target. Sixteen experienced
+developers completed 246 tasks in familiar open-source repositories. With the
+studied early-2025 tools, tasks took 19% longer, although participants estimated
+that assistance had helped. Perceived fluency was a poor substitute for measured
+completion in that setting. The result does not establish verification debt as
+the cause, nor describe every novice, prototype or subsequent model. It does
+undermine an inference from impressive production to useful productivity.
 
-Temporal scope matters. [METR's February 2026 follow-up](https://metr.org/blog/2026-02-24-uplift-update/)
-reports selection effects and unreliable time accounting, particularly when
-developers use concurrent agents. The authors consider their later experiment
-an unreliable estimate of the current effect, while judging greater speedup
-plausible. Quoting only the earlier slowdown would substitute a convenient
-conclusion for their qualified evidence. Across these sources, the defensible
-question is which workflow produces which verified outcome under stated
-conditions, rather than whether AI simply makes development faster.
+The authors' [February 2026 follow-up](https://metr.org/blog/2026-02-24-uplift-update/)
+complicates any convenient anti-agent conclusion. Participation and task
+selection increasingly favoured avoiding the no-AI condition; concurrent agents
+also made time accounting unreliable. The researchers judged their later
+estimate unreliable and considered larger speedups plausible. Their caution
+matters: the earlier randomized finding remains evidence about its period,
+while the follow-up cannot supply a clean estimate for current tools. Neither
+justifies a universal claim that agents accelerate or delay development.
 
-The strongest counterargument is that agents can expand verification too.
-They can write adversarial checks, inspect screenshots and reproduce runtime
-failures more cheaply than a person repeating every action. OpenAI's account
-explicitly demonstrates this ambition. Requiring independent human inspection
-of all output would preserve the bottleneck, and human review itself can be
-inconsistent or inattentive. My claim therefore concerns the capacity to
-contradict production claims, not a fixed ratio of reviewers to agents or a
-presumption that human assessment is always superior.
+The strongest counterargument to my position is that verification can itself
+be automated. Agents can generate adversarial cases, inspect real screenshots
+and reproduce failures more cheaply than people repeating every action.
+Mandatory human review could become expensive ceremony, and human judgement
+is also inconsistent. I accept this objection. Independence should mean that
+evidence can contradict the production claim, not that a different species
+produced it. A regression check that fails frozen faulty code is often more
+informative than a person approving a confident summary.
 
-The practical response is to divide acceptance by the claim. Give agents
-authority to execute well-specified technical checks and repair failures.
-Retain negative cases that can defeat their implementation, especially cases
-found outside its initial assumptions. For unfamiliar-player comprehension,
-musical pleasure or social meaning, obtain observations from relevant people
-and name the question they judged. A second model repeating the first one's
-success narrative supplies little independence; an actual environment state
-or an uncoached participant may contradict it.
+What remains human responsibility is the choice of what deserves acceptance.
+For an audio product, synchronized entry is an engineering claim; pleasantness
+for its intended listeners is another claim with different evidence. A model
+may assist both, but a technical metric cannot silently replace the second.
+Likewise, a completed scripted response does not demonstrate that unfamiliar
+friends discover the invitation. Relevant participants must be allowed to
+contradict that claim. Responsibility includes withdrawing an attractive
+promise when adequate observation is unavailable.
 
-This is a limited recommendation, not evidence of a universal productivity
-gain. It offers no numerical debt metric or mandatory review frequency.
-Before accepting more production, identify the consequential unresolved claim,
-the observer capable of rejecting it, and the evidence still missing. A useful
-agent can increase both output and the ability to discover that output is
-wrong. Autonomy becomes less dependable when only the first increase counts.
+Beyond one project, I propose recording three things before consequential
+acceptance: the claim, an observation that could defeat it, and the evidence
+still missing. This need not become a checklist for every cosmetic edit.
+Apply it where a wrong claim would change a release or product decision.
+Its cost should also be tested: compare time to an accepted outcome, escaped
+defects and relevant user observations, including checking overhead. If the
+practice adds ceremony without revealing consequential errors, revise it.
 
-## References and evidence limits
+This is a bounded proposal, not a validated debt metric. The literature
+supports questioning output and confidence as proxies; it does not prove my
+workflow universally superior. Good autonomy expands the capacity to find
+that the work is wrong, as well as the capacity to produce more work.
 
-- Lopopolo, R. (2026-02-11). *Harness engineering: leveraging Codex in an
-  agent-first world*. OpenAI. First-hand practitioner report; commercial
-  interest; mechanisms and reported experience, not controlled causal evidence.
-- Anthropic (2026-01-09). *Demystifying evals for AI agents*. Practitioner
-  account; commercial interest; useful distinctions rather than a universal
-  validation result.
-- Becker, J., Rush, N., Barnes, E., and Rein, D. (2025).
-  *Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer
-  Productivity*. arXiv:2507.09089v2. Randomized study; narrow participant,
-  repository and tool-period scope. The debt explanation here is an argument,
-  not a causal finding from this paper.
-- Becker, J., Rush, N., Cunningham, T., Rein, D., and Mahamud, K. (2026-02-24).
-  *We are Changing our Developer Productivity Experiment Design*. METR.
-  Primary follow-up acknowledging limitations; it is not a clean current
-  speedup estimate or a definitive statement about November 2026 tools.
+## References
+
+- Lopopolo, Ryan. 11 February 2026. [*Harness engineering: leveraging Codex in an agent-first world*](https://openai.com/index/harness-engineering/). OpenAI. Primary practitioner account.
+- Grace, Mikaela; Hadfield, Jeremy; Olivares, Rodrigo; and De Jonghe, Jiri. 9 January 2026. [*Demystifying evals for AI agents*](https://www.anthropic.com/research/demystifying-evals-for-ai-agents). Anthropic. Primary practitioner guidance.
+- Becker, Joel; Rush, Nate; Barnes, Elizabeth; and Rein, David. 2025. [*Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity*](https://arxiv.org/abs/2507.09089v2). arXiv:2507.09089v2, revised 25 July 2025. Randomized study.
+- Becker, Joel; Rush, Nate; Cunningham, Tom; Rein, David; and Mahamud, Khalid. 24 February 2026. [*We are Changing our Developer Productivity Experiment Design*](https://metr.org/blog/2026-02-24-uplift-update/). METR. Primary methodological follow-up.
