@@ -74,8 +74,10 @@ export class SoundDiscovery {
     this.origin.textContent=real?`By ${real.by} · shared sound`:this.opts.enabled()?"World example · local demonstration":"World example · paused for you";
     this.title.textContent=findSound(this.selectedSound)?.label??selected.title;
     this.cause.textContent=soundLifeEffect(this.selectedSound)??selected.effect;
-    const watchLabel=real&&({"harbour-boat":"Watch the boat","pond-bubbles":"Watch the fish","pond-frogs":"Watch the frogs","whale-song":"Watch the whale"} as Record<string,string>)[real.soundId];
-    this.sourceId=real?.id??"";this.watch.hidden=!this.opts.watch||!watchLabel;this.watch.textContent=watchLabel??"Watch the boat";
+    // A showing example can be watched too (ADR 038): it is still only a look.
+    const watched=real??(this.opts.enabled()?selected:null);
+    const watchLabel=watched&&({"harbour-boat":"Watch the boat","pond-bubbles":"Watch the fish","pond-frogs":"Watch the frogs","whale-song":"Watch the whale"} as Record<string,string>)[watched.soundId];
+    this.sourceId=watched?.id??"";this.watch.hidden=!this.opts.watch||!watchLabel;this.watch.textContent=watchLabel??"Watch the boat";
     this.compare.textContent=this.opts.enabled()?"Pause examples":"Show examples";this.compare.setAttribute("aria-pressed",String(this.opts.enabled()));
     this.compare.title="Only world demonstrations change. Your friends' sounds stay.";
     this.panel.dataset.source=real?.id??selected.id;this.panel.dataset.origin=real?"player":"example";

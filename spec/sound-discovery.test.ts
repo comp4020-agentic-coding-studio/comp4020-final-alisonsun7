@@ -53,3 +53,10 @@ it.each([["pond-bubbles","Watch the fish"],["pond-frogs","Watch the frogs"],["wh
   expect(source).toEqual(original);expect(f.opts.create).not.toHaveBeenCalled();expect(f.opts.setEnabled).not.toHaveBeenCalled();
   f.setSources([]);expect(watch.hidden).toBe(true);
 });
+it.each([["whale","Watch the whale"],["boat","Watch the boat"],["frogs","Watch the frogs"]])("offers to watch the showing %s example, and not once examples are paused (ADR 038)",(kind,label)=>{
+  const index=worldSoundExamples("room").findIndex(example=>example.kind===kind),f=fixture(index);
+  const watch=document.getElementById("sound-discovery-watch")!;
+  expect(watch.hidden).toBe(false);expect(watch.textContent).toBe(label);
+  watch.click();expect(f.opts.watch).toHaveBeenCalledWith(f.examples[index].id);expect(f.opts.create).not.toHaveBeenCalled();
+  document.getElementById("sound-example-compare")!.click();guide!.frame();expect(watch.hidden).toBe(true);
+});

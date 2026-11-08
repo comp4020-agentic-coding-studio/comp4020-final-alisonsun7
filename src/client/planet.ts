@@ -240,7 +240,7 @@ $("planet-open-soundscape").onclick=()=>afterDialogClose(tools,()=>{renderShared
 shared.addEventListener("close",()=>{if(!document.querySelector("dialog:modal")&&!$("planet-shared").getClientRects().length)$("planet-tools").focus();});
 function publicSounds(): PlacedSound[] { return [...sounds.values()].filter(s => !s.whileIn && !s.removedAt && !ended.has(s.id)); }
 function watchSoundEffect(sourceId:string):boolean {
-    const source=publicSounds().find(source=>source.id===sourceId);
+    const source=publicSounds().find(source=>source.id===sourceId)??activeWorldExamples(exampleBlueprints,publicSounds(),examplesEnabled).find(example=>example.id===sourceId);
     if(!source||!(world instanceof PlanetWorld)||!world.watchSound(sourceId))return false;
     lastSent="";updateView();clearTimeout(noticeTimer);notice.hidden=true;return true;
 }
