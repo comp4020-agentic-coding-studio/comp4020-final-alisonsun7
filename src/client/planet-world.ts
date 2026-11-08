@@ -348,11 +348,13 @@ export class PlanetWorld {
         this.residents.setContributions(signals);this.built.setContributions(signals);this.soundWildlife.setSources(signals);
         this.soundVessels.setSources(this.publicSounds);this.soundPinwheels.setSources(this.publicSounds);
         this.soundWaterlife.setSources(this.publicSounds);
+        // the world examples' own animals and ferry, after any real source's
+        this.soundVessels.setExamples(this.examples);this.soundWaterlife.setExamples(this.examples);
     }
     /** Explicit local viewing visit. No sound, author or audio emitter moves. */
     stopWatching():void { this.watchedVessel=null;this.host.dataset.watchingSound="";this.focus(); }
     watchSound(sourceId:string):boolean {
-        if(!this.publicSounds.some(source=>source.id===sourceId&&!source.removedAt))return false;
+        if(!this.publicSounds.some(source=>source.id===sourceId&&!source.removedAt)&&!this.examples.some(source=>source.id===sourceId))return false;
         const at=this.soundWaterlife.viewpoint(sourceId)??this.soundVessels.viewpoint(sourceId);
         if(!at||!this.built.canStand(at.x,at.z,this.locked())||!this.garden.canStand(at.x,at.z))return false;
         this.setViewMode("third");this.zoom=4.2;this.watchedVessel=sourceId;

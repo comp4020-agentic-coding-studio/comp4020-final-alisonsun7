@@ -5,6 +5,8 @@ import { FROG_CALL_ENVELOPE } from "../shared/frog-call.js";
 import { PLANET_HALF, PLANET_RADIUS as R, planetBasis, planetCoordsValid, planetDistance, planetPoint, planetStep } from "../shared/planet.js";
 import type { PlacedSound, Position } from "../shared/protocol.js";
 import { authorMark } from "../shared/chorus-signature.js";
+import { EXAMPLE_BY, EXAMPLE_ID } from "../shared/sound-life.js";
+import type { SoundSignal } from "../shared/sound-response.js";
 
 type Point = { x: number; z: number };
 export type WaterlifeKind = "fish" | "frog" | "whale";
@@ -18,7 +20,7 @@ export interface SoundWaterlifeOptions {
 export interface WaterlifeAnchor extends Point { area: "pond" | "ocean"; height: number; phase: number; radius?: number }
 export interface SoundWaterlifeState {
     sourceId: string; byId: string; by: string; soundId: string; kind: WaterlifeKind;
-    origin: "player"; sourceX: number; sourceZ: number; visible: boolean; count: number; color: string;
+    origin: "player" | "example"; sourceX: number; sourceZ: number; visible: boolean; count: number; color: string;
     reason?: "budget" | "no-nearby-water" | "no-water-route" | "not-started";
     anchorX?: number; anchorZ?: number; x?: number; z?: number; height?: number; yaw?: number;
     phase?: number; action?: WaterlifeAction;
@@ -35,6 +37,7 @@ const TAU = Math.PI * 2, FISH_SOURCES = 4, FROG_SOURCES = 2, WHALE_SOURCES = 2;
 const FISH_PER_SOURCE = 3, FROGS_PER_SOURCE = 2, MAX_FISH = 5 + FISH_SOURCES * FISH_PER_SOURCE;
 const MAX_BUBBLES = FISH_SOURCES * 5, MAX_RIPPLES = FROG_SOURCES * 4 + WHALE_SOURCES * 4, MAX_SPRAY = WHALE_SOURCES * 12;
 const DEFAULT_POOL = { x: 16, z: 14, radius: 2.55, height: .035 };
+const isExample = (source: PlacedSound): boolean => (source as PlacedSound & { origin?: string }).origin === "example";
 const kindFor = (soundId: string): WaterlifeKind | null => soundId === "pond-bubbles" ? "fish" : soundId === "pond-frogs" ? "frog" : soundId === "whale-song" ? "whale" : null;
 const wrap = (x: number): number => ((x + PLANET_HALF) % (PLANET_HALF * 2) + PLANET_HALF * 2) % (PLANET_HALF * 2) - PLANET_HALF;
 const unit = (x: number): number => ((x % 1) + 1) % 1;
@@ -165,6 +168,10 @@ export class SoundWaterlife {
     private readonly whaleFlipperMaterial: THREE.MeshStandardMaterial;
     private groups = new Map<string, Group>();
     private sources: PlacedSound[] = [];
+    // World examples (ADR 038) come only through setExamples, after every
+    // real source in each budget, and are never counted as withdrawals.
+    private examples: PlacedSound[] = [];
+    private get placed(): PlacedSound[] { return [...this.sources, ...this.examples]; }
     private rejected = new Map<string, NonNullable<SoundWaterlifeState["reason"]>>();
     private removed = new Set<string>();
     private disposed = false;
@@ -231,9 +238,9 @@ export class SoundWaterlife {
         return this.disposed ? [] : this.scenery.map(({ anchor, count }) => ({ origin: "scenery", kind: "fish", count, x: anchor.x, z: anchor.z, area: anchor.area }));
     }
     get state(): SoundWaterlifeState[] {
-        return this.sources.map(source => {
+        return this.placed.map(source => {
             const group = this.groups.get(source.id), reason = this.rejected.get(source.id), visible = !!group && (this.lastNow ?? 0) >= Date.parse(source.at);
-            return { sourceId: source.id, byId: source.byId, by: source.by, soundId: source.soundId, kind: kindFor(source.soundId)!, origin: "player", sourceX: source.x, sourceZ: source.z,
+            return { sourceId: source.id, byId: source.byId, by: source.by, soundId: source.soundId, kind: kindFor(source.soundId)!, origin: isExample(source) ? "example" : "player", sourceX: source.x, sourceZ: source.z,
                 visible, count: visible ? group.kind === "fish" ? FISH_PER_SOURCE : group.kind === "frog" ? FROGS_PER_SOURCE : 1 : 0, color: authorMark(source.byId).color,
                 ...(reason ? { reason } : !visible && group ? { reason: "not-started" as const } : {}),
                 ...(group ? { anchorX: group.anchor.x, anchorZ: group.anchor.z, ...group.pose } : {}) };
@@ -268,9 +275,22 @@ export class SoundWaterlife {
             && typeof source.byId === "string" && !!source.byId && typeof source.by === "string" && planetCoordsValid(source.x, source.z) && Number.isFinite(Date.parse(source.at)))
             .map(source => ({ ...source })).sort((a, b) => Date.parse(b.at) - Date.parse(a.at) || a.id.localeCompare(b.id) || JSON.stringify(a).localeCompare(JSON.stringify(b)))
             .filter(source => { if (seen.has(source.id)) return false;seen.add(source.id);return true; });
+        this.place();
+    }
+    /** The world examples showing for this visitor: replaced wholesale, so
+     * pausing them clears their animals without touching real sources. */
+    setExamples(examples: readonly SoundSignal[]): void {
+        if (this.disposed) return;
+        const seen = new Set<string>();
+        this.examples = examples.filter(source => source.origin === "example" && source.id.startsWith("@world:") && kindFor(source.soundId)
+            && planetCoordsValid(source.x, source.z) && Number.isFinite(Date.parse(source.at)) && !seen.has(source.id) && !!seen.add(source.id))
+            .map(({ id, soundId, x, z, at }) => ({ id, soundId, x, z, at, by: EXAMPLE_BY, byId: EXAMPLE_ID, origin: "example" }) as PlacedSound);
+        this.place();
+    }
+    private place(): void {
         const wanted = new Set<string>(), counts = { fish: 0, frog: 0, whale: 0 }, limits = { fish: FISH_SOURCES, frog: FROG_SOURCES, whale: WHALE_SOURCES };
         this.rejected.clear();
-        for (const source of this.sources) {
+        for (const source of this.placed) {
             const kind = kindFor(source.soundId)!;
             if (counts[kind] >= limits[kind]) { this.rejected.set(source.id, "budget");continue; }
             const existing = this.groups.get(source.id), same = existing && existing.source.soundId === source.soundId && existing.source.x === source.x && existing.source.z === source.z;
@@ -286,12 +306,12 @@ export class SoundWaterlife {
                 this.groups.set(source.id, group);
             }
             group.source = source;group.anchor = anchor;
-            for (const model of group.models) model.traverse(object => { object.userData.soundWaterlife = { sourceId: source.id, byId: source.byId, by: source.by, kind, origin: "player" }; });
+            for (const model of group.models) model.traverse(object => { object.userData.soundWaterlife = { sourceId: source.id, byId: source.byId, by: source.by, kind, origin: isExample(source) ? "example" : "player" }; });
             wanted.add(source.id);counts[kind]++;
         }
         for (const [id, group] of this.groups) if (!wanted.has(id)) { group.accent?.dispose();for (const model of group.models) model.removeFromParent();this.groups.delete(id); }
-        const ordered = new Map<string, Group>();for (const source of this.sources) { const group = this.groups.get(source.id);if (group) { ordered.set(source.id, group);for (const model of group.models) this.root.add(model); } }this.groups = ordered;
-        this.frame(this.lastNow ?? Date.parse(this.sources[0]?.at ?? "1970-01-01T00:00:00Z"), this.reducedMotion);
+        const ordered = new Map<string, Group>();for (const source of this.placed) { const group = this.groups.get(source.id);if (group) { ordered.set(source.id, group);for (const model of group.models) this.root.add(model); } }this.groups = ordered;
+        this.frame(this.lastNow ?? Date.parse(this.placed[0]?.at ?? "1970-01-01T00:00:00Z"), this.reducedMotion);
     }
     /** Actor point for an explicit local look, never a sound-emitter move. */
     getFocus(sourceId: string): (Position & { height: number; kind: WaterlifeKind; label: string }) | null {
@@ -374,7 +394,7 @@ export class SoundWaterlife {
     }
     dispose(): void {
         if (this.disposed) return;this.disposed = true;
-        for (const group of this.groups.values()) group.accent?.dispose();this.groups.clear();this.sources = [];this.rejected.clear();this.removed.clear();
+        for (const group of this.groups.values()) group.accent?.dispose();this.groups.clear();this.sources = [];this.examples = [];this.rejected.clear();this.removed.clear();
         for (const mesh of [this.fishBody, this.fishTail, this.bubbles, this.ripples, this.spray, this.pads]) mesh.dispose();
         for (const geometry of this.geometries) geometry.dispose();for (const material of this.materials) material.dispose();
         this.root.clear();this.root.removeFromParent();

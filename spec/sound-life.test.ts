@@ -3,7 +3,7 @@ import { activeWorldExamples,worldSoundExamples,soundLifeEffect } from "../src/s
 import { chooseResidentResponse } from "../src/shared/sound-response.ts";
 describe("world examples without invented contributors",()=>{
   it("gives the same room the same bounded discovery spots without an author",()=>{
-    const a=worldSoundExamples("room-one"),b=worldSoundExamples("room-one");expect(a).toEqual(b);expect(a).toHaveLength(3);
+    const a=worldSoundExamples("room-one"),b=worldSoundExamples("room-one");expect(a).toEqual(b);expect(a).toHaveLength(7);
     for(const example of a){expect(example.origin).toBe("example");expect(example).not.toHaveProperty("byId");expect(example).not.toHaveProperty("by");expect(example).not.toHaveProperty("replyToId");}
     expect(new Set(Array.from({length:8},(_,i)=>JSON.stringify(worldSoundExamples(String(i))))).size).toBeGreaterThan(1);
   });
@@ -11,8 +11,8 @@ describe("world examples without invented contributors",()=>{
     const blueprints=worldSoundExamples("room"),coffee=blueprints[0];
     const real={id:"real",soundId:"cafe-music",x:coffee.x,z:coffee.z,at:coffee.at},frozen=JSON.stringify(real);
     expect(activeWorldExamples(blueprints,[real],true).map(s=>s.id)).not.toContain(coffee.id);
-    expect(activeWorldExamples(blueprints,[{...real,whileIn:"private"}],true)).toHaveLength(3);
-    expect(activeWorldExamples(blueprints,[{...real,removedAt:coffee.at}],true)).toHaveLength(3);
+    expect(activeWorldExamples(blueprints,[{...real,whileIn:"private"}],true)).toHaveLength(7);
+    expect(activeWorldExamples(blueprints,[{...real,removedAt:coffee.at}],true)).toHaveLength(7);
     expect(activeWorldExamples(blueprints,[real],false)).toEqual([]);expect(JSON.stringify(real)).toBe(frozen);
   });
   it("explains a supported actual response and preserves the example's origin",()=>{

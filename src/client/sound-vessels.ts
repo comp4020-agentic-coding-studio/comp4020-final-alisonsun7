@@ -4,6 +4,8 @@ import * as THREE from "three";
 import { PLANET_HALF, planetBasis, planetCoordsValid, planetPoint, planetStep } from "../shared/planet.js";
 import type { PlacedSound, Position } from "../shared/protocol.js";
 import { authorMark } from "../shared/chorus-signature.js";
+import { EXAMPLE_BY, EXAMPLE_ID } from "../shared/sound-life.js";
+import type { SoundSignal } from "../shared/sound-response.js";
 
 type Point = { x: number; z: number };
 export interface SoundVesselOptions {
@@ -28,6 +30,7 @@ export interface SoundVesselState {
   sourceZ: number;
   color: string;
   visible: boolean;
+  origin?: "example";
   reason?: "budget" | "no-water-route";
   anchorX?: number;
   anchorZ?: number;
@@ -148,6 +151,10 @@ export class SoundVessels {
   private readonly upAxis = new THREE.Vector3(0, 1, 0);
   private vessels = new Map<string, Vessel>();
   private sources: PlacedSound[] = [];
+  // World examples (ADR 038) come only through setExamples, after every real
+  // horn in the budget, and are never counted as withdrawals.
+  private examples: PlacedSound[] = [];
+  private get placed(): PlacedSound[] { return [...this.sources, ...this.examples]; }
   private rejected = new Map<string, "budget" | "no-water-route">();
   private removed = new Set<string>();
   private disposed = false;
@@ -191,11 +198,11 @@ export class SoundVessels {
   }
 
   get state(): SoundVesselState[] {
-    return this.sources.map(source => {
+    return this.placed.map(source => {
       const vessel = this.vessels.get(source.id), reason = this.rejected.get(source.id);
       return { sourceId: source.id, byId: source.byId, by: source.by, soundId: "harbour-boat", sourceX: source.x, sourceZ: source.z,
         color: "#" + (vessel?.roofMaterial.color ?? roofColor(source.byId)).getHexString(),
-        visible: !!vessel?.model.visible, ...(reason ? { reason } : {}),
+        visible: !!vessel?.model.visible, ...(source.byId === EXAMPLE_ID ? { origin: "example" as const } : {}), ...(reason ? { reason } : {}),
         ...(vessel ? { anchorX: vessel.route.anchorX, anchorZ: vessel.route.anchorZ, ...vessel.pose } : {}) };
     });
   }
@@ -210,8 +217,22 @@ export class SoundVessels {
         || !planetCoordsValid(source.x, source.z) || !Number.isFinite(Date.parse(source.at))) return false;
       seen.add(source.id);return true;
     }).map(source => ({ ...source })).sort((a, b) => Date.parse(b.at) - Date.parse(a.at) || a.id.localeCompare(b.id));
+    this.place();
+  }
+
+  /** The world examples showing for this visitor, replaced wholesale. */
+  setExamples(examples: readonly SoundSignal[]): void {
+    if (this.disposed) return;
+    const seen = new Set<string>();
+    this.examples = examples.filter(source => source.origin === "example" && source.id.startsWith("@world:") && source.soundId === "harbour-boat"
+      && planetCoordsValid(source.x, source.z) && Number.isFinite(Date.parse(source.at)) && !seen.has(source.id) && !!seen.add(source.id))
+      .map(({ id, soundId, x, z, at }) => ({ id, soundId, x, z, at, by: EXAMPLE_BY, byId: EXAMPLE_ID }) as PlacedSound);
+    this.place();
+  }
+
+  private place(): void {
     const wanted = new Set<string>();this.rejected.clear();
-    for (const source of this.sources) {
+    for (const source of this.placed) {
       if (wanted.size === MAX_VESSELS) { this.rejected.set(source.id, "budget");continue; }
       const existing = this.vessels.get(source.id);
       const same = existing && existing.source.x === source.x && existing.source.z === source.z && existing.source.at === source.at;
@@ -236,12 +257,12 @@ export class SoundVessels {
     // Incremental arrivals and a fresh snapshot use the same instance order,
     // including the translucent smoke and wake and their provenance indices.
     const ordered = new Map<string, Vessel>();
-    for (const source of this.sources) {
+    for (const source of this.placed) {
       const vessel = this.vessels.get(source.id);
       if (vessel) { ordered.set(source.id, vessel);this.root.add(vessel.model); }
     }
     this.vessels = ordered;
-    this.frame(this.lastNow ?? Date.parse(this.sources[0]?.at ?? "1970-01-01T00:00:00Z"), this.reducedMotion);
+    this.frame(this.lastNow ?? Date.parse(this.placed[0]?.at ?? "1970-01-01T00:00:00Z"), this.reducedMotion);
   }
 
   /** A local viewing suggestion, never a new source or rewritten position.
@@ -292,7 +313,7 @@ export class SoundVessels {
 
   dispose(): void {
     if (this.disposed) return;
-    this.disposed = true;this.sources = [];
+    this.disposed = true;this.sources = [];this.examples = [];
     for (const vessel of this.vessels.values()) vessel.roofMaterial.dispose();
     this.vessels.clear();this.rejected.clear();this.removed.clear();
     this.smoke.dispose();this.wake.dispose();

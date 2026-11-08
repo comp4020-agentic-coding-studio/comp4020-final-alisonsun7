@@ -104,7 +104,7 @@ try{
         check(rows().length===3&&rows().every(row=>row.removed_at!==null),"Withdrawing all three stops their shared actors and retains durable sound history");
         const persisted=db.prepare("SELECT sound_id,parent_id FROM sound_replies WHERE sound_id=?").get(frogs.id);report.replyRow=persisted;assert.equal(persisted.parent_id,bubbles.id);
         check((await state(a.page)).scenery.reduce((n,row)=>n+row.count,0)===5,"Only explicitly labelled scenery fish remain after withdrawal");
-        await a.page.reload();await ready(a.page);check((await state(a.page)).water.length===0,"Returning to the world cannot revive withdrawn animals");
+        await a.page.reload();await ready(a.page);{const back=(await state(a.page)).water,gone=[whale,frogs,bubbles].map(source=>source.id);check(!back.some(row=>gone.includes(row.sourceId))&&back.every(row=>row.origin==="example"&&row.sourceId.startsWith("@world:")),"Returning to the world cannot revive withdrawn animals; only the labelled world examples remain (ADR 038)");}
         check(report.sources.length===3,"Exactly the three explicit Leave actions create sound sources");
     }
     assert.deepEqual(report.errors,[]);check(true,baseline?"Native GPU rendered the frozen baseline without browser/shader errors":"Native GPU and audio decode completed without browser/shader errors");report.passed=true;
