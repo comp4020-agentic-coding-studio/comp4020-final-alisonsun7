@@ -1,9 +1,10 @@
 import type { SoundSignal } from "../shared/sound-response.js";
 // Original low-cost, volumetric Soundfolk architecture. No downloaded models.
 import * as THREE from "three";
-import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, PLANET_CAFE_SCALE, planetBasis, planetPoint, planetDistance, type PlanetPlace } from "../shared/planet.js";
+import { PLANET_RADIUS as R, PLANET_PLACES, PLANET_HUTS, PLANET_CAFE_SCALE, planetBasis, planetPoint, planetNormal, planetDistance, type PlanetPlace } from "../shared/planet.js";
 import { coastlineAt, createPlanetCoast, planetPierHeightAt } from "./planet-coast.js";
-import { frontPlanetLocal, raisedPlanetFloorHeight } from "./planet-surface-safety.js";
+import { frontPlanetLocal } from "./planet-surface-safety.js";
+import { PlanetSupportSurfaces, curvedFoundationGeometry, horizontalGeometryBounds, radialStairGeometry, supportedPlanetFrame, type PlanetSupport, type PlanetContactAnchor } from "./planet-support.js";
 import type { PlacedSound } from "../shared/protocol.js";
 export interface PlanetDoor {
     id: string;
@@ -29,6 +30,8 @@ export interface PlanetBuild {
     }[];
     cafeState: { sourceIds: string[]; steam: boolean; music: boolean; company: boolean };
     setContributions(sounds: readonly SoundSignal[]): void;
+    supportAt(x: number, z: number): PlanetSupport;
+    contactAnchors: readonly PlanetContactAnchor[];
     heightAt(x: number, z: number): number;
     inside(x: number, z: number): boolean;
     canStand(x: number, z: number, locked: ReadonlySet<string>, ownHut?: string): boolean;
@@ -57,6 +60,14 @@ export function buildPlanet(): PlanetBuild {
     let cafeCupParent: THREE.Group | null = null;
     let cafeRecord: THREE.Mesh | null = null;
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
+    const supportSurfaces = new PlanetSupportSurfaces(), contactAnchors: PlanetContactAnchor[] = [];
+    const groundMeshes: THREE.Mesh[] = [], floorMeshes: THREE.Mesh[] = [];
+    const patches: { x: number; z: number; radius: number }[] = [];
+    const floors: { object: THREE.Mesh; radius?: number }[] = [];
+    const groundedProps: { group: THREE.Group; feet: THREE.Mesh[]; id: string }[] = [];
+    const furnitureFeet: THREE.Mesh[] = [];
+    const groundPostExtensions: { parent: THREE.Object3D; x: number; z: number; top: number; radius: number; material: THREE.Material; id: string }[] = [];
+    const extensionFeet: THREE.Mesh[] = [], groundedRocks: { group: THREE.Group; rock: THREE.Mesh }[] = [];
     const mat = (colour: number, emissive = 0): THREE.MeshStandardMaterial => {
         const m = new THREE.MeshStandardMaterial({ color: colour, roughness: .93, metalness: 0, emissive, emissiveIntensity: .35 });
         materials.add(m);
@@ -68,7 +79,8 @@ export function buildPlanet(): PlanetBuild {
     const mesh = (g: THREE.BufferGeometry, m: THREE.Material, parent: THREE.Object3D = root): THREE.Mesh => {
         geometries.add(g);
         const o = new THREE.Mesh(g, m);
-        o.castShadow = true;
+        // Clear glass must not cast the same solid slab shadow as its frame.
+        o.castShadow = !(m.transparent && m.opacity < .65);
         o.receiveShadow = true;
         parent.add(o);
         return o;
@@ -83,6 +95,13 @@ export function buildPlanet(): PlanetBuild {
         return object;
     };
     const place = (x: number, z: number): THREE.Group => { const g = new THREE.Group(); onPlanet(g, x, z); root.add(g); return g; };
+    const groundLocalHeight = (parent: THREE.Object3D, x: number, z: number): number => {
+        parent.updateWorldMatrix(true, false);
+        const up = new THREE.Vector3().setFromMatrixColumn(parent.matrixWorld, 1).normalize();
+        const origin = parent.localToWorld(new THREE.Vector3(x, 3, z));
+        const hit = new THREE.Raycaster(origin, up.clone().negate(), 0, 8).intersectObjects(groundMeshes, false)[0];
+        return hit ? parent.worldToLocal(hit.point.clone()).y : 0;
+    };
     const globe = new THREE.SphereGeometry(R, 112, 64);
     geometries.add(globe);
     const pos = globe.getAttribute("position"), colours = [];
@@ -98,11 +117,16 @@ export function buildPlanet(): PlanetBuild {
     globe.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
     const earthMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 });
     materials.add(earthMat);
-    mesh(globe, earthMat);
+    groundMeshes.push(mesh(globe, earthMat));
     const coast = createPlanetCoast();
     root.add(coast.root);
+    coast.root.traverse(object => { if (object instanceof THREE.Mesh && object.name === "soundfolk-beach") groundMeshes.push(object); });
+    const floor = (object: THREE.Mesh, id: string, kind: PlanetSupport["kind"] = "floor", radius?: number): THREE.Mesh => {
+        object.name = id;object.userData.supportSurface = true;supportSurfaces.add(object, id, kind, radius);floorMeshes.push(object);floors.push({ object, radius });return object;
+    };
     // Curved patches follow the real sphere, rather than floating flat discs.
     function patch(x: number, z: number, r: number, m: THREE.Material): void {
+        patches.push({ x, z, radius: R * Math.atan(r / R) });
         const segments = 48, rings = Math.ceil(r / .35), q = surfaceFrame(x, z), base = planetPoint(x, z), vertices: number[] = [], indices: number[] = [];
         const vertex = (xx: number, zz: number): void => { const v = new THREE.Vector3(xx, 0, zz).applyQuaternion(q).add(new THREE.Vector3(base.x, base.y, base.z)).normalize().multiplyScalar(R + .035); vertices.push(v.x, v.y, v.z); };
         vertex(0, 0);
@@ -123,6 +147,7 @@ export function buildPlanet(): PlanetBuild {
         geo.computeVertexNormals();
         const o = mesh(geo, m);
         o.castShadow = false;
+        groundMeshes.push(o);
     }
     patch(0, 0, 5.6, stone);
     for (const p of PLANET_PLACES)
@@ -227,6 +252,7 @@ export function buildPlanet(): PlanetBuild {
     roadGeometry.userData.continuousRoad = true;
     const roadMaterial = mat(0xffffff); roadMaterial.vertexColors = true;
     const road = mesh(roadGeometry, roadMaterial); road.castShadow = false; road.name = "around-the-world-promenade";
+    groundMeshes.push(road);
     function sign(parent: THREE.Object3D, text: string, y = 3.8, front = 2.04): void {
         const canvas = document.createElement("canvas");
         canvas.width = 512;
@@ -248,28 +274,33 @@ export function buildPlanet(): PlanetBuild {
         solids.push(o);
     }
     function lamp(parent: THREE.Object3D, x: number, z: number): void {
+        const g = new THREE.Group();g.name = "grounded-lantern";g.position.set(x, 0, z);parent.add(g);
         // Low timber lanterns belong to the village, rather than a repeated
         // line of tall city lamp-posts competing with the small buildings.
-        box(.14, 1.35, .14, timber, parent, x, .68, z);
+        const pole = box(.14, 1.35, .14, timber, g, 0, .68, 0);pole.name = "lantern-ground-post";
         const glow = mat(0xf6d694, 0xffc375);
-        box(.3, .32, .3, glow, parent, x, 1.49, z);
-        box(.4, .07, .4, dark, parent, x, 1.69, z);
-        box(.36, .06, .36, dark, parent, x, 1.29, z);
+        box(.3, .32, .3, glow, g, 0, 1.49, 0);
+        box(.4, .07, .4, dark, g, 0, 1.69, 0);
+        box(.36, .06, .36, dark, g, 0, 1.29, 0);
         const light = new THREE.PointLight(0xffd2a0, 0, 8, 2);
-        light.position.set(x, 1.5, z);
-        parent.add(light);
+        light.position.set(0, 1.5, 0);
+        g.add(light);
         lamps.push(light);
+        groundedProps.push({ group: g, feet: [pole], id: `lantern-${groundedProps.length}` });
     }
     function bench(parent: THREE.Object3D, x: number, z: number): void {
-        box(1.9, .13, .6, timber, parent, x, .48, z);
-        box(1.9, .57, .08, sage, parent, x, .85, z - .28);
+        const g = new THREE.Group();g.name = "grounded-bench";g.position.set(x, 0, z);parent.add(g);
+        box(1.9, .13, .6, timber, g, 0, .48, 0);
+        box(1.9, .57, .08, sage, g, 0, .85, -.28);
+        const feet: THREE.Mesh[] = [];
         for (const dx of [-.7, .7])
-            box(.1, .44, .44, dark, parent, x + dx, .22, z);
+            { const leg = box(.1, .44, .44, dark, g, dx, .22, 0);leg.name = "bench-ground-leg";feet.push(leg); }
+        groundedProps.push({ group: g, feet, id: `bench-${groundedProps.length}` });
     }
     function house(p: PlanetPlace, colour: THREE.Material, open = false): THREE.Group {
         const g = place(p.x, p.z);
         g.name = `village-${p.kind}`;
-        box(5, .18, 4.4, timber, g, 0, .06, 0);
+        floor(box(5, .18, 4.4, timber, g, 0, .06, 0), `${p.kind}-room-floor`);
         const glass = new THREE.MeshStandardMaterial({ color: 0x7caaa3, transparent: true, opacity: .28, roughness: .3, depthWrite: false });
         materials.add(glass);
         for (const x of [-2.4, 2.4]) {
@@ -298,7 +329,10 @@ export function buildPlanet(): PlanetBuild {
             geometry.rotateZ(Math.PI / 2); geometry.scale(1, .4, 1);
             const canopyMaterial = mat(0x719b90); canopyMaterial.side = THREE.DoubleSide;
             const roof = mesh(geometry, canopyMaterial, g); roof.position.y = 2.75; solids.push(roof);
-            for (const x of [-2.65, 2.65]) strut(g, [x, 0, 2.35], [x, 3.05, 2.35], .07, timber);
+            for (const x of [-2.65, 2.65]) {
+                strut(g, [x, 0, 2.35], [x, 3.05, 2.35], .07, timber);
+                groundPostExtensions.push({ parent: g, x, z: 2.35, top: 0, radius: .07, material: timber, id: `reading-canopy-foot-${x}` });
+            }
         } else {
             const shape = new THREE.Shape();
             shape.moveTo(-2.85, 0); shape.lineTo(0, 1.25); shape.lineTo(2.85, 0); shape.closePath();
@@ -314,7 +348,7 @@ export function buildPlanet(): PlanetBuild {
             box(.64, .12, .7, terra, chimney, 0, .64, 0);
         }
         // A real shaded porch and framed entrance are readable from the path.
-        box(5.1, .09, .8, timber, g, 0, .025, 2.5);
+        floor(box(5.1, .09, .8, timber, g, 0, .025, 2.5), `${p.kind}-porch-floor`);
         for (const x of [-2.35, 2.35]) {
             strut(g, [x, .04, 2.65], [x, 2.95, 2.65], .075, dark);
             box(.28, .1, .28, cream, g, x, .08, 2.65);
@@ -355,7 +389,21 @@ export function buildPlanet(): PlanetBuild {
             // place centre and every historical sound position stay exact.
             const g = place(p.x, p.z); g.name = "cafe-interior-and-terrace";
             cafeCupParent = g;
-            box(11.6, .12, 7.2, timber, g, 0, .075, 1.2).name = "cafe-terrace-floor";
+            floor(box(11.6, .12, 7.2, timber, g, 0, .075, 1.2), "cafe-terrace-floor");
+            // Five actual treads make the high, curved-ground foundation a
+            // readable entrance. The original terrace top and sounds stay put.
+            const stepDepth = .27, stepCount = 5, endBack = 4.8 + (stepCount - 1) * stepDepth;
+            let finalTop = -.7;
+            for (let pass = 0; pass < 4; pass++) {
+                const scale = (R + finalTop) / (R + .135);
+                finalTop = Math.max(...[-1.2, 0, 1.2].map(x => groundLocalHeight(g, x * scale, endBack * scale))) + .025;
+            }
+            const rise = (.135 - finalTop) / stepCount;
+            for (let i = 0; i < stepCount; i++) {
+                const top = .135 - (i + 1) * rise;
+                const step = mesh(radialStairGeometry(4.8 + i * stepDepth, stepDepth, 2.4, top, .1, .135), timber, g);
+                step.userData.radialFoundation = true;floor(step, `cafe-entrance-step-${i + 1}`);
+            }
             for (const x of [-5.65, 5.65]) box(.1, .6, 5.7, sage, g, x, .42, 1.35);
             // The open front and furnished patio explain what belongs here
             // from the path. Keep the original place ID and coordinates.
@@ -364,21 +412,23 @@ export function buildPlanet(): PlanetBuild {
                 return group;
             };
             for (const [x, z] of [[-2.2, .25], [2.2, .25], [-2.2, 3.8], [2.2, 3.8], [-4.5, 1.4], [4.5, 1.4]]) {
-                const table = new THREE.Group(); g.add(table); table.position.set(x, 0, z); table.name = "cafe-company-table";
+                const table = new THREE.Group(); g.add(table); table.position.set(x, Math.abs(x) < 3.75 && z < 2.97 ? .15 : .135, z); table.name = "cafe-company-table";
                 const top = mesh(new THREE.CylinderGeometry(.59, .59, .1, 18), timber, table); top.position.y = .84;
                 top.name = "cafe-table-top";
-                box(.12, .8, .12, dark, table, 0, .4, 0);
+                const stem = box(.12, .8, .12, dark, table, 0, .4, 0);stem.name = "cafe-table-ground-stem";furnitureFeet.push(stem);
                 box(.64, .07, .12, dark, table, 0, .1, 0);
                 cup(table, -.2, .9, 0); cup(table, .2, .9, .1);
                 const vase = ball(.085, terra, table, 0, .99, -.18); vase.scale.y = 1.4;
                 strut(table, [0, 1.02, -.18], [.02, 1.25, -.18], .01, sage);
                 ball(.075, rose, table, .02, 1.27, -.18);
                 for (const side of [-1, 1]) {
-                    const chair = new THREE.Group(); table.add(chair); chair.position.set(side * .88, 0, .18); chair.rotation.y = side * Math.PI / 2;
+                    const chair = new THREE.Group(); table.add(chair);
+                    const chairFloor = Math.abs(x + side * .88) < 3.75 && z + .18 < 2.97 ? .15 : .135;
+                    chair.position.set(side * .88, chairFloor - table.position.y, .18); chair.rotation.y = side * Math.PI / 2;
                     chair.name = "cafe-chair";
                     box(.46, .08, .46, terra, chair, 0, .44, 0);
                     box(.46, .49, .065, terra, chair, 0, .72, -.2);
-                    for (const xx of [-.16, .16]) for (const zz of [-.16, .16]) box(.045, .4, .045, dark, chair, xx, .2, zz);
+                    for (const xx of [-.16, .16]) for (const zz of [-.16, .16]) { const leg = box(.045, .4, .045, dark, chair, xx, .2, zz);leg.name = "cafe-chair-ground-leg";furnitureFeet.push(leg); }
                 }
             }
             const counter = box(6.4, .91, .7, cream, g, 0, .6, -1.9); counter.name = "cafe-coffee-counter";
@@ -427,14 +477,14 @@ export function buildPlanet(): PlanetBuild {
             for (const x of [-4.5, 4.5]) {
                 const canopy = new THREE.Group(); g.add(canopy); canopy.position.set(x, 2.45, 1.4);
                 mesh(canopyGeometry, canopyFabric, canopy);
-                box(.055, 2.2, .055, timber, g, x, 1.3, 1.4);
+                const pole = box(.055, 2.265, .055, timber, g, x, 1.2675, 1.4);pole.name = "cafe-canopy-ground-post";furnitureFeet.push(pole);
             }
-            const menu = new THREE.Group(); g.add(menu); menu.position.set(-.95, 0, 3.45); menu.rotation.y = -.12;
+            const menu = new THREE.Group(); g.add(menu); menu.position.set(-.95, .135, 3.45); menu.rotation.y = -.12;
             menu.name = "cafe-menu-board";
             box(.7, .95, .08, dark, menu, 0, .62, 0);
             for (const y of [.91, .68, .48]) box(.43, .025, .018, cream, menu, 0, y, .055);
             const bean = ball(.075, gold, menu, 0, .96, .065); bean.scale.set(1.6, .8, .25);
-            for (const x of [-.27, .27]) box(.05, .28, .4, timber, menu, x, .14, 0);
+            for (const x of [-.27, .27]) furnitureFeet.push(box(.05, .28, .4, timber, menu, x, .14, 0));
             // Detailed cups cost four draw calls, with a shared geometry
             // and the same small company gesture as their actual group frames.
             for (const [geometry, material, position] of [
@@ -462,8 +512,10 @@ export function buildPlanet(): PlanetBuild {
             g.name = "village-sail-stage";
             const plinth = mesh(new THREE.CylinderGeometry(3.1, 3.25, .22, 32), timber, g);
             plinth.position.y = .12;
+            floor(plinth, "pocket-jam-stage-floor", "floor", 3.1);
             for (const x of [-2.6, 2.6]) for (const z of [-2.1, 2.1]) {
                 strut(g, [x, .1, z], [x, 3.55, z], .085, timber);
+                groundPostExtensions.push({ parent: g, x, z, top: .1, radius: .085, material: timber, id: `stage-sail-foot-${x}-${z}` });
                 box(.25, .12, .25, cream, g, x, .19, z);
             }
             const canvas = new THREE.BufferGeometry();
@@ -491,11 +543,13 @@ export function buildPlanet(): PlanetBuild {
                 const arch = mesh(new THREE.TorusGeometry(2.7, .075, 6, 32, Math.PI), sage, g);
                 arch.rotation.y = Math.PI / 2;
                 arch.position.set(x, .15, 0);
+                for (const z of [-2.7, 2.7]) groundPostExtensions.push({ parent: g, x, z, top: .15, radius: .075, material: sage, id: `conservatory-arch-foot-${x}-${z}` });
             }
             for (const z of [-2.6, 2.6])
                 box(5.3, .1, .1, sage, g, 0, .2, z);
             for (const x of [-1.65, 1.65]) {
-                box(1.1, .45, 3.4, terra, g, x, .23, 0);
+                const planter = box(1.1, .45, 3.4, terra, g, x, .23, 0);planter.name = "conservatory-planter-body";
+                floors.push({ object: planter }); // A foundation, never a walkable planter top.
                 // An actual opening: the old full lid and soil shared y=.52,
                 // producing depth fighting as the camera moved.
                 for (const edge of [-1, 1]) {
@@ -528,8 +582,10 @@ export function buildPlanet(): PlanetBuild {
                 // An open mouth faces the sea; seated visitors and a ring of
                 // boulders must not hide the coast at first-person eye level.
                 if (Math.cos(a) > .6) continue;
-                const rock = ball(.32 + (i % 3) * .1, stone, g, Math.sin(a) * 3.1, .10, Math.cos(a) * 3.1);
+                const base = new THREE.Group();g.add(base);base.name = "pool-grounded-rock";base.position.set(Math.sin(a) * 3.1, 0, Math.cos(a) * 3.1);
+                const radius = .32 + (i % 3) * .1, rock = ball(radius, stone, base, 0, radius * .65 - .02, 0);
                 rock.scale.y = .65;
+                groundedProps.push({ group: base, feet: [], id: `pool-rock-${i}` });groundedRocks.push({ group: base, rock });
             }
             const seat = new THREE.Group(); seat.position.set(-3.8, 0, 1); seat.rotation.y = Math.PI / 2; g.add(seat);
             bench(seat, 0, 0);
@@ -551,6 +607,7 @@ export function buildPlanet(): PlanetBuild {
             const g = place(p.x, p.z);
             const base = mesh(new THREE.CylinderGeometry(2.4, 2.6, .25, 24), stone, g);
             base.position.y = .13;
+            floor(base, "lookout-plinth-floor", "floor", 2.4);
             const dome = mesh(new THREE.SphereGeometry(2.1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), sage, g);
             dome.position.y = .18;
             dome.rotation.z = .12;
@@ -562,7 +619,7 @@ export function buildPlanet(): PlanetBuild {
     }
     for (const h of PLANET_HUTS) {
         const cx = (h.x0 + h.x1) / 2, cz = (h.z0 + h.z1) / 2, g = place(cx, cz), colour = h.kind.endsWith("toilet") ? cream : sea;
-        box(3.1, .15, 3.1, timber, g, 0, .04, 0);
+        floor(box(3.1, .15, 3.1, timber, g, 0, .04, 0), `${h.id}-timber-floor`);
         for (const x of [-1.5, 1.5])
             solids.push(box(.13, 2.8, 3.1, colour, g, x, 1.4, 0));
         solids.push(box(3.1, 2.8, .13, colour, g, 0, 1.4, -1.5));
@@ -590,7 +647,7 @@ export function buildPlanet(): PlanetBuild {
         const ceramic = mat(0xf6f3e9);ceramic.roughness = .32;
         const chrome = mat(0x9aaea5);chrome.roughness = .3;chrome.metalness = .5;
         // Tiles are separate, raised surfaces, never coplanar decals.
-        const tiles = box(2.73, .025, 2.73, mat(0xd5ddd0), fixtures, 0, .137, 0);tiles.name = "washroom-tiled-floor";
+        const tiles = floor(box(2.73, .025, 2.73, mat(0xd5ddd0), fixtures, 0, .137, 0), `${h.id}-tiled-floor`);tiles.name = "washroom-tiled-floor";
         if (h.kind.endsWith("toilet")) {
             const toilet = new THREE.Group();fixtures.add(toilet);toilet.name = "restroom-toilet";toilet.position.set(-.42, 0, -.72);
             const pedestal = mesh(new THREE.CylinderGeometry(.18, .25, .43, 20), ceramic, toilet);pedestal.position.y = .38;
@@ -608,7 +665,7 @@ export function buildPlanet(): PlanetBuild {
             strut(fixtures, [.8, 1, -1.13], [.8, 1.22, -1.13], .025, chrome);strut(fixtures, [.8, 1.22, -1.13], [.8, 1.22, -.96], .025, chrome);
             box(.64, .78, .035, chrome, fixtures, .8, 1.68, -1.405).name = "restroom-mirror";
         } else {
-            box(1.4, .1, 1.42, ceramic, fixtures, -.37, .21, -.58).name = "shower-tray";
+            floor(box(1.4, .1, 1.42, ceramic, fixtures, -.37, .21, -.58), "shower-tray", "shower");
             const drain = mesh(new THREE.CylinderGeometry(.085, .085, .013, 16), chrome, fixtures);drain.position.set(-.37, .268, -.55);drain.name = "shower-drain";
             for (const x of [-.7, -.04]) strut(fixtures, [x, .28, -1.25], [x, .28, .1], .015, ceramic);
             strut(fixtures, [-.37, .7, -1.3], [-.37, 2.25, -1.3], .03, chrome);
@@ -712,16 +769,113 @@ export function buildPlanet(): PlanetBuild {
     // of identical poles. The continuous path itself provides wayfinding.
     for (const [x, z] of [[-6, 2.8], [6, -2.5], [23, 2.8], [42, -2.8], [-35, 2.8], [-54, -2.8]]) lamp(place(x, z), 0, 0);
     const buildings = PLANET_PLACES.filter(p => ["tea", "reading", "workshop"].includes(p.kind));
-    function heightAt(x: number, z: number): number {
+    // The actual timber planks use their own flat normals. Narrow joints keep
+    // the original continuous pier walking surface as a bounded fallback.
+    coast.root.traverse(object => {
+        if (!(object instanceof THREE.Mesh) || !(object.geometry instanceof THREE.BoxGeometry)) return;
+        const { width, height, depth } = object.geometry.parameters;
+        if ((width === 2.35 && height === .09 && depth === .29) || (width === 3.1 && height === .1 && depth === 1.5)) {
+            supportSurfaces.add(object, `pier-plank-${floorMeshes.length}`, "pier");floorMeshes.push(object);
+        }
+    });
+    root.updateMatrixWorld(true);supportSurfaces.refresh();
+    for (const post of groundPostExtensions) {
+        const corners = Array.from({ length: 12 }, (_, i) => { const angle = i / 12 * Math.PI * 2;
+            return groundLocalHeight(post.parent, post.x + Math.sin(angle) * post.radius, post.z + Math.cos(angle) * post.radius); });
+        const bottom = Math.min(...corners);
+        if (bottom >= post.top) continue;
+        const extension = strut(post.parent, [post.x, bottom, post.z], [post.x, post.top, post.z], post.radius, post.material);
+        extension.name = post.id;extensionFeet.push(extension);
+    }
+    // Foundations inherit the existing floor transform and material. They
+    // leave its top, footprint, persisted sounds and authoritative walls exact.
+    for (const { object, radius } of floors) {
+        object.geometry.computeBoundingBox();const bounds = object.userData.radialFoundation ? horizontalGeometryBounds(object.geometry, false) : object.geometry.boundingBox!, outline: { x: number; z: number }[] = [];
+        if (radius !== undefined) {
+            const bottomRadius = object.geometry instanceof THREE.CylinderGeometry ? object.geometry.parameters.radiusBottom : radius;
+            const segments = object.geometry instanceof THREE.CylinderGeometry ? object.geometry.parameters.radialSegments : 32;
+            for (let i = 0; i < segments; i++) {
+                const a = i / segments * Math.PI * 2, b = (i + 1) / segments * Math.PI * 2, count = Math.ceil(2 * bottomRadius * Math.sin(Math.PI / segments) / .35);
+                for (let j = 0; j < count; j++) outline.push({ x: bottomRadius * (Math.sin(a) + (Math.sin(b) - Math.sin(a)) * j / count), z: bottomRadius * (Math.cos(a) + (Math.cos(b) - Math.cos(a)) * j / count) });
+            }
+        } else {
+            const corners = [{ x: bounds.min.x, z: bounds.min.z }, { x: bounds.min.x, z: bounds.max.z }, { x: bounds.max.x, z: bounds.max.z }, { x: bounds.max.x, z: bounds.min.z }];
+            for (let i = 0; i < corners.length; i++) {
+                const a = corners[i], b = corners[(i + 1) % corners.length], count = Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / .35);
+                for (let j = 0; j < count; j++) outline.push({ x: a.x + (b.x - a.x) * j / count, z: a.z + (b.z - a.z) * j / count });
+            }
+        }
+        const foundation = mesh(curvedFoundationGeometry(object, outline, bounds.min.y), object.material as THREE.Material, object);
+        foundation.name = `${object.name}-ground-foundation`;
+    }
+    const canonical = (point: THREE.Vector3): { x: number; z: number } => ({ x: Math.atan2(point.x, point.z) * R, z: -Math.asin(THREE.MathUtils.clamp(point.y / point.length(), -1, 1)) * R });
+    const contact = (foot: THREE.Mesh, id: string, point?: THREE.Vector3): void => {
+        foot.geometry.computeBoundingBox();const bounds = foot.geometry.boundingBox!;
+        const world = point ?? new THREE.Vector3(0, bounds.min.y, 0).applyMatrix4(foot.matrixWorld), coords = canonical(world), support = supportAt(coords.x, coords.z);
+        const forward = new THREE.Vector3().setFromMatrixColumn(foot.matrixWorld, 2).normalize(), basis = planetBasis(coords.x, coords.z);
+        const yaw = Math.atan2(forward.dot(new THREE.Vector3(basis.east.x, basis.east.y, basis.east.z)), forward.dot(new THREE.Vector3(basis.south.x, basis.south.y, basis.south.z)));
+        const anchor = { id, point: { x: world.x, y: world.y, z: world.z }, normal: support.normal,
+            rx: (bounds.max.x - bounds.min.x) / 2 * new THREE.Vector3().setFromMatrixColumn(foot.matrixWorld, 0).length(),
+            rz: (bounds.max.z - bounds.min.z) / 2 * new THREE.Vector3().setFromMatrixColumn(foot.matrixWorld, 2).length(), yaw };
+        foot.userData.groundContact = anchor;contactAnchors.push(anchor);
+    };
+    // Ground each object at its own spherical location, then extend every leg
+    // to the actual triangles below its four corners. Aligning one bench's
+    // origin alone still leaves its outer foot hovering above a curved world.
+    for (const { group, feet, id } of groundedProps) {
+        const old = group.getWorldPosition(new THREE.Vector3()), coords = canonical(old), support = supportAt(coords.x, coords.z), basis = planetBasis(coords.x, coords.z);
+        const forward = new THREE.Vector3().setFromMatrixColumn(group.matrixWorld, 2).normalize();
+        const yaw = Math.atan2(forward.dot(new THREE.Vector3(basis.east.x, basis.east.y, basis.east.z)), forward.dot(new THREE.Vector3(basis.south.x, basis.south.y, basis.south.z)));
+        const point = planetPoint(coords.x, coords.z, support.height), parent = group.parent!;
+        group.position.copy(parent.worldToLocal(new THREE.Vector3(point.x, point.y, point.z)));
+        group.quaternion.copy(parent.getWorldQuaternion(new THREE.Quaternion()).invert()).multiply(supportedPlanetFrame(coords.x, coords.z, yaw, support.normal));
+        group.updateWorldMatrix(true, true);
+        for (let i = 0; i < feet.length; i++) {
+            const foot = feet[i], geometry = foot.geometry as THREE.BoxGeometry, { width, height, depth } = geometry.parameters;
+            const top = foot.position.y + height / 2, up = new THREE.Vector3().setFromMatrixColumn(group.matrixWorld, 1).normalize(), bottoms: number[] = [];
+            for (const x of [-width / 2, width / 2]) for (const z of [-depth / 2, depth / 2]) {
+                const base = new THREE.Vector3(x, -height / 2, z).applyMatrix4(foot.matrixWorld);
+                const hit = new THREE.Raycaster(base.clone().addScaledVector(up, 1), up.clone().negate(), 0, 4).intersectObjects([...groundMeshes, ...floorMeshes], false)[0];
+                if (hit) bottoms.push(group.worldToLocal(hit.point.clone()).y);
+            }
+            if (bottoms.length) {
+                const bottom = Math.min(...bottoms);foot.geometry = new THREE.BoxGeometry(width, top - bottom, depth);geometries.add(foot.geometry);
+                foot.position.y = (top + bottom) / 2;foot.updateWorldMatrix(true, false);
+            }
+            contact(foot, `${id}-foot-${i}`);
+        }
+    }
+    root.updateMatrixWorld(true);
+    for (let i = 0; i < furnitureFeet.length; i++) {
+        const foot = furnitureFeet[i], geometry = foot.geometry as THREE.BoxGeometry, { width, height, depth } = geometry.parameters, parent = foot.parent!;
+        const top = foot.position.y + height / 2, up = new THREE.Vector3().setFromMatrixColumn(parent.matrixWorld, 1).normalize(), bottoms: number[] = [];
+        for (const x of [-width / 2, width / 2]) for (const z of [-depth / 2, depth / 2]) {
+            const base = new THREE.Vector3(x, -height / 2, z).applyMatrix4(foot.matrixWorld);
+            const hit = new THREE.Raycaster(base.clone().addScaledVector(up, .5), up.clone().negate()).intersectObjects(floorMeshes, false)[0];
+            if (hit) bottoms.push(parent.worldToLocal(hit.point.clone()).y);
+        }
+        if (bottoms.length) {
+            const bottom = Math.min(...bottoms);foot.geometry = new THREE.BoxGeometry(width, top - bottom, depth);geometries.add(foot.geometry);
+            foot.position.y = (top + bottom) / 2;foot.updateWorldMatrix(true, false);
+        }
+        contact(foot, `cafe-furniture-foot-${i}`);
+    }
+    root.updateMatrixWorld(true);
+    for (const foot of extensionFeet) contact(foot, foot.name);
+    for (let i = 0; i < groundedRocks.length; i++) contact(groundedRocks[i].rock, `pool-rock-${i}`, groundedRocks[i].group.getWorldPosition(new THREE.Vector3()));
+    function supportAt(x: number, z: number): PlanetSupport {
+        let height = 0, id = "globe";
+        const edge = coastlineAt(x), sandWidth = 3.2 + Math.sin(x * .48) * .45 + Math.sin(x * 1.3) * .16;
+        if (z >= edge - sandWidth && z <= edge + .22) { height = .032;id = "beach"; }
+        if (patches.some(patch => planetDistance({ x, z }, patch) <= patch.radius)) { height = .035;id = "village-ground"; }
+        if (roadField(x, z) > 0) { height = .065;id = "promenade"; }
+        const support = supportSurfaces.at(x, z, { height, normal: planetNormal(x, z), kind: "ground", id });
+        if (support.kind !== "ground") return support;
         const pier = planetPierHeightAt(x, z);
-        if (pier !== null) return pier;
-        const p = buildings.find(p => { const local = frontPlanetLocal({ x, z }, p); return !!local && (p.kind === "tea" ? Math.abs(local.x) < 5.8 && local.z > -2.97 && local.z < 4.8 : Math.abs(local.x) < 2.5 && Math.abs(local.z) < 2.2); });
-        const h = PLANET_HUTS.find(h => x > h.x0 && x < h.x1 && z > h.z0 && z < h.z1);
-        const center = p ?? (h ? { x: (h.x0 + h.x1) / 2, z: (h.z0 + h.z1) / 2 } : null);
-        if (center)
-            return raisedPlanetFloorHeight({ x, z }, center, .16) ?? 0;
-        const stage = PLANET_PLACES.find(p => p.kind === "stage")!;
-        return planetDistance({ x, z }, stage) < 3 ? (R + .24) / Math.cos(planetDistance({ x, z }, stage) / R) - R : 0;
+        return pier === null ? support : { height: pier, normal: planetNormal(x, z), kind: "pier", id: "pier-joint" };
+    }
+    function heightAt(x: number, z: number): number {
+        return supportAt(x, z).height;
     }
     function canStand(x: number, z: number, locked: ReadonlySet<string>, ownHut?: string): boolean {
         // Water is visibly water. The continuous land promenade still wraps
@@ -780,7 +934,7 @@ export function buildPlanet(): PlanetBuild {
         }
         for (const window of cafeWindows) (window.material as THREE.MeshStandardMaterial).emissiveIntensity = cafeState.company ? .9 : .12;
     }
-    return { root, solids, doors, lamps, lanterns, blossoms, cafeState, setContributions, heightAt, inside, canStand, animate, dispose: () => {
+    return { root, solids, doors, lamps, lanterns, blossoms, cafeState, setContributions, supportAt, contactAnchors, heightAt, inside, canStand, animate, dispose: () => {
             coast.dispose();
             root.traverse(o => { const t = o.userData.signTexture as THREE.Texture | undefined; t?.dispose(); if (o instanceof THREE.InstancedMesh) o.dispose(); });
             for (const g of geometries)

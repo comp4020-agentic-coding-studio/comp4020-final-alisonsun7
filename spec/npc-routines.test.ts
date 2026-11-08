@@ -200,7 +200,13 @@ describe("server-controlled resident restroom routine", () => {
       for (let elapsed = 0; elapsed < duration.interval; elapsed += 100) {
         const state = frame(ordinary, start + elapsed);
         expect(scene.canStand(state.x, state.z, new Set())).toBe(true);
-        expect(scene.heightAt(state.x, state.z)).toBe(0);
+        // Actual road/patch/sand tops are now supported, without the old
+        // universal y=0 shortcut or a remote building's tangent floor.
+        const support = scene.supportAt(state.x, state.z);
+        expect(support.kind).toBe("ground");
+        const groundLayers: Record<string, number> = { globe: 0, promenade: .065, "village-ground": .035, beach: .032 };
+        expect(support.height).toBe(groundLayers[support.id]);
+        expect(scene.heightAt(state.x, state.z)).toBe(support.height);
       }
       for (const inviteAfter of [0, 49_000, 130_000]) {
         for (const available of [true, false]) {

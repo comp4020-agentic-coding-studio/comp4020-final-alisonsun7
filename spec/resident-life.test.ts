@@ -8,7 +8,7 @@ import { prepareResidentLife, sampleResidentLife, validResidentLifePlan, type Re
 
 // A frozen pre-life controller can be selected without replacing production
 // files or touching a database. It genuinely lacks the new activity behaviour.
-const { SoundResidents } = await import(process.env.RESIDENT_CONTROLLER_UNDER_TEST ?? "../src/client/sound-residents.ts");
+const { SoundResidents } = await import(process.env.RESIDENT_CONTROLLER_UNDER_TEST ?? "../src/client/sound-residents.ts") as typeof import("../src/client/sound-residents.ts");
 const now = Date.parse("2026-11-08T10:00:00Z");
 const geometry = { surfaceHeight: () => .4, canStand: () => true, distanceBetween: planetDistance };
 const loop: ResidentLifePlan = { group: "garden-round", periodSeconds: 40, pauseFraction: .6,
@@ -21,7 +21,7 @@ function figure() {
     const actor = sprite as unknown as AnimalFigure & { setConversation: ReturnType<typeof vi.fn> };
     actor.setFacing = yaw => { sprite.rotation.y = yaw; };
     actor.setPose = vi.fn();actor.setMotion = vi.fn(() => { sprite.children.forEach(bone => bone.rotation.set(0, 0, 0)); });
-    actor.setConversation = vi.fn();actor.dispose = vi.fn();return actor;
+    actor.setConversation = vi.fn<AnimalFigure["setConversation"]>();actor.dispose = vi.fn();return actor;
 }
 const definition = (id = "neighbour", life: ResidentLifePlan = loop): ResidentDefinition => ({ id, label: "Neighbour · NPC", x: 0, z: 0, preference: "cozy", facing: 0, life });
 const source = (id: string, at = now): SoundSignal => ({ id, soundId: "guitar", x: 8, z: 0, at: new Date(at).toISOString() });

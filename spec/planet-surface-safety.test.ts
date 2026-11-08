@@ -21,9 +21,12 @@ describe("the actual ground and camera on the far shore", () => {
         expect(point).toEqual({ x: HALF - 9, z: 7 });
         expect(scene.canStand(point.x, point.z, new Set())).toBe(true);
         expect(scene.inside(point.x, point.z)).toBe(false);
-        expect(scene.heightAt(point.x, point.z)).toBe(0);
+        // This shore has real raised sand now. A valid ground layer must not
+        // be confused with the remote cafe's negative tangent-plane floor.
+        expect(scene.heightAt(point.x, point.z)).toBeGreaterThanOrEqual(0);
+        expect(scene.heightAt(point.x, point.z)).toBeLessThanOrEqual(.065);
         const feet = planetPoint(point.x, point.z, scene.heightAt(point.x, point.z)), up = planetNormal(point.x, point.z);
-        expect(feet.x * up.x + feet.y * up.y + feet.z * up.z).toBeCloseTo(R, 8);
+        expect(feet.x * up.x + feet.y * up.y + feet.z * up.z).toBeCloseTo(R + scene.heightAt(point.x, point.z), 8);
     });
 
     it("removes phantom building walls at antipodes while retaining actual cafe walls and floor clearance", () => {
@@ -33,17 +36,21 @@ describe("the actual ground and camera on the far shore", () => {
             const phantomWall = offset(far, side * 3.6, 0), actualWall = offset(cafe, side * 3.6, 0);
             expect(scene.canStand(phantomWall.x, phantomWall.z, new Set())).toBe(true);
             expect(scene.inside(phantomWall.x, phantomWall.z)).toBe(false);
-            expect(scene.heightAt(phantomWall.x, phantomWall.z)).toBe(0);
+            expect(scene.heightAt(phantomWall.x, phantomWall.z)).toBeGreaterThanOrEqual(0);
+            expect(scene.heightAt(phantomWall.x, phantomWall.z)).toBeLessThanOrEqual(.065);
             expect(scene.canStand(actualWall.x, actualWall.z, new Set())).toBe(false);
         }
         const floor = scene.root.getObjectByName("cafe-terrace-floor")!;
+        const floors: THREE.Object3D[] = [];
+        scene.root.traverse((object: THREE.Object3D) => { if (object.userData.supportSurface) floors.push(object); });
+        if (!floors.length) floors.push(floor);
         for (const [x, z] of [[0, 0], [3, 1], [-3, 1], [4.5, 2.3]]) {
             const p = offset(cafe, x, z), origin = planetPoint(p.x, p.z, 3);
             const o = new THREE.Vector3(origin.x, origin.y, origin.z);
-            const hit = new THREE.Raycaster(o, o.clone().normalize().negate()).intersectObject(floor, false)[0];
+            const hit = new THREE.Raycaster(o, o.clone().normalize().negate()).intersectObjects(floors, false)[0];
             expect(hit, "An actual terrace triangle must support the existing raised walking surface").toBeDefined();
             const clearance = R + scene.heightAt(p.x, p.z) - hit.point.length();
-            expect(clearance).toBeGreaterThan(0);expect(clearance).toBeLessThan(.04);
+            expect(Math.abs(clearance)).toBeLessThan(.001);
         }
     });
 

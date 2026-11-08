@@ -8,6 +8,9 @@ import { SoundVessels } from "./sound-vessels.js";
 import { SoundPinwheels } from "./sound-pinwheels.js";
 import { PLANET_RESIDENT_HOMES, planetNpcFurnitureClearance } from "./planet-neighbours.js";
 import { NpcConversationCues } from "./npc-conversation-cues.js";
+import { PlanetLighting } from "./planet-lighting.js";
+import { PlanetContactShadows, type PlanetActorContact } from "./planet-contact-shadows.js";
+import { supportedPlanetFrame, type PlanetSupport } from "./planet-support.js";
 export { CAFE_RESIDENT_HOMES } from "./planet-neighbours.js";
 import { coastlineAt, planetPierHeightAt } from "./planet-coast.js";
 import type { SoundSignal } from "../shared/sound-response.js";
@@ -93,8 +96,8 @@ export class PlanetWorld {
     private conversationCues = new NpcConversationCues();
     private overlay = document.createElement("div");
     private touch: HTMLElement | null = null;
-    private sun = new THREE.DirectionalLight(0xffefcf, 3.2);
-    private hemi = new THREE.HemisphereLight(0xe2e9cf, 0x6d826f, 2.2);
+    private lighting = new PlanetLighting();
+    private contacts: PlanetContactShadows;
     private position: Position = { x: 1.8, z: 2.2, yaw: Math.PI };
     private selfYaw = Math.PI;
     private keys = new Set<string>();
@@ -157,23 +160,17 @@ export class PlanetWorld {
         Object.assign(this.overlay.style, { position: "absolute", inset: "0", pointerEvents: "none", overflow: "hidden" });
         host.prepend(canvas);
         host.append(this.overlay);
-        this.scene.add(this.built.root, this.hemi, this.sun);
+        this.scene.add(this.built.root, this.lighting.hemi, this.lighting.sun, this.lighting.target);
+        this.contacts = new PlanetContactShadows(this.built.contactAnchors,
+            this.built.root.getObjectByName("village-tree-trunks") as THREE.InstancedMesh | undefined,
+            (x, z) => this.built.supportAt(x, z));
+        this.scene.add(this.contacts.root);
         const fixtureNames = (name: string): string[] => {const names: string[]=[];this.built.root.getObjectByName(name)?.traverse(object=>{if(object.name)names.push(object.name);});return names;};
         host.dataset.roomFixtures = JSON.stringify({toilet:fixtureNames("restroom-fixtures"),shower:fixtureNames("shower-fixtures")});
         this.connections = new PlanetSoundConnections(this.scene, (x, z) => this.built.heightAt(x, z));
         this.garden = new ChorusGarden(this.scene);
         this.scene.add(this.kangaroo.figure);
         this.kangarooLabel = this.makeLabel("Kangaroo · companion", "npc");
-        this.sun.position.set(-28, 45, 55);
-        this.sun.castShadow = true;
-        this.sun.shadow.mapSize.set(2048, 2048);
-        const sc = this.sun.shadow.camera;
-        sc.left = sc.bottom = -35;
-        sc.right = sc.top = 35;
-        sc.near = 1;
-        sc.far = 150;
-        this.sun.shadow.bias = -.0006;
-        this.sun.shadow.normalBias = .035;
         const rainGeo = new THREE.BufferGeometry();
         rainGeo.setAttribute("position", new THREE.BufferAttribute(this.rainPositions, 3));
         this.rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xbadadd, size: .065, transparent: true, opacity: .65 }));
@@ -328,7 +325,7 @@ export class PlanetWorld {
         this.publicSounds = sounds.filter(s => !s.removedAt && !s.whileIn).map(s => ({ ...s })).sort((a,b)=>a.at.localeCompare(b.at)||a.id.localeCompare(b.id));
         this.refreshSoundLife();
         this.connections.setAll(this.publicSounds);
-        this.cues.setAll(this.publicSounds, (x, z) => this.built.heightAt(x, z));
+        this.cues.setAll(this.publicSounds, (x, z) => this.built.heightAt(x, z), (x,z)=>this.built.supportAt(x,z));
     }
     setExamples(examples: readonly SoundSignal[]): void { this.examples=examples.filter(source=>source.origin==="example").map(source=>({...source}));this.refreshSoundLife(); }
     private refreshSoundLife(): void {
@@ -465,20 +462,23 @@ export class PlanetWorld {
         this.jumpOffset = this.jumpStarted === null ? 0 : jumpHeight((this.serverNow - this.jumpStarted) / 1000);
         if (this.jumpStarted !== null && this.serverNow - this.jumpStarted >= JUMP_DURATION * 1000) { this.jumpStarted = null; this.jumpOffset = 0; }
         const b = planetBasis(this.position.x, this.position.z), up = new THREE.Vector3(b.up.x, b.up.y, b.up.z), heading = new THREE.Vector3(b.south.x, b.south.y, b.south.z).multiplyScalar(Math.cos(this.position.yaw)).addScaledVector(new THREE.Vector3(b.east.x, b.east.y, b.east.z), Math.sin(this.position.yaw));
-        const p = planetPoint(this.position.x, this.position.z, this.built.heightAt(this.position.x, this.position.z)), feet = new THREE.Vector3(p.x, p.y, p.z);
+        const support = this.built.supportAt(this.position.x, this.position.z), standingUp = new THREE.Vector3(support.normal.x, support.normal.y, support.normal.z);
+        const p = planetPoint(this.position.x, this.position.z, support.height), feet = new THREE.Vector3(p.x, p.y, p.z);
         // A roof can shorten the visual jump, but never open a wall/door or
         // change the server's two-dimensional occupancy admission.
         if (this.jumpOffset > 0) {
-            const ceiling = new THREE.Raycaster(feet.clone().addScaledVector(up, 1.55), up, .01, this.jumpOffset + .12).intersectObjects(this.built.solids, false)[0];
+            const ceiling = new THREE.Raycaster(feet.clone().addScaledVector(standingUp, 1.55), standingUp, .01, this.jumpOffset + .12).intersectObjects(this.built.solids, false)[0];
             if (ceiling) this.jumpOffset = Math.max(0, Math.min(this.jumpOffset, ceiling.distance - .12));
         }
         if (this.self) {
             this.self.visible = this.viewMode === "third";
             this.self.setPose(this.jumpOffset > .05 ? "arms-up" : walk ? "walk" : "stand");
             this.self.setMotion(this.walking % 1, walk && this.grounded && !this.reduced.matches);
-            onPlanet(this.self, this.position.x, this.position.z, this.built.heightAt(this.position.x, this.position.z) + this.jumpOffset, this.selfYaw);
+            this.standFigure(this.self, this.position, this.selfYaw, this.jumpOffset, support);
         }
-        const head = feet.clone().addScaledVector(up, 1.45 + this.jumpOffset);
+        // The body follows its actual floor; the camera keeps smooth radial
+        // gravity when stepping across a terrace edge rather than snapping roll.
+        const head = feet.clone().addScaledVector(standingUp, 1.45 + this.jumpOffset);
         this.camera.up.copy(up);
         if (this.viewMode === "first") {
             this.camera.position.copy(head);
@@ -516,19 +516,15 @@ export class PlanetWorld {
         const companionYaw = companionWork && this.kangaroo.phase === "resting" ? bearingToward(this.kangaroo.at, PLANET_PLACES.find(place => place.id === companionWork.placeId)!) : this.kangaroo.at.yaw;
         this.kangaroo.figure.userData.soundWorkId = companionWork?.id ?? null;
         this.kangaroo.figure.userData.localOnly = true;
-        onPlanet(this.kangaroo.figure, this.kangaroo.at.x, this.kangaroo.at.z, this.built.heightAt(this.kangaroo.at.x, this.kangaroo.at.z) + this.kangaroo.height + companionHop, companionYaw);
+        this.standFigure(this.kangaroo.figure, this.kangaroo.at, companionYaw, this.kangaroo.height + companionHop);
         const companionLabel = this.project(this.kangaroo.at.x, this.kangaroo.at.z, 2.1 + this.kangaroo.height + companionHop);
         this.kangarooLabel.hidden = !companionLabel.visible || planetDistance(this.position, this.kangaroo.at) > 3.4;
         if (!this.kangarooLabel.hidden) Object.assign(this.kangarooLabel.style, { left: companionLabel.x + "px", top: companionLabel.y + "px", transform: "translate(-50%,-100%)" });
         this.publishInteraction();
         this.host.dataset.replyThreads = String(this.connections.frame(this.position));
         const minute = minuteAt(this.environment, this.serverNow), day = Math.max(0, Math.sin((minute - 360) / 1440 * Math.PI * 2)), night = 1 - day;
-        this.sun.intensity = .2 + day * 3.2;
-        this.hemi.intensity = .8 + day * 1.4;
-        this.sun.position.set(Math.cos(minute / 1440 * Math.PI * 2) * 45, 45, 20 + day * 45);
         const weather = this.environment.weather, cloudy = weather === "cloudy" || weather === "rain", mist = weather === "mist";
-        this.sun.intensity *= cloudy ? .5 : mist ? .7 : 1;
-        this.hemi.intensity *= cloudy ? .9 : 1;
+        this.lighting.update({ ...this.position, groundHeight: support.height, minute, weather, zoom: this.zoom });
         const bg = new THREE.Color(0x1e3441).lerp(new THREE.Color(cloudy ? 0xa5babb : mist ? 0xc2d4ce : 0xdce8da), day);
         this.scene.background = bg;
         this.scene.fog = mist ? new THREE.Fog(bg, 28, 85) : weather === "rain" ? new THREE.Fog(bg, 40, 120) : null;
@@ -555,7 +551,7 @@ export class PlanetWorld {
             a.figure.setPose(jump > .05 ? "arms-up" : walking ? "walk" : "stand");
             a.figure.setMotion((this.serverNow / (running ? 430 : 700)) % 1, walking && jump < .05 && !this.reduced.matches);
             a.figure.setInteriorLight(fill(a.at.x, a.at.z));
-            onPlanet(a.figure, a.at.x, a.at.z, this.built.heightAt(a.at.x, a.at.z) + jump, a.at.yaw);
+            this.standFigure(a.figure, a.at, a.at.yaw, jump);
             this.label(a.label, a.figure, a.at);
         };
         for (const a of this.others.values())
@@ -578,7 +574,7 @@ export class PlanetWorld {
             this.sharedWorkGesture(f, p);
             animateCafeIdle(f, this.gestureRig(f), this.serverNow, this.reduced.matches);
             this.conversationCues.update(f,this.serverNow,this.reduced.matches);
-            onPlanet(f, p.x, p.z, this.built.heightAt(p.x, p.z), p.yaw);
+            this.standFigure(f, p, p.yaw);
             this.label(this.residentLabels.get(f)!, f, p);
         }
         this.arrangeLabels();
@@ -615,8 +611,14 @@ export class PlanetWorld {
             }
             this.rain.geometry.getAttribute("position").needsUpdate = true;
         }
+        const contactActors: PlanetActorContact[] = [];
+        if(this.self?.visible)contactActors.push({...this.position,yaw:this.selfYaw,air:this.jumpOffset});
+        for(const actor of [...this.others.values(),...this.routines.values()])if(actor.figure.visible)contactActors.push({...actor.at,air:actor.at.motion?.jump??0});
+        for(const [figure,at] of this.residentPos)if(figure.visible)contactActors.push({...at,air:0});
+        contactActors.push({...this.kangaroo.at,yaw:companionYaw,air:this.kangaroo.height+companionHop,companion:true});
+        this.contacts.update(contactActors, day);
         this.renderer.render(this.scene, this.camera);
-        this.host.dataset.groundSafety=JSON.stringify({frame:this.frameNumber,x:this.position.x,z:this.position.z,feetRadius:feet.length(),signedFeetRadius:feet.dot(up),cameraRadius:this.camera.position.length(),view:this.viewMode,zoom:this.zoom});
+        this.host.dataset.groundSafety=JSON.stringify({frame:this.frameNumber,x:this.position.x,z:this.position.z,feetRadius:feet.length(),signedFeetRadius:feet.dot(up),cameraRadius:this.camera.position.length(),view:this.viewMode,zoom:this.zoom,supportId:support.id,supportKind:support.kind,supportHeight:support.height});
         this.opts.listen({ ...this.at, camera: this.camera, serverNow: this.serverNow });
         this.host.dataset.running = String(this._running);
         this.host.dataset.jumpHeight = this.jumpOffset.toFixed(3);
@@ -639,6 +641,9 @@ export class PlanetWorld {
             this.host.dataset.minute = minute.toFixed(1);
             this.host.dataset.serverNow=String(this.serverNow);
             this.host.dataset.weather=this.environment.weather;
+            this.host.dataset.lighting=JSON.stringify(this.lighting.state);
+            this.host.dataset.contactShade=JSON.stringify(this.contacts.state);
+            this.host.dataset.support=JSON.stringify(support);
             this.host.dataset.figureFill=String(this.self?.userData.interiorLight??0);
             this.host.dataset.sea = String(this.built.root.getObjectByName("soundfolk-ocean")?.visible ?? false);
             this.host.dataset.triangles = String(this.renderer.info.render.triangles);
@@ -721,7 +726,8 @@ export class PlanetWorld {
         x: number;
         z: number;
     }): void {
-        const head = f.headAnchor.getWorldPosition(new THREE.Vector3()).addScaledVector(f.position.clone().normalize(), f.userData.residentLife?.role==="speaking"?.55:.2), distance = planetDistance(at, this.position);
+        const normal = this.built.supportAt(at.x,at.z).normal;
+        const head = f.headAnchor.getWorldPosition(new THREE.Vector3()).addScaledVector(new THREE.Vector3(normal.x,normal.y,normal.z), f.userData.residentLife?.role==="speaking"?.55:.2), distance = planetDistance(at, this.position);
         const focused = this.works.find(work => work.id === this.focusedWork);
         const focusedNpc = e.classList.contains("npc") && distance <= 8 && !!focused?.liveSources.some(source => source.id === f.userData.soundResident?.sourceId);
         const near = e === this.selfLabel || distance <= (e.classList.contains("npc") ? 3 : 8) || focusedNpc;
@@ -734,9 +740,15 @@ export class PlanetWorld {
             e.style.transform = "translate(-50%,-100%)";
         }
     }
+    private standFigure(figure: THREE.Object3D, at: {x:number;z:number}, yaw: number, air=0, support=this.built.supportAt(at.x,at.z)): void {
+        const p=planetPoint(at.x,at.z,support.height);
+        figure.position.set(p.x,p.y,p.z).addScaledVector(new THREE.Vector3(support.normal.x,support.normal.y,support.normal.z),air);
+        figure.quaternion.copy(supportedPlanetFrame(at.x,at.z,yaw,support.normal));
+        figure.userData.groundSupport={id:support.id,kind:support.kind,height:support.height,normal:support.normal};
+    }
     dispose(): void { if (this.disposed)
         return; this.disposed = true; cancelAnimationFrame(this.frameId); this.abort.abort(); this.resizeObserver.disconnect(); this.self?.dispose(); for (const a of [...this.others.values(), ...this.routines.values()])
-        a.figure.dispose(); this.conversationCues.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
+        a.figure.dispose(); this.conversationCues.dispose(); this.residents.dispose(); this.soundWildlife.dispose(); this.soundVessels.dispose(); this.soundPinwheels.dispose(); this.kangaroo.dispose(); this.connections.dispose(); this.garden.dispose(); this.contacts.dispose(); this.lighting.dispose(); this.built.dispose(); this.rain.geometry.dispose(); (this.rain.material as THREE.Material).dispose(); this.cues.dispose(); this.renderer.dispose(); this.overlay.remove(); this.touch?.remove(); this.renderer.domElement.remove(); }
 }
 
 /** A room wall/roof can compress the camera into the player's own head.
@@ -766,7 +778,7 @@ export class PlanetSourceCues {
         this.petal.computeVertexNormals(); this.geometries.push(this.petal, this.seed, this.disc, this.ring);
     }
     get state() { return [...this.cues.values()].map(cue => ({ id: cue.source.id, authorId: cue.source.byId, soundId: cue.source.soundId, x: cue.source.x, z: cue.source.z, kind: "paper-glass-bud" })); }
-    setAll(sounds: readonly PlacedSound[], heightAt: (x: number, z: number) => number = () => 0): void {
+    setAll(sounds: readonly PlacedSound[], heightAt: (x: number, z: number) => number = () => 0, supportAt?: (x:number,z:number)=>PlanetSupport): void {
         if (this.disposed) return;
         const ended = new Set(sounds.filter(source => source.removedAt || source.whileIn).map(source => source.id));
         const live = [...new Map(sounds.filter(source => !ended.has(source.id) && !!findSound(source.soundId)).map(source => [source.id, source])).values()]
@@ -790,7 +802,12 @@ export class PlanetSourceCues {
                 }; this.materials.set(family, materials);
             }
             const group = new THREE.Group(); group.name = "planet-sound-bud"; group.userData.sourceId = source.id; group.userData.authorId = source.byId;
-            onPlanet(group, source.x, source.z, heightAt(source.x, source.z) + .055); this.root.add(group);
+            if(supportAt){
+                const support=supportAt(source.x,source.z),p=planetPoint(source.x,source.z,support.height);
+                group.position.set(p.x,p.y,p.z).addScaledVector(new THREE.Vector3(support.normal.x,support.normal.y,support.normal.z),.006);
+                group.quaternion.copy(supportedPlanetFrame(source.x,source.z,0,support.normal));
+            }else onPlanet(group, source.x, source.z, heightAt(source.x, source.z) + .006);
+            this.root.add(group);
             const glow = new THREE.Mesh(this.disc, materials.glow); glow.name = "source-soft-ground-glow"; glow.rotation.x = -Math.PI / 2; glow.renderOrder = 1; group.add(glow);
             const petals = new THREE.InstancedMesh(this.petal, materials.paper, 4); petals.name = "source-paper-petals"; petals.castShadow = true; petals.receiveShadow = true; group.add(petals);
             const crystal = new THREE.Mesh(this.seed, materials.glass); crystal.position.y = .24; crystal.name = "source-glass-heart"; crystal.castShadow = true; group.add(crystal);

@@ -2,6 +2,16 @@
 
 # Little Chorus agent rules
 
+ADR034 grounds objects against the highest actual visible receiver, including
+its transformed normal. Keep the front-hemisphere gate for every tangent floor;
+never move historical coordinates to repair a visual gap. Give broad flat decks
+real curved foundations, and check actual soles, leg corners and stair treads
+before adding contact shade. Its two bounded instance batches fade for genuine
+jumps. Close shadow coverage may follow a visitor, but move sun and target
+together to retain the same shared-time global key direction. Inspect fresh
+compiled desktop, phone, night and moving views; source/configuration checks
+alone cannot establish convincing contact. Roll back code with current data.
+
 ADR033 gives the existing twelve 3D neighbours authored days, not new human
 identities or generated chat. Absolute server time samples complete safe tours;
 real sounds steer attention and upper-body gestures without moving the tour.
