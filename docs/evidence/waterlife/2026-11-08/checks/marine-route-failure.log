@@ -1,0 +1,146 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/sound-waterlife.test.ts (8 tests | 7 failed) 70ms
+   ❯ real sounds invite life to the actual pond and sea (8)
+     × keeps five small scenery fish separate from author-attributed public consequences and rejects private/examples 25ms
+     × declines remote ingredients rather than sending their effect to an unrelated place or across a pier 7ms
+     × shows an immediate breath and a complete rare breach with articulated tail/flippers, instead of an unchanging model 5ms
+     × keeps the actual whale geometry and spray over ocean water through a full route, including the seam 5ms
+     × gives independent arrivals identical actual poses/instances, canonical bounded selection and frozen reduced motion 11ms
+     × withdraws all source-owned models and particles immediately, and tombstones outrank old live snapshots 4ms
+     × releases a withdrawn author's accent without disposing shared pond meshes, then disposes everything exactly once 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > keeps five small scenery fish separate from author-attributed public consequences and rejects private/examples
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ spec/sound-waterlife.test.ts:34:104
+     32|             life.frame(at + 1300);
+     33|             expect(life.state.map(s => s.sourceId)).toEqual(["fish", "…
+     34|             expect(life.state.every(s => s.visible && s.origin === "pl…
+       |                                                                                                        ^
+     35|             expect(mesh(life, "waterlife-fish-bodies").count).toBe(8);
+     36|             expect(mesh(life, "waterlife-fish-bodies").userData.source…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > declines remote ingredients rather than sending their effect to an unrelated place or across a pier
+AssertionError: expected null not to be null
+ ❯ spec/sound-waterlife.test.ts:51:104
+     49|             expect(findWaterlifeAnchor(whale(), "whale", { shoreline: …
+     50|             const pierSource = whale("pier", { x: 7, z: coastlineAt(7)…
+     51|             const result = findWaterlifeAnchor(pierSource, "whale", op…
+       |                                                                                                        ^
+     52|             for (let ms = 0; ms <= 120_000; ms += 250) {
+     53|                 const pose = sampleWaterlife("whale", result.anchor!, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > shows an immediate breath and a complete rare breach with articulated tail/flippers, instead of an unchanging model
+AssertionError: expected { sourceId: 'whale', …(11) } to match object { action: 'breathing', visible: true }
+(11 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "action": "breathing",
+-   "visible": true,
++   "visible": false,
+  }
+
+ ❯ spec/sound-waterlife.test.ts:63:35
+     61|         try {
+     62|             life.setSources([whale()]);life.frame(at + 1800);
+     63|             expect(life.state[0]).toMatchObject({ action: "breathing",…
+       |                                   ^
+     64|             life.frame(at + 19_200);const start = life.state[0], befor…
+     65|             life.frame(at + 21_300);const apex = life.state[0];expect(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > keeps the actual whale geometry and spray over ocean water through a full route, including the seam
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ spec/sound-waterlife.test.ts:81:105
+     79|                 life.setSources([row]);
+     80|                 for (let ms = 0; ms < 64_000; ms += 900) {
+     81|                     life.frame(at + ms);life.root.updateMatrixWorld(tr…
+       |                                                                                                         ^
+     82|                     const model = life.root.getObjectByName("sound-bor…
+     83|                     model.traverse(object => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > gives independent arrivals identical actual poses/instances, canonical bounded selection and frozen reduced motion
+AssertionError: expected [ { sourceId: 'fish-4', …(25) }, …(5) ] to have a length of 8 but got 6
+
+- Expected
++ Received
+
+- 8
++ 6
+
+ ❯ spec/sound-waterlife.test.ts:124:56
+    122|             first.setSources(rows.slice(0, 3));first.frame(at + 3000);…
+    123|             first.frame(at + 21_300);late.frame(at + 21_300);expect(fi…
+    124|             expect(first.state.filter(s => s.visible)).toHaveLength(8)…
+       |                                                        ^
+    125|             expect(mesh(first, "waterlife-fish-bodies").count).toBe(17…
+    126|             expect(first.getFocus("fish-0")).toBeNull();expect(first.g…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > withdraws all source-owned models and particles immediately, and tombstones outrank old live snapshots
+AssertionError: expected +0 to be 12 // Object.is equality
+
+- Expected
++ Received
+
+- 12
++ 0
+
+ ❯ spec/sound-waterlife.test.ts:137:107
+    135|         const life = new SoundWaterlife(new THREE.Scene(), options), r…
+    136|         try {
+    137|             life.setSources(rows);life.frame(at + 1800);expect(mesh(li…
+       |                                                                                                           ^
+    138|             life.setSources(rows.map(row => ({ ...row, removedAt: new …
+    139|             expect(life.state).toEqual([]);expect(life.root.getObjectB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  spec/sound-waterlife.test.ts > real sounds invite life to the actual pond and sea > releases a withdrawn author's accent without disposing shared pond meshes, then disposes everything exactly once
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ spec/sound-waterlife.test.ts:152:97
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed (8)
+   Start at  17:51:43
+   Duration  213ms (tests 47%, transform 34%, import 18%, worker 1%)
+

@@ -1,0 +1,6 @@
+(node:44546) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok Frozen green actually hides Share behind its contextual card
+ok Frozen pool actually hides Share behind its contextual card
+ok Frozen baseline stayed GET-only
+ok Native GPU and audio decode completed without browser/shader errors

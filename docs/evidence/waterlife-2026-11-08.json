@@ -1,0 +1,268 @@
+{
+  "kind": "little-chorus-waterlife-local-release",
+  "date": "2026-11-08",
+  "sourceApplicationCommit": "3e367ee044546a6b1b51424c83c55f1386523ac0",
+  "sourceCommits": [
+    "bc7199b",
+    "6591d45",
+    "3e367ee"
+  ],
+  "previousApplicationCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559",
+  "branch": "codex/waters-answer",
+  "rollbackTag": "before-waters-answer-2026-11-08",
+  "releaseTag": "chorus-waters-answer-2026-11-08",
+  "scope": "Permanent real sound entry; original bounded synthetic audio; real-source 3D water life and unobstructed explicit viewing; no migration or coordinate changes",
+  "checks": {
+    "typecheckExit": 0,
+    "productionBuildExit": 0,
+    "fullSpec": {
+      "passed": 414,
+      "files": 60,
+      "seconds": 74.04,
+      "port": 18941,
+      "independentDatabase": true
+    },
+    "scratchBrowser": {
+      "passed": true,
+      "checks": 29,
+      "capturedFrames": 7,
+      "port": 18942,
+      "independentDatabase": true,
+      "independentCookieIdentities": 2,
+      "sourceWrites": 3,
+      "withdrawals": 3,
+      "errors": 0,
+      "quietFriendAudioStarts": 0,
+      "nativeAudioDecodeAndStart": true,
+      "physicalAudioOrHumanApproval": false
+    },
+    "actualPromotion": {
+      "applicationCommit": "3e367ee044546a6b1b51424c83c55f1386523ac0",
+      "previousCommit": "8f32290bbe4bab49abe32b9b8ae6fc13d7049559",
+      "allRowsPreserved": true,
+      "tables": 12,
+      "soundHistoryRows": 44,
+      "servedAssets": 69,
+      "observerPassed": true,
+      "coastRenderSamples": 382,
+      "retainedPublicSources": 16,
+      "retainedNPCs": 12,
+      "writes": 0,
+      "browserErrors": 0,
+      "localOnly": true
+    }
+  },
+  "rejectedOrLimitedEvidence": [
+    "Frozen compiled 8f32290 baseline reproduces hidden Share; GET-only visit, no audio audition",
+    "6591d45 passes 412 checks and 20 browser checks but phone cards obscure animals; rejected images retained",
+    "An initial final-suite attempt cannot reach localhost from its sandbox and executes no tests; eventual isolated run passes",
+    "Old phone whale capture contains a stale desktop projection/composited header; final capture waits real new frames at 390x844"
+  ],
+  "notEstablished": [
+    "Human artistic listening or physical speaker-output approval",
+    "Unfamiliar-friend study or true next-day return",
+    "Physical-phone performance or mobile soft-keyboard operation",
+    "Deep underwater ecology, new gravity/collision physics, or cinematic lighting",
+    "Hosted deployment"
+  ],
+  "rollback": {
+    "command": "python3 scripts/local-preview.py --rollback",
+    "workingDirectory": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7",
+    "keepsCurrentDatabase": true,
+    "neverRestoreHistoricalDatabase": true
+  },
+  "networkDelivery": {
+    "authorisedPublicSourceBranch": true,
+    "mainUnchanged": "e664fc467c1d0482d1facb2c2514d077c0344d26",
+    "hostedDeployment": false,
+    "globalGitHubConfigurationChanged": false,
+    "finalEvidenceCommit": "Recorded by the release tag after this index is committed, avoiding a self-referential hash"
+  },
+  "artifacts": [
+    {
+      "path": "waterlife/2026-11-08/README.md",
+      "bytes": 3558,
+      "sha256": "de5f6a477aba84473bb8fa27d325b4e4251ae9a15b5042e392b5e7714b0355bb"
+    },
+    {
+      "path": "waterlife/2026-11-08/audio/SCOPE.md",
+      "bytes": 2825,
+      "sha256": "c1defa61abc69fd9959b6a29238dc378abf3f8758aa48093834deea359a20aed"
+    },
+    {
+      "path": "waterlife/2026-11-08/audio/focused-unit-tests.log",
+      "bytes": 240,
+      "sha256": "9d8c61100559f0e031a2b4b5ab932a46863b35b754d4cf317573abc099a29561"
+    },
+    {
+      "path": "waterlife/2026-11-08/audio/index-upsert-verification.json",
+      "bytes": 721,
+      "sha256": "dae63d5f328155a9c7af6444be8f45c4bca36e310339358f66fdd7822cb9f07c"
+    },
+    {
+      "path": "waterlife/2026-11-08/audio/verification.json",
+      "bytes": 2527,
+      "sha256": "eb907bf9a9e0e176ed950e4d7a85dee61e00907f4c7355ee13b8b7e7b767f60e"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/SCOPE.md",
+      "bytes": 4338,
+      "sha256": "34c7d34972e078d952205c7a9a9702725dc0b4579fd16f24bb4c11f9e7629506"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/baseline/baseline-browser.txt",
+      "bytes": 402,
+      "sha256": "721420a1274b47c3def3c0debf33a4a7d9332a3ca09bcc322da23b724c6493f6"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/baseline/before-green-desktop.png",
+      "bytes": 777091,
+      "sha256": "053a6fc0779132800317b89346a2898f70cf61a5ee841470a79e9926f5f32165"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/baseline/before-pool-desktop.png",
+      "bytes": 611069,
+      "sha256": "1b6662ff425b51abdd71e4d0680bd953b991fd387c568f9bdb33ea2a10a98ec6"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/baseline/before-pool-phone.png",
+      "bytes": 148284,
+      "sha256": "2796386f1252d1de247a7bfa7a255611b6d5b395e93422fc45f10671d7fcb244"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/baseline/results.json",
+      "bytes": 2343,
+      "sha256": "08bd486740b4a76d2a015f1a4f0123c0a3ce708e051b1d88051588dfc3e06c57"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/final-browser.txt",
+      "bytes": 1864,
+      "sha256": "d1bc19b13731c7970e5fab59142437f7cc63b4abcaf4540325c25ed4d2222956"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/fish-bubbles-desktop.png",
+      "bytes": 464241,
+      "sha256": "73b7759e4108a817c4aebf23c11e4d55d74d1b4a3e02e0e312a990328c44dae3"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/friends-fish-phone.png",
+      "bytes": 111418,
+      "sha256": "a31e6a4534e887cbcf4295711d73cf5174ae2ac2e7e92f89bb4d235b581defed"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/friends-frogs-desktop.png",
+      "bytes": 531973,
+      "sha256": "46c573c34acc2b234ff762c3b75a31899728125fa9b9860a1163c0f176216fed"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/green-entry-desktop.png",
+      "bytes": 729142,
+      "sha256": "0d75b99535c6a2c2a8310e92a9c19dbca8808d80e8eeca212b05d76d62f4deab"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/results.json",
+      "bytes": 29563,
+      "sha256": "6d386880c1989c9e8c72b9ad7f7f41265650e896bb27cfb3083988972394eb53"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/whale-breath-desktop.png",
+      "bytes": 326997,
+      "sha256": "1bfc66608b5b619b6536311bf69b84b81ee5c04420b229eecfc7641e5a05c0f8"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/whale-leap-desktop.png",
+      "bytes": 259414,
+      "sha256": "9baeee6614c79fa75b7c8799c60f58a6dc10f3e83d8a02ebac3c358fde55d680"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/final/whale-phone.png",
+      "bytes": 80478,
+      "sha256": "8fb8881c70c1f26a599461eb586e78df3c4e3e8505029ca8a33a4920452b2982"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/occluded/browser.txt",
+      "bytes": 1373,
+      "sha256": "f29e38023791ba9e906b727dbe0fa523ad02a682b90dee6e9c762de6712e0147"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/occluded/friends-fish-phone.png",
+      "bytes": 116988,
+      "sha256": "0a8475069f4cccdc7cb67ee4bbb7ffa80a9e45873b68775c99a39526989ead4c"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/occluded/results.json",
+      "bytes": 27861,
+      "sha256": "7b0e6037828c888cc637418d804c04cbc1f863e7e9ac9bf530480ef3729bff40"
+    },
+    {
+      "path": "waterlife/2026-11-08/browser/occluded/whale-phone.png",
+      "bytes": 82479,
+      "sha256": "2cb5fd375054d4a6a9a3184b7923cd4948287361eecd5b0c3de30e0dd792f6c7"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/candidate-runtime.json",
+      "bytes": 1059,
+      "sha256": "c0ad2719ad14139a4706dc44b6c71a5039e82537b48418c0782a8d86453d6482"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/final-414.log",
+      "bytes": 1077,
+      "sha256": "985b05a31fb05a3ed00e504ee2ed030bcac56f1c368947c2caae20ad10034f2a"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/final-connection-failure-no-tests.log",
+      "bytes": 2817,
+      "sha256": "4e146a049442096518461db7d25e11b246d8ba1a8f777bb7731365c952e04012"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/initial-412.log",
+      "bytes": 1077,
+      "sha256": "abd0bcca74203b3616504f91aecf3951e8d14a3ff69e234bec2a1f4464083f01"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/marine-final.log",
+      "bytes": 225,
+      "sha256": "689e5df60b2a247de69cbe024e1370679e7e6c5ecb8f6f725d9d847147668260"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/marine-route-failure.log",
+      "bytes": 7164,
+      "sha256": "548b700e0100753b67b6df7608e4c44db5370f49a0a24f68ec94aa4150901609"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/marine-routes-fixed.log",
+      "bytes": 225,
+      "sha256": "14aeb9fd994c90277d20f883576f9c122b0d039cb2efcdb631685d1098c25d5d"
+    },
+    {
+      "path": "waterlife/2026-11-08/checks/marine-source-budget.json",
+      "bytes": 3249,
+      "sha256": "5c24cb00ac31a5ed9e967180b7e753655f30675ec3db91725b84c7072ad74d3d"
+    },
+    {
+      "path": "waterlife/2026-11-08/promoted/data-preserving-switch.json",
+      "bytes": 8995,
+      "sha256": "fc6bfd271df3ffe2ef456e748fe992d7a741e02a6196925cf306146735c6f19e"
+    },
+    {
+      "path": "waterlife/2026-11-08/promoted/promoted-green-desktop.png",
+      "bytes": 772360,
+      "sha256": "87dba535408059a75b77a6474912d17795d093c612e55562b2370957cd439fb1"
+    },
+    {
+      "path": "waterlife/2026-11-08/promoted/promoted-pool-phone.png",
+      "bytes": 149964,
+      "sha256": "f5f6453ce3a861a3fdffea28332c4cd837318472cb988e453af1904b30c85829"
+    },
+    {
+      "path": "waterlife/2026-11-08/promoted/results.json",
+      "bytes": 182747,
+      "sha256": "0fc19096c9d0e2b40d0026daf16bd9942693bfd63baf66d8b9ce5b6c48db49ea"
+    },
+    {
+      "path": "waterlife/2026-11-08/promoted/switch.log",
+      "bytes": 248,
+      "sha256": "78b85dc423e243ab939e0686d81dbc630e3f87cd5d1ec3ee4c56b5fa02a429dc"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "date": "2026-11-08",
+  "scope": "Offline asset decoding and previously executed focused unit checks; no speaker or artistic listening approval",
+  "audio": [
+    {
+      "id": "pond-bubbles",
+      "bytes": 53314,
+      "sha256": "102d7ce6742cef168b9a4ec7319f242436d84ff90dad810c73e28f1b96d3b185",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 1
+          }
+        ],
+        "format": {
+          "duration": "12.000000",
+          "size": "53314"
+        }
+      },
+      "decodedSamples": 529200,
+      "decodedPeakDbFS": -9.91447990729646,
+      "encodingSnrDb": 36.12931717720847,
+      "lastSecondRms": 0
+    },
+    {
+      "id": "pond-frogs",
+      "bytes": 84914,
+      "sha256": "91401f118d2f7423fa652511202ba8d9f6f755c03bcd32f2be225ae69b9327b4",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 1
+          }
+        ],
+        "format": {
+          "duration": "18.000000",
+          "size": "84914"
+        }
+      },
+      "decodedSamples": 793800,
+      "decodedPeakDbFS": -10.479177356247174,
+      "encodingSnrDb": 42.13486887033852,
+      "lastSecondRms": 0
+    },
+    {
+      "id": "whale-song",
+      "bytes": 145399,
+      "sha256": "ed27405e6ec5b8d6356b54b26dfb9e456bca734c4096ea7c3fe76aeffd8309ad",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 1
+          }
+        ],
+        "format": {
+          "duration": "32.000000",
+          "size": "145399"
+        }
+      },
+      "decodedSamples": 1411200,
+      "decodedPeakDbFS": -11.67463129064286,
+      "encodingSnrDb": 46.5340806850947,
+      "lastSecondRms": 0
+    }
+  ],
+  "focusedSpec": {
+    "file": "spec/waterlife-audio.test.ts",
+    "passed": 23,
+    "failed": 0,
+    "durationMs": 304,
+    "config": "/private/tmp/little-chorus-waterlife-vitest.config.mjs",
+    "initialWhaleFadeRegression": "22 passed / 1 failed before production soft-cut fix"
+  },
+  "indexUpsertVerification": "/private/tmp/little-chorus-waterlife-index-check/verification.json",
+  "originalCache": ".cache/waterlife-sounds/*.wav",
+  "rendererSha256": "2ca5056cc5663c0a3ad7b350c9a58e9c972f8e2656e53e07a4957c2ca25c82a4"
+}

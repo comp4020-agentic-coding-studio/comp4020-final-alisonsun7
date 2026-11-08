@@ -1,0 +1,92 @@
+{
+  "kind": "waters-answer-browser-developer-inspection",
+  "base": "http://localhost:18940",
+  "baselineReadOnly": true,
+  "checks": [
+    "Frozen green actually hides Share behind its contextual card",
+    "Frozen pool actually hides Share behind its contextual card",
+    "Frozen baseline stayed GET-only",
+    "Native GPU and audio decode completed without browser/shader errors"
+  ],
+  "captures": [
+    {
+      "name": "before-green-desktop",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 24,
+        "x": 1.8,
+        "z": 2.2,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035,
+        "cameraRadius": 31.672006961984586,
+        "view": "third",
+        "zoom": 8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "water": null,
+      "scenery": null,
+      "watched": null,
+      "soundOn": "false",
+      "serverNow": 1794132224498.6,
+      "starts": 0,
+      "contexts": 0,
+      "overflow": false
+    },
+    {
+      "name": "before-pool-desktop",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 46,
+        "x": 16,
+        "z": 14,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035000000000004,
+        "cameraRadius": 31.672006961984582,
+        "view": "third",
+        "zoom": 8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "water": null,
+      "scenery": null,
+      "watched": null,
+      "soundOn": "false",
+      "serverNow": 1794132224747.3,
+      "starts": 0,
+      "contexts": 0,
+      "overflow": false
+    },
+    {
+      "name": "before-pool-phone",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 53,
+        "x": 16,
+        "z": 14,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035000000000004,
+        "cameraRadius": 31.672006961984582,
+        "view": "third",
+        "zoom": 8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "water": null,
+      "scenery": null,
+      "watched": null,
+      "soundOn": "false",
+      "serverNow": 1794132224964.1,
+      "starts": 0,
+      "contexts": 0,
+      "overflow": false
+    }
+  ],
+  "sources": [],
+  "errors": [],
+  "requests": [],
+  "passed": true
+}

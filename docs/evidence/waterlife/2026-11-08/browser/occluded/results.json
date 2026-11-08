@@ -1,0 +1,1071 @@
+{
+  "kind": "waters-answer-browser-developer-inspection",
+  "base": "http://localhost:18942",
+  "baselineReadOnly": false,
+  "checks": [
+    "Share remains visible beside the expanded Green work card",
+    "Collapsing a work cannot hide Share",
+    "The water discovery card cannot hide Share",
+    "A real private bubble audition starts audio but never unmutes or publishes",
+    "Two real independent cookie identities take part",
+    "A late friend's arrival sees the same fish while staying silent",
+    "Watching stays outside the planet",
+    "The friend's audible reply retains the real second author",
+    "Share is an unobstructed 44px phone target with no horizontal overflow",
+    "Escape returns focus to the actual listening-settings opener",
+    "Watching stays outside the planet",
+    "Watching stays outside the planet",
+    "An actual server-timed whole whale leap is visible without clock injection",
+    "Whale watching keeps the phone viewport inside its bounds",
+    "A friend's bubbles, frogs and whale never enable local listening",
+    "Withdrawing all three stops their shared actors and retains durable sound history",
+    "Only explicitly labelled scenery fish remain after withdrawal",
+    "Returning to the world cannot revive withdrawn animals",
+    "Exactly the three explicit Leave actions create sound sources",
+    "Native GPU and audio decode completed without browser/shader errors"
+  ],
+  "captures": [
+    {
+      "name": "green-entry-desktop",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 11,
+        "x": 1.8,
+        "z": 2.2,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035,
+        "cameraRadius": 31.672006961984586,
+        "view": "third",
+        "zoom": 8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "water": [],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": null,
+      "soundOn": "false",
+      "serverNow": 1794132245617.6,
+      "starts": 0,
+      "contexts": 0,
+      "overflow": false
+    },
+    {
+      "name": "fish-first-desktop",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 48,
+        "x": 16,
+        "z": 14,
+        "feetRadius": 22.035,
+        "signedFeetRadius": 22.035000000000004,
+        "cameraRadius": 31.672006961984582,
+        "view": "third",
+        "zoom": 8,
+        "supportId": "village-ground",
+        "supportKind": "ground",
+        "supportHeight": 0.035
+      },
+      "water": [
+        {
+          "sourceId": "snd_2248488d13849f87",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#74c65d",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 16.988647376841396,
+          "z": 14.311380698395155,
+          "yaw": -0.3620012060729615,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0.0023832220335704302,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 5.100855069323588,
+          "action": "swimming"
+        }
+      ],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": null,
+      "soundOn": "false",
+      "serverNow": 1794132248112.2,
+      "starts": 1,
+      "contexts": 1,
+      "overflow": false
+    },
+    {
+      "name": "friends-frogs-desktop",
+      "identity": "Water Bo",
+      "ground": {
+        "frame": 60,
+        "x": 16.000000000000004,
+        "z": 9.999999999999996,
+        "feetRadius": 22.065000000000005,
+        "signedFeetRadius": 22.065000000000005,
+        "cameraRadius": 27.877203607966138,
+        "view": "third",
+        "zoom": 4.2,
+        "supportId": "promenade",
+        "supportKind": "ground",
+        "supportHeight": 0.065
+      },
+      "water": [
+        {
+          "sourceId": "snd_e24961adb740364a",
+          "byId": "par_aabebc3189c42489",
+          "by": "Water Bo",
+          "soundId": "pond-frogs",
+          "kind": "frog",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 2,
+          "color": "#c65db8",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 14.659125907667775,
+          "z": 12.61526449214485,
+          "yaw": 0.6554975943324091,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.07,
+          "phase": 2.4514106433901715,
+          "action": "resting"
+        },
+        {
+          "sourceId": "snd_2248488d13849f87",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#74c65d",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 15.807324987933017,
+          "z": 14.836165668758898,
+          "yaw": -1.7546722887789148,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0.06895190039728498,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 6.461223116198587,
+          "action": "bubbling"
+        }
+      ],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": {
+        "sourceId": "snd_e24961adb740364a",
+        "kind": "frog",
+        "x": 960,
+        "y": 504.9773745931702,
+        "visible": true
+      },
+      "soundOn": "false",
+      "serverNow": 1794132250945.1,
+      "starts": 0,
+      "contexts": 0,
+      "overflow": false
+    },
+    {
+      "name": "friends-fish-phone",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 252,
+        "x": 16.000000000000004,
+        "z": 9.999999999999996,
+        "feetRadius": 22.065000000000005,
+        "signedFeetRadius": 22.065000000000005,
+        "cameraRadius": 27.877203607966138,
+        "view": "third",
+        "zoom": 4.2,
+        "supportId": "promenade",
+        "supportKind": "ground",
+        "supportHeight": 0.065
+      },
+      "water": [
+        {
+          "sourceId": "snd_e24961adb740364a",
+          "byId": "par_aabebc3189c42489",
+          "by": "Water Bo",
+          "soundId": "pond-frogs",
+          "kind": "frog",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 2,
+          "color": "#c65db8",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 14.659125907667775,
+          "z": 12.61526449214485,
+          "yaw": 0.6554975943324091,
+          "throat": 0.6374239897486895,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.07,
+          "phase": 2.4514106433901715,
+          "action": "calling"
+        },
+        {
+          "sourceId": "snd_2248488d13849f87",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#74c65d",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 15.481958687563244,
+          "z": 14.743852285254833,
+          "yaw": -2.0836639373043,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 6.781239092761088,
+          "action": "swimming"
+        }
+      ],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": {
+        "sourceId": "snd_2248488d13849f87",
+        "kind": "fish",
+        "x": 195.3257267927629,
+        "y": 345.28227904568985,
+        "visible": true
+      },
+      "soundOn": "false",
+      "serverNow": 1794132251610.8,
+      "starts": 1,
+      "contexts": 1,
+      "overflow": false
+    },
+    {
+      "name": "whale-breath-desktop",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 300,
+        "x": 27,
+        "z": 11.116498206486876,
+        "feetRadius": 22.032000000000004,
+        "signedFeetRadius": 22.032000000000004,
+        "cameraRadius": 27.844580729470504,
+        "view": "third",
+        "zoom": 4.2,
+        "supportId": "beach",
+        "supportKind": "ground",
+        "supportHeight": 0.032
+      },
+      "water": [
+        {
+          "sourceId": "snd_6f27d53c9eda63b6",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "whale-song",
+          "kind": "whale",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 1,
+          "color": "#74c65d",
+          "anchorX": 27,
+          "anchorZ": 19.116498206486874,
+          "x": 26.0872700680436,
+          "z": 19.99504484458941,
+          "yaw": -2.16723664481508,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": -0.11610256401513694,
+          "phase": 0.5637224701626803,
+          "action": "breathing"
+        },
+        {
+          "sourceId": "snd_e24961adb740364a",
+          "byId": "par_aabebc3189c42489",
+          "by": "Water Bo",
+          "soundId": "pond-frogs",
+          "kind": "frog",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 2,
+          "color": "#c65db8",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 15.606156228091823,
+          "z": 12.26019701558671,
+          "yaw": 0.18011272884304713,
+          "throat": 0.9467615297749237,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.07,
+          "phase": 2.9514106433901715,
+          "action": "calling"
+        },
+        {
+          "sourceId": "snd_2248488d13849f87",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#74c65d",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 15.168752302174491,
+          "z": 14.532592051651623,
+          "yaw": -2.4764614293364473,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 7.165527139636088,
+          "action": "swimming"
+        }
+      ],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": {
+        "sourceId": "snd_6f27d53c9eda63b6",
+        "kind": "whale",
+        "x": 960.104954916402,
+        "y": 502.53683829248627,
+        "visible": true
+      },
+      "soundOn": "false",
+      "serverNow": 1794132252411.9,
+      "starts": 1,
+      "contexts": 1,
+      "overflow": false
+    },
+    {
+      "name": "whale-leap-desktop",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 1524,
+        "x": 27,
+        "z": 11.116498206486876,
+        "feetRadius": 22.032000000000004,
+        "signedFeetRadius": 22.032000000000004,
+        "cameraRadius": 27.844580729470504,
+        "view": "third",
+        "zoom": 4.2,
+        "supportId": "beach",
+        "supportKind": "ground",
+        "supportHeight": 0.032
+      },
+      "water": [
+        {
+          "sourceId": "snd_6f27d53c9eda63b6",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "whale-song",
+          "kind": "whale",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 1,
+          "color": "#74c65d",
+          "anchorX": 27,
+          "anchorZ": 19.116498206486874,
+          "x": 26.446580640496194,
+          "z": 18.132544874525998,
+          "yaw": 1.9176281782725924,
+          "throat": 0,
+          "hop": 0,
+          "pitch": -0.7472228785926984,
+          "roll": 0.23988740921299415,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 2.4313787833093734,
+          "phase": 2.775414515499244,
+          "action": "leaping"
+        },
+        {
+          "sourceId": "snd_e24961adb740364a",
+          "byId": "par_aabebc3189c42489",
+          "by": "Water Bo",
+          "soundId": "pond-frogs",
+          "kind": "frog",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 2,
+          "color": "#c65db8",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 14.400063343345009,
+          "z": 12.329180162840995,
+          "yaw": 0.6491735058732366,
+          "throat": 0,
+          "hop": 1.2246467991473532e-16,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.07000000000000006,
+          "phase": 2.4514106433901715,
+          "action": "resting"
+        },
+        {
+          "sourceId": "snd_2248488d13849f87",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#74c65d",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 16.9963920415805,
+          "z": 13.727042617631188,
+          "yaw": 0.33969693605087214,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0.7030352351666296,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 16.965255069323586,
+          "action": "bubbling"
+        }
+      ],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": {
+        "sourceId": "snd_6f27d53c9eda63b6",
+        "kind": "whale",
+        "x": 959.7502791961226,
+        "y": 494.74581817892897,
+        "visible": true
+      },
+      "soundOn": "false",
+      "serverNow": 1794132272827.5,
+      "starts": 1,
+      "contexts": 1,
+      "overflow": false
+    },
+    {
+      "name": "whale-phone",
+      "identity": "Water Ada",
+      "ground": {
+        "frame": 1529,
+        "x": 27,
+        "z": 11.116498206486876,
+        "feetRadius": 22.032000000000004,
+        "signedFeetRadius": 22.032000000000004,
+        "cameraRadius": 27.844580729470504,
+        "view": "third",
+        "zoom": 4.2,
+        "supportId": "beach",
+        "supportKind": "ground",
+        "supportHeight": 0.032
+      },
+      "water": [
+        {
+          "sourceId": "snd_6f27d53c9eda63b6",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "whale-song",
+          "kind": "whale",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 1,
+          "color": "#74c65d",
+          "anchorX": 27,
+          "anchorZ": 19.116498206486874,
+          "x": 26.446580640496194,
+          "z": 18.132544874525998,
+          "yaw": 1.9176281782725924,
+          "throat": 0,
+          "hop": 0,
+          "pitch": -0.7472228785926984,
+          "roll": 0.23988740921299415,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 2.4313787833093734,
+          "phase": 2.775414515499244,
+          "action": "leaping"
+        },
+        {
+          "sourceId": "snd_e24961adb740364a",
+          "byId": "par_aabebc3189c42489",
+          "by": "Water Bo",
+          "soundId": "pond-frogs",
+          "kind": "frog",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 2,
+          "color": "#c65db8",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 14.400063343345009,
+          "z": 12.329180162840995,
+          "yaw": 0.6491735058732366,
+          "throat": 0,
+          "hop": 1.2246467991473532e-16,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0,
+          "splash": 0,
+          "height": 0.07000000000000006,
+          "phase": 2.4514106433901715,
+          "action": "resting"
+        },
+        {
+          "sourceId": "snd_2248488d13849f87",
+          "byId": "par_092ba907a7371173",
+          "by": "Water Ada",
+          "soundId": "pond-bubbles",
+          "kind": "fish",
+          "origin": "player",
+          "sourceX": 16,
+          "sourceZ": 14,
+          "visible": true,
+          "count": 3,
+          "color": "#74c65d",
+          "anchorX": 16,
+          "anchorZ": 14,
+          "x": 16.9963920415805,
+          "z": 13.727042617631188,
+          "yaw": 0.33969693605087214,
+          "throat": 0,
+          "hop": 0,
+          "pitch": 0,
+          "roll": 0,
+          "spray": 0,
+          "bubbles": 0.7030352351666296,
+          "splash": 0,
+          "height": 0.11,
+          "phase": 16.965255069323586,
+          "action": "bubbling"
+        }
+      ],
+      "scenery": [
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 2,
+          "x": 16,
+          "z": 14,
+          "area": "pond"
+        },
+        {
+          "origin": "scenery",
+          "kind": "fish",
+          "count": 3,
+          "x": 18,
+          "z": 22.15527070484234,
+          "area": "ocean"
+        }
+      ],
+      "watched": {
+        "sourceId": "snd_6f27d53c9eda63b6",
+        "kind": "whale",
+        "x": 959.7502791961226,
+        "y": 494.74581817892897,
+        "visible": true
+      },
+      "soundOn": "false",
+      "serverNow": 1794132272827.5,
+      "starts": 1,
+      "contexts": 1,
+      "overflow": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "snd_2248488d13849f87",
+      "soundId": "pond-bubbles",
+      "x": 16,
+      "z": 14,
+      "by": "Water Ada",
+      "byId": "par_092ba907a7371173",
+      "at": "2026-11-08T10:04:08.006Z"
+    },
+    {
+      "id": "snd_e24961adb740364a",
+      "soundId": "pond-frogs",
+      "x": 16,
+      "z": 14,
+      "by": "Water Bo",
+      "byId": "par_aabebc3189c42489",
+      "at": "2026-11-08T10:04:10.497Z",
+      "replyToId": "snd_2248488d13849f87",
+      "replyTo": {
+        "id": "snd_2248488d13849f87",
+        "soundId": "pond-bubbles",
+        "x": 16,
+        "z": 14,
+        "by": "Water Ada",
+        "byId": "par_092ba907a7371173",
+        "at": "2026-11-08T10:04:08.006Z"
+      }
+    },
+    {
+      "id": "snd_6f27d53c9eda63b6",
+      "soundId": "whale-song",
+      "x": 16,
+      "z": 14,
+      "by": "Water Ada",
+      "byId": "par_092ba907a7371173",
+      "at": "2026-11-08T10:04:12.055Z"
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/join"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/sounds"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/join"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/sounds"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/sounds"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "DELETE",
+      "path": "/api/sessions/ses_b2f841f98c175641/sounds/snd_6f27d53c9eda63b6"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Bo",
+      "method": "DELETE",
+      "path": "/api/sessions/ses_b2f841f98c175641/sounds/snd_e24961adb740364a"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    },
+    {
+      "name": "Water Ada",
+      "method": "DELETE",
+      "path": "/api/sessions/ses_b2f841f98c175641/sounds/snd_2248488d13849f87"
+    },
+    {
+      "name": "Water Ada",
+      "method": "POST",
+      "path": "/api/sessions/ses_b2f841f98c175641/move"
+    }
+  ],
+  "passed": true,
+  "firstWhale": {
+    "sourceId": "snd_6f27d53c9eda63b6",
+    "byId": "par_092ba907a7371173",
+    "by": "Water Ada",
+    "soundId": "whale-song",
+    "kind": "whale",
+    "origin": "player",
+    "sourceX": 16,
+    "sourceZ": 14,
+    "visible": true,
+    "count": 1,
+    "color": "#74c65d",
+    "anchorX": 27,
+    "anchorZ": 19.116498206486874,
+    "x": 26.0872700680436,
+    "z": 19.99504484458941,
+    "yaw": -2.16723664481508,
+    "throat": 0,
+    "hop": 0,
+    "pitch": 0,
+    "roll": 0,
+    "spray": 0,
+    "bubbles": 0,
+    "splash": 0,
+    "height": -0.11610256401513694,
+    "phase": 0.5637224701626803,
+    "action": "breathing"
+  },
+  "replyRow": {
+    "sound_id": "snd_e24961adb740364a",
+    "parent_id": "snd_2248488d13849f87"
+  }
+}

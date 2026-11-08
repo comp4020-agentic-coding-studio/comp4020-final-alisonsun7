@@ -2,6 +2,18 @@
 
 # Little Chorus agent rules
 
+ADR035 keeps the one Share action and local listening-settings entrance in the
+header. Contextual cards must not remove either. Visible sharing still requires
+explicit identity, authoritative admission and an explicit Leave; blocked
+places retain private listening. Water-life actors use real public source IDs,
+canonical server time, true water footprints, bounded budgets and permanent
+withdrawal precedence. The five smaller scenery fish have no author/source.
+Do not relocate historical audio emitters to follow animals. Watch is an
+explicit local visit; suppress obstructing cards while it is active, restore
+them on exit/movement, and keep Share, quiet consent and keyboard/touch access.
+Original synthesized frog/whale illustrations are not species recordings or
+external CC0 assets. Native decode/start checks do not replace human listening.
+
 ADR034 grounds objects against the highest actual visible receiver, including
 its transformed normal. Keep the front-hemisphere gate for every tangent floor;
 never move historical coordinates to repair a visual gap. Give broad flat decks

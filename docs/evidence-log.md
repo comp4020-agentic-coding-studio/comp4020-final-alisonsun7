@@ -3303,3 +3303,88 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   return remain separate unperformed judgements. Keep every current identity,
   source/reply row, coordinate and table; do not restore an old DB for rollback.
   No new preview promotion, public push, `main` change or deployment is claimed.
+
+- The next source milestone is frozen as `6591d45` (audio assets first saved
+  independently as `bc7199b`). The current complete source/HTTP run passes
+  **412 checks in 60 files, 74.03 s**; the actual raw log is
+  `.cache/waterlife/full-spec-initial.txt`. The runtime record
+  `.cache/waterlife/candidate-runtime.json` identifies the same application
+  hash on two separate scratch packages: 18941 for the source/HTTP suite and
+  18942 for browser acceptance. The separate latest marine source run in
+  `.cache/waterlife/final-tests.txt` passes eight checks in 706 ms. These are
+  different scopes and executions, not an accumulated aesthetic score. The
+  earlier 30/31 catalogue mismatch and marine failures remain historical
+  failures; they are not the state of this frozen complete test run.
+- This source milestone retains the real CSS cause and permission boundary:
+  four contextual selectors previously removed Share, whereas the one current
+  header entrance remains outside those selectors. Its chooser remains private
+  until an explicit, available Leave. The shared creation guard and server
+  authority still distinguish Join, disconnection, private stays, safe placement
+  and idempotent confirmation. The settings shortcut opens the one existing
+  local listening control set; receiving a source or opening that drawer never
+  grants listening consent. No schema, identity, room, source-coordinate or
+  historical-data migration is introduced.
+- The new `e2e/waters-answer.mjs` is undergoing real-browser acceptance, not
+  yet recorded here as passing. Read-only UI review catches harness selectors
+  naming `#chorus-chooser` and Close, while the actual curated dialog is
+  `#chorus-studio` with Cancel. Root corrects the script against the frozen
+  product rather than changing the product to match invented selectors. The
+  exact current desktop/phone, source withdrawal, native-time whale motion and
+  listening results will be recorded after execution and visual inspection.
+  A 390 px browser path must not be relabelled as a 375 px, landscape or
+  physical-phone measurement; pure guards do not establish a live-room UI.
+- GPU/browser acceptance and any data-preserving promotion remain pending at
+  this source checkpoint. The user's preview remains a distinct application
+  until the local switch is actually performed and verified. Machine timing,
+  lifecycle and decoding results do not establish comfortable timbres, realistic
+  animal calls, pleasant combined sound, unfamiliar-player comprehension or a
+  successful shared creative experience. Human listening and real player study
+  remain open; no such judgement or new deployment is claimed.
+
+- Actual browser evidence then changes the acceptance decision. The frozen
+  baseline record `.cache/waterlife/baseline-artifacts/results.json` passes
+  four read-only checks with three captures, including the genuinely missing
+  Share entrance. The first candidate record
+  `.cache/waterlife/browser-artifacts/results.json` passes twenty behaviour
+  checks and saves seven captures with zero errors. Root nevertheless rejects
+  its actual `friends-fish-phone.png`: the discovery card and little-shower
+  prompt overlap across the central fish view. A passing real-source projection
+  and controller path did not establish that the fish could be clearly seen.
+- The corrective Watch presentation uses the renderer's actual
+  `watchingSound` state to clear contextual world cards, pins, discovery/private
+  prompts and floating names. It leaves the header Share and Sound/settings,
+  real chat/native dialogs and movement controls available. The single 44 px
+  `#planet-watch-exit` Back to exploring action calls the real stopWatching
+  method, clears local observation and returns canvas focus; movement also
+  exits. CSS does not rewrite each card's dismissal state, so normal visibility
+  logic resumes afterwards. No sound/source, identity, coordinates, consent or
+  room occupancy is changed by this layout correction.
+- A new actual-CSS regression first fails because discovery and private-room
+  cards remain `block` in Watch mode. After correction, the focused entry file
+  passes eleven checks (1.24 s), covering all four Watch kinds, retained Share,
+  restoration on exit and the actual local exit controller. TypeScript passes.
+  These outputs are in the executing agent's tool record rather than a saved
+  raw cache log. They neither supersede the rejected screenshot nor expand the
+  earlier 412-check/6591d45 scope. A new coherent build, complete regression and
+  actual unoccluded desktop/phone review remain pending. No candidate has been
+  promoted at this corrective checkpoint.
+
+
+## 2026-11-08 — Waters answer accepted locally after phone rejection
+
+`3e367ee` corrects the actual occluded Watch view rather than treating its green
+predecessor as complete. Final coherent source/HTTP regression: 414 / 60 files,
+74.04 s on isolated 18941. A prior sandboxed attempt executes zero tests after
+failing its HTTP setup and is retained. Final independent-cookie native-GPU
+path: 29 checks / seven captures on isolated 18942, real MP3 private preview,
+quiet friend, source/author/reply consistency, actual bubble/throat/spray/leap
+phases, phone hit targets/clear focus, withdrawal/history and reload.
+
+The local preview switch retains every row in twelve tables (44 sound-history
+rows) and verifies 69 served assets. Its GET-only observer sees the same sixteen
+public sources and twelve NPCs; 382 actual continuous-shore render samples stay
+outside the globe, with zero writes/errors. No tests write this preview DB.
+The new [hashed evidence index](evidence/waterlife-2026-11-08.json) preserves the
+baseline, rejected phone frames, final results and scopes. Ear listening,
+physical phones, unfamiliar friends and next-day return remain unperformed.
+Code rollback keeps current data; no historical DB restore or hosted deploy.

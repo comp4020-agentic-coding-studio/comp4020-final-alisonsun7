@@ -1,8 +1,9 @@
 # ADR 035 — Waters answer, and sharing stays within reach
 
-Date: 2026-11-08. Status: implementation approved; candidate in development.
-Marine-route corrections and integrated browser acceptance are still in
-progress. This record does not claim a completed release or local promotion.
+Date: 2026-11-08. Status: milestone `6591d45` passes its coherent source/HTTP
+suite, but actual phone-view review rejects its obstructed Watch experience.
+A follow-up observation layout is implemented and awaiting fresh coherent
+GPU/browser acceptance. No completed release or local promotion is claimed.
 
 ## Request and observed failure
 
@@ -76,8 +77,8 @@ these public consequences. A source may have no visible animal when suitable
 water, a complete safe route or an effect-budget slot is unavailable. Do not
 move its historical coordinates to manufacture an effect. Ocean routes must
 keep the whole whale and spray over actual water, clear of the shore and pier,
-including across the longitude seam. This requirement is still being exercised
-and corrected at this checkpoint.
+including across the longitude seam. The source/geometry checks pass on the
+frozen candidate; convincing actual rendered views require separate inspection.
 
 Withdrawal removes source-owned animals, pads and particles immediately;
 observed tombstones outrank an old live snapshot. Shared meshes and materials
@@ -86,6 +87,14 @@ pose and suppresses moving bubbles, ripples and spray. Explicit Watch actions
 offer a local viewing visit to an eligible real effect; they never relocate its
 sound source, publish, answer a work or turn listening on. Merely receiving a
 source never initiates that viewing visit.
+
+An explicit Watch temporarily clears contextual cards, source pins, discovery
+guidance and private-room prompts from the view. Their own dismissal/visibility
+state is preserved. The header's Share and local Sound/settings remain available,
+as do actual chat, native dialogs and movement controls. A visible 44 px
+Back to exploring action ends observation and returns canvas focus; movement
+also ends it. This is a local presentation mode, not removal of a source,
+publication, a room/privacy change or permission to start audio.
 
 ## Original sounds, with honest event and file durations
 
@@ -124,14 +133,40 @@ sound, convincing rendered motion or successful friend collaboration.
 
 Initial marine tests caught rejected water anchors/routes, missing whale
 visibility and downstream budget/withdrawal failures. A subsequent eight-check
-route-focused source run passes, but the integrated 3D visit and final browser
-matrix are still pending here. The final coherent full-source/HTTP run, actual
-desktop/phone review and promotion require separately recorded outcomes.
-Human listening and unfamiliar-player acceptance remain pending regardless of
-automated results. [The evidence log](../evidence-log.md) separates each scope.
+route-focused source run passes; a further focused run on the frozen code
+passes eight checks in 706 ms. The coherent `6591d45` candidate then passes
+412 checks in 60 files in 74.03 s, including the source and HTTP checks against
+an independent scratch runtime. Its raw output is
+`.cache/waterlife/full-spec-initial.txt`; the runtime/package identities are
+in `.cache/waterlife/candidate-runtime.json`. These are distinct execution
+scopes, not added quality scores or an inference that a screenshot is good.
+
+The first browser path records twenty passing checks and seven captures, yet
+review of its actual `friends-fish-phone.png` rejects two overlapping discovery
+and shower cards covering the fish. Green actor/state assertions do not
+establish an unobstructed view. The observation-mode correction has eleven
+passing focused entry/UI checks, including CSS visibility restoration and the
+actual exit controller. It follows, rather than being validated by, the earlier
+412-check run and first browser path. A fresh coherent package must be rebuilt
+and inspected before acceptance or promotion.
+
+Developer browser operation is not an unfamiliar-player study; an actual
+audio-node start is not a human listening verdict. Human listening and
+unfamiliar-player acceptance remain pending regardless of automated results.
+[The evidence log](../evidence-log.md) separates each scope.
 
 No identity, room, storage path, schema or historical coordinates change. The
 existing quiet consent and durable reply graph remain intact. The starting
 preview is application `8f32290`; current preview data must survive any eventual
-candidate promotion or code-only rollback. No promotion, public push, `main`
-change or deployment is claimed by this implementation checkpoint.
+candidate promotion or code-only rollback. The accepted `3e367ee` package now runs on local port 18861. Its switch
+preserves every row in twelve tables, including 44 sound-history rows, and
+checks 69 served assets. An anonymous GET-only inspection retains sixteen live
+public sources and twelve NPCs, with 382 outward-safe shore render samples.
+The separate final scratch suite passes 414 checks / 60 files in 74.04 s; the
+native-GPU two-identity path passes 29 checks with seven captures. These final
+phone frames show animals without the rejected cards. The preceding sandboxed
+full-suite attempt executes no tests because its HTTP connection is blocked;
+its raw output is retained separately. This release authorizes no main change
+or hosted deployment. The release tag records the final saved source/evidence
+commit. Revert compiled code using the data-preserving preview utility,
+never an old database.

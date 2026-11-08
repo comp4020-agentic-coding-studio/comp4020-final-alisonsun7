@@ -1,0 +1,31 @@
+(node:48815) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok Share remains visible beside the expanded Green work card
+ok Collapsing a work cannot hide Share
+ok The water discovery card cannot hide Share
+ok A real private bubble audition starts audio but never unmutes or publishes
+ok Watching stays outside the planet
+ok The actual animal focus is clear of contextual cards
+ok Two real independent cookie identities take part
+ok A late friend's arrival sees the same fish while staying silent
+ok Watching stays outside the planet
+ok The actual animal focus is clear of contextual cards
+ok The friend's audible reply retains the real second author
+ok Share is an unobstructed 44px phone target with no horizontal overflow
+ok Escape returns focus to the actual listening-settings opener
+ok Watching stays outside the planet
+ok The actual animal focus is clear of contextual cards
+ok The phone has a reachable 44px Back to exploring action
+ok Leaving Watch restores keyboard focus to the world
+ok Watching stays outside the planet
+ok The actual animal focus is clear of contextual cards
+ok A real server-timed breath produces spray above the water
+ok An actual server-timed whole whale leap is visible without clock injection
+ok The actual animal focus is clear of contextual cards
+ok Whale watching keeps the phone viewport inside its bounds
+ok A friend's bubbles, frogs and whale never enable local listening
+ok Withdrawing all three stops their shared actors and retains durable sound history
+ok Only explicitly labelled scenery fish remain after withdrawal
+ok Returning to the world cannot revive withdrawn animals
+ok Exactly the three explicit Leave actions create sound sources
+ok Native GPU and audio decode completed without browser/shader errors

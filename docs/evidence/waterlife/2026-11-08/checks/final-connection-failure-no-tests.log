@@ -1,0 +1,31 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+No test files found, exiting with code 1
+
+include: spec/**/*.test.ts
+exclude:  **/node_modules/**, **/.git/**
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: nothing is answering at http://localhost:18941: start your app first, or set APP_URL to where it's listening
+ ❯ Object.setup spec/global-setup.ts:25:13
+     23|     }
+     24|     if (attempt >= 300) {
+     25|       throw new Error(
+       |             ^
+     26|         `nothing is answering at ${baseUrl}: start your app first, or …
+     27|       );
+ ❯ processTicksAndRejections node:internal/process/task_queues:105:5
+ ❯ TestProject._initializeGlobalSetup ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/index.DzobfTyw.js:12113:21
+ ❯ Vitest.initializeGlobalSetup ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/index.DzobfTyw.js:21212:35
+ ❯ ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/index.DzobfTyw.js:21052:6
+ ❯ ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/index.DzobfTyw.js:21081:11
+ ❯ ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/index.DzobfTyw.js:20943:19
+ ❯ startVitest ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/cli-api.DcLieX4F.js:369:8
+ ❯ start ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/cac.fSuRXrAx.js:2370:15
+ ❯ CAC.run ../../%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/node_modules/.pnpm/vitest@5.0.1_@types+node@24.13.6_jsdom@30.1.0_vite@8.3.0_@types+node@24.13.6_esbuild@0.28.2_tsx@4.23.13_yaml@2.9.1_/node_modules/vitest/dist/chunks/cac.fSuRXrAx.js:2346:2
+
+
+
+

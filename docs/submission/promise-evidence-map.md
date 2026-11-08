@@ -7,7 +7,25 @@ that cannot be supplied by source inspection.
 
 ## Build scope before reading any result
 
-The current local application is **`40ed231`**, served at
+The current local application is **`3e367ee`** on `codex/waters-answer`, at
+`http://localhost:18861/planet`. [ADR035](../decisions/035-waters-answer-and-visible-sound-entry.md)
+and the [water-life evidence index](../evidence/waterlife-2026-11-08.json)
+record persistent Share/listening entrances, source-attributed fish/frogs/whales,
+original bounded audio events and an explicit unobstructed Watch view. The final
+coherent package passes **414 source/HTTP checks in 60 files, 74.04 s**, plus
+**29 browser checks / seven captures** with independent real cookie identities
+at 1920×1080 and 390×844. The first 412-check version is rejected for phone
+occlusion despite a green browser path; both records are retained. Actual
+promotion preserves every row in twelve tables and 44 sound-history rows;
+a GET-only observer retains sixteen public sources and twelve NPCs. None of
+these observations establishes human listening quality or an unfamiliar-pair
+playtest. The core Green/Stage/Reading promises below remain the priority;
+water life is source-derived exploration, not a replacement shared-work gate.
+
+The following `40ed231` account is a **historical neighbour milestone**, retained
+with its original scope and results rather than presented as today's build.
+
+The neighbour milestone application was **`40ed231`**, served at
 `http://localhost:18861/planet`, on
 `codex/neighbours-in-motion`, following
 [ADR033](../decisions/033-neighbours-have-a-day.md). The
@@ -163,6 +181,13 @@ It does not establish what the course Fly deployment currently serves.
 | Phone and keyboard players can complete the loop | Dialog input pauses movement, focus survives SSE, 44 px actions, no hover dependency | Creation/view-comparison paths cover 1920×1080, 390×844, actual emulated touch and mid-dialog resize. Phone chat initially failed from overlapping cards; CSS fixes and immediate hit-target checks are retained | Physical phone, software keyboard and slower devices remain unverified. Desktop touch emulation is explicitly narrower |
 | A social world does not counterfeit people | Real nearby chat uses independent identities and 12 m reach; NPCs/local companion remain labelled; natural room visits share the authoritative gate | Neighbours and lived-in private/social paths cover text input, second-person lock rejection, real flush/shower nodes and quiet preference. Fixtures are actual geometry; no artificial Invite Rowan action remains | Whether the café feels socially inviting or residents' responses read as meaningful is not established by their number |
 | A reversible release keeps current work | Scratch-only writes, exact listener/static bytes, current DB retained; [preview utility](../../scripts/local-preview.py) | Earlier utility fixture covers startup/switch/restart/rollback. Actual `5f1fc28` promotion preserves every row in all twelve tables, including 31 sound rows, verifies 56 served assets and keeps `37e055b` for application rollback. An unjoined desktop/phone observer makes zero writes and finds the nine existing public sounds | Course deployment, final Docker/CI image and production rollback still need explicit authorization and their own verification |
+
+## Water-life addition (ADR035)
+
+| Product promise | Agent rule | Automatic / developer evidence | Human boundary |
+| --- | --- | --- | --- |
+| Sharing and local settings stay findable | One permanent header entrance each; unavailable Leave keeps private Listen and an explanation | Actual frozen baseline reproduces missing Share; 11 entry/CSS/controller checks; final phone hit targets, settings/exit focus and clear animal projection | Unfamiliar-player discovery and physical-phone usability remain untested |
+| Real sounds bring recognisable water life | True public source/author, server-time phases, actual water footprints, bounded geometry, removal outranks late snapshots; scenery never acts as a person | 8 marine checks plus two independent real-cookie browser identities; actual bubbles, inflated throat, spray and whole-whale leap captures; 3 withdrawals/history/reload | Stylized surface animals and synthetic timbres, not a biological simulation or artistically approved mix |
 
 ## Failures that changed the harness
 

@@ -1,0 +1,24 @@
+{
+  "actualIndexEntries": 21,
+  "actualOriginalEntries": [
+    "pond-bubbles",
+    "pond-frogs",
+    "whale-song"
+  ],
+  "fixtureEntries": 24,
+  "protectedOriginalIds": [
+    "pond-bubbles",
+    "pond-frogs",
+    "whale-song",
+    "chorus-chords",
+    "chorus-pulse",
+    "chorus-bells"
+  ],
+  "unchangedOriginals": true,
+  "existingCommonsMappingsUnchanged": true,
+  "staleCommonsMappingUpdated": true,
+  "actualProjectIndexUnchanged": true,
+  "networkCalls": 0,
+  "downloads": 0,
+  "note": "Historical chorus entries were not present in the existing project index; preservation additionally exercised three chorus-score entries constructed from the actual shared catalogue, without adding them to the project index."
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "spec",
+    "port": 18941,
+    "pid": 48653,
+    "home": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/waterlife/spec",
+    "database": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/waterlife/spec/history.db",
+    "log": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/waterlife/spec/server.log",
+    "applicationCommit": "3e367ee044546a6b1b51424c83c55f1386523ac0"
+  },
+  {
+    "name": "browser",
+    "port": 18942,
+    "pid": 48658,
+    "home": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/waterlife/browser",
+    "database": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/waterlife/browser/history.db",
+    "log": "/Users/steveluo/Documents/ChatGPT/Alison/\u5d3d\u5d3d8020/comp4020-final-alisonsun7/.cache/waterlife/browser/server.log",
+    "applicationCommit": "3e367ee044546a6b1b51424c83c55f1386523ac0"
+  }
+]

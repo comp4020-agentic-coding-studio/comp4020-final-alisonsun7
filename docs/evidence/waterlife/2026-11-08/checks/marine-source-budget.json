@@ -1,0 +1,175 @@
+{
+  "scope": "pure maximum 8 eligible public-source scene, at+1800ms; no GPU/DB/audio",
+  "state": [
+    {
+      "sourceId": "fish-0",
+      "kind": "fish",
+      "count": 3,
+      "visible": true,
+      "anchorX": 16,
+      "anchorZ": 14,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "bubbling"
+    },
+    {
+      "sourceId": "fish-1",
+      "kind": "fish",
+      "count": 3,
+      "visible": true,
+      "anchorX": 16,
+      "anchorZ": 14,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "bubbling"
+    },
+    {
+      "sourceId": "fish-2",
+      "kind": "fish",
+      "count": 3,
+      "visible": true,
+      "anchorX": 16,
+      "anchorZ": 14,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "bubbling"
+    },
+    {
+      "sourceId": "fish-3",
+      "kind": "fish",
+      "count": 3,
+      "visible": true,
+      "anchorX": 16,
+      "anchorZ": 14,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "bubbling"
+    },
+    {
+      "sourceId": "frog-0",
+      "kind": "frog",
+      "count": 2,
+      "visible": true,
+      "anchorX": 16,
+      "anchorZ": 14,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "calling"
+    },
+    {
+      "sourceId": "frog-1",
+      "kind": "frog",
+      "count": 2,
+      "visible": true,
+      "anchorX": 16,
+      "anchorZ": 14,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "calling"
+    },
+    {
+      "sourceId": "whale-0",
+      "kind": "whale",
+      "count": 1,
+      "visible": true,
+      "anchorX": 27,
+      "anchorZ": 19.116498206486874,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "breathing"
+    },
+    {
+      "sourceId": "whale-1",
+      "kind": "whale",
+      "count": 1,
+      "visible": true,
+      "anchorX": 27,
+      "anchorZ": 19.116498206486874,
+      "sourceX": 16,
+      "sourceZ": 14,
+      "action": "breathing"
+    }
+  ],
+  "scenery": [
+    {
+      "origin": "scenery",
+      "kind": "fish",
+      "count": 2,
+      "x": 16,
+      "z": 14,
+      "area": "pond"
+    },
+    {
+      "origin": "scenery",
+      "kind": "fish",
+      "count": 3,
+      "x": 18,
+      "z": 22.15527070484234,
+      "area": "ocean"
+    }
+  ],
+  "drawCalls": 32,
+  "renderedTriangles": 40840,
+  "sharedGeometryCount": 10,
+  "materials": 8,
+  "instances": [
+    {
+      "name": "waterlife-fish-bodies",
+      "count": 17,
+      "sourceIds": [
+        null,
+        "fish-0",
+        "fish-1",
+        "fish-2",
+        "fish-3"
+      ]
+    },
+    {
+      "name": "waterlife-fish-tails",
+      "count": 17,
+      "sourceIds": [
+        null,
+        "fish-0",
+        "fish-1",
+        "fish-2",
+        "fish-3"
+      ]
+    },
+    {
+      "name": "waterlife-bubbles",
+      "count": 20,
+      "sourceIds": [
+        "fish-0",
+        "fish-1",
+        "fish-2",
+        "fish-3"
+      ]
+    },
+    {
+      "name": "waterlife-ripples",
+      "count": 4,
+      "sourceIds": [
+        "frog-0",
+        "frog-1",
+        "whale-0",
+        "whale-1"
+      ]
+    },
+    {
+      "name": "waterlife-whale-spray",
+      "count": 24,
+      "sourceIds": [
+        "whale-0",
+        "whale-1"
+      ]
+    },
+    {
+      "name": "waterlife-lily-pads",
+      "count": 4,
+      "sourceIds": [
+        "frog-0",
+        "frog-1"
+      ]
+    }
+  ]
+}
