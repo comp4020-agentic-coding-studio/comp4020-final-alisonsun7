@@ -338,6 +338,7 @@ export class PlanetWorld {
         this.soundWaterlife.setSources(this.publicSounds);
     }
     /** Explicit local viewing visit. No sound, author or audio emitter moves. */
+    stopWatching():void { this.watchedVessel=null;this.host.dataset.watchingSound="";this.focus(); }
     watchSound(sourceId:string):boolean {
         if(!this.publicSounds.some(source=>source.id===sourceId&&!source.removedAt))return false;
         const at=this.soundWaterlife.viewpoint(sourceId)??this.soundVessels.viewpoint(sourceId);
@@ -669,6 +670,7 @@ export class PlanetWorld {
             const waterPoint=waterFocus&&planetPoint(waterFocus.x,waterFocus.z,waterFocus.height+(waterFocus.kind==="whale"?.35:.15));
             this.host.dataset.watchedWaterlife=JSON.stringify(waterFocus&&waterPoint?{sourceId:this.watchedVessel,kind:waterFocus.kind,...this.projectPosition(new THREE.Vector3(waterPoint.x,waterPoint.y,waterPoint.z))}:null);
             const watched=this.soundVessels.state.find(boat=>boat.sourceId===this.watchedVessel&&boat.visible);
+            this.host.dataset.watchingSound=waterFocus?waterFocus.kind:watched?"boat":"";
             this.host.dataset.watchedVessel=JSON.stringify(watched&&watched.x!==undefined&&watched.z!==undefined?{sourceId:watched.sourceId,...this.project(watched.x,watched.z,.6)}:null);
             this.host.dataset.soundCues = JSON.stringify(this.cues.state);
             this.host.dataset.chorusResidents = JSON.stringify(this.residents.figures.map(figure => ({

@@ -2584,6 +2584,10 @@ h3 {
 .planet-page .planet-create-control:hover { background:#244d40;border-color:#244d40;color:#fffbee; }
 .planet-create-control svg { width:19px;height:19px;flex-shrink:0; }
 .planet-listening-settings { width:44px;padding:10px; }
+.planet-watch-exit { display:none;position:absolute;top:18px;left:22px;z-index:25;min-height:44px;max-width:calc(100% - 90px);padding:10px 15px;border:1px solid #91a48c!important;border-radius:12px;background:#fffbedf5!important;color:#315548!important;box-shadow:0 4px 18px #2548381c;font-size:13px; }
+.planet-stage[data-watching-sound]:not([data-watching-sound=""])>.planet-watch-exit { display:inline-flex; }
+.planet-stage[data-watching-sound]:not([data-watching-sound=""]) :is(.planet-corner,.chorus-travel,.chorus-dock,.planet-nearby-sound,.planet-nearby-reopen,.planet-sound-pins,#sound-discovery,.sound-discovery,.sound-discovery-reopen,.planet-restroom-card,.planet-restroom-reopen,.planet-listen-hint,.planet-talk,.planet-reply-intent,.chorus-placement-intent,.planet-interact,.planet-person-label) { display:none!important; }
+.planet-stage:has(dialog:modal)>.planet-watch-exit { visibility:hidden; }
 .planet-creation-note { padding:10px 12px;border:1px solid #c7b88c;border-radius:10px;background:#f4edd8;color:#5e5336!important;font-size:12px!important;line-height:1.5!important; }
 .planet-library-placement { grid-column:1/-1;width:100%;margin:4px 0 0!important;color:#685935!important;font-size:12px!important;line-height:1.5!important; }
 #planet-listening-settings-section { scroll-margin-top:110px; }
@@ -2596,6 +2600,7 @@ h3 {
  .planet-page .planet-create-control { min-height:44px;padding:9px 10px;gap:6px;font-size:12px; }
  .planet-page .planet-actions { gap:6px; }
  .planet-page .planet-bar { gap:6px;padding-left:10px;padding-right:10px; }
+ .planet-watch-exit { top:12px;left:12px;padding:10px 13px;font-size:12px; }
 }
 
 .planet-notice { pointer-events:none; }

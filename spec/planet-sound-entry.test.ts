@@ -76,6 +76,45 @@ describe("a permanent entrance to shared sounds", () => {
     } finally { dom.window.close(); }
   });
 
+  it("clears obstructing world cards during an explicit Watch, then restores their own visibility",()=>{
+    const dom=new JSDOM(renderPlanet(snapshot,false));
+    try{
+      const doc=dom.window.document,style=doc.createElement("style");style.textContent=styles;doc.head.append(style);
+      const stage=doc.getElementById("planet-stage")!;
+      stage.insertAdjacentHTML("beforeend",'<aside id="sound-discovery">Pond frogs</aside><section class="planet-restroom-card">The little shower</section><div class="planet-sound-pins">A sound pin</div>');
+      const targets=[doc.getElementById("sound-discovery")!,doc.querySelector(".planet-restroom-card")!,doc.querySelector(".planet-sound-pins")!];
+      const normal=targets.map(target=>dom.window.getComputedStyle(target).display);
+      for(const kind of ["fish","frog","whale","boat"]){
+        stage.dataset.watchingSound=kind;
+        expect(targets.map(target=>dom.window.getComputedStyle(target).display)).toEqual(["none","none","none"]);
+        expect(dom.window.getComputedStyle(doc.getElementById("planet-place")!).display).not.toBe("none");
+      }
+      stage.dataset.watchingSound="";
+      expect(targets.map(target=>dom.window.getComputedStyle(target).display)).toEqual(normal);
+      expect(targets.every(target=>!(target as HTMLElement).hidden)).toBe(true);
+    }finally{dom.window.close();}
+  });
+
+  it("provides an explicit Watch exit that clears only the local observation and returns world focus",()=>{
+    const source=readFileSync("src/client/planet.ts","utf8"),tree=ts.createSourceFile("planet.ts",source,ts.ScriptTarget.Latest,true,ts.ScriptKind.TS);
+    const names=new Set(["button","buildWatchExit","stopWatchingSound"]);
+    const functions=tree.statements.filter(statement=>ts.isFunctionDeclaration(statement)&&statement.name&&names.has(statement.name.text));
+    expect(functions).toHaveLength(3);
+    const implementation=ts.transpileModule(functions.map(statement=>statement.getText(tree)).join("\n"),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText;
+    const dom=new JSDOM(renderPlanet(snapshot,false));
+    try{
+      const doc=dom.window.document,stage=doc.getElementById("planet-stage")!,style=doc.createElement("style");style.textContent=styles;doc.head.append(style);
+      class World { stopWatching=vi.fn();focus=vi.fn(); }
+      const world=new World();
+      const exit=new Function("document","stage","world","PlanetWorld",implementation+"\nreturn buildWatchExit();")(doc,stage,world,World) as HTMLButtonElement;
+      stage.append(exit);expect(dom.window.getComputedStyle(exit).display).toBe("none");
+      stage.dataset.watchingSound="fish";
+      expect(dom.window.getComputedStyle(exit).display).toBe("inline-flex");expect(dom.window.getComputedStyle(exit).minHeight).toBe("44px");
+      exit.click();expect(world.stopWatching).toHaveBeenCalledOnce();expect(world.focus).toHaveBeenCalledOnce();
+      expect(stage.dataset.watchingSound).toBe("");expect(dom.window.getComputedStyle(exit).display).toBe("none");
+    }finally{dom.window.close();}
+  });
+
   it("routes an unjoined Share through the arrival choice without publishing or enabling audio", () => {
     const {harness,adapters,dispose}=controller();
     try {

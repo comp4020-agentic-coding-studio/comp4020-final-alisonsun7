@@ -103,6 +103,17 @@ $("planet-view").onclick = () => { if(flat)world.setCameraDistance(world.cameraD
 updateView();
 const zoomControls=document.createElement("div");zoomControls.className="planet-zoom";zoomControls.setAttribute("aria-label","Camera distance");
 for(const [id,label,text,delta]of [["planet-zoom-in","Camera closer","+",-2],["planet-zoom-out","See more of the world","−",2]] as const){const b=document.createElement("button");b.type="button";b.id=id;b.setAttribute("aria-label",label);b.title=label;b.textContent=text;b.onclick=()=>{world.setViewMode("third");world.setCameraDistance(world.cameraDistance+delta);updateView();world.focus();};zoomControls.append(b);}stage.append(zoomControls);
+function stopWatchingSound(): void {
+    if(world instanceof PlanetWorld)world.stopWatching();
+    stage.dataset.watchingSound="";
+    world.focus();
+}
+function buildWatchExit(): HTMLButtonElement {
+    const exit=button("Back to exploring",stopWatchingSound);
+    exit.id="planet-watch-exit";exit.classList.add("planet-watch-exit");
+    return exit;
+}
+stage.append(buildWatchExit());
 const setLook = (value: string): void => { const mode = value === "scene" ? "scene" : "follow"; world.setLookMode(mode); try {
     localStorage.setItem("soac-look-mode", mode);
 }
@@ -231,8 +242,7 @@ function publicSounds(): PlacedSound[] { return [...sounds.values()].filter(s =>
 function watchSoundEffect(sourceId:string):boolean {
     const source=publicSounds().find(source=>source.id===sourceId);
     if(!source||!(world instanceof PlanetWorld)||!world.watchSound(sourceId))return false;
-    const subject = source.soundId === "pond-bubbles" ? "fish" : source.soundId === "pond-frogs" ? "frogs" : source.soundId === "whale-song" ? "whale" : "boat";
-    lastSent="";updateView();say(`Watching ${source.by}'s ${subject}. The sound stays in its original spot.`);return true;
+    lastSent="";updateView();clearTimeout(noticeTimer);notice.hidden=true;return true;
 }
 function refreshWorld(): void { const list = [...sounds.values()].filter(s => !ended.has(s.id)); world.setContributions(list); audio.setAll(list);refreshSoundLife(); soundInteractions?.setAll(list);studio.setWorks(chorus);conversations.changed();renderShared(); renderPeople(); }
 function record(kind: string, s: PlacedSound, by = s.by): void { if (s.whileIn)
