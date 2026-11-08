@@ -2,6 +2,11 @@
 
 # Little Chorus agent rules
 
+Wen (2026-11-09): the pages offer only Little Chorus · a little world. The
+explore page, home page, planet menu and About no longer list or link the
+coastal edition (From the Forest to the Sea); its `/scene/seaside` page,
+room and history stay untouched, reachable only by its address.
+
 ADR038 (Wen, 2026-11-09) puts sounds that change the world in place from
 the start: seven labelled world examples (coffee, birds, gulls, whale, frogs,
 ferry horn, stage guitar) that now cause their animals, ferry and resident

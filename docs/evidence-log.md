@@ -3462,3 +3462,18 @@ The ferry's state reports it as visible and sailing, but keyboard walking did
 not reach its card, so no screenshot of it was taken. Nothing was pushed or
 deployed. No one has listened to it yet.
 
+## 2026-11-09 — Only the little world on the pages
+
+Prompt (Wen, in Chinese): remove the From the Forest to the Sea part from the
+web pages, and keep only Little Chorus · a little world.
+
+The explore page now lists only the planet card. The home page's Visit the
+coast button and coastal sentence, the planet menu's coastal link and note,
+and About's two-editions sentence are gone. The `/scene/seaside` route, its
+room and its data are unchanged. ADR 024's test that the explore page lists
+the coast became the opposite check, with the coast's own page still
+served. It failed against the unchanged pages; the full spec passed 427 / 61
+on a fresh scratch server. The screenshots of the home and explore pages at
+1440×900 and 390×844 show no coastal title and no `/scene/seaside` links.
+The World sound examples note now names all seven examples.
+

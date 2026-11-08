@@ -22,10 +22,13 @@ async function snapshot(mode: string, who: Person | null = null): Promise<Snapsh
 
 describe("the walkable world", () => {
   it("is the place listed, and says on its page what it is", async () => {
-    // ADR024: the explicitly requested new edition retains the original coast.
+    // ADR024 keeps the original coast; since Wen's 2026-11-09 request the
+    // explore page lists only the little world, and the coast keeps its page.
     expect(SCENES.map((s) => s.id)).toEqual(["seaside", "planet"]);
     const explore = await (await fetch(new URL("/explore", baseUrl))).text();
-    expect(explore).toContain(`/scene/${world.id}?mode=`);
+    expect(explore).not.toContain(`/scene/${world.id}`);
+    expect(explore).not.toContain(world.title);
+    expect(explore).toContain("Little Chorus · a little world");
     const html = await (await fetch(new URL(`/scene/${world.id}?mode=weekday`, baseUrl))).text();
     expect(html).toContain(world.about.slice(0, 30));
     expect(html).toContain('"three":"/vendor/three.module.min.js"');

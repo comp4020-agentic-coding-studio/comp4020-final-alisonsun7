@@ -110,9 +110,8 @@ export function renderLanding(user: User | null): string {
     <p class="hero-promise">Your ingredients stay after you leave. Your work remembers who began it, who answered, and what you changed together.</p>
     <p class="actions">
       <a class="btn primary" href="/planet">Start at Listening Green</a>
-      <a class="btn ghost" href="/scene/seaside">Visit the coast</a>
     </p>
-    <p class="hero-editions">The coastal world is still here, with everything you left in it. <a href="/about#how">How it works</a></p>
+    <p class="hero-editions"><a href="/about#how">How it works</a></p>
     <ul class="hero-families" aria-label="Three kinds of shared sound"><li class="family-water">Water &amp; wind</li><li class="family-animal">Animals</li><li class="family-people">People</li></ul>
     ${user ? `<p class="fine">Welcome back, ${escapeHtml(user.nickname)}.</p>` : ""}
     <p class="independent">An independent student project.</p>
@@ -133,7 +132,9 @@ const placeLine = (p: PlaceSummary | undefined): string =>
 
 export function renderExplore(user: User | null, places: PlaceSummary[], error: string | null): string {
   const find = (sceneId: string, mode: string): PlaceSummary | undefined => places.find((p) => p.sceneId === sceneId && p.mode === mode);
-  const ordered = [...SCENES].sort((a, b) => Number(b.id === "planet") - Number(a.id === "planet"));
+  // Only the little world is listed (Wen, 2026-11-09). The coast keeps its
+  // address and everything left there, but isn't offered any more.
+  const ordered = SCENES.filter((s) => s.id === "planet");
   const cards = ordered.map((scene) => {
     const planet = scene.id === "planet";
     const modes = scene.modes
@@ -160,7 +161,7 @@ export function renderExplore(user: User | null, places: PlaceSummary[], error: 
     `${nav}
 <main class="explore-main">
   <h1>Find your kind of place</h1>
-  <p class="lede">Make a cozy corner with a friend, start a lively gathering, or find your own mix. The little world and the coast each keep their own sounds. You bring the same name and character to both.</p>
+  <p class="lede">Make a cozy corner with a friend, start a lively gathering, or find your own mix.</p>
   <p class="explore-planet-invite"><a class="btn primary" href="/planet">Enter the little world</a><span>Little places for the things you do together.</span></p>
   ${
     user
@@ -286,11 +287,9 @@ export function renderPlanet(snap: Snapshot, joined: boolean, user: User | null 
   <section class="planet-panel-section" aria-labelledby="planet-friends-title"><h3 id="planet-friends-title">Here together</h3><div id="planet-people" class="planet-people"></div><button type="button" id="planet-chat-toggle" class="btn ghost">Talk nearby</button></section>
   <section class="planet-panel-section" aria-labelledby="planet-activity-title"><h3 id="planet-activity-title">Made while you’re here</h3><div id="planet-activity" class="planet-activity"><p>Shared changes appear here as they happen during this visit.</p></div></section>
   <section id="planet-environment" class="planet-panel-section" aria-label="Weather and light"></section>
-  <section id="planet-listening-settings-section" class="planet-panel-section" aria-labelledby="planet-listening-title"><h3 id="planet-listening-title">Your listening · Only what you hear</h3><button type="button" id="planet-listening-toggle" class="btn ghost" aria-pressed="false">Turn sound on</button><label for="chorus-volume">Work volume <input id="chorus-volume" type="range" min="0" max="100" value="70"/></label><p>Work volume and Listen closely change only your mix of contributions. Sound off also silences residents. Adding, answering and withdrawing change the shared work.</p><label id="planet-examples-label" class="planet-examples-label"><input id="planet-examples" type="checkbox" checked/> World sound examples</label><p id="planet-examples-note">See how coffee, birds and gulls answer sounds. Examples are local demonstrations; your friends' sounds stay when you turn them off.</p><button type="button" id="chorus-notebook" class="btn ghost">Our works</button><button type="button" id="chorus-welcome-again" class="btn ghost">Show the invitation again</button><button type="button" id="chorus-overview" class="btn ghost" aria-pressed="false">World overview</button></section>
+  <section id="planet-listening-settings-section" class="planet-panel-section" aria-labelledby="planet-listening-title"><h3 id="planet-listening-title">Your listening · Only what you hear</h3><button type="button" id="planet-listening-toggle" class="btn ghost" aria-pressed="false">Turn sound on</button><label for="chorus-volume">Work volume <input id="chorus-volume" type="range" min="0" max="100" value="70"/></label><p>Work volume and Listen closely change only your mix of contributions. Sound off also silences residents. Adding, answering and withdrawing change the shared work.</p><label id="planet-examples-label" class="planet-examples-label"><input id="planet-examples" type="checkbox" checked/> World sound examples</label><p id="planet-examples-note">See how coffee, birds, gulls, the whale, frogs, a ferry and a guitar answer sounds. Examples are local demonstrations; your friends' sounds stay when you turn them off.</p><button type="button" id="chorus-notebook" class="btn ghost">Our works</button><button type="button" id="chorus-welcome-again" class="btn ghost">Show the invitation again</button><button type="button" id="chorus-overview" class="btn ghost" aria-pressed="false">World overview</button></section>
   <details id="planet-help" class="planet-help"><summary>Moving, listening &amp; looking</summary><p>Walk with W A S D or the arrows. Hold Shift to run; Space jumps. Drag to look; click the ground to walk there. On a phone, use the arrows and Run / Jump buttons.</p><p>First person brings you close to the little details. Third person lets you see your character and the people you meet.</p><label class="planet-look" for="planet-look-settings">Look direction<select id="planet-look-settings"><option value="follow">Follow pointer</option><option value="scene">Drag the scene</option></select></label><p class="planet-form-note">Follow pointer: down looks down, left looks left. Drag the scene reverses both directions. Saved in this browser.</p><p>Choose a sound, listen privately, then share it where you stand. Click its named marker or press E beside it to Respond to sound. Real replies form threads around the globe. Meet the kangaroo at the green: invite it along, then jump and play together.</p><a href="/about#how">How sounds and privacy work</a></details>
   <details class="planet-restroom"><summary>Restrooms &amp; doors</summary><p>A red lamp means someone is in. Occupied doors stay locked, including during residents' own visits. Flush or run the shower inside; your stay sound ends when you come out.</p><p id="planet-occupancy" role="status" aria-live="polite">Walk to the restrooms to see the shared door state.</p></details>
-  <a class="planet-coast-link" href="/scene/seaside">Visit the coastal world <span aria-hidden="true">↗</span></a>
-  <p class="planet-edition-note">A separate edition. Everything you left at the coast stays at the coast.</p>
   <p class="planet-project-note">${NOT_AFFILIATED} <a href="/about">Sources &amp; privacy</a></p>
 </dialog>
 <dialog id="planet-join" class="planet-dialog planet-arrival" aria-labelledby="planet-join-title" hidden>
@@ -324,10 +323,10 @@ export function renderAbout(): string {
   <p><strong>${NOT_AFFILIATED}</strong></p>
 
   <h2 id="how">How it works</h2>
-  <p>Little Chorus has two editions: <a href="/planet">the little world</a> and <a href="/scene/seaside">the coast</a>. Each keeps its own sounds and shared sky. Your name and character work in both.</p>
+  <p>Little Chorus is <a href="/planet">a little world</a> you walk around with friends, leaving and answering sounds.</p>
   <ol>
     <li>Open the place. Give a name and come as a cat or a dog. No account.</li>
-    <li>Walk with W A S D or the arrow keys, drag to look, or choose a destination. On the coastal forest trail, a kangaroo points you back if you wander too far.</li>
+    <li>Walk with W A S D or the arrow keys, drag to look, or choose a destination. Meet the kangaroo at Listening Green and play together.</li>
     <li>Everyone in the place sees everyone else. Come within a few steps of someone and you can talk: your words show over your head for five seconds, or until you say something new, and only people nearby see them.</li>
     <li>Leave a sound where you stand: it shows as a coloured light (blue for water and wind, green for animals, orange for people) and plays from there for everyone until someone standing beside it removes it. It stays after you leave. Anyone can leave or remove any sound, and everyone is told who did.</li>
     <li>Find someone else's sound and choose <em>Reply with a sound</em>. Walk to a spot, choose your answer, and leave it there. The two sounds stay connected in their conversation.</li>
