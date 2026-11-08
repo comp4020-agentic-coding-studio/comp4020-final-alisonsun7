@@ -3164,3 +3164,31 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   distinct checks, failures, promotion and observer scopes. The documentation/
   evidence follow-up and tag will be committed and verified separately on
   the same branch without changing the accepted `40ed231` application.
+
+
+## 2026-11-08 — Grounded places and light: measured repair direction
+
+- The author reports suspended objects and unsatisfying lighting. Read-only
+  inspection of accepted café/conversation/coast captures finds the terrace
+  underside and weak base contact most conspicuous. Static impressions do not
+  establish each object's clearance. The starting preview remains `40ed231`,
+  recorded in `.cache/grounding/starting-preview.json`.
+- The actual pre-support compiled geometry audit, temporarily recorded in
+  `.cache/support-review/baseline.json`, measures Green bench-leg gaps of
+  25.9–29.1 cm and its two sampled lamp-base gaps of 51.4–54.6 cm. Nine café
+  outer-deck underside samples reach a 1.357 m globe gap. Terrace figures use
+  radial up despite the floor plane, with sampled normal mismatch up to
+  13.28 degrees and sole vertices on both sides. This is pure geometry with
+  sign rasterisation stubbed, not GPU or database evidence.
+- The old 2048 shadow map covers 70 m: 3.42 cm per texel. Bias -0.0006 over
+  its 1–150 m depth range gives an 8.94 cm depth-offset scale, separately from
+  its 3.5 cm normal bias. These code-derived scales do not measure a rendered
+  gap. [ADR034](decisions/034-grounded-places-and-light.md) requires actual
+  support/floor-normal and foundation repairs before subtle contact cues,
+  then local shadow focus with a consistent shared-time global sun direction.
+- Keep the renderer, coordinate meanings, source/reply history, identities and
+  current database. No engine/composer migration or new third-party media is
+  introduced; new support/contact/light modules are original procedural code.
+  Raw-command archival, repaired geometry comparisons, fresh desktop/phone
+  visual checks and promotion remain pending at this checkpoint. Old accepted
+  screenshots and a new implementation file do not validate the repaired view.
