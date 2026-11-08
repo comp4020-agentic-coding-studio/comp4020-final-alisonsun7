@@ -2960,3 +2960,25 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   No main push, public deployment, new asset licence, unfamiliar-pair study,
   human listening verdict, physical-phone test or real next-day return is
   claimed. Those human judgements remain actionable author work.
+
+## 2026-11-08 — Sounds in motion: diagnosis and candidate
+
+- The author requests a visible boat journey after leaving a horn and reports
+  walking into the planet near the coast. A frozen, independent clone actually
+  reproduces the inside-looking-out view. Pure geometry locates the cause:
+  tangent projection aliases a building's antipode to its local footprint.
+  At the café antipode the old floor height is -44.16 m. This is a surface
+  classification defect, not evidence that the camera needs a larger offset.
+- The first instrumented old-browser observation catches the signed feet
+  radius already negative at the lookout and camera radius 15.777 m, inside
+  the 22 m globe. Observation-only instrumentation is distinguished from the
+  original compiled build; no movement or camera behaviour was patched there.
+- `f464e75` implements front-hemisphere footprint checks and real-source ferries
+  and paper pinwheels. The 326-check/51-file source and isolated HTTP run passes;
+  the first seven actual desktop/touch walking routes pass. A further continuous
+  coast leg near the café antipode and the dual-browser ship path are pending
+  at this checkpoint. No visual or listening verdict for boats is claimed yet.
+- [ADR032](decisions/032-sounds-set-the-world-in-motion.md) bounds the work:
+  existing sound identities/positions and audio stay fixed, effects derive from
+  real public sources and server time, watching is an explicit local action,
+  and examples do not multiply. Water-flow expansion remains deferred.
