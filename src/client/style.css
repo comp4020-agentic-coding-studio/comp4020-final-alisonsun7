@@ -2405,6 +2405,9 @@ h3 {
 .chorus-tone.pulse:after { display:none; }
 .chorus-feedback { font-size:13px;min-height:20px;color:#625330; }
 .chorus-choice .chorus-choice-outcome { flex:0;padding-top:10px;border-top:1px dashed #aab49a;font-size:12px;color:#36584b; }
+/* Sounds that visibly change the world (ADR 038). */
+.chorus-changes-world { display:inline-block;align-self:flex-start;margin:0 0 4px;padding:2px 8px;border-radius:10px;background:#2f5d50;color:#fff8e6;font-size:11px;font-weight:700;letter-spacing:.02em; }
+.palette-text .chorus-changes-world { margin:3px 0 2px; }
 .chorus-choice .chorus-room-reason { flex:0;margin:9px 0 3px;color:#754726;font-size:12px; }
 .chorus-choice [hidden] { display:none; }
 .chorus-step { padding-left:11px;border-left:3px solid #bd894b; }
@@ -2510,6 +2513,7 @@ h3 {
  .chorus-choice .btn.primary { grid-column:3; }
  .chorus-choice .chorus-choice-outcome { padding-top:6px;font-size:12px; }
  .chorus-choice .chorus-find-room { grid-column:2/4; }
+ .chorus-choice .chorus-changes-world { grid-column:2/4;justify-self:start; }
  .chorus-dock .chorus-step { font-size:12px;line-height:1.4; }
  .chorus-welcome { padding:26px; }
  .chorus-welcome h2 { font-size:32px; }

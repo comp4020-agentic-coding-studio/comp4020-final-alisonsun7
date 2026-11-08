@@ -283,8 +283,11 @@ export class SoundLibrary {
     const kinds = SOUNDS.filter((kind) => (this.family === "all" || kind.family === this.family)
       && (this.intention === "all" || soundResponseFor(kind.id)?.mood === this.intention)
       && (kind.label + " " + FAMILIES[kind.family].label + " " + (soundResponseFor(kind.id)?.label ?? "")).toLocaleLowerCase().includes(query))
-      .sort((a, b) => Number(b.zones.includes(this.zone.id)) - Number(a.zones.includes(this.zone.id)));
-    this.result.textContent = kinds.length + (kinds.length === 1 ? " sound" : " sounds") + " · suited to " + this.zone.title + " first";
+      // Sounds that visibly change the world lead (ADR 038), then those
+      // that suit where you are.
+      .sort((a, b) => Number(!!this.opts.effect?.(b.id)) - Number(!!this.opts.effect?.(a.id))
+        || Number(b.zones.includes(this.zone.id)) - Number(a.zones.includes(this.zone.id)));
+    this.result.textContent = kinds.length + (kinds.length === 1 ? " sound" : " sounds") + (this.opts.effect ? " · sounds that change the world first, then those suited to " : " · suited to ") + this.zone.title + (this.opts.effect ? "" : " first");
     for (const kind of kinds) {
       const li = document.createElement("li");
       li.style.setProperty("--family", FAMILIES[kind.family].colour);
@@ -295,9 +298,16 @@ export class SoundLibrary {
       const family = document.createElement("span");
       family.className = "palette-family";
       family.textContent = FAMILIES[kind.family].label + (kind.zones.includes(this.zone.id) ? " · suits here" : "");
-      text.append(name, family);
-      const response = soundResponseFor(kind.id);
       const effect=this.opts.effect?.(kind.id);
+      text.append(name, family);
+      if (effect) {
+        li.dataset.changesWorld = "true";
+        const badge = document.createElement("span");
+        badge.className = "chorus-changes-world";
+        badge.textContent = "Changes the world";
+        text.append(badge);
+      }
+      const response = soundResponseFor(kind.id);
       if (response||effect) {
         const hint = document.createElement("span");
         hint.className = "palette-response";

@@ -4,7 +4,7 @@ import { findSound } from "../shared/sounds.js";
 import type { Person, SoundReference } from "../shared/protocol.js";
 import { choiceConsequence, nextSource, soundName, workNextStep, workResult } from "../shared/chorus-guidance.js";
 import { authorMark } from "../shared/chorus-signature.js";
-import { soundLifeEffect } from "../shared/sound-life.js";
+import { soundLifeEffect, worldChangingFirst } from "../shared/sound-life.js";
 
 interface Options {
   effects?:(id:string)=>string|null;
@@ -121,7 +121,12 @@ export class ChorusStudio {
     const defaults=inCafe && !parent ? ["espresso", "cafe-chatter", "cafe-music"] : !parent&&!workPlace&&nearest.sounds.length?nearest.sounds:recommendedSounds(parent, place);
     const choices=!parent&&suggested&&findSound(suggested)?[suggested,...nearest.sounds.filter(id=>id!==suggested&&!!findSound(id)),...defaults.filter(id=>id!==suggested)]:defaults;
     if(!parent&&!workPlace&&!inCafe)this.context.textContent="Listen to a little ingredient, then leave one here to change this corner. Your sound keeps your name; nothing is shared until you choose Leave.";
-    this.renderChoices([...new Set(choices)].slice(0,3));this.opts.pause();this.element.showModal();
+    // A reply keeps its compatible parts; otherwise the sounds whose effect
+    // can be seen lead (ADR 038).
+    const effect=this.opts.effects??soundLifeEffect;
+    const ids=parent?[...new Set(choices)].sort((a,b)=>Number(!!effect(b))-Number(!!effect(a))).slice(0,3)
+      :worldChangingFirst(choices,this.opts.at(),3,suggested&&findSound(suggested)?suggested:undefined,effect);
+    this.renderChoices(ids);this.opts.pause();this.element.showModal();
   }
   close(): void { this.viewRevision++;this.previewRevision++;this.opts.stop();this.element.close(); }
   private renderChoices(ids: string[]): void {
@@ -148,7 +153,9 @@ export class ChorusStudio {
       }, true);leave.dataset.leave = id;leave.setAttribute("aria-label", `Leave ${s.label} here`);
       const work = this.parent ? this.works.find(work => work.sources.some(source => source.id === this.parent!.id)) : undefined;
       const cafe = ["espresso", "cafe-chatter", "cafe-music"].includes(id) && !this.parent;
-      card.append(symbol, title, node("p", copy));
+      card.append(symbol, title);
+      if((this.opts.effects??soundLifeEffect)(id)){card.dataset.changesWorld="true";card.append(node("span","Changes the world","chorus-changes-world"));}
+      card.append(node("p", copy));
       const localEffect=!this.parent&&!chorusPlaceAt(this.opts.at())?(this.opts.effects??soundLifeEffect)(id):null;
       if (!cafe) {const outcome=node("p", localEffect??choiceConsequence(id, this.parent, work, this.opts.you()?.id), "chorus-choice-outcome");if(localEffect)outcome.dataset.localEffect=localEffect;card.append(outcome);}
       card.append(listen, leave);
