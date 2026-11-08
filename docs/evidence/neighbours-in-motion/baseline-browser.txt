@@ -1,0 +1,11 @@
+(node:73834) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+AssertionError [ERR_ASSERTION]: The running baseline lacks the residentLife capability: no claimed activity, rig or paired-conversation checks passed
+    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/neighbour-life.mjs:201:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}

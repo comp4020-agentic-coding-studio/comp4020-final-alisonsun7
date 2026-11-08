@@ -2,6 +2,20 @@
 
 # Little Chorus agent rules
 
+ADR033 gives the existing twelve 3D neighbours authored days, not new human
+identities or generated chat. Absolute server time samples complete safe tours;
+real sounds steer attention and upper-body gestures without moving the tour.
+Pair conversation requires mutual nearby partners and alternating roles.
+Use actual furniture clearance; refresh the route cache after shared sculpture
+geometry changes, with an honest safe fallback. Walking/conversation owns its
+pose and must not be overwritten by an idle/work layer. A projected torso and
+passing state checks do not establish readable faces or turn cues: inspect the
+normal camera, and require actual unobstructed cue projection. The author later
+explicitly permits a public push to the existing course final repository.
+Push the verified independent branch only; main still auto-deploys and has not
+been authorised by this clarification. Project-local Alison SSH remains scoped
+to this repository.
+
 ADR032 keeps local building tests on the front hemisphere before applying a
 tangent-plane footprint or raised floor. Antipodes can project onto the same
 local rectangle; never repair their negative floor height with an arbitrary

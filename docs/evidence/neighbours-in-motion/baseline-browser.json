@@ -1,0 +1,45 @@
+{
+  "type": "automated-developer-browser-check",
+  "base": "http://localhost:18920",
+  "baseline": true,
+  "failed": true,
+  "failure": "AssertionError [ERR_ASSERTION]: The running baseline lacks the residentLife capability: no claimed activity, rig or paired-conversation checks passed\n    at file:///Users/steveluo/Documents/ChatGPT/Alison/%E5%B4%BD%E5%B4%BD8020/comp4020-final-alisonsun7/e2e/neighbour-life.mjs:201:12",
+  "checks": [],
+  "errors": [],
+  "cleanupErrors": [],
+  "evidence": {
+    "baselineReadOnly": true,
+    "observation": null,
+    "consistency": null,
+    "attention": [],
+    "reducedMotion": [],
+    "history": null,
+    "baseline": {
+      "wallNow": 1794126529970,
+      "serverNow": 1794126529746.2,
+      "residents": null,
+      "quiet": {
+        "on": "false",
+        "voices": 0,
+        "starts": 0,
+        "contexts": 0
+      },
+      "pair": null
+    }
+  },
+  "targets": [],
+  "samples": [],
+  "created": [],
+  "independentCookieIdentities": false,
+  "humanListening": false,
+  "unfamiliarPairStudy": false,
+  "physicalPhone": false,
+  "nextDayReturn": false,
+  "limitations": [
+    "Actual native-clock animation and final rig rotations are observed; screenshots require visual inspection for naturalness.",
+    "Quiet native audio observation does not establish artistic sound quality.",
+    "390×844 touch emulation is not a physical-phone study.",
+    "The baseline is an anonymous read-only capability negative, not a two-player activity run.",
+    "No server restart, unfamiliar-pair study or next-day return is claimed."
+  ]
+}

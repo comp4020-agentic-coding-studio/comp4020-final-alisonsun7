@@ -1,5 +1,52 @@
 # Little Chorus: a place that remembers an answer
 
+## Current neighbour revision
+
+[ADR033](decisions/033-neighbours-have-a-day.md) gives the existing twelve
+3D neighbours a small day of walking, working, resting and conversation.
+Application `40ed231` on `codex/neighbours-in-motion` keeps the same shared
+world, source positions, people and histories. The
+[revision evidence index](evidence/neighbours-in-motion-2026-11-08.json)
+distinguishes its actual candidate checks, visual correction and local delivery
+from the preceding motion release documented below.
+
+It is served at `http://localhost:18861/planet` and saved to the public course
+repository's independent development branch. Refresh an existing tab to load
+it. The source and HTTP run passes 345 checks in 54 files; the separate
+18-check browser path observes a complete native-clock café cycle. An anonymous
+post-promotion visit makes no writes, retains sixteen public source IDs and
+checks the current twelve rendered residents. Promotion retains all rows in
+twelve tables, including 44 sound-history rows. Application-only rollback is
+`python3 scripts/local-preview.py --rollback`, returning to `3ee3493` with the
+current database. Start the recorded preview with
+`python3 scripts/local-preview.py`.
+
+At Tide & Coffee, Bean works beside the counter, Jun makes short rounds, and
+Coco and Maple come out to the front porch for conversation. They face each
+other, alternate telling and listening, and use small hand gestures and nods.
+A wordless three-dot cue identifies the speaking NPC; it is not a real-player
+message or a new sound. The named residents keep their NPC badges and never
+count as connected friends.
+
+New sounds still earn an initial response. A lasting sound is periodically
+revisited as residents continue their day, rather than freezing everyone in
+one repeated pose. Quiet visitors see the same server-time activities without
+being unmuted. The ordinary loops need no new contribution rows. Source
+removal clears attention while the authored walk continues.
+
+Routes use real floor and furniture clearance. A newly changed shared sculpture
+can invalidate a tour and select a verified safe stop; this exceptional geometry
+change can reposition a figure. Reduced motion uses a still authored position.
+This is a bounded authored behaviour system, not a needs or dialogue model.
+The separate shared restroom routine and lock remain unchanged.
+
+The source was tested before and after the front-porch correction. The first
+successful state/browser path still left heads and turn cues behind the café
+sign in its screenshot. The route and visible-cue check were changed because
+of that failure; the release index identifies which captures are final.
+
+## Preceding sound-motion revision — historical scope
+
 The current candidate follows [ADR026](decisions/026-a-world-that-remembers-an-answer.md):
 two to six friends without musical training answer sounds to make a place
 recognizably different. Listening Green is the main encounter. Pocket Jam and

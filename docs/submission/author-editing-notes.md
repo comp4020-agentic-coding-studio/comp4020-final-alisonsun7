@@ -3,17 +3,61 @@
 Audit date: 2026-11-08. Agent-prepared factual notes, not a rewrite of the
 author's argument. Root materials at the start of this audit came from
 [`f86e1d6`](https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7/commit/f86e1d6).
-The current local application is **`3ee3493`** on `codex/sounds-in-motion`,
-serving `http://localhost:18861/planet`. [ADR032](../decisions/032-sounds-set-the-world-in-motion.md)
+
+The current local application is **`40ed231`**, serving
+`http://localhost:18861/planet` on `codex/neighbours-in-motion`, following
+[ADR033](../decisions/033-neighbours-have-a-day.md) and the
+[neighbour evidence index](../evidence/neighbours-in-motion-2026-11-08.json),
+which records 41 artifacts with their distinct scopes.
+Its twelve existing NPCs keep their identities while gaining validated daily
+routes, paired stops, alternating hand/nod gestures and a local wordless
+speaker cue. This adds no NPC dialogue API, player or contribution. New real
+sounds retain the two-second settle and up-to-seven-second eased initial
+attention, followed by periodic attention; gaze/gesture no longer stops the
+ordinary walking route.
+
+Final `40ed231` passes **345 source/HTTP checks in 54 files, 67.90 s**, and a
+separate **18-check** browser path, recorded in
+`.cache/neighbours/full-spec-final.txt` and
+`.cache/neighbours/final-artifacts/results.json`. The first pre-porch
+**344 / 53-file** and **17-check** runs passed, but visual review rejected the
+sign-obscured heads and cue. The porch version `7e0e565` passed its own
+**344 / 53-file** and **18-check** runs; further visual review found the cue
+too high and its diagnostic point estimated. The final cue anchors to the
+head, has a 0.22 m world gap and 0.62 m width, and projects its actual Sprite
+world position. The new geometry expectation fails the former 0.899 m gap
+against a 0.4 m limit; a separate focused group then passes **42 in seven
+files**. Preserve these scopes and rejected captures rather than telling a
+first-pass success story. The frozen anonymous baseline completes zero
+activity checks, not a measured full-cycle comparison.
+
+The actual port-18861 promotion preserves all twelve tables and **44** sound-
+history rows. **65** served assets and **72** compiled files match the reviewed
+candidate. Rollback changes application files back to **`3ee3493`**, retaining
+the current database. The fresh anonymous observer of the actual promoted
+preview passes with **16** unchanged public source IDs, **12 NPC diagnostic
+rows**, zero joins/writes/page errors and **386** safe rendered coast samples.
+The sixteen-source / 387-sample observation below remains scoped to `3ee3493`.
+
+Using Alison's SSH identity, **`40ed231`** was successfully pushed to the new
+public branch `codex/neighbours-in-motion` in the existing course repository.
+No `main` push or automatic Fly deployment was performed. This does not
+establish the deployed course app's version. No human listening,
+unfamiliar-pair, physical-phone or next-day result is supplied by these checks.
+
+## Preceding motion release — 2026-11-08 historical preview
+
+The preceding local preview was **`3ee3493`** on `codex/sounds-in-motion`,
+served at `http://localhost:18861/planet`. [ADR032](../decisions/032-sounds-set-the-world-in-motion.md)
 and the [motion release index](../evidence/sounds-in-motion-2026-11-08.json)
 record real source-driven ferries and pinwheels, safe coastal viewpoints,
 the antipodal floor/camera correction and preserved current history.
 The final **328 source/HTTP checks in 51 files, 65.31 s**, **17** shared boat/
 breeze browser checks and **19** coastal-walk browser checks have distinct
 scopes. They must not become a combined quality total or a human-study result.
-The actual local promotion preserves all twelve tables, including **44**
-sound-history rows, and verifies **62** served assets. Its rollback target is
-**`cd73f2a`**, retaining the current database.
+That local promotion preserved all twelve tables, including **44**
+sound-history rows, and verified **62** served assets. Its rollback target was
+**`cd73f2a`**, retaining the then-current database.
 
 The subsequent fresh anonymous observer of the promoted port-18861 application
 finds **16** live public planet sources and preserves their IDs. It joins no
@@ -75,7 +119,7 @@ rows in all twelve tables, including **31 sound rows at promotion**, and
 verifies 56 served assets/cache behaviour. The initial planning count of 29
 rows must not be reused as the final comparison. Previous application
 `37e055b` was the rollback target at that checkpoint; `5f1fc28` later became
-the target for ADR031. The current target is `cd73f2a`, always retaining the
+the target for ADR031. The current target is `3ee3493`, always retaining the
 current database.
 The [fresh unjoined Chrome observer](../evidence/answers/promoted-observer.json)
 passes desktop/phone checks with zero writes/page errors, nine existing public
@@ -90,13 +134,14 @@ playtest or a public deployment.
 | [README](../../README.md), opening notice and final AUTHOR INPUT paragraph | Explicitly an unapproved author-review draft | Review every personal/product claim using the [five questions](final-author-checklist.md). Retain honest limits. Remove scaffolding only after review. |
 | README, “Enter the planet”, line 13 at audit | Raw Markdown links `http://localhost:18861/planet` | The candidate renderer repairs the deployed entry to `/planet`; the raw GitHub README still needs the author-approved, verified course URL. The marker cannot use another computer's localhost. |
 | README, “Small enough to matter” | Sloan and Harley are design arguments selected in an agent-assisted draft | Confirm reading and specify what each source changes about the actual product; remove or replace unsupported personal interpretation. |
-| README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules | Walk current `3ee3493` and confirm the terms and visible/audible consequence. The new ferry and pinwheel are source effects, not evidence that two people formed a joint work. Scoped paths establish technical behaviour, not human comprehension. |
+| README, “A reply should change our place” | Describes canopy/flower/lantern and musical duet rules | Walk current `40ed231` and confirm the terms and visible/audible consequence. Ferry, pinwheel and NPC behaviour are source effects, not evidence that two people formed a joint work. Scoped paths establish technical behaviour, not human comprehension. |
 | README, relative evidence/audio/manifest links | GitHub-relative links are valid there, but the previous renderer resolved them under `/readme/`; those application routes did not exist | Four exact note routes, `/assets-manifest.json` and current-origin `/planet` are repaired. Other repository references use fixed public GitHub links. Final source checks and the promoted observer verify route 200/404 behaviour. Docker-image verification remains separate. No author prose was changed for this repair. |
 | [PROCESS](../../PROCESS.md), “Failures changed the harness” | The earlier audit found garden-release checks described as current | The 2026-11-08 edit now names the 43-check browser path and 190-test source run as historical garden results with their [build scope](../evidence/chorus-garden-2026-11-07.json). Later candidate evidence remains in the release index; do not replace every old number with the newest count. |
 | README, “Small enough to matter”, and PROCESS, “Keeping dependable foundations” | Updated on 2026-11-08 following the author's explicit request to record testing 2D/2.5D and finding 3D more lively and suitable | The drafts now distinguish the author's stated design preference from the developer's [playable comparison checks](../evidence/perspectives-2026-11-08.json). [ADR028](../decisions/028-optional-paper-world-presentations.md) and [ADR029](../decisions/029-a-lived-in-3d-world.md) record the alternatives and return to 3D. Retain the explicit cost: occlusion, camera and rendering work. No unfamiliar-player preference study is implied. |
 | PROCESS, final acceptance and failure selection | Predates the populated-Green `too_close` failure and ADR030's reply clarity/placement changes | Explain why a brighter sculpture could not fix impossible placement. Cite `2ca764f` planning, `f557ade` cancellation/SSE repair, the real failed travel path and `5f1fc28` current-position/zero-walk correction, then `686a048` actual-controller checks. The final historical path and local promotion are now verified; preserve the earlier failed attempts rather than presenting first-pass success. |
 | PROCESS, technical versus harness failure | Does not yet distinguish the wrong fixture assumptions and coastal timeout from the real travel failure | Nine live planet sources are not nine Green sources: the fixture has five in Green. Separately, the coastal workflow deliberately waits 4.56 s inside a five-second overall budget; `5f1fc28` raises only that whole-workflow budget to ten seconds, preserving every one-second SSE assertion. A clean 275-check run takes 107.04 s before the separate final 277-check run. These repairs diagnose the harness; they do not establish better application latency. |
 | PROCESS, ADR032 failure selection | The newer motion/coast evidence is not yet interpreted in the personal account | Distinguish the actual antipodal café footprint producing a negative floor from a test clicking a deliberately hidden Share duplicate. Keep the stale server-HTML/client-JS startup failure and its full restart in the record. The final 19 coastal checks and 17 shared-motion checks are bounded developer evidence; explain the author's own change in directing or accepting work rather than inventing one. |
+| PROCESS, ADR033 visual acceptance | The initial 344-check source and 17-check browser runs passed despite sign occlusion; porch 344/18 also passed before review found the cue's excessive head gap and estimated diagnostic | Explain the author's own acceptance standard if selected. Keep both rejected views and the actual-Sprite/head-anchor correction with final `40ed231` 345/54 and 18-check results. Rig state and passing totals did not establish visibility or naturalness. |
 | PROCESS, two AUTHOR INPUT paragraphs | Asks for a real change in directing practice and personal reading/listening | Supply the real experience; commits establish events, not what the author learned or believed. Add a bounded before/fix/harness example rather than another totals paragraph. |
 | [Research note](../../research-note.md), notice and first-person thesis | A useful field-level draft remains unsigned | Own or revise the verification-capacity thesis; verify source claims and limitations, explain the strongest counter-case, and avoid turning the note into a project summary. |
 | [Historical reflections](../../reflections/README.md) | Earlier DayDraw/SoundGarden/Bloom context differs from the final product | Preserve that context. A later correction must be dated; do not write Little Chorus success retrospectively into earlier entries. |
@@ -164,9 +209,12 @@ Read-only configuration findings:
   the four public notes linked by README rather than the entire docs folder.
   A real container/context check remains separate. Never upload a private
   local working database as build context.
-- The current instruction in [CLAUDE](../../CLAUDE.md) does not authorize a
-  main-branch push or public deployment. This audit has neither released nor
-  changed public access; no credentials or secret values were inspected.
+- The author now explicitly permits a public push on
+  `codex/neighbours-in-motion` in the existing public repository. Alison's SSH
+  identity successfully delivered `40ed231` to that new remote branch. The instruction in
+  [CLAUDE](../../CLAUDE.md) still does not authorize `main` or its automatic
+  Fly deployment. This audit has not changed visibility or inspected secret
+  values.
 
 Before any separately authorized final release:
 

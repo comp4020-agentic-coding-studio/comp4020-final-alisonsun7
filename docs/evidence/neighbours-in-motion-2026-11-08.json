@@ -1,0 +1,362 @@
+{
+  "date": "2026-11-08",
+  "kind": "local-release-and-public-code-evidence-index",
+  "applicationCommit": "40ed231",
+  "branch": "codex/neighbours-in-motion",
+  "url": "http://localhost:18861/planet",
+  "design": "docs/decisions/033-neighbours-have-a-day.md",
+  "beforeCodeTag": "before-neighbours-in-motion-2026-11-08",
+  "previousApplication": "3ee3493",
+  "interpretation": "Actual developer automation and visual review are separately scoped. Counts are not an additive quality or grade score. No artistic listening, unfamiliar-player judgement or autonomous-language-model dialogue is claimed.",
+  "runs": [
+    {
+      "name": "focused source history",
+      "evidence": "docs/evidence/neighbours-in-motion/pure-checks.json",
+      "scope": "Eight separately scoped runs, including real gesture/controller negative controls. The old controller genuinely lacks daily life; the canonical helper is current in that negative control. Initial missing canvas stub is a harness failure, not a product regression."
+    },
+    {
+      "name": "anonymous old-browser capability negative",
+      "command": "APP_URL=http://localhost:18920 node e2e/neighbour-life.mjs .cache/neighbours/baseline-artifacts",
+      "result": "failed as expected; zero passed checks",
+      "evidence": "docs/evidence/neighbours-in-motion/baseline-browser.json",
+      "scope": "Frozen 3ee3493, actual Just look around first and rendered canvas. No join or write. Missing residentLife capability is observed; this is not a full comparison of old movement over time."
+    },
+    {
+      "name": "pre-porch candidate",
+      "checks": 17,
+      "result": "technically passed, visually rejected",
+      "evidence": "docs/evidence/neighbours-in-motion/before-porch-browser.json",
+      "sourceRun": "docs/evidence/neighbours-in-motion/source-before-porch-344.txt",
+      "scope": "Actual roughly 50-second native-clock observation, real independent-cookie identities, movement/turns, shared authored chatter, quiet/withdrawal, touch and reduced motion. 344 checks in 53 files passed separately. Heads and turn cue are obscured by the café sign in its actual image, so state success is insufficient."
+    },
+    {
+      "name": "front-porch correction before head anchoring",
+      "checks": 18,
+      "result": "technically passed, cue placement visually rejected",
+      "evidence": "docs/evidence/neighbours-in-motion/before-head-anchor-browser.json",
+      "sourceRun": "docs/evidence/neighbours-in-motion/source-before-head-anchor-344.txt",
+      "scope": "7e0e565 moves the conversation onto a furniture-safe porch. The cue is visible, but parent scaling makes it float too high and its diagnostic projects an estimated point rather than the actual sprite. This is narrower than final cue acceptance."
+    },
+    {
+      "name": "actual cue geometry regression",
+      "command": "./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs spec/npc-conversation-cues.test.ts",
+      "beforeResult": "1 actual failure: head/cue distance about 0.899m exceeds 0.4m bound",
+      "beforeEvidence": "docs/evidence/neighbours-in-motion/cue-anchor-before.txt",
+      "result": "fixed focused run passes 42 checks in 7 files, 1.50s",
+      "evidence": "docs/evidence/neighbours-in-motion/cue-anchor-after-42.txt",
+      "scope": "Actual AnimalFigure at three scales and a rotated world transform. The cue follows its animated head at a 0.22m offset and 0.62m world width. An earlier no-test-found command is retained as a harness mistake, never a product negative control."
+    },
+    {
+      "name": "final complete source and HTTP regression",
+      "command": "APP_URL=http://localhost:18921 ./node_modules/.bin/vitest run",
+      "checks": 345,
+      "files": 54,
+      "durationSeconds": 67.9,
+      "result": "passed",
+      "evidence": "docs/evidence/neighbours-in-motion/source-final-345.txt",
+      "scope": "Final 40ed231 source, including actual sprite projection, cue scaling and route/furniture/legacy sound/camera regressions. HTTP writes use the separate spec database."
+    },
+    {
+      "name": "final native-clock independent-browser path",
+      "command": "APP_URL=http://localhost:18922 SCRATCH_DB=.cache/neighbours/browser/history.db node e2e/neighbour-life.mjs .cache/neighbours/final-artifacts",
+      "checks": 18,
+      "result": "passed",
+      "evidence": "docs/evidence/neighbours-in-motion/final-browser.json",
+      "scope": "Two real independent-cookie identities, 12 existing NPCs excluded from human counts, full real-time café cycle, safe walking, mutual partner gaze and alternating gestures, actual visible sprite and both partners clear of sign/HUD, server-time consistency, real authored chatter and removal, quiet guards, touch cancellation and native reduced motion. No autoplay bypass, clock replacement or fabricated messages."
+    },
+    {
+      "name": "app-only local promotion",
+      "command": "python3 scripts/local-preview.py --dist .cache/neighbours/release-40ed231/dist --commit 40ed231 --restart",
+      "result": "passed",
+      "evidence": "docs/evidence/neighbours-in-motion/promotion.json",
+      "scope": "All 72 compiled files exactly equal reviewed candidate. All rows in twelve tables preserved, including 44 sound-history rows; 65 served bytes/cache headers checked. Previous 3ee3493 compiled package retained, never a database rollback."
+    },
+    {
+      "name": "actual promoted anonymous inspection",
+      "command": "APP_URL=http://localhost:18861 node e2e/chorus-read-only.mjs .cache/neighbours/promoted",
+      "result": "passed",
+      "evidence": "docs/evidence/neighbours-in-motion/promoted-observer.json",
+      "scope": "Actual new 40ed231 document, 3D/Sound off, 16 current public planet source IDs unchanged. Every non-GET/HEAD request blocked, no join/writes/page errors. Normal S/D/S coast walk has 386 safe rendered samples. Café exposes twelve actual final rigs, desktop/390x844 captures and note/README routes. NPC inspection is a short post-promotion sample, not a second complete cycle."
+    }
+  ],
+  "failures": [
+    {
+      "kind": "initial test harness",
+      "evidence": "docs/evidence/neighbours-in-motion/route-qa-initial.txt",
+      "observation": "Actual build geometry needs a canvas sign-rasterisation stub in Node; missing document fails two route tests.",
+      "correction": "Stub rasterisation only, retain actual scene meshes and clearance."
+    },
+    {
+      "kind": "scratch package setup",
+      "observation": "First candidate Node process resolves imported README relative to canonical candidate directory, not the symlinked spec working directory. No user preview was changed.",
+      "correction": "Supply canonical candidate README and asset symlinks before starting independent services."
+    },
+    {
+      "kind": "visual sign obstruction",
+      "evidence": "docs/evidence/neighbours-in-motion/rejected-sign-obstruction.png",
+      "correction": "Move actual talk stop to the front porch through validated furniture-safe waypoints; require the turn cue to be visible too."
+    },
+    {
+      "kind": "cue scale and measurement error",
+      "evidence": "docs/evidence/neighbours-in-motion/rejected-high-cue.png",
+      "correction": "Anchor to animated head, compensate figure scale, separate name marker and project actual sprite world position. The estimated point is no longer used as evidence of that sprite."
+    },
+    {
+      "kind": "test configuration selection",
+      "evidence": "docs/evidence/neighbours-in-motion/cue-not-selected-harness.txt",
+      "correction": "Include the new test before taking the actual failing run. No-test-found is not a successful negative control."
+    }
+  ],
+  "isolation": "Baseline18920 is a retained-history clone, source18921 and browser18922 are separate databases. Only the designated browser DB/path accepts writing automation. Actual18861 receives app-only promotion and an anonymous blocked-write inspection.",
+  "behaviourScope": {
+    "identity": "Reuse existing twelve resident IDs, never human presence or source authors. Existing server-controlled restroom routine remains separate.",
+    "position": "Canonical great-circle tours, independent of frame rate or source additions/removals. New real sculpture geometry can select a safe fallback position; this exceptional change can reposition a figure.",
+    "attention": "After two-second settle, a roughly seven-second eased initial window; later eight seconds in thirty with stable source/group phase. It changes gaze and upper-body response while walking remains grounded.",
+    "conversation": "Actual nearby partners, mutual orientation and 3.2-second role turns. A wordless cue is an NPC animation, not a generated message or new sound.",
+    "rendering": "Final cue uses actual animated head plus 0.22m, width0.62m. Its diagnostic is the actual sprite world point. Shared work/idle layers yield to walking and conversations."
+  },
+  "localPromotionCounts": {
+    "tables": 12,
+    "soundHistoryRows": 44,
+    "publicPlanetSourcesAtInspection": 16,
+    "compiledFiles": 72,
+    "servedAssets": 65
+  },
+  "publicCodeDelivery": {
+    "authorisation": "The author explicitly accepted public delivery after being told the course final repository was already public.",
+    "repository": "https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7",
+    "branch": "codex/neighbours-in-motion",
+    "pushedApplicationCommit": "40ed231",
+    "result": "Application source push succeeded; this committed index accompanies the branch evidence update.",
+    "credentialScope": "Alisonsun7 project SSH only; no global account change.",
+    "mainAndDeployment": "No main update or workflow dispatch. This publishes the branch source, not a new deployed website."
+  },
+  "humanStatus": {
+    "hardwareListening": "not performed",
+    "unfamiliarPairs": "not performed",
+    "physicalPhone": "not performed",
+    "nextDayReturn": "not performed",
+    "publicWebsiteDeployment": "not authorised or performed"
+  },
+  "limits": [
+    "Authored tours and gestures are a small behaviour system, not free-form AI conversation or simulated needs.",
+    "Only mutual nearby partners converse; people and geometry can obscure a particular frame. A bounded visible capture is not universal visibility proof.",
+    "Optional 2D/2.5D views were not extended or rerun in this revision. Existing coastal residents retain their optional-contract default behaviour.",
+    "Native audio/quiet lifecycle checks do not establish artistic sound quality."
+  ],
+  "rollback": {
+    "targetApplication": "3ee3493",
+    "retainedCompiledFiles": 69,
+    "matchesFrozenBefore": true,
+    "command": "python3 scripts/local-preview.py --rollback",
+    "data": "Keep current database, never restore an old database for appearance.",
+    "fullRollbackRehearsalThisIteration": false
+  },
+  "artifacts": [
+    {
+      "path": "docs/evidence/neighbours-in-motion/baseline-browser.json",
+      "bytes": 1572,
+      "sha256": "0065b578b1895c437100c60098659b25e8e8a845868a3ef2d33eb230fc9611b0"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/baseline-browser.txt",
+      "bytes": 579,
+      "sha256": "9a48515cad7786d72bee0020676901dca9cf5a39ef942798c066414135fb2bb9"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/before-head-anchor-browser.json",
+      "bytes": 2534588,
+      "sha256": "9f5e92122a92fc99540ea7ab59e37e8f0abf984522552040fb65e6abf72f3345"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/before-head-anchor-browser.txt",
+      "bytes": 2116,
+      "sha256": "07dc2dfe9904514b45847be8db59370d756a55ed434c002b237191e259dc5b2e"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/before-porch-browser.json",
+      "bytes": 2143165,
+      "sha256": "f0d8b94e71132efd5deb9def0d0d1dc9fa22a19e82961861035212b537d08ddd"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/before-porch-browser.txt",
+      "bytes": 1984,
+      "sha256": "814230e5a0d0cdce89e87af650a937a1af3751f8032d18b97986d32d8a6bef2c"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/cafe-chooser-phone.png",
+      "bytes": 91977,
+      "sha256": "3c8fd64ec74dfcaa94b74b68b06683d9564024e02246e7df3256490a2df9be74"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/command-provenance.txt",
+      "bytes": 3634,
+      "sha256": "49aa969b05475b0af19882ddd41f173b35e4fcad783bf19e77fe10bca55fd473"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/controller-before.txt",
+      "bytes": 7842,
+      "sha256": "7b20d7a08425c09463d829c41f97c51a8ee2128354113dc4cc893d92cedc2157"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-after.txt",
+      "bytes": 227,
+      "sha256": "40781c8cee57af8db9493f1ec6ee39b12ade4c0dd17b887d16991c38c0ea797a"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-before.txt",
+      "bytes": 3504,
+      "sha256": "2f0b4b574cf8953a95e795decfbffdfd025a4eca32bbe3cec6946bbcf526a6f7"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-config.txt",
+      "bytes": 83,
+      "sha256": "c3ddb7b0b0b4bb088e0de274995b7ff6d31b86a41ffa4026231066c03f3012b8"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-desktop.png",
+      "bytes": 751472,
+      "sha256": "41f2b090187107f8cfa23f95bed946e917058778233588bade883fe1af9d6852"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/cue-anchor-after-42.txt",
+      "bytes": 438,
+      "sha256": "e445078ee783e6f7fe363354433559e9bf681c1a56d969f5739c8a682bdcf48a"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/cue-anchor-before.txt",
+      "bytes": 1189,
+      "sha256": "448fed8a176c296626883939123839332e01e4174576ae48740ea4089130d7f6"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/cue-config.txt",
+      "bytes": 283,
+      "sha256": "b4392defc0cbabcd861f572c605474db2c4a95f3f9a77ae74d49edc2e549ebfa"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/cue-not-selected-harness.txt",
+      "bytes": 411,
+      "sha256": "3fee1def1877c98dc61f2957bfacd5e4276943ad248e32905d6d8e0269287e32"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/final-browser.json",
+      "bytes": 2535496,
+      "sha256": "b2dd9065fb6a1bc6737d4e1919f923719fa763990b521d2758a40c385c628c0d"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/final-browser.txt",
+      "bytes": 2116,
+      "sha256": "39b43fe22a0fb6eea70beeda0b8f4e1b7fc255dae2334552fdfe738acc5ee359"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-current-config.txt",
+      "bytes": 246,
+      "sha256": "8b854eb9a0fa7552140f7407ea75051322f3ba69b7b5562ce769537039f6af48"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-integrated.txt",
+      "bytes": 438,
+      "sha256": "6fb77ab8892afdd335ace869a824ad270082464d6abd95224ad3c925a369669a"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-porch-focused.txt",
+      "bytes": 438,
+      "sha256": "8f31b3acdf7542c973d7f4588dace22f82b7e15cd807d819e4483b9acd4229bf"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-ready.txt",
+      "bytes": 438,
+      "sha256": "55ff4180affecf35dc6ad68c64936f958c70bca613e0c401b5086d48bd95ac36"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/promoted-cafe-desktop.png",
+      "bytes": 771501,
+      "sha256": "550bc06cec5693de530d35ed3899e10b84b2a0aea53131296ff740d40002f3c8"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/promoted-cafe-phone.png",
+      "bytes": 155632,
+      "sha256": "0e210b57481972003ab17346b2790761798bd9291175d4c4c1a019d01cf1cadf"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/promoted-coast-end.png",
+      "bytes": 589361,
+      "sha256": "43c761623782ff812800acffbcd9b60335b88e5a68b6b6c28542cc01ccf18ec6"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/promoted-observer.json",
+      "bytes": 144138,
+      "sha256": "c7890c411a8f198dab6a123b80f7b1f1b0e8d439b080300fa1aa27e597d3cc06"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/promoted-observer.txt",
+      "bytes": 87685,
+      "sha256": "4c6d909b9963e7db551a4756db38c2a8904714033c5c648c901b8f7b87161df6"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/promotion.json",
+      "bytes": 8515,
+      "sha256": "2d5a2757cea5f9e36f2e6b139707194c1a61f117973d8b6019eb4026465fc919"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/pure-checks.json",
+      "bytes": 11615,
+      "sha256": "887b5e0b0d9b9709a6119a3ef482dd00a0798ae354ffeb45d6f480b1da7bcaa1"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/reduced-motion-phone.png",
+      "bytes": 156838,
+      "sha256": "70ef1c06f174dfd986c6485a52070df60c58e8d654da56324e76083a64f8b73f"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/rejected-high-cue.png",
+      "bytes": 757533,
+      "sha256": "04de60d5123b1ae25d21c301e7a0d03fc508cf3e521c85c444f97657fe4898e8"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/rejected-sign-obstruction.png",
+      "bytes": 744035,
+      "sha256": "8b2428d65bd8c4a22c62c41d69b3dad9c5ef40a7a0fe12aa50cd6da7fb54d567"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/release-build.json",
+      "bytes": 7057,
+      "sha256": "e1094d72b367624c71a23ed43b9fb724c727f0fb28e13c62670c9bf7f32bc175"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/rollback-check.json",
+      "bytes": 288,
+      "sha256": "191f6c94784dff0368bf032e0df1cc38660869a4cb5b818d91bd21e0e336ef19"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/route-qa-initial.txt",
+      "bytes": 2477,
+      "sha256": "b002395e1e46b733f4b063edb8e0a982092c33300dce242a98c7c16537480527"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/routes-after-dom-stub.txt",
+      "bytes": 438,
+      "sha256": "65c4f782d7511f56ce5352b83de4a87c9ef3775a208c2d87da52b60f2f6ef2dd"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/source-before-head-anchor-344.txt",
+      "bytes": 1077,
+      "sha256": "bde9cfa1eda6a7e972ae36d562ba7cf58b6dd043f65ba3e9a496588a40d97e24"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/source-before-porch-344.txt",
+      "bytes": 1277,
+      "sha256": "7355b97f3335efbf7466e4965cf0d83091231c61d40ce62e360661a8deac84cc"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/source-final-345.txt",
+      "bytes": 1077,
+      "sha256": "2d85c0b09441665d7661ff6ba3c4933fdb5d328f44220f09b629488d139d78cc"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/walking-desktop.png",
+      "bytes": 729883,
+      "sha256": "c7e636bf28f95c9564cac2fc415be79cc5f5ee348c2fd45323b0699c2af1af5a"
+    }
+  ]
+}

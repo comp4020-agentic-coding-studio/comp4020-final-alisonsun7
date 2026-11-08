@@ -1,0 +1,50 @@
+Command provenance and changing candidate scope — not new stdout
+Date: 2026-11-08. Exact invocations were confirmed by executing root, and by
+resident_life_balance for the original character gestures. Archiving copied
+existing complete outputs without rerunning tests.
+
+The first four commands use the same six-file include config. The initial
+and routes runs actually execute five files because spec/resident-life.test.ts
+does not yet exist. Integrated and ready execute all six, adding its nine
+cases. This explains 32 then41; no phantom passed file is inferred.
+
+route-qa-initial: ./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-initial.txt 2>&1
+routes-after-dom-stub: ./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-routes.txt 2>&1
+life-integrated: ./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-integrated.txt 2>&1
+life-ready: ./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-ready.txt 2>&1
+controller-before: RESIDENT_CONTROLLER_UNDER_TEST=../.cache/neighbours/before/dist/client/sound-residents.js ./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs spec/resident-life.test.ts
+conversation-before: ./node_modules/.bin/vitest run --config .cache/conversation-gesture/vitest.config.mjs > .cache/conversation-gesture/before.txt 2>&1
+conversation-after: ./node_modules/.bin/vitest run --config .cache/conversation-gesture/vitest.config.mjs > .cache/conversation-gesture/after.txt 2>&1
+
+The frozen controller command selects before/dist/client/sound-residents.js
+from old3ee3493 only. spec/resident-life.test.ts still imports the current
+pure resident-life module. Eight cases fail at missing activities API; the
+one passing pure-helper case is not old full-app parity. The actual output
+is archived from .cache/neighbours/controller-before.txt; no unconfirmed shell
+redirect is invented here.
+
+Character before is new expectations against the then-current old character
+source, not a temporary replacement/frozen import. One failure exposes static
+hand motion; three report missing setConversation. The forward implementation
+then passes12. The executing agent also reports tsc --noEmit passed, but no
+separate tsc stdout is archived or reconstructed.
+
+The two initial route failures are ReferenceError: document is not defined
+inside sign rendering. They occur before those geometry assertions and are
+harness defects, not measured route failures. A DOM/canvas stub fixes that setup.
+
+All these source outputs precede the later porch correction. The first native
+49.3-server-second browser path passes17 and the full source/HTTP run passes344,
+but root then rejects the actual paired-conversation image because heads and
+three-dot cues sit behind the café sign. Root is changing the real talk stop
+and adding actual projected-cue visibility acceptance. New rechecks are pending
+and are not accepted by the earlier green totals. Their runtime/screenshot
+records will be integrated separately.
+
+LATEST FOCUSED SOURCE CHECK AFTER PORCH CORRECTION
+Root confirms milestone7e0e565 and the actual command:
+./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-porch.txt 2>&1
+The saved output has41 passes/six files/1.69s. It follows the porch route and
+cue-visibility correction. This is a focused source/geometry result, while
+post-correction native-cycle browser and full-source runs are still pending.
+The earlier7 run records keep their pre-correction scope.

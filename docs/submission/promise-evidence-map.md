@@ -7,7 +7,57 @@ that cannot be supplied by source inspection.
 
 ## Build scope before reading any result
 
-The current verified local application is **`3ee3493`**, served at
+The current local application is **`40ed231`**, served at
+`http://localhost:18861/planet`, on
+`codex/neighbours-in-motion`, following
+[ADR033](../decisions/033-neighbours-have-a-day.md). The
+[neighbour evidence index](../evidence/neighbours-in-motion-2026-11-08.json)
+records 41 artifacts with separate check and capture scopes. It gives the same twelve existing
+NPCs validated daily walks, paired stops, alternating speaking/listening
+gestures and a local wordless turn cue. No NPC dialogue API, real-player
+identity or contribution is added. After the existing two-second settle,
+new real sounds receive up to seven seconds of eased gaze/gesture attention,
+followed by periodic windows; they no longer freeze ordinary routes.
+
+Final `40ed231` acceptance passes **345 source/HTTP checks in 54 files,
+67.90 s**, and a separate **18-check browser path** in
+`.cache/neighbours/full-spec-final.txt` and
+`.cache/neighbours/final-artifacts/results.json`. The path observes a real
+café cycle, independent quiet identities, authored chatter and withdrawal,
+touch controls, reduced motion and retained scratch history. The first
+**344 / 53-file** and **17-check** results remain pre-porch history: the sign
+hid heads and the speaking cue. `7e0e565` then passed the porch **344 / 53-file**
+and **18-check** paths, but visual review found the cue too high and the
+diagnostic using an estimated point. Final head anchoring sets a 0.22 m world
+gap and 0.62 m width; diagnostics project the actual Sprite world position.
+A geometry check fails the former 0.899 m gap against a 0.4 m limit; the
+separate focused group then passes **42 checks in seven files**. Do not add
+these different runs or treat the earlier passes as visual acceptance.
+The anonymous frozen baseline completes zero activity checks because it
+lacks the new capability; it is not a measured full-cycle comparison.
+
+The actual local switch preserves all twelve tables, including **44**
+sound-history rows; **65** served assets and **72** compiled files match the
+reviewed candidate. Application rollback retains **`3ee3493`** with the
+current database. A fresh anonymous observer of the actual promoted preview
+finds **16** public planet sources with unchanged IDs and **12 NPC diagnostic
+rows**, makes zero joins/writes and reports zero page errors. Its actual
+coast walk records **386** safe rendered samples. This is distinct from the
+older sixteen-source / 387-sample observation of `3ee3493` below.
+
+| Neighbour release promise | Agent rule / automatic rejection | Remaining judgement |
+| --- | --- | --- |
+| Existing neighbours have a day together | Validated furniture-clear spherical routes, shared server time, complementary stationary roles; the final [18-check life path](../../e2e/neighbour-life.mjs) observes a real approximately 50-second cycle, final rig rotations and an unobstructed actual Sprite cue projection | Reviewed captures establish this view's visibility; movement totals cannot establish naturalness or unfamiliar-player understanding |
+| Sound attracts attention without ending ordinary life | Real sources retain priority, initial and periodic attention use gaze/upper-body response, walking owns the legs; withdrawal and quiet visits use two actual identities | Whether players notice the cause and find these residents expressive remains a human judgement |
+
+Alison's SSH identity successfully pushed **`40ed231`** to the new public
+remote branch `codex/neighbours-in-motion`. No `main` push or Fly deployment
+was performed. A public source branch does not establish the course app's
+deployed version.
+
+### Preceding motion release — 2026-11-08 historical preview
+
+The preceding local preview was **`3ee3493`**, served at
 `http://localhost:18861/planet`, on `codex/sounds-in-motion`.
 [ADR032](../decisions/032-sounds-set-the-world-in-motion.md) and the
 [motion release index](../evidence/sounds-in-motion-2026-11-08.json) distinguish
@@ -22,15 +72,15 @@ added score or evidence of human understanding.
 | Shore walking keeps the actual body and camera outside the planet | Front-hemisphere building/floor/collision classification; real continuous coastal walks, turns, zoom and desktop/touch views | The 19 bounded browser checks do not cover every future angle, obstruction or physical device |
 | I can reach the consequence and withdraw it on a phone | Ordinary pool Share offers three relevant choices; explicit Watch and the Places & friends Soundscape entry; actual 390×844 touch path | Physical-phone comfort and whether the route is discoverable without explanation |
 
-Promotion preserves all twelve tables including **44** sound-history rows;
-**62** served assets match the reviewed build. A fresh anonymous observer of
-the actual port-18861 release finds **16** public planet sources, unchanged
+That promotion preserved all twelve tables including **44** sound-history rows;
+**62** served assets matched its reviewed build. A fresh anonymous observer of
+that port-18861 release found **16** public planet sources, unchanged
 IDs, zero writes/page errors and **387** safe rendered samples on a real
 desktop coast walk. The 19-check scratch coast run precedes the final Watch
 framing/menu adjustments, with ordinary movement/camera formulas unchanged;
 the promoted desktop observation is not a second mobile coast run.
-Application rollback retains
-`cd73f2a` with the **current database**, never an old database snapshot.
+Its application rollback target was `cd73f2a`, retaining the then-current
+database rather than an old database snapshot. The current target is `3ee3493`.
 No human listening, unfamiliar-pair, physical-phone, next-day or public-
 deployment result is implied.
 

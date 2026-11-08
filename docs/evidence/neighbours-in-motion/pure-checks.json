@@ -1,0 +1,193 @@
+{
+  "kind": "source-check-evidence-index",
+  "date": "2026-11-08",
+  "workingDirectory": "repository root",
+  "archivedFromCheckout": "926ddae8341b46b6ffce0c16753d4b621c3c3c5e",
+  "checkoutMeaning": "Archive context only. Runs execute forward working-tree stages, and no final application commit is inferred.",
+  "countsAreNotAdditive": true,
+  "artifacts": [
+    {
+      "path": "docs/evidence/neighbours-in-motion/route-qa-initial.txt",
+      "copiedFrom": ".cache/neighbours/pure-initial.txt",
+      "bytes": 2477,
+      "sha256": "b002395e1e46b733f4b063edb8e0a982092c33300dce242a98c7c16537480527",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/routes-after-dom-stub.txt",
+      "copiedFrom": ".cache/neighbours/pure-routes.txt",
+      "bytes": 438,
+      "sha256": "65c4f782d7511f56ce5352b83de4a87c9ef3775a208c2d87da52b60f2f6ef2dd",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-integrated.txt",
+      "copiedFrom": ".cache/neighbours/pure-integrated.txt",
+      "bytes": 438,
+      "sha256": "6fb77ab8892afdd335ace869a824ad270082464d6abd95224ad3c925a369669a",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-ready.txt",
+      "copiedFrom": ".cache/neighbours/pure-ready.txt",
+      "bytes": 438,
+      "sha256": "55ff4180affecf35dc6ad68c64936f958c70bca613e0c401b5086d48bd95ac36",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/controller-before.txt",
+      "copiedFrom": ".cache/neighbours/controller-before.txt",
+      "bytes": 7842,
+      "sha256": "7b20d7a08425c09463d829c41f97c51a8ee2128354113dc4cc893d92cedc2157",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-current-config.txt",
+      "copiedFrom": ".cache/neighbours/pure.config.mjs",
+      "bytes": 246,
+      "sha256": "8b854eb9a0fa7552140f7407ea75051322f3ba69b7b5562ce769537039f6af48",
+      "kind": "verbatim-config-snapshot"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-before.txt",
+      "copiedFrom": ".cache/conversation-gesture/before.txt",
+      "bytes": 3504,
+      "sha256": "2f0b4b574cf8953a95e795decfbffdfd025a4eca32bbe3cec6946bbcf526a6f7",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-after.txt",
+      "copiedFrom": ".cache/conversation-gesture/after.txt",
+      "bytes": 227,
+      "sha256": "40781c8cee57af8db9493f1ec6ee39b12ade4c0dd17b887d16991c38c0ea797a",
+      "kind": "verbatim-terminal-output"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/conversation-config.txt",
+      "copiedFrom": ".cache/conversation-gesture/vitest.config.mjs",
+      "bytes": 83,
+      "sha256": "c3ddb7b0b0b4bb088e0de274995b7ff6d31b86a41ffa4026231066c03f3012b8",
+      "kind": "verbatim-config-snapshot"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/command-provenance.txt",
+      "bytes": 3634,
+      "sha256": "49aa969b05475b0af19882ddd41f173b35e4fcad783bf19e77fe10bca55fd473",
+      "kind": "executing-agent-command-provenance-not-new-stdout"
+    },
+    {
+      "path": "docs/evidence/neighbours-in-motion/life-porch-focused.txt",
+      "copiedFrom": ".cache/neighbours/pure-porch.txt",
+      "bytes": 438,
+      "sha256": "8f31b3acdf7542c973d7f4588dace22f82b7e15cd807d819e4483b9acd4229bf",
+      "kind": "verbatim-terminal-output"
+    }
+  ],
+  "runs": [
+    {
+      "id": "route-qa-initial",
+      "output": "route-qa-initial.txt",
+      "files": 5,
+      "passed": 30,
+      "failed": 2,
+      "startTime": "16:23:11",
+      "command": "./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-initial.txt 2>&1",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "Initial five-file geometry/source QA; missing document/canvas sign stub causes both failures before route assertions can run. A harness error, not demonstrated product navigation failure. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "routes-after-dom-stub",
+      "output": "routes-after-dom-stub.txt",
+      "files": 5,
+      "passed": 32,
+      "failed": 0,
+      "startTime": "16:24:29",
+      "command": "./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-routes.txt 2>&1",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "Five-file current-source group after adding the DOM sign stub. Thirty-two passes; source/Three.js geometry and rig checks, not browser/GPU or novice observations. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "life-integrated",
+      "output": "life-integrated.txt",
+      "files": 6,
+      "passed": 41,
+      "failed": 0,
+      "startTime": "16:26:35",
+      "command": "./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-integrated.txt 2>&1",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "Expanded six-file integration group at 16:26:35. Current life/controller, geometry, character and prior sound/surface checks. Not a full source/HTTP suite. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "life-ready",
+      "output": "life-ready.txt",
+      "files": 6,
+      "passed": 41,
+      "failed": 0,
+      "startTime": "16:28:11",
+      "command": "./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-ready.txt 2>&1",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "Later focused six-file group at 16:28:11;41 checks pass. It does not establish the final package, a whole native browser cycle or subjective lifelikeness. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "controller-before",
+      "output": "controller-before.txt",
+      "files": 1,
+      "passed": 1,
+      "failed": 8,
+      "startTime": "16:29:09",
+      "command": "RESIDENT_CONTROLLER_UNDER_TEST=../.cache/neighbours/before/dist/client/sound-residents.js ./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs spec/resident-life.test.ts",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "Frozen old 3ee3493 SoundResidents control with current resident-life pure helper. Eight cases fail at missing activities API; the helper case passing is not old-application parity. Preserve no-plan legacy scope separately. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "conversation-before",
+      "output": "conversation-before.txt",
+      "files": 1,
+      "passed": 8,
+      "failed": 4,
+      "startTime": "16:17:21",
+      "command": "./node_modules/.bin/vitest run --config .cache/conversation-gesture/vitest.config.mjs > .cache/conversation-gesture/before.txt 2>&1",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "New conversation expectations against the pre-implementation character rig: one static hand-range assertion plus three missing-setConversation API failures. Not four independent implementation mutation controls. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "conversation-after",
+      "output": "conversation-after.txt",
+      "files": 1,
+      "passed": 12,
+      "failed": 0,
+      "startTime": "16:18:08",
+      "command": "./node_modules/.bin/vitest run --config .cache/conversation-gesture/vitest.config.mjs > .cache/conversation-gesture/after.txt 2>&1",
+      "commandStatus": "Actual invocation confirmed by executing root or the character implementation agent; controller output archival path is recorded independently of shell redirection.",
+      "scope": "Current forward character conversation implementation passes12 including hands/listening/reduced motion/reset. Native Three geometry/rig observation, not WebGL or human naturalness judgement. This output predates the later front-porch conversation/visible-cue correction."
+    },
+    {
+      "id": "life-porch-focused",
+      "output": "life-porch-focused.txt",
+      "files": 6,
+      "passed": 41,
+      "failed": 0,
+      "durationSeconds": 1.69,
+      "command": "./node_modules/.bin/vitest run --config .cache/neighbours/pure.config.mjs > .cache/neighbours/pure-porch.txt 2>&1",
+      "commandStatus": "Actual same-config command and result confirmed by executing root.",
+      "sourceMilestone": "7e0e565",
+      "scope": "After front-porch route and cue-visibility instrumentation correction, focused source/geometry/rig group only. Post-correction native-cycle browser and full-source paths are still running separately; this is not artistic or final whole-package acceptance."
+    }
+  ],
+  "commandProvenancePending": false,
+  "configurationBoundary": "Executing root confirms the same six-file include config for all four focused runs. spec/resident-life.test.ts did not yet exist in the initial/routes stages, so Vitest actually executed five files there; integrated/ready execute all six. Missing file is not counted as a passed suite.",
+  "notEstablished": [
+    "Final full-source/HTTP acceptance of the new NPC candidate",
+    "Whole native-clock browser cycle or final package startup",
+    "GPU/visual naturalness or artistic sound quality",
+    "Unfamiliar-pair comprehension",
+    "Physical-phone performance",
+    "Real next-day return",
+    "Remote delivery or public deployment"
+  ],
+  "excluded": "Previous 328-check source results concern the old3ee3493 NPC controller. Legacy files in .cache/neighbours from older releases, current full-source/browser work and server logs are not copied into this pure packet.",
+  "privacy": "Only the explicitly listed test output and config snapshots are copied. No DB, cookie jar, token, runtime/server log, compiled dist or source-coordinate record is included.",
+  "integrity": "All copied artifacts have complete summaries and stable bytes at copy time. SHA256 covers exact bytes; this manifest does not hash itself. Unknown command details are marked pending rather than invented.",
+  "currentCandidateBoundary": "First native-cycle17-check browser and344-check full-source passes precede rejected heads/three-dot cues behind the café sign. Milestone7e0e565 implements the porch correction; its focused41/6 group passes1.69s, but final native-cycle browser and full source remain pending. Root will index actual final runs separately.",
+  "sourceMilestoneForLatestFocusedRun": "7e0e565"
+}

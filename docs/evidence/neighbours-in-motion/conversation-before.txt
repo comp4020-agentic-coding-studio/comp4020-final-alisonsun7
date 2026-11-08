@@ -1,0 +1,66 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/characters.test.ts (12 tests | 4 failed) 585ms
+   ❯ the original Soundfolk people (12)
+     × speaks with alternating hands and real rests instead of holding one paw up forever 5ms
+     × distinguishes a quiet listener from a speaker without changing world facing or opening the mouth 1ms
+     × freezes conversation motion when reduced and never accumulates a repeated conversational phase 1ms
+     × resets conversation joints completely before walking, jumping or playing again 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/characters.test.ts > the original Soundfolk people > speaks with alternating hands and real rests instead of holding one paw up forever
+AssertionError: expected 0 to be greater than 0.04
+ ❯ spec/characters.test.ts:273:27
+    271|       }
+    272|       const range = (points: THREE.Vector3[]) => Math.max(...points.ma…
+    273|       expect(range(left)).toBeGreaterThan(.04);expect(range(right)).to…
+       |                           ^
+    274|       expect(left.some((point, i) => point.z > right[i].z + .04)).toBe…
+    275|       expect(right.some((point, i) => point.z > left[i].z + .04)).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  spec/characters.test.ts > the original Soundfolk people > distinguishes a quiet listener from a speaker without changing world facing or opening the mouth
+TypeError: figure.setConversation is not a function
+ ❯ spec/characters.test.ts:288:16
+    286|       figure.setFacing(1.2);
+    287|       for (let step = 0; step < 40; step++) {
+    288|         figure.setConversation("listening", step / 40, false, .3);
+       |                ^
+    289|         left.push(part(figure, "left-hand").getWorldPosition(new THREE…
+    290|         head.push(figure.getObjectByName("head-rig")!.rotation.x);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  spec/characters.test.ts > the original Soundfolk people > freezes conversation motion when reduced and never accumulates a repeated conversational phase
+TypeError: figure.setConversation is not a function
+ ❯ spec/characters.test.ts:308:16
+    306|     try {
+    307|       for (const role of ["speaking", "listening"] as const) {
+    308|         figure.setConversation(role, .12, false, .1);const first = cap…
+       |                ^
+    309|         for (let i = 0; i < 80; i++) figure.setConversation(role, .12,…
+    310|         expect(capture()).toEqual(first);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  spec/characters.test.ts > the original Soundfolk people > resets conversation joints completely before walking, jumping or playing again
+TypeError: used.setConversation is not a function
+ ❯ spec/characters.test.ts:323:14
+    321|     try {
+    322|       for (const pose of ["stand", "walk", "arms-up", "guitar", "strum…
+    323|         used.setConversation("speaking", .23, false, .5);
+       |              ^
+    324|         used.setConversation("listening", .61, false, -.4);
+    325|         used.setPose(pose);used.setMotion(.37, pose === "walk");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 8 passed (12)
+   Start at  16:17:21
+   Duration  750ms (tests 87%, transform 8%, import 4%)
+

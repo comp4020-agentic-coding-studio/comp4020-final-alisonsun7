@@ -1,0 +1,9 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+No test files found, exiting with code 1
+
+filter: spec/npc-conversation-cues.test.ts
+include: spec/planet-neighbours.test.ts, spec/resident-life.test.ts, spec/characters.test.ts, spec/sound-response.test.ts, spec/planet-render-life.test.ts, spec/planet-surface-safety.test.ts
+exclude:  **/node_modules/**, **/.git/**
+

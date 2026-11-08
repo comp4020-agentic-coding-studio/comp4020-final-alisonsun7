@@ -94,6 +94,16 @@ try{
   const afterSnapshot=JSON.parse((await afterCoast.text()).match(/id="planet-boot"[^>]*>([\s\S]*?)<\/script>/)[1]).snapshot;
   report.afterCoastSourceIds=sourceIds(afterSnapshot);assert.deepEqual(report.afterCoastSourceIds,report.expectedSourceIds,"Read-only coast walking leaves every current public source unchanged");
   assert.equal((await page.evaluate(()=>JSON.parse(document.getElementById("planet-boot").textContent).joined)),false);
+  await page.locator('#chorus-travel [data-place="tea"]').click();
+  await page.waitForFunction(()=>JSON.parse(document.getElementById("planet-stage").dataset.residentLife??"[]").length===12);
+  const life=()=>page.locator("#planet-stage").evaluate(stage=>({serverNow:Number(stage.dataset.serverNow),soundOn:stage.dataset.soundOn,residents:JSON.parse(stage.dataset.residentLife)}));
+  report.neighbourLife={first:await life()};await page.waitForTimeout(1300);report.neighbourLife.later=await life();
+  assert.equal(report.neighbourLife.later.soundOn,"false");
+  assert.ok(report.neighbourLife.later.residents.every(row=>typeof row.activity==="string"&&row.rig.head.length===3&&row.cueScreen&&Number.isFinite(row.x)&&Number.isFinite(row.z)));
+  await page.screenshot({path:`${out}/promoted-cafe-desktop.png`,fullPage:true});
+  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(250);
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  await page.screenshot({path:`${out}/promoted-cafe-phone.png`,fullPage:true});
   const readme=await context.request.get(base+"/readme/");assert.equal(readme.status(),200);
   const rendered=await readme.text();assert.ok(!rendered.includes('href="http://localhost:18861/planet"'));
   report.notes=[];

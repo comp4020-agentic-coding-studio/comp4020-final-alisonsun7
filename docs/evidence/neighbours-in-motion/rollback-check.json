@@ -1,0 +1,8 @@
+{
+  "targetApplication": "3ee3493",
+  "retainedCompiledFiles": 69,
+  "matchesFrozenBefore": true,
+  "command": "python3 scripts/local-preview.py --rollback",
+  "data": "Keep current database, never restore an old database for appearance.",
+  "fullRollbackRehearsalThisIteration": false
+}

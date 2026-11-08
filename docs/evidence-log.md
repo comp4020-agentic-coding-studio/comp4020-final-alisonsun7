@@ -3049,3 +3049,118 @@ The final local release is identified by the annotated tag `chorus-garden-2026-1
   [release index](evidence/sounds-in-motion-2026-11-08.json) archives these
   distinct runs, screenshots, actual failures and file hashes. Owned scratch
   services are stopped after checks, their databases retained; 18861 stays up.
+
+
+## 2026-11-08 — Neighbours have a day: implementation and public-delivery clarification
+
+- The author reports stiff residents and unclear independent conversation.
+  The previous controller approached a persistent source once and held; its
+  idle/shared-work layers did not constitute a whole day. [ADR033](decisions/033-neighbours-have-a-day.md)
+  keeps the original twelve planet NPC IDs, adding canonical authored routes
+  and work/rest/conversation stops, not more players or public sound rows.
+- Life-enabled position comes from server-time route sampling. Real sounds
+  retain selector priority but influence attention/gaze rather than pulling
+  residents toward the emitter: up to seven eased seconds after the existing
+  two-second settle, then eight seconds per thirty with stable phase offsets.
+  Nearby stationary pairs alternate speaking/listening every 3.2 seconds;
+  walking keeps its leg pose, and reduced motion keeps a still validated stop.
+- Café homes and routes are adjusted around actual counter/furniture geometry;
+  human coordinates and persisted sound coordinates remain exact. A canonical
+  garden update revalidates paths and can deliberately move a newly blocked
+  resident to a shared safe fallback. There is no never-teleport guarantee.
+  The original separate restroom lock/routine is unchanged.
+- Initial geometry QA has 30 passes/two failures because the harness omitted
+  the document/canvas sign stub. The stub correction yields 32/five files;
+  the expanded ready group passes 41/six. Frozen `3ee3493` controller checks
+  report eight failures/one pass while using the current pure life helper.
+  Conversation-gesture checks first fail four/pass eight, then pass twelve
+  after the actual rig implementation. These are source/geometry checks,
+  not artistic or unfamiliar-player acceptance.
+- The old candidate browser at 18920 is a quiet anonymous capability negative:
+  its missing life diagnostic produces zero completed activity checks. It is
+  not a measured complete old routine. An initial scratch boot also failed
+  because the canonical README symlink was missing; the scratch package was
+  corrected. Neither event modifies the live `3ee3493` at 18861. The preceding
+  328-check motion run does not validate the new NPCs. New integrated full-source
+  and approximately one native café-cycle browser runs remain separate pending
+  results at this checkpoint.
+- Privacy clarification changed the delivery boundary. Official read-only API
+  inspection found the existing course origin public; Alison SSH authenticated,
+  while no matching private personal final destination was confirmed. The
+  author then explicitly permitted public delivery. Only the independent
+  `codex/neighbours-in-motion` branch is selected; `main` and its Fly deployment
+  are outside this push. No repository visibility or global account setting
+  changes. Alison-only SSH dry-run succeeds, but a read-only remote ref check
+  still shows no new branch and unchanged main; actual verified delivery has
+  not happened at this checkpoint. No pending run is called a completed release.
+
+- The first new candidate completes 17 browser checks over 49.3 native server
+  seconds, including all six café residents walking more than 1.5 m, paired
+  speaking/listening, true-source attention/withdrawal, quiet visits and phone
+  actions. Its separate full-source run passes 344 checks in 53 files, 72.84 s.
+  These are actual first-candidate results, not a final acceptance claim.
+- Root then rejects the real paired-conversation screenshot: the café name
+  board obscures heads and three-dot cues. Passing activity/rig state did not
+  establish visible social interaction. The real talk stop is being moved to
+  a front-porch location through a furniture-cleared NPC aisle; projected
+  cue-screen visibility is added to the browser requirement. Earlier17/344 and
+  pure41 results predate this correction. New geometry/source/browser checks,
+  live promotion and actual independent-branch delivery remain pending here.
+- Pure evidence in `docs/evidence/neighbours-in-motion/pure-checks.json`
+  preserves actual initial harness failures, frozen-controller scope and
+  gesture before/after output, configs, exact executing-agent-confirmed
+  commands and byte hashes. The initial five-file runs used the six-entry
+  config before resident-life.test.ts existed; no missing suite is counted
+  as passed. No DB, cookie jar, server log or invented test output is copied.
+
+- Source milestone `7e0e565` commits the front-porch correction and cue-visibility
+  instrumentation. `.cache/neighbours/pure-porch.txt` passes the focused 41
+  checks/six files in 1.69 s, archived with its exact command and hash. The
+  post-correction native-cycle path and full source run are running separately
+  at this checkpoint; no screenshot/whole-package acceptance is supplied by
+  that source total. The public independent-branch push remains for verified
+  delivery; neither `main` nor automatic deployment is part of this step.
+
+- The front-porch milestone `7e0e565` subsequently passes its 18-check browser
+  path and 344-check source run, but Root's visual review rejects the cue's
+  excessive height. AnimalFigure scaling had multiplied the cue's local
+  offset; the diagnostic projected an assumed 1.92 m point, not the actual
+  rendered Sprite. Those green totals remain earlier evidence, not final
+  cue-placement acceptance.
+- The first new cue-test invocation finds no tests because its config omits
+  the file. `.cache/neighbours/cue-before.txt` is that harness failure, not a
+  product negative. `.cache/neighbours/cue-before-real.txt` then executes
+  the real test and fails on a roughly 0.899 m head-to-cue gap. `40ed231`
+  anchors the cue to the actual animated headAnchor plus 0.22 m in world
+  space, fixes its world width at 0.62 m and projects the actual Sprite for
+  screen visibility. The focused group passes 42 checks/seven files in 1.50 s.
+- The final `.cache/neighbours/final-artifacts/results.json` passes 18 browser
+  checks with zero runtime/cleanup errors. Its actual visible cue, complete
+  activity path, real source response/withdrawal, independent quiet identities,
+  touch controls and reduced-motion checks are separate from the coherent
+  final source/HTTP run: 345 checks in 54 files, 67.90 s. They are not an added
+  quality score or evidence of unfamiliar-player understanding.
+- Application `40ed231` is locally promoted at port 18861, PID 85402. All 72
+  reviewed compiled files match; every row in twelve current tables, including
+  44 sound-history rows, is preserved and 65 served assets are verified. The
+  retained application-only rollback is `3ee3493` with the current database.
+  A fresh anonymous promoted observer and authorised public push to the
+  independent branch are running at this checkpoint; no completion is claimed
+  for either yet. `main`, automatic deployment and global account settings
+  remain outside this delivery. No human listening or player study is invented.
+
+- The subsequent anonymous observer at the actual 18861 preview passes with
+  zero joins, writes or page errors. It retains all sixteen current public
+  planet source IDs, records 386 safe coast-walk render samples, and exposes
+  twelve final NPC life rigs in both desktop and phone captures. This is a
+  short real-preview inspection, not another complete native-cycle study or
+  a physical-phone evaluation.
+- The authorised source push of `40ed231` succeeds through Alison's project
+  SSH identity to the new `codex/neighbours-in-motion` branch in the existing
+  public course final repository. No `main` update, workflow dispatch,
+  repository visibility change or global account change occurs. The source
+  is public by the author's clarified choice; it is not a new website release.
+  The [release index](evidence/neighbours-in-motion-2026-11-08.json) records the
+  distinct checks, failures, promotion and observer scopes. The documentation/
+  evidence follow-up and tag will be committed and verified separately on
+  the same branch without changing the accepted `40ed231` application.

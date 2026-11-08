@@ -1,0 +1,1 @@
+export default {test:{include:["spec/planet-neighbours.test.ts","spec/resident-life.test.ts","spec/characters.test.ts","spec/npc-conversation-cues.test.ts","spec/sound-response.test.ts","spec/planet-render-life.test.ts","spec/planet-surface-safety.test.ts"],fileParallelism:false}};

@@ -1,0 +1,49 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/planet-neighbours.test.ts (3 tests | 2 failed) 115ms
+   ❯ real authored neighbour routes (3)
+     × rejects actual tables, chairs, counter and menu even where building admission permits standing 65ms
+     × keeps every complete authored day on actual floors and out of sea, walls, private huts and furniture 44ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/planet-neighbours.test.ts > real authored neighbour routes > rejects actual tables, chairs, counter and menu even where building admission permits standing
+ReferenceError: document is not defined
+ ❯ sign src/client/planet-build.ts:231:24
+    229|     const road = mesh(roadGeometry, roadMaterial); road.castShadow = f…
+    230|     function sign(parent: THREE.Object3D, text: string, y = 3.8, front…
+    231|         const canvas = document.createElement("canvas");
+       |                        ^
+    232|         canvas.width = 512;
+    233|         canvas.height = 96;
+ ❯ house src/client/planet-build.ts:324:9
+ ❯ buildPlanet src/client/planet-build.ts:352:27
+ ❯ spec/planet-neighbours.test.ts:9:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  spec/planet-neighbours.test.ts > real authored neighbour routes > keeps every complete authored day on actual floors and out of sea, walls, private huts and furniture
+ReferenceError: document is not defined
+ ❯ sign src/client/planet-build.ts:231:24
+    229|     const road = mesh(roadGeometry, roadMaterial); road.castShadow = f…
+    230|     function sign(parent: THREE.Object3D, text: string, y = 3.8, front…
+    231|         const canvas = document.createElement("canvas");
+       |                        ^
+    232|         canvas.width = 512;
+    233|         canvas.height = 96;
+ ❯ house src/client/planet-build.ts:324:9
+ ❯ buildPlanet src/client/planet-build.ts:352:27
+ ❯ spec/planet-neighbours.test.ts:23:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  2 failed | 30 passed (32)
+   Start at  16:23:11
+   Duration  1.59s (tests 70%, transform 16%, import 13%, worker 1%)
+
+    Isolate  5 workers spawned · ~71ms startup each (spawn + environment, per file)
+             at least ~283ms faster with isolate: false — reuses workers across files instead of one per file
+

@@ -1,0 +1,118 @@
+
+ RUN  v5.0.1 /Users/steveluo/Documents/ChatGPT/Alison/崽崽8020/comp4020-final-alisonsun7
+
+ ❯ spec/resident-life.test.ts (9 tests | 8 failed) 12ms
+   ❯ authored daily life remains actual movement and conversation (8)
+     × walks and pauses through the whole tour with identical late-arrival and high/low-rate states 4ms
+     × faces a physically nearby partner and alternates speaking/listening regardless of add order 1ms
+     × never converses across a long gap or while a partner is walking 0ms
+     × keeps source response priority and true metadata without teleporting a routine after additions/removal 1ms
+     × promotes a shared real chat source to two-person gestures at a safe stop 0ms
+     × rejects blocked intermediate paths and floor drops as a stationary safe fallback, including late arrivals 1ms
+     × holds reduced motion at one safe authored stop through time and source changes, leaving old no-plan behaviour intact 0ms
+     × revalidates a tour only when actual shared geometry changes instead of using a stale collision cache 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > walks and pauses through the whole tour with identical late-arrival and high/low-rate states
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ spec/resident-life.test.ts:34:120
+     32|         early.add(definition(), a);late.add(definition(), b);
+     33|         const observed = [];
+     34|         for (let offset = 0; offset <= 40_000; offset += 200) { early.…
+       |                                                                                                                        ^
+     35|         const final = now + 43_725;
+     36|         early.frame(final, .017);late.frame(final, .25);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > faces a physically nearby partner and alternates speaking/listening regardless of add order
+TypeError: initial is not iterable
+ ❯ spec/resident-life.test.ts:59:20
+     57|         first.residents.frame(now, .017);second.residents.frame(now, .…
+     58|         const initial = first.residents.activities;
+     59|         expect([...initial].sort((a, b) => a.id.localeCompare(b.id))).…
+       |                    ^
+     60|         expect(initial.map(state => state.role).sort()).toEqual(["list…
+     61|         expect(initial.find(state => state.id === "a")?.yaw).toBeClose…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > never converses across a long gap or while a partner is walking
+TypeError: Cannot read properties of undefined (reading 'every')
+ ❯ spec/resident-life.test.ts:73:64
+     71|         residents.add(definition("a", { group: "far", partnerId: "b", …
+     72|         residents.add(definition("b", { group: "far", partnerId: "a", …
+     73|         residents.frame(now, .017);expect(residents.activities.every(s…
+       |                                                                ^
+     74|         expect(a.setConversation).not.toHaveBeenCalled();expect(b.setC…
+     75|         const walkers = new SoundResidents(geometry), c = figure(), d …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > keeps source response priority and true metadata without teleporting a routine after additions/removal
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ spec/resident-life.test.ts:92:37
+     90|         for (let offset = 2500; offset < 70_000; offset += 250) {
+     91|             reacting.frame(now + offset, .25);quiet.frame(now + offset…
+     92|             const actual = reacting.activities[0];attention.push(actua…
+       |                                     ^
+     93|             expect(actual.sourceId).toBe("real-music");expect(reacting…
+     94|             expect(a.position.toArray()).toEqual(b.position.toArray());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > promotes a shared real chat source to two-person gestures at a safe stop
+TypeError: Cannot read properties of undefined (reading 'map')
+ ❯ spec/resident-life.test.ts:109:37
+    107|         residents.setContributions([{ ...source("actual-coffee-chat"),…
+    108|         residents.frame(now + 3500, .017);
+    109|         expect(residents.activities.map(state => state.role).sort()).t…
+       |                                     ^
+    110|         expect(residents.activities.every(state => state.attending && …
+    111|         expect(residents.responses.every(state => state.sourceId === "…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > rejects blocked intermediate paths and floor drops as a stationary safe fallback, including late arrivals
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ spec/resident-life.test.ts:125:26
+    123|             first.frame(now + 42_000, .017);second.frame(now + 42_000,…
+    124|             expect(first.activities).toEqual(second.activities);expect…
+    125|             expect(first.activities[0]).toMatchObject({ blocked: true,…
+       |                          ^
+    126|             first.dispose();second.dispose();
+    127|         }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > holds reduced motion at one safe authored stop through time and source changes, leaving old no-plan behaviour intact
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ spec/resident-life.test.ts:134:131
+    132|         const residents = new SoundResidents(geometry), actor = figure…
+    133|         residents.setContributions([source("quiet-call")]);residents.f…
+    134|         const position = actor.position.toArray(), bones = actor.child…
+       |                                                                                                                                   ^
+    135|         residents.frame(now + 41_000, .25, true);
+    136|         expect(actor.position.toArray()).toEqual(position);expect(acto…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  spec/resident-life.test.ts > authored daily life remains actual movement and conversation > revalidates a tour only when actual shared geometry changes instead of using a stale collision cache
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ spec/resident-life.test.ts:150:45
+    148|         const early = new SoundResidents(currentGeometry), late = new …
+    149|         early.add(definition(), a);late.add(definition(), b);
+    150|         early.frame(now, .017);expect(early.activities[0].blocked).toB…
+       |                                             ^
+    151|         sculpture = true;early.refreshLifeGeometry();late.refreshLifeG…
+    152|         early.frame(now + 10_000, .017);late.frame(now + 10_000, .25);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 1 passed (9)
+   Start at  16:29:09
+   Duration  144ms (transform 52%, import 30%, tests 15%, worker 2%)
+

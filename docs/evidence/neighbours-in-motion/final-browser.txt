@@ -1,0 +1,20 @@
+(node:83922) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ok  The rendered candidate exposes twelve existing NPCs and their final actual head and arm rotations
+ok  Two quiet visitors enter through the real join UI with independent browser-cookie identities
+ok  The twelve NPCs are not counted as the two real joined people
+ok  Over a real full café cycle, at least two existing NPCs walk more than 0.7 metres instead of staying at their sound stops
+ok  Coco and Maple meet within three metres, face each other and exchange speaking/listening turns with different final head and hand poses
+ok  Both actual walking and a paired conversation project visibly into unobstructed desktop world space
+ok  An actual speaking turn has a shown cue whose projected point and both partners are visible and clear of the café sign and HUD
+ok  The complete unscripted NPC cycle creates no audio context or native audio start for a quiet visitor
+ok  Independent visits see the same server-time NPC trajectories, allowing measured frame-sampling skew
+ok  After the real source settles, both visits visibly attend to that authored café sound within its initial six-second window without unmuting
+ok  The shared response refers to the actual acknowledged author and unchanged sound coordinates
+ok  Withdrawing beside the source removes that real attention target and live contribution in both visits
+ok  At 390×844, touch travel to Tide & Coffee remains an unobstructed 44px target
+ok  The touch café chooser starts with reachable audition and explicit contribution controls
+ok  Touch cancellation publishes nothing and preserves the quiet visit
+ok  Native reduced-motion preference keeps both later views stationary with stable actual conversation rigs and no audio
+ok  The actual desktop, touch, sound-response, withdrawal and reduced-motion path has no browser runtime errors
+ok  Read-only scratch history confirms original sources remain exact and only acknowledged fixtures have retained author/position tombstones
