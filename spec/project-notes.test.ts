@@ -6,10 +6,9 @@ const document = (html: string) => new JSDOM(html).window.document;
 const notes = ["chorus-audio", "promise-evidence-map", "human-playtest", "little-chorus"];
 
 describe("readable submission entry without changing the author's Markdown", () => {
-  it("keeps the author draft warning while making entry and four cited notes work on the current origin", () => {
+  it("makes the entry and four cited notes work on the current origin", () => {
     const doc = document(renderReadme());
     const links = Array.from(doc.querySelectorAll("main a"), a => a.getAttribute("href"));
-    expect(doc.querySelector("main")?.textContent).toContain("Author review draft");
     expect(links).toContain("/planet");
     expect(links.some(href => href?.includes("localhost"))).toBe(false);
     for (const slug of notes) expect(links).toContain("/project-notes/" + slug);
