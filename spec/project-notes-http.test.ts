@@ -3,14 +3,11 @@ import { expect, inject, it } from "vitest";
 
 const base = inject("baseUrl");
 
-it("serves the four public README references and manifest through their canonical GET routes", async () => {
+it("serves the four public notes and the manifest through their canonical GET routes", async () => {
   const response = await fetch(new URL("/readme/", base));
   expect(response.status).toBe(200);
-  const doc = new JSDOM(await response.text()).window.document;
-  const noteLinks = Array.from(doc.querySelectorAll<HTMLAnchorElement>('main a[href^="/project-notes/"]'), a => a.getAttribute("href")!);
-  expect(new Set(noteLinks)).toEqual(new Set([
-    "/project-notes/chorus-audio", "/project-notes/promise-evidence-map", "/project-notes/human-playtest", "/project-notes/little-chorus",
-  ]));
+  // The README no longer links every note, but each stays published.
+  const noteLinks = ["/project-notes/chorus-audio", "/project-notes/promise-evidence-map", "/project-notes/human-playtest", "/project-notes/little-chorus"];
   for (const href of noteLinks) {
     const note = await fetch(new URL(href, base));
     expect(note.status, href).toBe(200);

@@ -6,13 +6,14 @@ const document = (html: string) => new JSDOM(html).window.document;
 const notes = ["chorus-audio", "promise-evidence-map", "human-playtest", "little-chorus"];
 
 describe("readable submission entry without changing the author's Markdown", () => {
-  it("makes the entry and four cited notes work on the current origin", () => {
+  // A marker arrives with only the URL and starts at /readme/: the README
+  // must send them to the deployed place, never a localhost preview.
+  it("points a newcomer at the deployed place and its sources, never localhost", () => {
     const doc = document(renderReadme());
     const links = Array.from(doc.querySelectorAll("main a"), a => a.getAttribute("href"));
-    expect(links).toContain("/planet");
     expect(links.some(href => href?.includes("localhost"))).toBe(false);
-    for (const slug of notes) expect(links).toContain("/project-notes/" + slug);
-    expect(links).toContain("/assets-manifest.json");
+    expect(links.some(href => href === "/planet" || href?.endsWith(".fly.dev/planet"))).toBe(true);
+    expect(links.some(href => href?.endsWith("/assets-manifest.json"))).toBe(true);
     expect(links).toContain("https://www.robinsloan.com/notes/home-cooked-app/");
   });
 
