@@ -1,0 +1,123 @@
+{
+  "kind": "local-submission-materials-review",
+  "recordedAt": "2026-11-08T15:39:10.485169+00:00",
+  "repository": "https://github.com/comp4020-agentic-coding-studio/comp4020-final-alisonsun7",
+  "publicMainCommit": "4e6433e9d9dce2a942a363c2bb133d2218e8f554",
+  "separatePublicationEvidenceCommit": "aaa5c2498712707b59ac1aa2462909f1cdb9acfa",
+  "publicationEvidencePath": "docs/decisions/038-sites-playtest-publication.md",
+  "localDevelopmentCommitAtStart": "aaa5c2498712707b59ac1aa2462909f1cdb9acfa",
+  "originalDocuments": {
+    "README.md": {
+      "sha256": "999643025f38615fe902c029b9620802a2eb826c3b598d61959cc49a3b612a95",
+      "gitBlobSha": "87b73b140ffac6e7309adb97c39488ef3a09edba"
+    },
+    "PROCESS.md": {
+      "sha256": "e394def15d0566cafd6d8224c680b1b1123a2ee9efbac26917f33f2f41960641",
+      "gitBlobSha": "c4111ae6a8b91e675f60c5786e9ffa0d8887ec50"
+    },
+    "research-note.md": {
+      "sha256": "0590052619f0ad4f1b3e6eb443e835ccceab6b5831e31cdf43a83f648f24f045",
+      "gitBlobSha": "ed02cd33b9c9a6643e9931ba8b34776d5fe56633"
+    },
+    "CLAUDE.md": {
+      "sha256": "720db171005bccca51a37da3fa3f4967048f4aa28be2f0a491e985a31a2e1a15",
+      "gitBlobSha": "14a7cf6e4f5b89b1b6923511ee1199e88f2e5f58"
+    }
+  },
+  "currentFlyGetObservations": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 2367,
+      "sha256": "d3a695b2264da655d025f2d882c0a5fb70fded33c918713c970fb64564fba65a",
+      "containsLocalhost18861": false,
+      "containsWorldWhale": false,
+      "containsLittleChorus": true
+    },
+    {
+      "path": "/readme/",
+      "status": 200,
+      "bytes": 5815,
+      "sha256": "ba9e1a2c2b019a1f1b91eb76edad33edf7a22d110822825dcee420b8df28433d",
+      "containsLocalhost18861": false,
+      "containsWorldWhale": false,
+      "containsLittleChorus": true
+    },
+    {
+      "path": "/shared/sound-life.js",
+      "status": 200,
+      "bytes": 5796,
+      "sha256": "b5651328ed6e635bd70dd3250bb203cf801ec841c332beac6e8f29d4fe0ae0bc",
+      "containsLocalhost18861": false,
+      "containsWorldWhale": true,
+      "containsLittleChorus": false
+    }
+  ],
+  "sourceTreeComplete": true,
+  "humanFeedback": {
+    "provenance": "User-supplied account in this conversation on 2026-11-08; not a new agent-operated study or reconstructed timestamped browser log.",
+    "participants": 2,
+    "platforms": [
+      "Mac",
+      "Mac"
+    ],
+    "reportedBrowsers": [
+      "Safari",
+      "Firefox",
+      "Chrome",
+      "DuckDuckGo"
+    ],
+    "independentIdentities": true,
+    "bothLeftSounds": true,
+    "mutualAnswers": true,
+    "chat": true,
+    "observedPeerChanges": true,
+    "retainedAfterRefreshAndReopening": true,
+    "retainedOnNextDayReturn": true,
+    "initialProblem": "Using sounds to co-build the environment was initially difficult to understand.",
+    "designResponse": "Guiding words and default sounds were added.",
+    "interest": "NPC activities and new creatures, objects and behaviours made exploration interesting.",
+    "listening": "Synthetic frog disliked; modified replacement acceptable.",
+    "testSessionBuildHash": null,
+    "measuredLatencyMs": null,
+    "researchPositionApprovedByUser": true,
+    "authorPosition": "Agents can brainstorm, advise and construct prototypes; people judge interaction, sound, additions and art. These judgements must inform the harness to improve subsequent work."
+  },
+  "reviewActivities": [
+    "Read latest public main documents and comparison against local branch.",
+    "Checked official course brief and AI-use policy.",
+    "Checked six primary literature/design pages.",
+    "Read existing source/decision/evidence records; did not rerun the application suite.",
+    "GET-only checks of course homepage, readme and shared sound-life module; zero writes.",
+    "Retained historical reflections byte-for-byte after checking public tree blob hashes.",
+    "Prepared local replacement materials only; no repository push or deployment.",
+    "Ran the unmodified public-main course evidence checker against prepared materials; three reflections and seven process commit objects pass."
+  ],
+  "primarySources": [
+    "https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/assessments/final-project/",
+    "https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/",
+    "https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/ai-use-and-integrity/",
+    "https://www.robinsloan.com/notes/home-cooked-app/",
+    "https://www.nngroup.com/articles/visibility-system-status/",
+    "https://openai.com/index/harness-engineering/",
+    "https://www.anthropic.com/research/demystifying-evals-for-ai-agents",
+    "https://arxiv.org/abs/2507.09089v2",
+    "https://metr.org/blog/2026-02-24-uplift-update/"
+  ],
+  "includedEvidenceImages": [
+    {
+      "sourceCommit": "4e6433e9d9dce2a942a363c2bb133d2218e8f554",
+      "sourcePath": "docs/evidence/waterlife/2026-11-08/browser/occluded/friends-fish-phone.png",
+      "packetPath": "docs/submission/images/phone-occluded.png",
+      "sha256": "0a8475069f4cccdc7cb67ee4bbb7ffa80a9e45873b68775c99a39526989ead4c",
+      "transformed": false
+    },
+    {
+      "sourceCommit": "4e6433e9d9dce2a942a363c2bb133d2218e8f554",
+      "sourcePath": "docs/evidence/waterlife/2026-11-08/browser/final/friends-fish-phone.png",
+      "packetPath": "docs/submission/images/phone-watch.png",
+      "sha256": "a31e6a4534e887cbcf4295711d73cf5174ae2ac2e7e92f89bb4d235b581defed",
+      "transformed": false
+    }
+  ]
+}
